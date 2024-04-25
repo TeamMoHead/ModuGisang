@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# npm
+*/node_modules
+
+# settings
+.vscode
+
+# environment
+*/.env
+*/.env.local
