@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import Countdown from './components/Countdown';
 import Thumbnail from './components/Thumbnail';
 
 const InGame = () => {
@@ -25,6 +26,7 @@ const InGame = () => {
   return (
     <Wrapper>
       InGame
+      <Countdown />
       <ThumbnailWrapper>
         <Thumbnail stream={stream} isActive={false} />
         <Thumbnail stream={stream} isActive={true} />
