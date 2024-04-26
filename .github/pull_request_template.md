@@ -2,7 +2,7 @@
 
 > 작업 분류: 내용
 > 
-> 분류: feat(새로운 기능 추가), fix(버그 수정), Docs(문서 수정), style(코드 포맷 변경 등), refactor(코드 리펙토링), test(테스트 코드 추가), design(ui 디자인 변경), rename(파일명 수정), remove(파일이나 코드 삭제), chore(빌드 관련 수정)
+> 분류: feat(새로운 기능 추가), fix(버그 수정), docs(문서 수정), style(코드 포맷 변경 등), refactor(코드 리펙토링), test(테스트 코드 추가), ui(ui 변경), rename(파일명 수정), remove(파일이나 코드 삭제), chore(빌드 관련 수정)
 >
 > ex) feat: add useFetch hook
 
