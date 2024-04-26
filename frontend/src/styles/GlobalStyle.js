@@ -13,6 +13,7 @@ ${reset}
   body{
     font-family: 'NotoSansKR', sans-serif;
     background-color: ${theme.colors.white};
+    color: ${theme.colors.black};
 
     &::-webkit-scrollbar {
     display: none;

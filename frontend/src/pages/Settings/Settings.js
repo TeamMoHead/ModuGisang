@@ -1,7 +1,8 @@
 import React from 'react';
+import * as S from '../../styles/common';
 
 const Settings = () => {
-  return <div>Settings</div>;
+  return <S.PageWrapper>Settings</S.PageWrapper>;
 };
 
 export default Settings;

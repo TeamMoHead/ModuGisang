@@ -1,7 +1,8 @@
 import React from 'react';
+import * as S from '../../styles/common';
 
 const CreateChallenge = () => {
-  return <div>CreateChallenge</div>;
+  return <S.PageWrapper>CreateChallenge</S.PageWrapper>;
 };
 
 export default CreateChallenge;

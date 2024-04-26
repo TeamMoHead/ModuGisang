@@ -1,4 +1,4 @@
-import React, { isValidElement, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 const Thumbnail = ({ userId, stream, isActive }) => {
@@ -6,10 +6,10 @@ const Thumbnail = ({ userId, stream, isActive }) => {
     <Wrapper>
       <ThumbnailContentArea>
         <UserVideo title="UserVideo" stream={stream} />
-        <UserStatus isActive={isActive} />
+        <StatusIcon isActive={isActive} />
       </ThumbnailContentArea>
       <ThumbnailInfoArea>
-        <UserInfo userId={userId} />
+        <UserName>{userId}</UserName>;
       </ThumbnailInfoArea>
     </Wrapper>
   );
@@ -31,18 +31,6 @@ const UserVideo = ({ stream }) => {
   return <Video title="video">{video}</Video>;
 };
 
-const UserInfo = ({ userId }) => {
-  if (userId === null || userId === undefined) {
-    userId = 'Unknown User';
-  }
-  return <UserId>{userId}</UserId>;
-};
-
-const UserStatus = ({ isActive }) => {
-  console.log(isActive);
-  return <StatusIcon isActive={isActive} />;
-};
-
 const Wrapper = styled.div`
   width: 200px;
   height: 20%;
@@ -61,7 +49,9 @@ const ThumbnailInfoArea = styled.div`
   height: 20%;
   display: flex;
 `;
-const UserId = styled.div``;
+
+const UserName = styled.div``;
+
 const Video = styled.div`
   width: 100%;
   height: 100%;

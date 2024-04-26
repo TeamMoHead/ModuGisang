@@ -15,9 +15,9 @@ const colors = {
     dark: '#bdbdbd',
   },
   text: {
-    primary: '#212121',
-    secondary: '#757575',
-    disabled: '#bdbdbd',
+    black: '#212121',
+    gray: '#757575',
+    lightGray: '#bdbdbd',
   },
   white: '#ffffff',
   black: '#000000',
