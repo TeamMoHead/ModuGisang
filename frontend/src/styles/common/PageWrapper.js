@@ -7,9 +7,8 @@ const PageWrapper = styled.div`
   width: 96vw;
 
   gap: 20px;
-
   margin: auto;
-  padding: 20px;
+  padding: 60px 20px 20px 20px;
 `;
 
 export default PageWrapper;

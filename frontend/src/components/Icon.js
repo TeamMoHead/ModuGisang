@@ -11,6 +11,8 @@ import {
   faSadTear,
   faSpinner,
   faGear,
+  faMicrophone,
+  faMicrophoneSlash,
 } from '@fortawesome/free-solid-svg-icons';
 
 const iconList = {
@@ -23,6 +25,8 @@ const iconList = {
   sadFace: faSadTear,
   loading: faSpinner,
   settings: faGear,
+  micOn: faMicrophone,
+  micOff: faMicrophoneSlash,
 };
 
 const Icon = ({ icon, iconStyle, onClickHandler }) => {
@@ -30,6 +34,9 @@ const Icon = ({ icon, iconStyle, onClickHandler }) => {
     <IconWrapper
       $iconStyle={iconStyle}
       onClick={e => {
+        e.preventDefault();
+        e.stopPropagation();
+
         if (onClickHandler) {
           onClickHandler(e);
         }

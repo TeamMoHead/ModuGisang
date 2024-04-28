@@ -55,7 +55,7 @@ const Wrapper = styled.nav`
   top: 0;
   ${({ theme }) => theme.flex.between}
   width: 100vw;
-  height: 5vh;
+  height: 50px;
   padding: 0 20px;
   background-color: ${({ theme }) => theme.colors.primary.light};
 `;

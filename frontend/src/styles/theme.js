@@ -69,11 +69,16 @@ const flex = {
   `,
 };
 
+const boxShadow = {
+  basic: '0 2px 4px 0 rgba(0, 0, 0, 0.15)',
+};
+
 const theme = {
   colors,
   fonts,
   radius,
   flex,
+  boxShadow,
 };
 
 export default theme;

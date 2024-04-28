@@ -18,10 +18,10 @@ const Main = () => {
   // userInfo 받는 ContextAPI 사용하는 것으로 바꾸기
   const [hasChallenge, setHasChallenge] = useState('hasChallenge');
 
-  const challengeId = 11;
+  const challengeId = 1234;
   const userInfo = {
-    userId: 2,
-    userName: '귀요미이시현',
+    userId: 0,
+    userName: '천사박경원',
     streakDays: 2,
   };
   const { userId, userName, streakDays } = userInfo;
@@ -39,10 +39,19 @@ const Main = () => {
 
   const CARD_ON_CLICK_HANDLERS = {
     streak: () => navigate('/myStreak'),
-    invitations: () => navigate('/joinChallenge'),
+    invitations: () => {
+      // 초대받은 challenge 존재 여부에 따라 분기처리
+      navigate('/joinChallenge');
+    },
     create: () => navigate('/createChallenge'),
-    challenge: () => {},
-    enter: () => navigate(`/inGame/${challengeId}`),
+    challenge: () => {
+      // 얘는 페이지 이동 없이 그냥 고정 카드임
+    },
+    enter: () => {
+      // 현재 시간이 challenge 시작 시간보다 늦으면
+      // or 너무 빠르면...등 분기처리 로직
+      navigate(`/inGame/${challengeId}`);
+    },
   };
 
   return (
