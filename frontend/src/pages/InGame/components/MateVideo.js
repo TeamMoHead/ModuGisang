@@ -1,12 +1,37 @@
-import React, { forwardRef, useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { GameContext } from '../../../contexts/GameContext';
 import styled from 'styled-components';
 
-const MateVideo = forwardRef(({ name, stream, isActive }, ref) => {
+const MateVideo = ({ mateId }) => {
+  const { mateVideoRefs, mateStreams } = useContext(GameContext);
+  const [mateStream, setMateStream] = useState(null);
+  const [name, setName] = useState('');
+  const [isActive, setIsActive] = useState(false);
+  const ref = mateVideoRefs.current[mateId];
+
   useEffect(() => {
-    if (ref.current && stream) {
-      ref.current.srcObject = stream;
+    if (mateStreams.length > 0) {
+      const mateStream = mateStreams.streams.find(
+        stream => stream.connection.data.userId === mateId,
+      );
+
+      if (mateStream) {
+        setMateStream(mateStream);
+        setName(mateStream.connection.data.userName);
+        setIsActive(true);
+      } else {
+        setMateStream(null);
+        setName('');
+        setIsActive(false);
+      }
     }
-  }, [stream, ref]);
+  }, [mateStreams]);
+
+  useEffect(() => {
+    if (ref.current && mateStream) {
+      ref.current.srcObject = mateStream;
+    }
+  }, [mateStream, ref]);
 
   return (
     <Wrapper>
@@ -18,7 +43,7 @@ const MateVideo = forwardRef(({ name, stream, isActive }, ref) => {
       <UserName>{name}</UserName>
     </Wrapper>
   );
-});
+};
 
 export default MateVideo;
 

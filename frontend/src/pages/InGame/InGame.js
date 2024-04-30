@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useParams } from 'react-router-dom';
+import { ChallengeContext } from '../../contexts/ChallengeContext';
+import { UserContext } from '../../contexts/UserContext';
 import { GameContext } from '../../contexts/GameContext';
 import InGameNav from './components/Nav/InGameNav';
 import { MyVideo, MateVideo } from './components';
@@ -20,21 +22,19 @@ const InGame = () => {
   // 유효한 사용자만이 이 페이지에 접근할 수 있도록 하기
   const [isPageLoading, setIsPageLoading] = useState(true);
   const { challengeId } = useParams();
-  const myVideoRef = useRef(null);
-  const matesVideoRef = useRef({});
-  // ------ myId 테스트용 나중에 지워야 함!!!!!!!!-----
-  // 나중에 Context의 userInfo에서 받아오기
-  const myId = 0;
-  // ---------------------------------
+  const { userInfo } = useContext(UserContext);
+  const { userId: myId } = userInfo;
+  const { getChallengeData } = useContext(ChallengeContext);
   const {
     inGameMode,
-    getChallengeData,
+    getConnectionToken,
     challengeData,
     videoSession,
     startSession,
+    myStream,
+    setMyStream,
   } = useContext(GameContext);
   const [stage, setStage] = useState(stages.waiting);
-  const [myStream, setMyStream] = useState(null);
   const [mateList, setMateList] = useState([]);
 
   const stopCamera = () => {
@@ -46,22 +46,9 @@ const InGame = () => {
     }
   };
 
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-      setMyStream(stream);
-    } catch (error) {
-      console.error(error);
-      setMyStream(null);
-    }
-  };
-
   useEffect(() => {
     if (challengeId) {
-      // getChallengeData();
+      getChallengeData(challengeId);
     }
     return;
   }, [challengeId]);
@@ -69,6 +56,8 @@ const InGame = () => {
   useEffect(() => {
     if (challengeData) {
       setMateList(challengeData.mates.filter(mate => mate.id !== myId));
+      getConnectionToken();
+
       startSession();
     }
     return;
@@ -76,11 +65,6 @@ const InGame = () => {
 
   // 현재시간과 challenge 시작시간 비교해서,
   // challenge 시작시간이 지났으면 setIsWaiting(false)
-  useEffect(() => {
-    if (myVideoRef.current && myStream) {
-      myVideoRef.current.srcObject = myStream;
-    }
-  }, [myStream]);
 
   useEffect(() => {
     if (videoSession) {
@@ -88,20 +72,17 @@ const InGame = () => {
     }
   }, [videoSession]);
 
+  console.log('USER INFO:  ', userInfo);
+
   return (
     <>
       <InGameNav />
       <Wrapper>
-        <MyVideo startCamera={startCamera} ref={myVideoRef} />
+        <MyVideo />
         {mateList.length > 0 && (
           <MatesVideoWrapper $isSingle={mateList.length === 1}>
-            {mateList.map(({ id, name }) => (
-              <MateVideo
-                key={id}
-                name={name}
-                // stream={matesStream.stream}
-                // ref={matesVideoRef.current[id]}
-              />
+            {mateList.map(({ userId }) => (
+              <MateVideo key={userId} mateId={userId} />
             ))}
           </MatesVideoWrapper>
         )}

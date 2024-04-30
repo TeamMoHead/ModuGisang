@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Router from './Router';
 
+import { UserContextProvider } from './contexts/UserContext';
+
 import GlobalStyle from './styles/GlobalStyle';
 import theme from './styles/theme';
 import { ThemeProvider } from 'styled-components';
@@ -14,7 +16,9 @@ root.render(
   <>
     <GlobalStyle />
     <ThemeProvider theme={theme}>
-      <Router />
+      <UserContextProvider>
+        <Router />
+      </UserContextProvider>
     </ThemeProvider>
   </>,
 );

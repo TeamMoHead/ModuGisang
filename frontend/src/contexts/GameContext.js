@@ -1,38 +1,47 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, {
+  createContext,
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+} from 'react';
 import { Openvidu } from 'openvidu-browser';
+import { UserContext } from './UserContext';
+import { ChallengeContext } from './ChallengeContext';
 import { challengeServices } from '../apis/challengeServices';
+
 const GameContext = createContext();
 
-// create provider
 const GameContextProvider = ({ children }) => {
-  const [videoSession, setVideoSession] = useState(null);
+  const { userInfo } = useContext(UserContext);
+  const { challengeData } = useContext(ChallengeContext);
+  const { userId, userName } = userInfo;
   const [inGameMode, setInGameMode] = useState('waiting');
-  const [missionNum, setMissionNum] = useState(0);
-  const [micOn, setMicOn] = useState(true);
-  const [challengeData, setChallengeData] = useState(null);
+  // challengeData는 나중에 challengeContext에서 받아오는 것으로 변경
+  // ----------------------------------------------
 
-  const getChallengeData = async () => {
-    // try {
-    //   const response = await challengeServices.getChallengeInfo(challengeId);
-    //   setChallengeData(response.data);
-    // } catch (error) {
-    //   console.error(error);
-    //
-    // ------테스트용 값 나중에 지워야 함!!!!!!!!-----
-    setChallengeData({
-      challengeId: 1234,
-      startDate: '2021-09-01T00:00:00.000Z',
-      wakeTime: '05:30:00',
-      mates: [
-        { id: 0, name: '천사박경원' },
-        { id: 1, name: '귀요미이시현' },
-        { id: 2, name: '깜찍이이재원' },
-        // { id: 3, name: '상큼이금도현' },
-        // { id: 4, name: '똑똑이연선애' },
-      ],
-    });
-    // ----------------------------------------------
-    // }
+  const [videoSession, setVideoSession] = useState(null);
+  const [connectionToken, setConnectionToken] = useState('');
+  const myVideoRef = useRef(null);
+  const [myStream, setMyStream] = useState(null);
+  const mateVideoRefs = useRef(null);
+  const [mateStreams, setMateStreams] = useState([]);
+  const [micOn, setMicOn] = useState(false);
+
+  const getConnectionToken = async () => {
+    const userData = {
+      challengeId: challengeData.challengeId,
+      userId,
+      userName,
+    };
+
+    try {
+      const response = await challengeServices.getConnectionToken({ userData });
+      console.log('====Get token response: ', response);
+      setConnectionToken(response.data.token);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const startSession = () => {
@@ -41,7 +50,7 @@ const GameContextProvider = ({ children }) => {
     // session.on('streamCreated', event => {
     //   session.subscribe(event.stream, 'video-container');
     // });
-    // session.connect('token', { clientData: 'clientData' }, error => {
+    // session.connect(token, error => {
     //   if (error) {
     //     console.error(error);
     //   } else {
@@ -59,14 +68,17 @@ const GameContextProvider = ({ children }) => {
   return (
     <GameContext.Provider
       value={{
-        getChallengeData,
-        challengeData,
+        getConnectionToken,
         videoSession,
         startSession,
         micOn,
         turnMicOnOff,
         inGameMode,
-        missionNum,
+        myVideoRef,
+        myStream,
+        setMyStream,
+        mateVideoRefs,
+        mateStreams,
       }}
     >
       {children}
@@ -98,10 +110,14 @@ function VideoSession({ token }) {
 
         // 발행자 초기화 및 발행
         const initPublisher = () => {
-            const publisher = OV.initPublisher('my-video-container', {
-                audio: true,  // 오디오 활성화
-                video: true,  // 비디오 활성화
+            const publisher = OV.initPublisher(myVideoRef, {
+                audioSource: undefined,
+                videoSource: undefined,
+                publishAudio: true,
+                publishVideo: true,
                 resolution: '640x480'
+                frameRate: 30,
+                mirror: false,
             });
 
             // 발행자 스트림 상태 업데이트

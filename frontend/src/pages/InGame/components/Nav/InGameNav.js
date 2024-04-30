@@ -18,18 +18,16 @@ const InGameNav = () => {
 
   return (
     <Wrapper>
-      {(inGameMode === 'waiting' || inGameMode === 'result') && (
-        <LeftArea>
+      <BtnArea $hasLeft={inGameMode === 'waiting' || inGameMode === 'result'}>
+        {(inGameMode === 'waiting' || inGameMode === 'result') && (
           <Icon icon="back" iconStyle={BackBtnStyle} onClickHandler={goBack} />
-        </LeftArea>
-      )}
-      <RightArea>
+        )}
         <Icon
           icon={micOn ? 'micOn' : 'micOff'}
           iconStyle={micOn ? micOnStyle : micOffStyle}
           onClickHandler={turnMicOnOff}
         />
-      </RightArea>
+      </BtnArea>
       <TextArea>
         {inGameMode !== 'waiting' && (
           <>
@@ -72,22 +70,14 @@ const micOffStyle = {
   color: 'main',
 };
 
-const LeftArea = styled.div`
+const BtnArea = styled.div`
   position: fixed;
   top: 0;
-  width: 100vw;
-  height: 50px;
-  padding: 0 20px;
-  ${({ theme }) => theme.flex.left}
-`;
 
-const RightArea = styled.div`
-  position: fixed;
-  top: 0;
   width: 100vw;
   height: 50px;
   padding: 0 20px;
-  ${({ theme }) => theme.flex.right}
+  ${({ theme, $hasLeft }) => ($hasLeft ? theme.flex.between : theme.flex.right)}
 `;
 
 const TextArea = styled.div`

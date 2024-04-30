@@ -38,6 +38,7 @@ const Icon = ({ icon, iconStyle, onClickHandler }) => {
         e.stopPropagation();
 
         if (onClickHandler) {
+          console.log('try!');
           onClickHandler(e);
         }
       }}
@@ -50,6 +51,7 @@ const Icon = ({ icon, iconStyle, onClickHandler }) => {
 export default Icon;
 
 const IconWrapper = styled.div`
+  z-index: 100;
   width: auto;
   padding: 5px;
 
