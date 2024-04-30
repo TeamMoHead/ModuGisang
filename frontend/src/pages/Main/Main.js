@@ -1,23 +1,43 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import useAuth from '../../hooks/useAuth';
+import { AccountContext } from '../../contexts/AccountContexts';
 
 const Main = () => {
+  const { handleCheckAuth } = useAuth();
+  const { accessToken } = useContext(AccountContext);
   const navigate = useNavigate();
-
   // challenge id는 서버에서 받아온 값으로 대체
   const challengeId = '1234';
 
+  useEffect(() => {
+    handleCheckAuth();
+  });
+
+  if (!accessToken) {
+    return <div>Unauthorized</div>;
+  }
+
   return (
     <Wrapper>
-      <p>Main</p>
-      <EnterBtn
-        onClick={() => {
-          navigate(`/inGame/${challengeId}`);
-        }}
-      >
-        Start Game
-      </EnterBtn>
+      <div>
+        <p>Main</p>
+        <button
+          onClick={() => {
+            navigate('/settings');
+          }}
+        >
+          settings
+        </button>
+        <EnterBtn
+          onClick={() => {
+            navigate(`/inGame/${challengeId}`);
+          }}
+        >
+          Start Game
+        </EnterBtn>
+      </div>
     </Wrapper>
   );
 };
