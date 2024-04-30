@@ -14,7 +14,7 @@ const Settings = () => {
     handleCheckAuth();
   }, [handleCheckAuth]);
 
-  if (refreshToken === null) {
+  if (!refreshToken) {
     contents = <div>Loading...</div>;
   } else {
     contents = (

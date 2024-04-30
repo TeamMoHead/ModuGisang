@@ -2,20 +2,20 @@ import React, { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import useAuth from '../../hooks/useAuth';
-import { AccountContext } from '../../contexts/AccountContexts';
 
 const Main = () => {
   const { handleCheckAuth } = useAuth();
-  const { accessToken } = useContext(AccountContext);
   const navigate = useNavigate();
   // challenge id는 서버에서 받아온 값으로 대체
   const challengeId = '1234';
+
+  const refreshToken = localStorage.getItem('refreshToken');
 
   useEffect(() => {
     handleCheckAuth();
   });
 
-  if (!accessToken) {
+  if (!refreshToken) {
     return <div>Unauthorized</div>;
   }
 
