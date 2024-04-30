@@ -1,68 +1,83 @@
-import React, { useEffect, useRef, useContext } from 'react';
+import React, { useRef, useEffect, useContext } from 'react';
 import { GameContext } from '../../../contexts/GameContext';
-import { FaceMesh } from '@mediapipe/face_mesh';
+import * as pose from '@mediapipe/pose';
+import { Camera } from '@mediapipe/camera_utils';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
+import styled from 'styled-components';
 
 const GameMode1MediaPipe = () => {
   const { myVideoRef } = useContext(GameContext);
   const canvasRef = useRef(null);
 
-  const setupMediaPipeFaceMesh = () => {
-    const faceMesh = new FaceMesh({
+  useEffect(() => {
+    const mpPose = new pose.Pose({
       locateFile: file =>
-        `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`,
+        `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
     });
 
-    faceMesh.setOptions({
-      maxNumFaces: 1,
-      refineLandmarks: true,
+    mpPose.setOptions({
+      modelComplexity: 1,
+      smoothLandmarks: true,
+      enableSegmentation: true,
+      smoothSegmentation: true,
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5,
     });
 
-    return faceMesh;
-  };
+    mpPose.onResults(results => {
+      const canvasElement = canvasRef.current;
+      const canvasCtx = canvasElement.getContext('2d');
+      canvasElement.width = myVideoRef.current.videoWidth;
+      canvasElement.height = myVideoRef.current.videoHeight;
 
-  const drawFaceMeshResults = (ctx, results) => {
-    if (results.multiFaceLandmarks) {
-      for (const landmarks of results.multiFaceLandmarks) {
-        drawConnectors(ctx, landmarks, FaceMesh.FACEMESH_TESSELATION, {
-          color: '#C0C0C070',
-          lineWidth: 1,
-        });
-        drawConnectors(ctx, landmarks, FaceMesh.FACEMESH_RIGHT_EYE, {
-          color: '#FF3030',
-        });
-        drawConnectors(ctx, landmarks, FaceMesh.FACEMESH_RIGHT_EYEBROW, {
-          color: '#FF3030',
-        });
-        drawLandmarks(ctx, landmarks, { color: '#FF3030', radius: 1 });
-      }
-    }
-  };
+      canvasCtx.save();
+      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+      canvasCtx.drawImage(
+        results.image,
+        0,
+        0,
+        canvasElement.width,
+        canvasElement.height,
+      );
 
-  useEffect(() => {
-    // 가정: faceMesh가 이미 설정되어 있고, 여기서 사용한다.
-    const faceMesh = setupMediaPipeFaceMesh(); // MediaPipe 설정 함수
-    faceMesh.onResults(results => {
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-      canvas.width = myVideoRef.current.videoWidth;
-      canvas.height = myVideoRef.current.videoHeight;
-
-      drawFaceMeshResults(ctx, results); // 결과 그리기 함수
+      drawConnectors(canvasCtx, results.poseLandmarks, pose.POSE_CONNECTIONS, {
+        color: '#FFFFFF',
+        lineWidth: 4,
+      });
+      drawLandmarks(canvasCtx, results.poseLandmarks, {
+        color: '#F0A000',
+        radius: 2,
+      });
+      canvasCtx.restore();
     });
 
     if (myVideoRef.current) {
-      faceMesh.send({ video: myVideoRef.current });
+      const camera = new Camera(myVideoRef.current, {
+        onFrame: async () => {
+          await mpPose.send({ image: myVideoRef.current });
+        },
+        width: 1280,
+        height: 720,
+      });
+      camera.start();
     }
 
     return () => {
-      faceMesh.close(); // 사용이 끝나면 리소스 정리
+      mpPose.close();
     };
   }, [myVideoRef]);
 
-  return <canvas ref={canvasRef} style={{ position: 'absolute', top: 0 }} />;
+  return <Canvas ref={canvasRef} />;
 };
 
 export default GameMode1MediaPipe;
+
+const Canvas = styled.canvas`
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+`;

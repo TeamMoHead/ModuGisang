@@ -86,6 +86,8 @@ const InGame = () => {
     }
   }, [videoSession]);
 
+  console.log('GAME MODE:: ', inGameMode);
+
   // if (
   //   GAME_MODE[inGameMode] === 'waiting' &&
   //   isPastTime(challengeData.wakeTime)

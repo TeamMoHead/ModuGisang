@@ -8,7 +8,7 @@ const ChallengeContextProvider = ({ children }) => {
   const [challengeData, setChallengeData] = useState({
     challengeId: 1234,
     startDate: '2021-09-01T00:00:00.000Z',
-    wakeTime: '23:51',
+    wakeTime: '01:14',
     mates: [
       { userId: 0, userName: '천사뿅뿅뿅' },
       { userId: 1, userName: '귀요미이시현' },

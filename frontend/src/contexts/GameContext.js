@@ -127,7 +127,7 @@ const GameContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (challengeData) {
-      scheduleFirstMission(challengeData.wakeTime);
+      // scheduleFirstMission(challengeData.wakeTime);
     }
   }, [challengeData]);
 

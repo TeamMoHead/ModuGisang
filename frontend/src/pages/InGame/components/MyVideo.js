@@ -43,7 +43,7 @@ const MyVideo = () => {
   }, [myStream]);
 
   useEffect(() => {
-    // startCamera();
+    startCamera();
   }, []);
 
   return (
