@@ -39,7 +39,14 @@ function Router() {
           }
         />
         <Route path="/settings" element={<Settings />} />
-        <Route path="*" element={<Main />} />
+        <Route
+          path="*"
+          element={
+            <ChallengeContextProvider>
+              <Main />
+            </ChallengeContextProvider>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

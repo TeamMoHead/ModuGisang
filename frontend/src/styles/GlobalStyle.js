@@ -12,8 +12,8 @@ ${reset}
 
   body{
     font-family: 'NotoSansKR', sans-serif;
-    background-color: ${theme.colors.white};
-    color: ${theme.colors.black};
+    background-color: #333336;
+    color: ${theme.colors.white};
 
     &::-webkit-scrollbar {
     display: none;

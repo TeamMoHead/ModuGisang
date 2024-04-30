@@ -1,40 +1,58 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ChallengeContext } from '../../contexts/ChallengeContext';
 import { UserContext } from '../../contexts/UserContext';
 import { GameContext } from '../../contexts/GameContext';
+import { isPastTime } from './functions';
 import InGameNav from './components/Nav/InGameNav';
+import {
+  Waiting,
+  Mission1,
+  Mission2,
+  Mission3,
+  Mission4,
+  Affirmation,
+  Result,
+} from './';
 import { MyVideo, MateVideo } from './components';
 import styled from 'styled-components';
 
-const stages = {
-  waiting: 'waiting',
-  mission0: 'mission0',
-  mission1: 'mission1',
-  mission2: 'mission2',
-  mission3: 'mission3',
-  mission4: 'mission4',
-  affirmation: 'affirmation',
-  result: 'result',
+const GAME_MODE = {
+  0: 'waiting',
+  1: 'mission1',
+  2: 'mission2',
+  3: 'mission3',
+  4: 'mission4',
+  5: 'affirmation',
+  6: 'result',
+};
+
+const GAME_MODE_COMPONENTS = {
+  0: <Waiting />,
+  1: <Mission1 />,
+  2: <Mission2 />,
+  3: <Mission3 />,
+  4: <Mission4 />,
+  5: <Affirmation />,
+  6: <Result />,
 };
 
 const InGame = () => {
-  // 유효한 사용자만이 이 페이지에 접근할 수 있도록 하기
-  const [isPageLoading, setIsPageLoading] = useState(true);
+  const navigate = useNavigate();
+
   const { challengeId } = useParams();
   const { userInfo } = useContext(UserContext);
   const { userId: myId } = userInfo;
-  const { getChallengeData } = useContext(ChallengeContext);
+  const { challengeData, getChallengeData } = useContext(ChallengeContext);
   const {
     inGameMode,
     getConnectionToken,
-    challengeData,
     videoSession,
     startSession,
     myStream,
     setMyStream,
   } = useContext(GameContext);
-  const [stage, setStage] = useState(stages.waiting);
+
   const [mateList, setMateList] = useState([]);
 
   const stopCamera = () => {
@@ -59,12 +77,8 @@ const InGame = () => {
       getConnectionToken();
 
       startSession();
-    }
-    return;
+    } else return;
   }, [challengeData]);
-
-  // 현재시간과 challenge 시작시간 비교해서,
-  // challenge 시작시간이 지났으면 setIsWaiting(false)
 
   useEffect(() => {
     if (videoSession) {
@@ -72,20 +86,27 @@ const InGame = () => {
     }
   }, [videoSession]);
 
-  console.log('USER INFO:  ', userInfo);
-
+  // if (
+  //   GAME_MODE[inGameMode] === 'waiting' &&
+  //   isPastTime(challengeData.wakeTime)
+  // ) {
+  //   alert('챌린지 참여 시간이 지났습니다. 메인 화면으로 이동합니다.');
+  //   navigate('/main');
+  //   return;
+  // } else {
   return (
     <>
       <InGameNav />
+      {GAME_MODE_COMPONENTS[inGameMode]}
       <Wrapper>
         <MyVideo />
-        {mateList.length > 0 && (
-          <MatesVideoWrapper $isSingle={mateList.length === 1}>
-            {mateList.map(({ userId }) => (
-              <MateVideo key={userId} mateId={userId} />
-            ))}
-          </MatesVideoWrapper>
-        )}
+        {/* {mateList.length > 0 && (
+            <MatesVideoWrapper $isSingle={mateList.length === 1}>
+              {mateList.map(({ userId }) => (
+                <MateVideo key={userId} mateId={userId} />
+              ))}
+            </MatesVideoWrapper>
+          )} */}
         <CloseVideoBtn
           onClick={e => {
             e.preventDefault();
@@ -98,6 +119,7 @@ const InGame = () => {
       </Wrapper>
     </>
   );
+  // }
 };
 
 export default InGame;

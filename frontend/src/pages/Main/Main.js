@@ -16,15 +16,15 @@ import { TEST_USER_INFO } from './TEST_DATA';
 
 import styled from 'styled-components';
 import * as S from '../../styles/common';
+import { isPastTime } from '../InGame/functions';
 
 const Main = () => {
   const navigate = useNavigate();
   // setUserInfo는 Test용으로 사용하는 함수
   const { userInfo, setUserInfo } = useContext(UserContext);
   const { userId, userName, streakDays, hasChallenge } = userInfo;
-  // const { challengeData } = useContext(ChallengeContext);
-  // const { challengeId } = challengeData;
-  const challengeId = 1234;
+  const { challengeData } = useContext(ChallengeContext);
+  const { challengeId, wakeTime } = challengeData;
 
   const greetings = GREETINGS[0] + userName + GREETINGS[1];
 
@@ -43,15 +43,18 @@ const Main = () => {
       navigate('/joinChallenge');
     },
     create: () => navigate('/createChallenge'),
-    challenge: () => {
-      // 얘는 페이지 이동 없이 그냥 고정 카드임
-    },
+    challenge: null,
     enter: () => {
       // 현재 시간이 challenge 시작 시간보다 늦으면
       // or 너무 빠르면...등 분기처리 로직
+      if (isPastTime(wakeTime)) {
+        alert('챌린지 참여 시간이 지났습니다.');
+        return;
+      }
       navigate(`/startMorning/${challengeId}`);
     },
   };
+
   return (
     <>
       <NavBar />

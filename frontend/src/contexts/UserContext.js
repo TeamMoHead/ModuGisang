@@ -8,7 +8,7 @@ const UserContextProvider = ({ children }) => {
     userId: '',
     userName: '',
     streakDays: 0,
-    hasChallenge: true,
+    challengeId: '',
   });
 
   return (

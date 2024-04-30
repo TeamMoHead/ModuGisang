@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { UserContext } from '../../../contexts/UserContext';
 import {
   level0,
   // level1,
@@ -8,8 +9,9 @@ import {
 } from '../../../assets/streakLevels';
 import styled from 'styled-components';
 
-const StreakContent = ({ userInfo }) => {
+const StreakContent = () => {
   const [level, setLevel] = useState('streak0');
+  const { userInfo } = React.useContext(UserContext);
   const { streakDays, medals } = userInfo;
   // calculate user streak level by user streakDays
 
@@ -49,7 +51,7 @@ const StreakContent = ({ userInfo }) => {
 export default StreakContent;
 
 const Wrapper = styled.div`
-  ${({ theme }) => theme.flex.center}
+  ${({ theme }) => theme.flex.left}
 `;
 
 const LevelIcon = styled.img`

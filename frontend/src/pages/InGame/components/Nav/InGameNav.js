@@ -5,12 +5,21 @@ import { Icon } from '../../../../components';
 import { GameRound, MissionTitle, MissionInfo, Timer } from './';
 import styled from 'styled-components';
 
+const GAME_MODE = {
+  0: 'waiting',
+  1: 'mission1',
+  2: 'mission2',
+  3: 'mission3',
+  4: 'mission4',
+  5: 'affirmation',
+  6: 'result',
+};
+
 const InGameNav = () => {
   const navigate = useNavigate();
-  const { inGameMode, missionNum, micOn, turnMicOnOff } =
-    useContext(GameContext);
+  const { inGameMode, micOn, turnMicOnOff } = useContext(GameContext);
 
-  const goBack = () => {
+  const goToMain = () => {
     navigate('/main');
   };
 
@@ -18,9 +27,19 @@ const InGameNav = () => {
 
   return (
     <Wrapper>
-      <BtnArea $hasLeft={inGameMode === 'waiting' || inGameMode === 'result'}>
-        {(inGameMode === 'waiting' || inGameMode === 'result') && (
-          <Icon icon="back" iconStyle={BackBtnStyle} onClickHandler={goBack} />
+      <BtnArea
+        $hasLeft={
+          GAME_MODE[inGameMode] === 'waiting' ||
+          GAME_MODE[inGameMode] === 'result'
+        }
+      >
+        {(GAME_MODE[inGameMode] === 'waiting' ||
+          GAME_MODE[inGameMode] === 'result') && (
+          <Icon
+            icon="back"
+            iconStyle={BackBtnStyle}
+            onClickHandler={goToMain}
+          />
         )}
         <Icon
           icon={micOn ? 'micOn' : 'micOff'}
@@ -29,14 +48,14 @@ const InGameNav = () => {
         />
       </BtnArea>
       <TextArea>
-        {inGameMode !== 'waiting' && (
+        {GAME_MODE[inGameMode] !== 'waiting' && (
           <>
             <GameRound />
             <MissionTitle />
             <MissionInfo />
           </>
         )}
-        {inGameMode === 'waiting' && <Timer />}
+        {GAME_MODE[inGameMode] === 'waiting' && <Timer />}
       </TextArea>
     </Wrapper>
   );
