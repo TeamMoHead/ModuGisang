@@ -18,28 +18,29 @@ const useAuth = () => {
     }
   };
 
-  const handleLogIn = async (email, password) => {
+  const logInUser = async (email, password) => {
     try {
       const response = await authServices.logInUser(email, password);
-      setAccessToken(response.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
-      navigate('/main');
+      return {
+        success: true,
+        data: response.data,
+      };
     } catch (error) {
-      console.error('Login failed:', error);
-    } finally {
-      return;
+      return {
+        success: false,
+        message: error.response?.data?.message || '로그인에 실패했습니다.',
+      };
     }
   };
 
   const refreshAuthorization = async () => {
     try {
-      const storedRefreshToken = localStorage.getItem('refreshToken');
-      if (!storedRefreshToken) {
+      if (!refreshToken) {
         return false;
       }
       const response = await authServices.refreshAccessToken(
         accessToken,
-        storedRefreshToken,
+        refreshToken,
       );
       if (response.status === 200) {
         setAccessToken(response.data.accessToken);
@@ -50,20 +51,16 @@ const useAuth = () => {
       }
     } catch (error) {
       console.error('Failed to refresh access token', error);
+      return false;
     }
   };
 
   const handleCheckAuth = async () => {
     try {
-      if (!refreshToken) {
-        alert('다시 로그인 해주세요');
-        navigate('/auth');
-        return;
-      }
       if (accessToken === null) {
         const isRefreshed = await refreshAuthorization();
         if (!isRefreshed) {
-          alert('다시 로그인 해주세요');
+          alert('로그인이 필요합니다.');
           navigate('/auth');
         }
         return isRefreshed;
@@ -77,7 +74,7 @@ const useAuth = () => {
 
   return {
     verifyToken,
-    handleLogIn,
+    logInUser,
     refreshAuthorization,
     handleCheckAuth,
   };

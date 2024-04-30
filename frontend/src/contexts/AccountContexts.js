@@ -5,17 +5,18 @@ const AccountContext = createContext();
 
 const AccountContextProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null);
-  const { logOutUser } = authServices;
 
-  const handleLogOut = async () => {
+  const logOut = async () => {
     try {
-      const response = await logOutUser();
+      const response = await authServices.logOutUser();
       if (response.status === 200) {
         setAccessToken(null);
         localStorage.removeItem('refreshToken');
+        return true;
       }
     } catch (error) {
       console.error('Logout failed', error);
+      return false;
     }
   };
 
@@ -24,7 +25,7 @@ const AccountContextProvider = ({ children }) => {
       value={{
         setAccessToken,
         accessToken,
-        handleLogOut,
+        logOut,
       }}
     >
       {children}

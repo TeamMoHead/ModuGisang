@@ -1,23 +1,33 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import useAuth from '../../hooks/useAuth';
 
 const Main = () => {
+  const [isAuthorized, setIsAuthorized] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { handleCheckAuth } = useAuth();
   const navigate = useNavigate();
+
   // challenge id는 서버에서 받아온 값으로 대체
   const challengeId = '1234';
 
-  const refreshToken = localStorage.getItem('refreshToken');
-
   useEffect(() => {
-    handleCheckAuth();
-  });
+    const fetchData = async () => {
+      const result = await handleCheckAuth();
+      if (!result || result.error) {
+        setIsAuthorized(false);
+        navigate('/auth');
+      } else {
+        setIsAuthorized(true);
+      }
+    };
+    fetchData();
+  }, []);
 
-  if (!refreshToken) {
-    return <div>Unauthorized</div>;
-  }
+  if (isLoading) return <div>Loading...</div>;
+  if (isAuthorized === null)
+    return <div>접근이 허용되지 않은 페이지입니다.</div>;
 
   return (
     <Wrapper>
