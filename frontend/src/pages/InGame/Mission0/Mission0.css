@@ -1,0 +1,24 @@
+.container {
+  position: relative;
+  background-color: #596e73;
+  max-width: 100%;
+  height: auto;
+}
+
+.input_video {
+  display: none;
+  position: absolute;
+  transform: scale(-1, 1);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.output_canvas {
+  width: 50%;
+  display: block;
+  position: relative;
+  left: 0;
+  top: 0;
+}
