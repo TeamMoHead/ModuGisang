@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import { GameContext } from '../../../contexts/GameContext';
-// import Webcam from 'react-webcam';
 import { Camera } from '@mediapipe/camera_utils';
 import { FACEMESH_TESSELATION, Holistic } from '@mediapipe/holistic';
 import { drawConnectors } from '@mediapipe/drawing_utils';

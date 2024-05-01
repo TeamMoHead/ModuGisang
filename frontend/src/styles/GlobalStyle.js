@@ -11,9 +11,9 @@ ${reset}
   }
 
   body{
-    font-family: 'NotoSansKR', sans-serif;
-    background-color: #333336;
-    color: ${theme.colors.white};
+    font-family: 'IBM Plex Sans KR', 'Noto Sans KR', 'Jua', sans-serif;
+    background-color: ${theme.colors.primary.dark};
+    color: ${theme.colors.system.white};
 
     &::-webkit-scrollbar {
     display: none;

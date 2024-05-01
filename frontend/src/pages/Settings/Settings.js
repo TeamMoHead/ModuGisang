@@ -1,8 +1,14 @@
 import React from 'react';
+import { NavBar } from '../../components';
 import * as S from '../../styles/common';
 
 const Settings = () => {
-  return <S.PageWrapper>Settings</S.PageWrapper>;
+  return (
+    <>
+      <NavBar />
+      <S.PageWrapper>Settings</S.PageWrapper>
+    </>
+  );
 };
 
 export default Settings;

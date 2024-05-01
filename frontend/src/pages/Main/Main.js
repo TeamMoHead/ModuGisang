@@ -60,7 +60,6 @@ const Main = () => {
       <NavBar />
       <S.PageWrapper>
         <Greetings>{greetings}</Greetings>
-        <p>Main</p>
         {TEST_USER_INFO.map(({ userId, userName }) => (
           <SimpleBtn
             key={userId}
@@ -92,7 +91,8 @@ const Main = () => {
 export default Main;
 
 const Greetings = styled.h6`
-  font-size: 1.5rem;
+  ${({ theme }) => theme.fonts.content}
+  padding: 20px 0;
 `;
 
 const CardsWrapper = styled.div`

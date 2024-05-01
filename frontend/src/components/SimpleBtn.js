@@ -10,6 +10,6 @@ export default SimpleBtn;
 const Wrapper = styled.button`
   width: 100px;
   padding: 10px;
-  background-color: ${({ theme }) => theme.colors.secondary.main};
+  background-color: ${({ theme }) => theme.colors.primary.emerald};
   border-radius: 5px;
 `;

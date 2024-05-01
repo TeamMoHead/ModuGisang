@@ -7,19 +7,23 @@ export const CARD_TYPES = {
 
 export const CARD_STYLES = {
   streak: {
-    bgColor: 'main',
-    color: 'black',
+    bgColor: 'purple',
+    color: 'light',
   },
   challenge: {
-    bgColor: 'light',
-    color: 'black',
+    bgColor: 'purple',
+    color: 'light',
   },
   invitations: {
-    bgColor: 'dark',
-    color: 'black',
+    bgColor: 'purple',
+    color: 'light',
+  },
+  create: {
+    bgColor: 'emerald',
+    color: 'dark',
   },
   enter: {
-    bgColor: 'light',
-    color: 'black',
+    bgColor: 'emerald',
+    color: 'dark',
   },
 };

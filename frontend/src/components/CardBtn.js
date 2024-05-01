@@ -28,20 +28,22 @@ const Wrapper = styled.div`
   padding: 10px 20px;
   width: 80vw;
 
-  color: ${({ theme }) => theme.colors.white};
+  color: ${({ theme }) => theme.colors.system.white};
+
   border: 1px solid
     ${({ $btnStyle, theme }) =>
       $btnStyle
         ? theme.colors.primary[$btnStyle.bgColor]
-        : theme.colors.primary.main};
+        : theme.colors.primary.purple};
 
   border-radius: ${({ theme }) => theme.radius.basic};
 
   :hover {
     background-color: ${({ $btnStyle, $isClickable, theme }) =>
-      $btnStyle && $isClickable
-        ? theme.colors.primary[$btnStyle.bgColor]
-        : theme.colors.primary.main};
+      $btnStyle && $isClickable && theme.colors.primary[$btnStyle.bgColor]};
+
+    color: ${({ $btnStyle, $isClickable, theme }) =>
+      $btnStyle && $isClickable && theme.colors.primary[$btnStyle.color]};
   }
   cursor: ${({ $isClickable }) => ($isClickable ? 'pointer' : 'default')};
 `;

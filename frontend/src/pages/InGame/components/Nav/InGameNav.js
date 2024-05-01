@@ -28,7 +28,7 @@ const InGameNav = () => {
   return (
     <Wrapper>
       <BtnArea
-        $hasLeft={
+        $hasLeftBtn={
           GAME_MODE[inGameMode] === 'waiting' ||
           GAME_MODE[inGameMode] === 'result'
         }
@@ -71,22 +71,23 @@ const Wrapper = styled.nav`
   align-items: center;
   width: 100vw;
   height: 100px;
-  background-color: rgb(255, 255, 255, 0.4);
+
+  background-color: ${({ theme }) => theme.colors.lighter.light};
 `;
 
 const BackBtnStyle = {
   size: 24,
-  color: 'main',
+  color: 'purple',
 };
 
 const micOnStyle = {
   size: 24,
-  color: 'main',
+  color: 'purple',
 };
 
 const micOffStyle = {
   size: 21,
-  color: 'main',
+  color: 'purple',
 };
 
 const BtnArea = styled.div`
@@ -96,7 +97,8 @@ const BtnArea = styled.div`
   width: 100vw;
   height: 50px;
   padding: 0 20px;
-  ${({ theme, $hasLeft }) => ($hasLeft ? theme.flex.between : theme.flex.right)}
+  ${({ theme, $hasLeftBtn }) =>
+    $hasLeftBtn ? theme.flex.between : theme.flex.right}
 `;
 
 const TextArea = styled.div`
