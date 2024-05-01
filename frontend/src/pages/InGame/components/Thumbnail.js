@@ -39,7 +39,6 @@ const UserInfo = ({ userId }) => {
 };
 
 const UserStatus = ({ isActive }) => {
-  console.log(isActive);
   return <StatusIcon isActive={isActive} />;
 };
 
