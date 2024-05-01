@@ -1,34 +1,41 @@
 import React, { useState, useContext } from 'react';
 import useAuth from '../../hooks/useAuth';
+import useFetch from '../../hooks/useFetch';
 import { TEST_CONFIG } from '../../config';
 import { AccountContext } from '../../contexts/AccountContexts';
 import { useNavigate } from 'react-router-dom';
 
 const Auth = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
   const { setAccessToken } = useContext(AccountContext);
   const { logInUser } = useAuth();
+  const { fetchData } = useFetch();
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    setIsLoading(true);
-    const result = await logInUser(
-      TEST_CONFIG.TEST_EMAIL,
-      TEST_CONFIG.TEST_PASSWORD,
+    setIsLoginLoading(true);
+    const response = await fetchData(() =>
+      logInUser(TEST_CONFIG.TEST_EMAIL, TEST_CONFIG.TEST_PASSWORD),
     );
-    setIsLoading(false);
-    if (result.success) {
-      setAccessToken(result.data.accessToken);
-      localStorage.setItem('refreshToken', result.data.refreshToken);
+    const {
+      isLoading: isLoginLoading,
+      data: loginData,
+      error: loginError,
+    } = response;
+    if (!isLoginLoading) {
+      setIsLoginLoading(false);
+      setAccessToken(loginData.accessToken);
+      localStorage.setItem('refreshToken', loginData.refreshToken);
       alert('로그인 되었습니다.');
       navigate('/main');
-    } else {
-      alert(result.message);
+    } else if (loginError) {
+      setIsLoginLoading(false);
+      alert(loginError);
       return;
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoginLoading) return <div>Loading...</div>;
 
   return (
     <>

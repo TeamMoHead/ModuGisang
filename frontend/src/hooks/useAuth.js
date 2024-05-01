@@ -20,7 +20,10 @@ const useAuth = () => {
 
   const logInUser = async (email, password) => {
     try {
-      const response = await authServices.logInUser(email, password);
+      const response = await authServices.logInUser({
+        email: email,
+        password: password,
+      });
       return {
         success: true,
         data: response.data,
@@ -38,10 +41,10 @@ const useAuth = () => {
       if (!refreshToken) {
         return false;
       }
-      const response = await authServices.refreshAccessToken(
-        accessToken,
-        refreshToken,
-      );
+      const response = await authServices.refreshAccessToken({
+        accseeToken: accessToken,
+        refreshToken: refreshToken,
+      });
       if (response.status === 200) {
         setAccessToken(response.data.accessToken);
         return true;

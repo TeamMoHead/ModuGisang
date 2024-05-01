@@ -2,32 +2,47 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import useAuth from '../../hooks/useAuth';
+import useFetch from '../../hooks/useFetch';
 
 const Main = () => {
-  const [isAuthorized, setIsAuthorized] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const { fetchData } = useFetch();
   const { handleCheckAuth } = useAuth();
   const navigate = useNavigate();
 
   // challenge id는 서버에서 받아온 값으로 대체
   const challengeId = '1234';
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await handleCheckAuth();
-      if (!result || result.error) {
+  const checkAuthorize = async () => {
+    try {
+      const response = await fetchData(() => handleCheckAuth());
+      const {
+        isLoading: isAuthLoading,
+        data: authData,
+        error: authError,
+      } = response;
+      if (!isAuthLoading) {
+        setIsAuthLoading(false);
+        setIsAuthorized(true);
+      } else if (authError) {
+        setIsAuthLoading(false);
         setIsAuthorized(false);
         navigate('/auth');
-      } else {
-        setIsAuthorized(true);
       }
-    };
-    fetchData();
+    } catch (error) {
+      console.error(error);
+      alert(error);
+    }
+  };
+
+  useEffect(() => {
+    checkAuthorize();
   }, []);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isAuthorized === null)
+  if (isAuthorized === false)
     return <div>접근이 허용되지 않은 페이지입니다.</div>;
+  if (isAuthLoading) return <div>Loading...</div>;
 
   return (
     <Wrapper>

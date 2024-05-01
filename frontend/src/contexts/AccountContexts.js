@@ -8,7 +8,9 @@ const AccountContextProvider = ({ children }) => {
 
   const logOut = async () => {
     try {
-      const response = await authServices.logOutUser();
+      const response = await authServices.logOutUser({
+        accessToken: accessToken,
+      });
       if (response.status === 200) {
         setAccessToken(null);
         localStorage.removeItem('refreshToken');

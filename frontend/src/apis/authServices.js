@@ -103,18 +103,18 @@ mock.onGet('/user/logout').reply(config => {
   });
 });
 
-const logInUser = async (email, password) => {
+const logInUser = async ({ email, password }) => {
   return API.post('/user/login', { email: email, password: password });
 };
 
-const testAPI = async (email, password) => {
+const testAPI = async ({ email, password }) => {
   return axios.post('http://3.36.88.196:3000/users', {
     username: 'leejaewon babo',
     password: 'iloveyou',
   });
 };
 
-const logOutUser = async accessToken => {
+const logOutUser = async ({ accessToken }) => {
   return API.get('/user/logout', {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -122,7 +122,7 @@ const logOutUser = async accessToken => {
   });
 };
 
-const signUpUser = async (email, password, name) => {
+const signUpUser = async ({ email, password, name }) => {
   return API.post('/user/signUp', {
     email: email,
     password: password,
@@ -130,15 +130,15 @@ const signUpUser = async (email, password, name) => {
   });
 };
 
-const checkEmailAvailability = async email => {
+const checkEmailAvailability = async ({ email }) => {
   return API.get('/email/check', { params: { email } });
 };
 
-const verifyAuthCode = async authNum => {
-  return API.post('/auth', { authNum });
+const verifyAuthCode = async ({ authNum }) => {
+  return API.post('/auth', { authNum: authNum });
 };
 
-const verifyAccessToken = async accessToken => {
+const verifyAccessToken = async ({ accessToken }) => {
   return API.get('/auth/authenticate', {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -146,7 +146,7 @@ const verifyAccessToken = async accessToken => {
   });
 };
 
-const refreshAccessToken = async (accessToken, refreshToken) => {
+const refreshAccessToken = async ({ accessToken, refreshToken }) => {
   return API.post(
     '/auth/refresh',
     { refreshToken: refreshToken },
