@@ -21,6 +21,7 @@ const InGameNav = () => {
 
   const goToMain = () => {
     navigate('/main');
+    localStorage.removeItem('inGameMode');
   };
 
   useEffect(() => {}, [inGameMode]);
