@@ -12,3 +12,10 @@
 # environment
 */.env
 */.env.local
+*/.env.*
+
+# build
+/backend/dist
+
+#key
+*.pem

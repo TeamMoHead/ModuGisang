@@ -11,7 +11,7 @@ export class OpenviduService {
     constructor(
         private configService:ConfigService
     ){
-        this.openvidu = new OpenVidu(this.OPENVIDU_URL,this.OPENVIDU_SECRET);
+        this.openvidu = new OpenVidu(this.OPENVIDU_URL, this.OPENVIDU_SECRET);
     }
     async createSessions(body:any){
         try {
