@@ -12,3 +12,6 @@
 # environment
 */.env
 */.env.local
+
+# build
+/backend/dist
