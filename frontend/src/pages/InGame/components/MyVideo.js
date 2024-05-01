@@ -1,27 +1,9 @@
 import React, { useContext, useEffect } from 'react';
 import { GameContext } from '../../../contexts/GameContext';
-import {
-  Mission1,
-  Mission2,
-  Mission3,
-  Mission4,
-  Affirmation,
-  Result,
-} from '../';
 import styled from 'styled-components';
 
-const GAME_MODE_COMPONENTS = {
-  1: <Mission1 />,
-  2: <Mission2 />,
-  3: <Mission3 />,
-  4: <Mission4 />,
-  5: <Affirmation />,
-  6: <Result />,
-};
-
 const MyVideo = () => {
-  const { myVideoRef, myStream, setMyStream, inGameMode } =
-    useContext(GameContext);
+  const { myVideoRef, myStream, setMyStream } = useContext(GameContext);
 
   const startCamera = async () => {
     try {
@@ -49,7 +31,6 @@ const MyVideo = () => {
   return (
     <Wrapper>
       <Video ref={myVideoRef} autoPlay playsInline />
-      {GAME_MODE_COMPONENTS[inGameMode]}
     </Wrapper>
   );
 };
