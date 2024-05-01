@@ -49,20 +49,21 @@ const InGame = () => {
     getConnectionToken,
     videoSession,
     startSession,
+    myVideoRef,
     myStream,
     setMyStream,
   } = useContext(GameContext);
 
   const [mateList, setMateList] = useState([]);
 
-  // const stopCamera = () => {
-  //   if (myStream) {
-  //     myStream.getTracks().forEach(track => {
-  //       track.stop();
-  //     });
-  //     setMyStream(null);
-  //   }
-  // };
+  const stopCamera = () => {
+    if (myStream) {
+      myStream.getTracks().forEach(track => {
+        track.stop();
+      });
+      setMyStream(null);
+    }
+  };
 
   useEffect(() => {
     if (challengeId) {
@@ -101,6 +102,8 @@ const InGame = () => {
       <InGameNav />
       <Wrapper>
         <MyVideo />
+        {GAME_MODE_COMPONENTS[inGameMode]}
+
         {/* {mateList.length > 0 && (
             <MatesVideoWrapper $isSingle={mateList.length === 1}>
               {mateList.map(({ userId }) => (
@@ -108,7 +111,7 @@ const InGame = () => {
               ))}
             </MatesVideoWrapper>
           )} */}
-        {/* <CloseVideoBtn
+        <CloseVideoBtn
           onClick={e => {
             e.preventDefault();
             e.stopPropagation();
@@ -116,7 +119,7 @@ const InGame = () => {
           }}
         >
           stop camera
-        </CloseVideoBtn> */}
+        </CloseVideoBtn>
       </Wrapper>
     </>
   );
