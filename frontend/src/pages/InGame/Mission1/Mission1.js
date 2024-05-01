@@ -56,8 +56,6 @@ const GameMode1MediaPipe = () => {
         onFrame: async () => {
           await mpPose.send({ image: myVideoRef.current });
         },
-        width: 1280,
-        height: 720,
       });
       camera.start();
     }
@@ -65,7 +63,7 @@ const GameMode1MediaPipe = () => {
     return () => {
       mpPose.close();
     };
-  }, [myVideoRef]);
+  }, [myVideoRef.current]);
 
   return <Canvas ref={canvasRef} />;
 };
