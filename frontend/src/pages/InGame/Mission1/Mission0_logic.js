@@ -76,6 +76,7 @@ function Mission0() {
         },
       });
       mpPose.setOptions({
+        upperBodyOnly: true,
         selfieMode: true,
         modelComplexity: 0,
         smoothLandmarks: true,

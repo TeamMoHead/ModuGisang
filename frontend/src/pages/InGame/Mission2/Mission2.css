@@ -1,6 +1,6 @@
 .container {
   position: relative;
-  background-color: #596e73;
+  background-color: #f0f3ff;
   max-width: 100%;
   height: auto;
 }
@@ -16,7 +16,8 @@
 }
 
 .output_canvas {
-  width: 50%;
+  width: 100%;
+  height: 'auto';
   display: block;
   position: relative;
   left: 0;

@@ -6,20 +6,47 @@ import {
   InGame,
   MyStreak,
   CreateChallenge,
+  JoinChallenge,
   Settings,
 } from './pages';
+import { GameContextProvider } from './contexts/GameContext';
+import { ChallengeContextProvider } from './contexts/ChallengeContext';
 
 function Router() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route
+          path="/"
+          element={
+            <ChallengeContextProvider>
+              <Main />
+            </ChallengeContextProvider>
+          }
+        />
         <Route path="/auth" element={<Auth />} />
-        <Route path="/main" element={<Main />} />
         <Route path="/myStreak" element={<MyStreak />} />
-        <Route path="/inGame" element={<InGame />} />
+        <Route path="/joinChallenge" element={<JoinChallenge />} />
         <Route path="/createChallenge" element={<CreateChallenge />} />
+        <Route
+          path="/startMorning/:challengeId"
+          element={
+            <ChallengeContextProvider>
+              <GameContextProvider>
+                <InGame />
+              </GameContextProvider>
+            </ChallengeContextProvider>
+          }
+        />
         <Route path="/settings" element={<Settings />} />
-        <Route path="*" element={<Main />} />
+        <Route
+          path="*"
+          element={
+            <ChallengeContextProvider>
+              <Main />
+            </ChallengeContextProvider>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
