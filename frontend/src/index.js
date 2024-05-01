@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Router from './Router';
 
+import { AccountContextProvider } from './contexts';
+
 import GlobalStyle from './styles/GlobalStyle';
 import theme from './styles/theme';
 import { ThemeProvider } from 'styled-components';
@@ -14,7 +16,9 @@ root.render(
   <>
     <GlobalStyle />
     <ThemeProvider theme={theme}>
-      <Router />
+      <AccountContextProvider>
+        <Router />
+      </AccountContextProvider>
     </ThemeProvider>
   </>,
 );
