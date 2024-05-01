@@ -6,9 +6,9 @@ const ChallengeContext = createContext();
 const ChallengeContextProvider = ({ children }) => {
   // 임시 데이터
   const [challengeData, setChallengeData] = useState({
-    challengeId: 1234,
+    challengeId: '333',
     startDate: '2021-09-01T00:00:00.000Z',
-    wakeTime: '01:14',
+    wakeTime: '01:09',
     mates: [
       { userId: 0, userName: '천사뿅뿅뿅' },
       { userId: 1, userName: '귀요미이시현' },

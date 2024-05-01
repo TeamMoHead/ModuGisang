@@ -11,7 +11,7 @@ const MateVideo = ({ mateId }) => {
 
   useEffect(() => {
     if (mateStreams.length > 0) {
-      const mateStream = mateStreams.streams.find(
+      const mateStream = mateStreams.find(
         stream => stream.connection.data.userId === mateId,
       );
 

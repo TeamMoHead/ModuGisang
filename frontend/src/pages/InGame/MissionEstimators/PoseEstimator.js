@@ -2,6 +2,10 @@ import * as pose from '@mediapipe/pose';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 
 export const estimatePose = ({ results, myVideoRef, canvasRef }) => {
+  // ------성능 test용-----
+  let count = 0;
+  // ---------------------
+
   const canvasElement = canvasRef.current;
   const canvasCtx = canvasElement.getContext('2d');
   canvasElement.width = myVideoRef.current.videoWidth;
@@ -26,6 +30,11 @@ export const estimatePose = ({ results, myVideoRef, canvasRef }) => {
     color: '#F0A000',
     radius: 2,
   });
+
+  // ------성능 test용-----
+  console.log('===Pose Estimator: ', count);
+  count++;
+  // ---------------------
 
   canvasCtx.restore();
 };
