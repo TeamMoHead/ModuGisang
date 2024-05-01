@@ -1,7 +1,7 @@
 import React from 'react';
 
 const CreateContent = () => {
-  return <div>CreateContent</div>;
+  return <div>챌린지 생성하기</div>;
 };
 
 export default CreateContent;
