@@ -7,7 +7,9 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get<number>('NEST_PORT');
   app.enableCors({
-    origin:'*'
+    origin:'*',
+    methods: 'GET,HEAD,PATCH,POST',
+    credentials: true,
   });
   await app.listen(port);
 }

@@ -5,13 +5,13 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class OpenviduService {
     private openvidu: OpenVidu;
-    private OPENVIDU_URL = this.configService.get<string>('OPENVIDU_URL');
-    private OPENVIDU_SECRET = this.configService.get<string>('OPENVIDU_SECRET');
+    //private OPENVIDU_URL = this.configService.get<string>('OPENVIDU_URL');
+    //private OPENVIDU_SECRET = this.configService.get<string>('OPENVIDU_SECRET');
 
     constructor(
         private configService:ConfigService
     ){
-        this.openvidu = new OpenVidu(this.OPENVIDU_URL,this.OPENVIDU_SECRET);
+        this.openvidu = new OpenVidu("http://3.37.246.223:5443", "MY_SECRET");
     }
     async createSessions(body:any){
         try {
