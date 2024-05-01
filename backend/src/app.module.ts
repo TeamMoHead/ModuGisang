@@ -4,9 +4,13 @@ import { AppService } from './app.service';
 import { OpenviduModule } from './openvidu/openvidu.module';
 import { OpenviduController } from './openvidu/openvidu.controller';
 import { OpenviduService } from './openvidu/openvidu.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [OpenviduModule],
+  imports: [OpenviduModule, ConfigModule.forRoot({
+    isGlobal: true,
+    envFilePath: '.env'
+  })],
   controllers: [AppController,OpenviduController],
   providers: [AppService,OpenviduService],
 })
