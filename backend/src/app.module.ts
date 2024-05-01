@@ -17,8 +17,8 @@ import * as fs from 'fs';
   imports: [
     OpenviduModule, ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development',
-      ignoreEnvFile: process.env.NODE_ENV === 'production',
+      envFilePath: process.env.NODE_ENV === 'development' ? '.env.development' : '.env.production',
+      //ignoreEnvFile: process.env.NODE_ENV === 'production',
     }),
     CacheModule.registerAsync({
       imports: [ConfigModule],
@@ -43,14 +43,14 @@ import * as fs from 'fs';
     
         synchronize: true,//테이블을 자동으로 생성해주는 옵션 , 실제 환경에서는 사용하지 않는 것이 좋다.
         entities: [], // 여기에 엔티티 클래스를 추가합니다. 
-        // ssl: {
+        ssl: {
         // 다운로드한 인증서 파일 경로 추가
-        //   ca: fs.readFileSync("././global-bundle.pem")
-        // },
-        // extra: {
+          ca: fs.readFileSync("././global-bundle.pem")
+        },
+        extra: {
         // SSL 연결을 강제 설정
-        //   ssl: { rejectUnauthorized: false },
-        // },
+          ssl: { rejectUnauthorized: false },
+        },
       }),
       inject: [ConfigService],
     }),
