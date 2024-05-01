@@ -55,14 +55,14 @@ const InGame = () => {
 
   const [mateList, setMateList] = useState([]);
 
-  const stopCamera = () => {
-    if (myStream) {
-      myStream.getTracks().forEach(track => {
-        track.stop();
-      });
-      setMyStream(null);
-    }
-  };
+  // const stopCamera = () => {
+  //   if (myStream) {
+  //     myStream.getTracks().forEach(track => {
+  //       track.stop();
+  //     });
+  //     setMyStream(null);
+  //   }
+  // };
 
   useEffect(() => {
     if (challengeId) {
@@ -99,7 +99,6 @@ const InGame = () => {
   return (
     <>
       <InGameNav />
-      {GAME_MODE_COMPONENTS[inGameMode]}
       <Wrapper>
         <MyVideo />
         {/* {mateList.length > 0 && (
@@ -109,7 +108,7 @@ const InGame = () => {
               ))}
             </MatesVideoWrapper>
           )} */}
-        <CloseVideoBtn
+        {/* <CloseVideoBtn
           onClick={e => {
             e.preventDefault();
             e.stopPropagation();
@@ -117,7 +116,7 @@ const InGame = () => {
           }}
         >
           stop camera
-        </CloseVideoBtn>
+        </CloseVideoBtn> */}
       </Wrapper>
     </>
   );
