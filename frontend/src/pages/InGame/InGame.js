@@ -78,7 +78,7 @@ const InGame = () => {
 
   useEffect(() => {
     if (challengeData) {
-      setMateList(challengeData.mates.filter(mate => mate.id !== myId));
+      setMateList(challengeData.mates.filter(mate => mate.userId !== myId));
       getConnectionToken();
 
       startSession();
@@ -111,8 +111,8 @@ const InGame = () => {
 
         {mateList.length > 0 && (
           <MatesVideoWrapper $isSingle={mateList.length === 1}>
-            {mateList.map(({ userId }) => (
-              <MateVideo key={userId} mateId={userId} />
+            {mateList.map(({ userId, userName }) => (
+              <MateVideo key={userId} mateId={userId} mateName={userName} />
             ))}
           </MatesVideoWrapper>
         )}

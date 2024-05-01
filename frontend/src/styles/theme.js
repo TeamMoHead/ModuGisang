@@ -8,7 +8,7 @@ const colors = {
     dark: '#211951',
   },
   lighter: {
-    light: 'rgb(240, 243, 255, 0.8)',
+    light: 'rgb(240, 243, 255, 0.7)',
     purple: 'rgb(131, 111, 255, 0.8)',
     emerald: 'rgb(21, 245, 186, 0.8)',
     dark: 'rgb(33, 25, 81, 0.8)',

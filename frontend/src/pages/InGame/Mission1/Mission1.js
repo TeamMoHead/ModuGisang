@@ -9,12 +9,14 @@ const Mission1 = () => {
   const { myVideoRef, inGameMode } = useContext(GameContext);
   const canvasRef = useRef(null);
   const msPoseRef = useRef(null);
-  const videoElement = myVideoRef.current;
 
   useEffect(() => {
-    console.log('Mission1 gameMode: ', inGameMode);
+    console.log('Mission1 gameMode: ', inGameMode, 'video: ', myVideoRef);
 
     if (inGameMode !== 1) return;
+    if (!myVideoRef.current) return;
+
+    const videoElement = myVideoRef.current;
 
     msPoseRef.current = new pose.Pose({
       locateFile: file =>
@@ -30,9 +32,7 @@ const Mission1 = () => {
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5,
     });
-  }, [myVideoRef.current, inGameMode]);
 
-  useEffect(() => {
     console.log('msPoseRef.current: ', msPoseRef.current);
 
     msPoseRef.current.onResults(results => {
@@ -60,7 +60,7 @@ const Mission1 = () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
       msPoseRef.current.close();
     };
-  }, [myVideoRef.current, inGameMode, msPoseRef.current]);
+  }, [myVideoRef.current, inGameMode]);
 
   console.log('----Mission1 Mounted----');
   return <Canvas ref={canvasRef} />;
