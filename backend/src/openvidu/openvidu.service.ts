@@ -13,22 +13,28 @@ export class OpenviduService {
     ){
         this.openvidu = new OpenVidu(this.OPENVIDU_URL, this.OPENVIDU_SECRET);
     }
+
     async createSessions(body:any){
         try {
-            const session = await this.openvidu.createSession(body);
-            return session.sessionId;
+            const session = this.openvidu.activeSessions.find((s) => s.sessionId === body.customSessionId);
+            if(session !== undefined){
+                return body.customSessionId;
+            }else{
+                return await this.openvidu.createSession(body);
+            }
+            // const session = await this.openvidu.createSession(body);
+            // return session.sessionId;
         } catch (error) {
             console.log(error);
         }
     }
 
     async createConnection(sessionId:string, body:any){
-        console.log(body);
         const session = this.openvidu.activeSessions.find(
             (s) => s.sessionId === sessionId,
         );
-        console.log("세션");
-        console.log(session);
+
+        this.listActiveSessions();
         if(!session){
             throw new HttpException('Session not found',HttpStatus.NOT_FOUND);
         }else{
@@ -44,4 +50,12 @@ export class OpenviduService {
             }
         }
     }
+
+    async listActiveSessions() {
+        try {
+            this.openvidu.activeSessions.find((s) => console.log("sessionlist : "+s.sessionId));
+        } catch (error) {
+            console.error('Error fetching active sessions:', error);
+        }
+      }
 }
