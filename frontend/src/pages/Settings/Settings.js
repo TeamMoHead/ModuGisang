@@ -3,6 +3,8 @@ import { AccountContext } from '../../contexts/AccountContexts';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import useFetch from '../../hooks/useFetch';
+import { NavBar } from '../../components';
+import * as S from '../../styles/common';
 
 const Settings = () => {
   const [isAuthLoading, setIsAuthLoading] = useState(true);
@@ -12,10 +14,6 @@ const Settings = () => {
   const { fetchData } = useFetch();
   const { handleCheckAuth } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    checkAuthorize();
-  }, []);
 
   const checkAuthorize = async () => {
     try {
@@ -62,14 +60,21 @@ const Settings = () => {
     }
   };
 
-  if (isAuthorized === false)
-    return <div>접근이 허용되지 않은 페이지입니다.</div>;
+  useEffect(() => {
+    checkAuthorize();
+  }, []);
+
   if (isLogoutLoading || isAuthLoading) return <div>Loading...</div>;
+  if (!isAuthorized) return <div>접근이 허용되지 않은 페이지입니다.</div>;
 
   return (
     <>
-      <button onClick={handleLogOut}>Log Out</button>
-      <div>Settings</div>
+      <NavBar />
+
+      <S.PageWrapper>
+        Settings
+        <button onClick={handleLogOut}>Log Out</button>
+      </S.PageWrapper>
     </>
   );
 };

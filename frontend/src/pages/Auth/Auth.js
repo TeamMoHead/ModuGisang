@@ -4,6 +4,7 @@ import useFetch from '../../hooks/useFetch';
 import { TEST_CONFIG } from '../../config';
 import { AccountContext } from '../../contexts/AccountContexts';
 import { useNavigate } from 'react-router-dom';
+import * as S from '../../styles/common';
 
 const Auth = () => {
   const [isLoginLoading, setIsLoginLoading] = useState(false);
@@ -38,10 +39,10 @@ const Auth = () => {
   if (isLoginLoading) return <div>Loading...</div>;
 
   return (
-    <>
-      <div>Auth</div>
+    <S.PageWrapper>
+      Auth
       <button onClick={handleLogin}>로그인</button>
-    </>
+    </S.PageWrapper>
   );
 };
 
