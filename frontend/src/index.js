@@ -2,16 +2,21 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Router from './Router';
 
+import GlobalStyle from './styles/GlobalStyle';
+import theme from './styles/theme';
+import { ThemeProvider } from 'styled-components';
+
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
-  <React.StrictMode>
-    <Router />
-  </React.StrictMode>,
+  <>
+    <GlobalStyle />
+    <ThemeProvider theme={theme}>
+      <Router />
+    </ThemeProvider>
+  </>,
 );
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://cra.link/PWA
 serviceWorkerRegistration.register();
