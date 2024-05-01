@@ -12,4 +12,6 @@ const Wrapper = styled.button`
   padding: 10px;
   background-color: ${({ theme }) => theme.colors.primary.emerald};
   border-radius: 5px;
+
+  cursor: pointer;
 `;

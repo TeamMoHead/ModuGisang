@@ -1,15 +1,21 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import { GameContext } from '../../../contexts/GameContext';
-import { Holistic } from '@mediapipe/holistic';
+import { Holistic, FACEMESH_TESSELATION } from '@mediapipe/holistic';
+import { drawConnectors } from '@mediapipe/drawing_utils';
+
 import { estimateFace } from '../MissionEstimators/FaceEstimator';
 import styled from 'styled-components';
 
 const Mission2 = () => {
-  const { myVideoRef } = useContext(GameContext);
+  const { myVideoRef, inGameMode } = useContext(GameContext);
   const canvasRef = useRef(null);
   const holisticRef = useRef(null);
 
   useEffect(() => {
+    console.log('Mission2 gameMode: ', inGameMode);
+
+    if (inGameMode !== 2) return;
+
     const videoElement = myVideoRef.current;
 
     holisticRef.current = new Holistic({
@@ -20,33 +26,41 @@ const Mission2 = () => {
 
     holisticRef.current.setOptions({
       selfieMode: true,
-      modelComplexity: 0.5,
+      modelComplexity: 0,
       smoothLandmarks: true,
       enableSegmentation: false,
-      smoothSegmentation: true,
+      smoothSegmentation: false,
       refineFaceLandmarks: true,
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5,
     });
 
-    holisticRef.current.onResults(results =>
-      estimateFace({ results, myVideoRef, canvasRef }),
-    );
+    holisticRef.current.onResults(results => {
+      estimateFace({ results, myVideoRef, canvasRef });
+    });
 
     const handleCanPlay = () => {
-      holisticRef.current.send({ image: videoElement }).then(() => {
-        requestAnimationFrame(handleCanPlay);
-      });
+      console.log('Mission2 handleCanPlay=========');
+      let frameCount = 0;
+      const frameSkip = 150;
+
+      if (frameCount % (frameSkip + 1) === 0) {
+        holisticRef.current.send({ image: videoElement }).then(() => {
+          requestAnimationFrame(handleCanPlay);
+        });
+      }
+
+      frameCount++;
     };
 
     videoElement.addEventListener('canplay', handleCanPlay);
-
     return () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
       holisticRef.current.close();
     };
-  }, [myVideoRef]);
+  }, [myVideoRef.current, inGameMode]);
 
+  console.log('----Mission2 Mounted----');
   return <Canvas ref={canvasRef} />;
 };
 

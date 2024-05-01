@@ -49,4 +49,8 @@ const Video = styled.video`
   width: 100vw;
   height: 100vh;
   object-fit: cover;
+
+  will-change: transform;
+  transform: rotateY(180deg) translateZ(0);
+  -webkit-transform: rotateY(180deg);
 `;
