@@ -1,7 +1,10 @@
-import React, { useState, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChallengeContext } from '../../contexts/ChallengeContext';
 import { UserContext } from '../../contexts/UserContext';
+import useAuth from '../../hooks/useAuth';
+import useFetch from '../../hooks/useFetch';
+import { isPastTime } from '../InGame/functions';
 import { NavBar, CardBtn, SimpleBtn } from '../../components';
 import {
   StreakContent,
@@ -16,10 +19,14 @@ import { TEST_USER_INFO } from './TEST_DATA';
 
 import styled from 'styled-components';
 import * as S from '../../styles/common';
-import { isPastTime } from '../InGame/functions';
 
 const Main = () => {
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const { fetchData } = useFetch();
+  const { handleCheckAuth } = useAuth();
   const navigate = useNavigate();
+
   // setUserInfo는 Test용으로 사용하는 함수
   const { userInfo, setUserInfo } = useContext(UserContext);
   const { userId, userName, streakDays, hasChallenge } = userInfo;
@@ -54,6 +61,35 @@ const Main = () => {
       navigate(`/startMorning/${challengeId}`);
     },
   };
+
+  const checkAuthorize = async () => {
+    try {
+      const response = await fetchData(() => handleCheckAuth());
+      const {
+        isLoading: isAuthLoading,
+        data: authData,
+        error: authError,
+      } = response;
+      if (!isAuthLoading) {
+        setIsAuthLoading(false);
+        setIsAuthorized(true);
+      } else if (authError) {
+        setIsAuthLoading(false);
+        setIsAuthorized(false);
+        navigate('/auth');
+      }
+    } catch (error) {
+      console.error(error);
+      alert(error);
+    }
+  };
+
+  useEffect(() => {
+    checkAuthorize();
+  }, []);
+
+  if (isAuthLoading) return <div>Loading...</div>;
+  if (!isAuthorized) return <div>접근이 허용되지 않은 페이지입니다.</div>;
 
   return (
     <>
