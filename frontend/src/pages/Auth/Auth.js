@@ -1,9 +1,10 @@
 import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AccountContext } from '../../contexts/AccountContexts';
 import useAuth from '../../hooks/useAuth';
 import useFetch from '../../hooks/useFetch';
+import { SimpleBtn } from '../../components';
 import { TEST_CONFIG } from '../../config';
-import { AccountContext } from '../../contexts/AccountContexts';
-import { useNavigate } from 'react-router-dom';
 import * as S from '../../styles/common';
 
 const Auth = () => {
@@ -40,8 +41,8 @@ const Auth = () => {
 
   return (
     <S.PageWrapper>
-      Auth
-      <button onClick={handleLogin}>로그인</button>
+      Auth Page
+      <SimpleBtn btnName="로그인" onClickHandler={handleLogin} />
     </S.PageWrapper>
   );
 };

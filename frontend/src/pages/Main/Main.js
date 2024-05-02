@@ -58,7 +58,7 @@ const Main = () => {
         alert('챌린지 참여 시간이 지났습니다.');
         return;
       }
-      navigate(`/startMorning/${challengeId}`);
+      navigate(`/startMorning/${challengeId}/waiting`);
     },
   };
 

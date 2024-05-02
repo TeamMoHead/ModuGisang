@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useContext,
 } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { OpenVidu } from 'openvidu-browser';
 import { UserContext } from './UserContext';
 import { ChallengeContext } from './ChallengeContext';
@@ -32,6 +33,7 @@ const GAME_MODE_DURATION = {
 };
 
 const GameContextProvider = ({ children }) => {
+  const navigate = useNavigate();
   const { userInfo } = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
   const { userId, userName } = userInfo;
@@ -120,7 +122,6 @@ const GameContextProvider = ({ children }) => {
     const delay = wakeTimeDate - now;
 
     setTimeout(() => {
-      localStorage.setItem('inGameMode', JSON.stringify(1));
       setInGameMode(1); // waiting 끝나면 첫 미션으로 전환
       setTimeout(updateMode, GAME_MODE_DURATION[1]); // 첫 미션 후 다음 모드로 전환 시작
     }, delay);

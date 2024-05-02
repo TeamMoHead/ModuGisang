@@ -12,6 +12,8 @@ import {
 import { GameContextProvider } from './contexts/GameContext';
 import { ChallengeContextProvider } from './contexts/ChallengeContext';
 
+import InGameRouter from './pages/InGame/InGameRouter';
+
 function Router() {
   return (
     <BrowserRouter>
@@ -29,7 +31,7 @@ function Router() {
         <Route path="/joinChallenge" element={<JoinChallenge />} />
         <Route path="/createChallenge" element={<CreateChallenge />} />
         <Route
-          path="/startMorning/:challengeId"
+          path="/startMorning/:challengeId/*"
           element={
             <ChallengeContextProvider>
               <GameContextProvider>
