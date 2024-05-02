@@ -147,17 +147,13 @@ const GameContextProvider = ({ children }) => {
   // ------------------------------------------------
 
   useEffect(() => {
+    const OV = new OpenVidu();
     if (!connectionToken) return;
 
-    const OV = new OpenVidu();
     const newSession = OV.initSession();
     setVideoSession(newSession);
 
-    newSession.on('streamCreated', event => {
-      const mateStream = newSession.subscribe(event.stream, undefined);
-      setMateStreams(prevStreams => [...prevStreams, mateStream]);
-      console.log(`==== New stream created. Stream ID: ${mateStream.streamId}`);
-    });
+    console.log('session Created: ', newSession);
 
     // 발행자 초기화 및 발행
     const initPublisher = () => {
@@ -180,7 +176,7 @@ const GameContextProvider = ({ children }) => {
 
     // 세션 연결
     newSession.connect(connectionToken, error => {
-      console.log('====Connection TRy: ', connectionToken);
+      console.log('====Connection Try: ', connectionToken);
       if (error) {
         console.error('Connection error:', error);
       } else {
@@ -198,7 +194,22 @@ const GameContextProvider = ({ children }) => {
         myStream.dispose();
       }
     };
-  }, [connectionToken, myVideoRef]);
+  }, [connectionToken]);
+
+  useEffect(() => {
+    if (videoSession) {
+      // videoSession.on('streamCreated', event => {
+      //   const newStream = videoSession.subscribe(event.stream, undefined);
+      //   setMateStreams(prevStreams => [...prevStreams, newStream]);
+      //   console.log(`New stream created. Stream ID: ${newStream.streamId}`);
+      // });
+      videoSession.onParticipantPublished = event => {
+        const newStream = videoSession.getRemote(event.stream, undefined);
+        setMateStreams(prevStreams => [...prevStreams, newStream]);
+        console.log(`New stream created. Stream ID: ${newStream.streamId}`);
+      };
+    }
+  }, [videoSession]);
 
   console.log('Mate Streams: ', mateStreams);
 

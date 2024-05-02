@@ -1,49 +1,32 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { GameContext } from '../../../contexts/GameContext';
 import styled from 'styled-components';
 
 const MateVideo = ({ mateId, mateName }) => {
-  const { mateVideoRefs, mateStreams } = useContext(GameContext);
-  const [mateStream, setMateStream] = useState(null);
+  const { mateStreams } = useContext(GameContext);
   const [name, setName] = useState(mateName);
-  const [isActive, setIsActive] = useState(false);
-
-  useEffect(() => {
-    if (mateId && !mateVideoRefs.current[mateId]) {
-      mateVideoRefs.current[mateId] = React.createRef();
-    }
-  }, [mateId, mateVideoRefs]);
+  const mateVideoRef = useRef(null);
 
   useEffect(() => {
     if (mateStreams.length > 0) {
-      const mateStream = mateStreams.find(
-        stream => stream.connection.data.userId === mateId,
+      const thisMate = mateStreams.find(
+        sub => sub.connection.data.userId === mateId,
       );
+      setName(thisMate.connection.data.userName);
 
-      if (mateStream) {
-        setMateStream(mateStream);
-        setName(mateStream.connection.data.userName);
-        setIsActive(true);
-      } else {
-        setMateStream(null);
-        setName('');
-        setIsActive(false);
+      if (thisMate && mateVideoRef.current) {
+        thisMate.addVideoElement(mateVideoRef.current);
       }
     }
-  }, [mateStreams]);
+  }, [mateStreams, mateId]);
 
-  useEffect(() => {
-    if (mateVideoRefs.current[mateId] && mateStream) {
-      mateVideoRefs.current[mateId].srcObject = mateStream;
-    }
-  }, [mateStream, mateVideoRefs.current[mateId]]);
-
+  console.log('Mate Video: ', mateId, mateStreams, mateVideoRef.current);
   return (
-    <Wrapper $mateOffLine={!mateStream}>
+    <Wrapper $mateOffLine={!mateVideoRef.current}>
       <VideoSessionArea>
-        <StatusIcon $isActive={mateStream} />
-        {mateStream ? (
-          <Video ref={mateVideoRefs.current[mateId]} autoPlay playsInline />
+        <StatusIcon $isActive={mateVideoRef.current} />
+        {mateVideoRef.current ? (
+          <Video ref={mateVideoRef.current} autoPlay playsInline />
         ) : (
           <EmptyVideo>Zzz...</EmptyVideo>
         )}

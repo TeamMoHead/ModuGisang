@@ -4,8 +4,8 @@ import { ChallengeContext } from '../../contexts/ChallengeContext';
 import { UserContext } from '../../contexts/UserContext';
 import { GameContext } from '../../contexts/GameContext';
 import { isPastTime } from './functions';
-import * as pose from '@mediapipe/pose';
-import { Holistic } from '@mediapipe/holistic';
+
+import { SimpleBtn, SimpleBtn2 } from '../../components';
 
 import InGameNav from './components/Nav/InGameNav';
 import {
@@ -104,6 +104,22 @@ const InGame = () => {
       <InGameNav />
       <Wrapper>
         <MyVideo />
+
+        <SimpleBtn
+          onClickHandler={() => {
+            localStorage.setItem('inGameMode', 1);
+            window.location.reload();
+          }}
+          btnName="Mission1"
+        />
+
+        <SimpleBtn2
+          onClickHandler={() => {
+            localStorage.setItem('inGameMode', 2);
+            window.location.reload();
+          }}
+          btnName="Mission2"
+        />
 
         <React.Fragment key={inGameMode}>
           {GAME_MODE_COMPONENTS[inGameMode]}
