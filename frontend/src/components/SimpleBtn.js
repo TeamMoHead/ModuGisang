@@ -8,10 +8,6 @@ const SimpleBtn = ({ btnName, onClickHandler }) => {
 export default SimpleBtn;
 
 const Wrapper = styled.button`
-  z-index: 300;
-  position: fixed;
-  top: 100px;
-  right: 10px;
   width: 100px;
   padding: 10px;
   background-color: ${({ theme }) => theme.colors.primary.emerald};

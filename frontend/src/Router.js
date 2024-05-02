@@ -9,10 +9,11 @@ import {
   JoinChallenge,
   Settings,
 } from './pages';
-import { GameContextProvider } from './contexts/GameContext';
-import { ChallengeContextProvider } from './contexts/ChallengeContext';
-
-import InGameRouter from './pages/InGame/InGameRouter';
+import {
+  ChallengeContextProvider,
+  GameContextProvider,
+  OpenViduContextProvider,
+} from './contexts';
 
 function Router() {
   return (
@@ -35,7 +36,9 @@ function Router() {
           element={
             <ChallengeContextProvider>
               <GameContextProvider>
-                <InGame />
+                <OpenViduContextProvider>
+                  <InGame />
+                </OpenViduContextProvider>
               </GameContextProvider>
             </ChallengeContextProvider>
           }

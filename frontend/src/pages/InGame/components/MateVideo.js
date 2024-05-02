@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
-import { GameContext } from '../../../contexts/GameContext';
+import { OpenViduContext } from '../../../contexts';
 import styled from 'styled-components';
 
 const MateVideo = ({ mateId, mateName }) => {
-  const { mateStreams } = useContext(GameContext);
+  const { mateStreams } = useContext(OpenViduContext);
   const [name, setName] = useState(mateName);
   const mateVideoRef = useRef(null);
 

@@ -1,12 +1,13 @@
 import React, { useRef, useEffect, useContext, useState } from 'react';
-import { GameContext } from '../../../contexts/GameContext';
+import { GameContext, OpenViduContext } from '../../../contexts';
 import { Pose } from '@mediapipe/pose';
 import { estimatePose } from '../MissionEstimators/PoseEstimator';
 
 import styled from 'styled-components';
 
 const Mission1 = () => {
-  const { myVideoRef, inGameMode } = useContext(GameContext);
+  const { inGameMode } = useContext(GameContext);
+  const { myVideoRef } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
   const msPoseRef = useRef(null);
 

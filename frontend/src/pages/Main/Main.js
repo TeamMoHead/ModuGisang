@@ -5,7 +5,7 @@ import { UserContext } from '../../contexts/UserContext';
 import useAuth from '../../hooks/useAuth';
 import useFetch from '../../hooks/useFetch';
 import { isPastTime } from '../InGame/functions';
-import { NavBar, CardBtn, SimpleBtn0 } from '../../components';
+import { NavBar, CardBtn, SimpleBtn } from '../../components';
 import {
   StreakContent,
   InvitationsContent,
@@ -97,7 +97,7 @@ const Main = () => {
       <S.PageWrapper>
         <Greetings>{greetings}</Greetings>
         {TEST_USER_INFO.map(({ userId, userName }) => (
-          <SimpleBtn0
+          <SimpleBtn
             key={userId}
             btnName={userId}
             onClickHandler={() => {
