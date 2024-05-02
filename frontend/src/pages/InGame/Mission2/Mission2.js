@@ -6,11 +6,15 @@ import { estimateFace } from '../MissionEstimators/FaceEstimator';
 import styled from 'styled-components';
 
 const Mission2 = () => {
-  const { myVideoRef } = useContext(GameContext);
+  const { myVideoRef, inGameMode } = useContext(GameContext);
   const canvasRef = useRef(null);
-  const faceRef = useRef(null);
+  const holisticRef = useRef(null);
 
   useEffect(() => {
+    console.log('Mission2 gameMode: ', inGameMode);
+
+    if (inGameMode !== 2) return;
+
     const videoElement = myVideoRef.current;
 
     // Face만 탐지하는데도 현재 holistic를 쓰고 있습니다 (사유: 라인 그리기, 인덱싱)
@@ -20,13 +24,13 @@ const Mission2 = () => {
     //   },
     // });
 
-    faceRef.current = new Holistic({
+    holisticRef.current = new Holistic({
       locateFile: file => {
         return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
       },
     });
 
-    faceRef.current.setOptions({
+    holisticRef.current.setOptions({
       selfieMode: true,
       numFaces: 1,
       refineFaceLandmarks: false, // Attention Mesh Model 적용 여부
@@ -34,24 +38,32 @@ const Mission2 = () => {
       minTrackingConfidence: 0.5,
     });
 
-    faceRef.current.onResults(results =>
-      estimateFace({ results, myVideoRef, canvasRef }),
-    );
+    holisticRef.current.onResults(results => {
+      estimateFace({ results, myVideoRef, canvasRef });
+    });
 
     const handleCanPlay = () => {
-      faceRef.current.send({ image: videoElement }).then(() => {
-        requestAnimationFrame(handleCanPlay);
-      });
+      console.log('Mission2 handleCanPlay=========');
+      let frameCount = 0;
+      const frameSkip = 150;
+
+      if (frameCount % (frameSkip + 1) === 0) {
+        holisticRef.current.send({ image: videoElement }).then(() => {
+          requestAnimationFrame(handleCanPlay);
+        });
+      }
+
+      frameCount++;
     };
 
     videoElement.addEventListener('canplay', handleCanPlay);
-
     return () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
-      faceRef.current.close();
+      holisticRef.current.close();
     };
-  }, [myVideoRef]);
+  }, [myVideoRef.current, inGameMode]);
 
+  console.log('----Mission2 Mounted----');
   return <Canvas ref={canvasRef} />;
 };
 

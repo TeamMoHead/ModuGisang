@@ -48,6 +48,7 @@ const GameContextProvider = ({ children }) => {
   const mateVideoRefs = useRef(null);
   const [mateStreams, setMateStreams] = useState([]);
   const [micOn, setMicOn] = useState(false);
+  // -------------------------------------
 
   const getConnectionToken = async () => {
     const userData = {
@@ -127,9 +128,73 @@ const GameContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (challengeData) {
-      // scheduleFirstMission(challengeData.wakeTime);
+      scheduleFirstMission(challengeData.wakeTime);
     }
   }, [challengeData]);
+
+  // ----------------- Test용 게임 모드 변경 -----------------
+  // const moveToNextMode = () => {
+  //   setInGameMode(prev => {
+  //     let nextMode = prev + 1;
+  //     if (nextMode <= 6) {
+  //       localStorage.setItem('inGameMode', JSON.stringify(nextMode));
+  //       return nextMode;
+  //     }
+  //     return prev;
+  //   });
+  // };
+  // ------------------------------------------------
+
+  useEffect(() => {
+    const OV = new Openvidu();
+    const newSession = OV.initSession();
+    setVideoSession(newSession);
+
+    newSession.on('streamCreated', event => {
+      const mateStream = event.stream;
+      setMateStreams(prevStreams => [...prevStreams, mateStream]);
+      console.log(`New stream created. Stream ID: ${mateStream.streamId}`);
+    });
+
+    // 발행자 초기화 및 발행
+    const initPublisher = () => {
+      const publisher = OV.initPublisher(myVideoRef, {
+        audioSource: undefined,
+        videoSource: undefined,
+        publishAudio: true,
+        publishVideo: true,
+        resolution: '640x480',
+        frameRate: 30,
+        mirror: false,
+      });
+
+      // 발행자 스트림 상태 업데이트
+      setMyStream(publisher);
+
+      // 세션에 발행자 추가
+      newSession.publish(publisher);
+    };
+
+    // 세션 연결
+    newSession.connect(connectionToken, error => {
+      if (error) {
+        console.error('Connection error:', error);
+      } else {
+        console.log('Successfully connected to the session!');
+        initPublisher();
+      }
+    });
+
+    return () => {
+      if (videoSession) {
+        videoSession.off('streamCreated');
+        videoSession.disconnect();
+      }
+      if (myStream) {
+        myStream.dispose();
+      }
+    };
+  }, [connectionToken]);
 
   return (
     <GameContext.Provider
@@ -145,6 +210,7 @@ const GameContextProvider = ({ children }) => {
         setMyStream,
         mateVideoRefs,
         mateStreams,
+        // moveToNextMode,
       }}
     >
       {children}

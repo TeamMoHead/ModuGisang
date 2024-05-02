@@ -8,6 +8,10 @@ let status;
 export const estimatePose = ({ results, myVideoRef, canvasRef }) => {
   if (!myVideoRef.current || !canvasRef.current) return;
 
+  // ------성능 test용-----
+  let count = 0;
+  // ---------------------
+
   const canvasElement = canvasRef.current;
   const canvasCtx = canvasElement.getContext('2d');
   if (canvasCtx == null) throw new Error('Could not get context');
@@ -86,6 +90,11 @@ export const estimatePose = ({ results, myVideoRef, canvasRef }) => {
   });
 
   stretchingGame(results.poseLandmarks);
+
+  // ------성능 test용-----
+  console.log('===Pose Estimator: ', count);
+  count++;
+  // ---------------------
 
   canvasCtx.restore();
 };

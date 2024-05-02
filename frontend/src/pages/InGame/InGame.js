@@ -4,6 +4,9 @@ import { ChallengeContext } from '../../contexts/ChallengeContext';
 import { UserContext } from '../../contexts/UserContext';
 import { GameContext } from '../../contexts/GameContext';
 import { isPastTime } from './functions';
+import * as pose from '@mediapipe/pose';
+import { Holistic } from '@mediapipe/holistic';
+
 import InGameNav from './components/Nav/InGameNav';
 import {
   Waiting,
@@ -49,9 +52,10 @@ const InGame = () => {
     getConnectionToken,
     videoSession,
     startSession,
-    myVideoRef,
     myStream,
     setMyStream,
+
+    // moveToNextMode,
   } = useContext(GameContext);
 
   const [mateList, setMateList] = useState([]);
@@ -87,8 +91,6 @@ const InGame = () => {
     }
   }, [videoSession]);
 
-  console.log('GAME MODE:: ', inGameMode);
-
   // if (
   //   GAME_MODE[inGameMode] === 'waiting' &&
   //   isPastTime(challengeData.wakeTime)
@@ -102,16 +104,19 @@ const InGame = () => {
       <InGameNav />
       <Wrapper>
         <MyVideo />
-        {GAME_MODE_COMPONENTS[inGameMode]}
 
-        {/* {mateList.length > 0 && (
-            <MatesVideoWrapper $isSingle={mateList.length === 1}>
-              {mateList.map(({ userId }) => (
-                <MateVideo key={userId} mateId={userId} />
-              ))}
-            </MatesVideoWrapper>
-          )} */}
-        <CloseVideoBtn
+        <React.Fragment key={inGameMode}>
+          {GAME_MODE_COMPONENTS[inGameMode]}
+        </React.Fragment>
+
+        {mateList.length > 0 && (
+          <MatesVideoWrapper $isSingle={mateList.length === 1}>
+            {mateList.map(({ userId }) => (
+              <MateVideo key={userId} mateId={userId} />
+            ))}
+          </MatesVideoWrapper>
+        )}
+        {/* <CloseVideoBtn
           onClick={e => {
             e.preventDefault();
             e.stopPropagation();
@@ -119,7 +124,7 @@ const InGame = () => {
           }}
         >
           stop camera
-        </CloseVideoBtn>
+        </CloseVideoBtn> */}
       </Wrapper>
     </>
   );
