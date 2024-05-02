@@ -21,17 +21,14 @@ const Mission2 = () => {
 
     holisticRef.current = new Holistic({
       locateFile: file => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
+        return `https://fastly.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
       },
     });
 
     holisticRef.current.setOptions({
       selfieMode: true,
-      modelComplexity: 0,
-      smoothLandmarks: true,
-      enableSegmentation: false,
-      smoothSegmentation: false,
-      refineFaceLandmarks: true,
+      numFaces: 1,
+      refineFaceLandmarks: false,
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5,
     });

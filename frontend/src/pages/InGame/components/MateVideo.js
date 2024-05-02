@@ -35,9 +35,16 @@ const MateVideo = ({ mateId, mateName }) => {
   useEffect(() => {
     if (mateVideoRefs.current[mateId] && mateStream) {
       mateVideoRefs.current[mateId].srcObject = mateStream;
+      mateStream.addVideoElement(mateVideoRefs.current[mateId]);
     }
   }, [mateStream, mateVideoRefs.current[mateId]]);
 
+  console.log(
+    'Mate Video: ',
+    mateId,
+    mateVideoRefs.current[mateId],
+    mateStream,
+  );
   return (
     <Wrapper $mateOffLine={!mateStream}>
       <VideoSessionArea>

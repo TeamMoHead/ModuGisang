@@ -153,7 +153,9 @@ const GameContextProvider = ({ children }) => {
     const newSession = OV.initSession();
     setVideoSession(newSession);
 
+    console.log('session Created: ', newSession);
     newSession.on('streamCreated', event => {
+      console.log('---Subscribe: ', event);
       const mateStream = newSession.subscribe(event.stream, undefined);
       setMateStreams(prevStreams => [...prevStreams, mateStream]);
       console.log(`==== New stream created. Stream ID: ${mateStream.streamId}`);
