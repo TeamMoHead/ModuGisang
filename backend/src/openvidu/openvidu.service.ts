@@ -16,25 +16,24 @@ export class OpenviduService {
 
     async openviduTotalService(body:any){
         try {
-            console.log(body);
-            const session = this.openvidu.activeSessions.find((s) => s.sessionId === body.userData.challengeId); // 동일한 세션이 있는지 검사
-            if(session !== undefined){ // 동일한 세션이 존재 O
-                // const connection = await session.
-                return this.createConnection(session.sessionId, body);
-            }else{ // 동일한 세션이 존재 X
-                const s = await this.openvidu.createSession({customSessionId: body.userData.challengeId});
-                return this.createConnection(s.sessionId, body);
-                // return connection.token;
-            }
+            const session = await this.findSession(body.userData.challengeId); // 동일한 세션이 있는지 검사
+            return session ? await this.createToken(session.sessionId, body) : await this.handleNoSessionFound(body);
+            // if(session !== undefined){ // 동일한 세션이 존재 O
+            //     // const connection = await session.
+            //     return await this.createToken(body.userData.challengeId, body);
+            // }else{ // 동일한 세션이 존재 X
+            //     const s = await this.openvidu.createSession({customSessionId: body.userData.challengeId});
+            //     return await this.createToken(s.sessionId, body);
+            //     // return connection.token;
+            // }
         } catch (error) {
-            console.log(error);
+            console.log("Check existing session: ", error);
+            return await this.handleNoSessionFound(body);
         }
     }
 
-    async createConnection(sessionId:string, body:any){
-        const session = this.openvidu.activeSessions.find(
-            (s) => s.sessionId === sessionId
-        );
+    async createToken(sessionId:string, body:any){
+        const session = await this.findSession(sessionId);
         
         if(!session){
             throw new HttpException('Session not found', HttpStatus.NOT_FOUND);
@@ -45,60 +44,35 @@ export class OpenviduService {
                     role: OpenViduRole.PUBLISHER
                 };
                 const response = await session.generateToken(tokenOptions);
-                const token = this.extractToken(response);
-                return token;
+                console.log("Generated Token: ",response);
+                if (response != null){
+                    return response;
+                }else{
+                    throw new HttpException('Token generation failed',HttpStatus.INTERNAL_SERVER_ERROR);
+                }
                 
             } catch (error) {
-                throw new HttpException(
-                    'Error creating connection : ' + error.message,
-                    HttpStatus.INTERNAL_SERVER_ERROR 
-                )
+                console.error("Error creating connection: ", error);
+                throw new HttpException('Error creating connection: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
     }
 
-
-    extractToken(url){
-        const queryParmas = new URLSearchParams(new URL(url).search);
-        const token = queryParmas.get('token');
-        return token;
+    async findSession(challengeId: string){
+        await this.listActiveSessions();
+        return this.openvidu.activeSessions.find((s) => s.sessionId === challengeId);
     }
 
-    // async createSessions(body:any){
-    //     try {
-    //         const session = this.openvidu.activeSessions.find((s) => s.sessionId === body.customSessionId);
-    //         if(session !== undefined){
-    //             return body.customSessionId;
-    //         }else{
-    //             const sessionId = await this.openvidu.createSession(body);
-    //             return sessionId.sessionId;
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
-
-    // async createConnection(sessionId:string, body:any){
-    //     const session = this.openvidu.activeSessions.find(
-    //         (s) => s.sessionId === sessionId,
-    //     );
-
-    //     this.listActiveSessions();
-    //     if(!session){
-    //         throw new HttpException('Session not found',HttpStatus.NOT_FOUND);
-    //     }else{
-    //         try{
-    //             const connection = await session.createConnection(body);
-    //             return connection.token;
-    //         }catch(error){
-    //             throw new HttpException(
-    //                 'Error creating connection: ' + error.message,
-    //                 HttpStatus.INTERNAL_SERVER_ERROR,
-    //               );
-          
-    //         }
-    //     }
-    // }
+    async handleNoSessionFound(body:any){
+        try {
+            console.log("No existing session found, creating new session");
+            const session = await this.openvidu.createSession({ customSessionId: body.userData.challengeId});
+            return this.createToken(session.sessionId, body);
+        } catch (error) {
+            console.error("Error creating new session : ", error);
+            throw new HttpException("Faild to create session ", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     async listActiveSessions() {
         try {
@@ -106,5 +80,13 @@ export class OpenviduService {
         } catch (error) {
             console.error('Error fetching active sessions:', error);
         }
-      }
+    }
+
+    // 사용자의 세션 id에 대한 토큰을 발행 시 토큰 값만 전달할 수 있도록 반환
+    // extractToken(url){
+    //     const queryParmas = new URLSearchParams(new URL(url).search);
+    //     const token = queryParmas.get('token');
+    //     return token;
+    // }
+
 }
