@@ -4,6 +4,7 @@
 .LSOverride
 
 # npm
+*/build
 */node_modules
 
 # settings

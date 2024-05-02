@@ -29,7 +29,7 @@ const Main = () => {
 
   // setUserInfo는 Test용으로 사용하는 함수
   const { userInfo, setUserInfo } = useContext(UserContext);
-  const { userId, userName, streakDays, hasChallenge } = userInfo;
+  const { userId, userName, streakDays, challengeId: hasChallenge } = userInfo;
   const { challengeData } = useContext(ChallengeContext);
   const { challengeId, wakeTime } = challengeData;
 
@@ -58,7 +58,7 @@ const Main = () => {
         alert('챌린지 참여 시간이 지났습니다.');
         return;
       }
-      navigate(`/startMorning/${challengeId}`);
+      navigate(`/startMorning/${challengeId}/waiting`);
     },
   };
 
@@ -134,5 +134,5 @@ const Greetings = styled.h6`
 const CardsWrapper = styled.div`
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 `;
