@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState, useContext } from 'react';
+import React, { useEffect, useRef, useContext } from 'react';
 import { GameContext } from '../../../contexts/GameContext';
-import { Holistic, FACEMESH_TESSELATION } from '@mediapipe/holistic';
-import { drawConnectors } from '@mediapipe/drawing_utils';
-
+import { Holistic } from '@mediapipe/holistic';
+// import * as face from '@mediapipe/face_mesh';
 import { estimateFace } from '../MissionEstimators/FaceEstimator';
 import styled from 'styled-components';
 
@@ -19,19 +18,23 @@ const Mission2 = () => {
 
     const videoElement = myVideoRef.current;
 
+    // Face만 탐지하는데도 현재 holistic를 쓰고 있습니다 (사유: 라인 그리기, 인덱싱)
+    // faceRef.current = new face.FaceMesh({
+    //   locateFile: file => {
+    //     return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
+    //   },
+    // });
+
     holisticRef.current = new Holistic({
       locateFile: file => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
+        return `https://fastly.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
       },
     });
 
     holisticRef.current.setOptions({
       selfieMode: true,
-      modelComplexity: 0,
-      smoothLandmarks: true,
-      enableSegmentation: false,
-      smoothSegmentation: false,
-      refineFaceLandmarks: true,
+      numFaces: 1,
+      refineFaceLandmarks: false, // Attention Mesh Model 적용 여부
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5,
     });
