@@ -12,7 +12,7 @@ const Mission3 = () => {
   const msPoseRef = useRef(null);
 
   useEffect(() => {
-    console.log('Mission1 gameMode: ', inGameMode, 'video: ', myVideoRef);
+    console.log('Mission3 gameMode: ', inGameMode, 'video: ', myVideoRef);
 
     if (inGameMode !== 1) return;
     if (!myVideoRef.current) return;
