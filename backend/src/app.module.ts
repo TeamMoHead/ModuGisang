@@ -9,8 +9,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
 import { RedisCacheService } from './redis-cache/redis-cache.service';
 import { RedisCacheController } from './redis-cache/redis-cache.controller';
-import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
 import * as redisStore from 'cache-manager-ioredis';
 import * as fs from 'fs';
 
@@ -56,10 +54,6 @@ import * as fs from 'fs';
       }),
       inject: [ConfigService],
     }),
-
-    UserModule,
-
-    AuthModule,
 
   ],
   controllers: [AppController, RedisCacheController, OpenviduController],
