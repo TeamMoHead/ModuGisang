@@ -27,7 +27,7 @@ const Mission2 = () => {
 
     holisticRef.current = new Holistic({
       locateFile: file => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
+        return `https://fastly.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
       },
     });
 

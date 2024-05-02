@@ -21,7 +21,7 @@ const Mission3 = () => {
 
     msPoseRef.current = new pose.Pose({
       locateFile: file =>
-        `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
+        `https://fastly.jsdelivr.net/npm/@mediapipe/pose/${file}`,
     });
 
     // msPoseRef.current = new Holistic({
