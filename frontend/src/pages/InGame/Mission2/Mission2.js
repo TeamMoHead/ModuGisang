@@ -15,6 +15,7 @@ const Mission2 = () => {
     console.log('Mission2 gameMode: ', inGameMode);
 
     if (inGameMode !== 2) return;
+    if (!myVideoRef.current) return;
 
     const videoElement = myVideoRef.current;
 

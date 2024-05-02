@@ -5,7 +5,8 @@ import React, {
   useEffect,
   useContext,
 } from 'react';
-import { Openvidu } from 'openvidu-browser';
+import { useNavigate } from 'react-router-dom';
+import { OpenVidu } from 'openvidu-browser';
 import { UserContext } from './UserContext';
 import { ChallengeContext } from './ChallengeContext';
 import { challengeServices } from '../apis/challengeServices';
@@ -32,6 +33,7 @@ const GAME_MODE_DURATION = {
 };
 
 const GameContextProvider = ({ children }) => {
+  const navigate = useNavigate();
   const { userInfo } = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
   const { userId, userName } = userInfo;
@@ -45,7 +47,7 @@ const GameContextProvider = ({ children }) => {
   const [connectionToken, setConnectionToken] = useState('');
   const myVideoRef = useRef(null);
   const [myStream, setMyStream] = useState(null);
-  const mateVideoRefs = useRef(null);
+  const mateVideoRefs = useRef({});
   const [mateStreams, setMateStreams] = useState([]);
   const [micOn, setMicOn] = useState(false);
   // -------------------------------------
@@ -120,7 +122,6 @@ const GameContextProvider = ({ children }) => {
     const delay = wakeTimeDate - now;
 
     setTimeout(() => {
-      localStorage.setItem('inGameMode', JSON.stringify(1));
       setInGameMode(1); // waiting 끝나면 첫 미션으로 전환
       setTimeout(updateMode, GAME_MODE_DURATION[1]); // 첫 미션 후 다음 모드로 전환 시작
     }, delay);
@@ -146,14 +147,16 @@ const GameContextProvider = ({ children }) => {
   // ------------------------------------------------
 
   useEffect(() => {
-    const OV = new Openvidu();
+    if (!connectionToken) return;
+
+    const OV = new OpenVidu();
     const newSession = OV.initSession();
     setVideoSession(newSession);
 
     newSession.on('streamCreated', event => {
-      const mateStream = event.stream;
+      const mateStream = newSession.subscribe(event.stream, undefined);
       setMateStreams(prevStreams => [...prevStreams, mateStream]);
-      console.log(`New stream created. Stream ID: ${mateStream.streamId}`);
+      console.log(`==== New stream created. Stream ID: ${mateStream.streamId}`);
     });
 
     // 발행자 초기화 및 발행
@@ -177,6 +180,7 @@ const GameContextProvider = ({ children }) => {
 
     // 세션 연결
     newSession.connect(connectionToken, error => {
+      console.log('====Connection TRy: ', connectionToken);
       if (error) {
         console.error('Connection error:', error);
       } else {
@@ -194,7 +198,9 @@ const GameContextProvider = ({ children }) => {
         myStream.dispose();
       }
     };
-  }, [connectionToken]);
+  }, [connectionToken, myVideoRef]);
+
+  console.log('Mate Streams: ', mateStreams);
 
   return (
     <GameContext.Provider
