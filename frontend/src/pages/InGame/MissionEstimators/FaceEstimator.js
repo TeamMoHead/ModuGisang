@@ -21,59 +21,53 @@ export const estimateFace = ({ results, myVideoRef, canvasRef }) => {
   image.src = stickyNoteImage;
 
   const postitGame = faceLandmarks => {
+    let targetNumber = 100;
+
     // Check left cheek movement
-    const leftCheekIndex = 205; // Left cheek landmark index
+    const leftCheekIndex = 61; // Left cheek landmark index
     const leftCheek = results.faceLandmarks[leftCheekIndex];
-    if (leftCheek) {
+    if (leftCheek && leftScore < targetNumber) {
       if (prevLeftCheekPosition) {
-        const deltaLeftX = leftCheek.x - prevLeftCheekPosition.x;
+        const deltaLeftY = leftCheek.y - prevLeftCheekPosition.y;
         // console.log('deltaLeftY:', leftCheek.y - prevLeftCheekPosition.y);
-        if (Math.abs(deltaLeftX) > 0.1) {
+        if (Math.abs(deltaLeftY) > 0.01) {
           // Threshold for detecting movement, adjust as needed
           leftScore = leftScore + 1;
+          console.log('----leftScore:  ', leftScore);
         }
       }
       prevLeftCheekPosition = { x: leftCheek.x, y: leftCheek.y };
       // console.log('prevLeftCheekPosition:', { x: leftCheek.x, y: leftCheek.y });
     }
 
+    const A = faceLandmarks[face.FACEMESH_RIGHT_IRIS];
+
     // Check right cheek movement
-    const rightCheekIndex = 425; // Right cheek landmark index
+    const rightCheekIndex = 291; // Right cheek landmark index
     const rightCheek = results.faceLandmarks[rightCheekIndex];
-    console.log('----right cheek:  ', rightCheek);
-    if (rightCheek) {
+    // console.log('----right cheek:  ', rightCheek);
+    if (rightCheek && rightScore < targetNumber) {
       // Set previous right cheek position
       if (prevRightCheekPosition) {
         const deltaRightY = rightCheek.y - prevRightCheekPosition.y;
-        console.log('----deltaRightY:', deltaRightY);
-        if (Math.abs(deltaRightY) > 0.1) {
+        // console.log('----deltaRightY:', deltaRightY);
+        if (Math.abs(deltaRightY) > 0.01) {
           // Threshold for detecting movement, adjust as needed
           rightScore = rightScore + 1;
+          console.log('----rightScore:  ', rightScore);
         }
       } else {
         console.log('----계산 안 되었음!!!!!!!');
       }
       prevRightCheekPosition = { x: rightCheek.x, y: rightCheek.y };
-      console.log('prevRightCheekPosition:', prevRightCheekPosition);
-
-      console.log('----score:  ', rightScore);
+      // console.log('prevRightCheekPosition:', prevRightCheekPosition);
 
       // 얼굴 랜드마크에 그림을 붙이는 함수 호출
-      if (leftScore < 300) {
-        drawImageOnFace(
-          canvasCtx,
-          results.faceLandmarks,
-          leftCheekIndex,
-          image,
-        );
+      if (leftScore < targetNumber) {
+        drawImageOnFace(canvasCtx, results.faceLandmarks, 205, image);
       }
-      if (rightScore < 300) {
-        drawImageOnFace(
-          canvasCtx,
-          results.faceLandmarks,
-          rightCheekIndex,
-          image,
-        );
+      if (rightScore < targetNumber) {
+        drawImageOnFace(canvasCtx, results.faceLandmarks, 425, image);
       }
     }
   };
@@ -87,15 +81,15 @@ export const estimateFace = ({ results, myVideoRef, canvasRef }) => {
       const canvasHeight = canvasCtx.canvas.height;
 
       // 이미지 크기 조절
-      const resizedWidth = 50; // 원하는 너비로 조절
-      const resizedHeight = 50; // 원하는 높이로 조절
+      const resizedWidth = 40; // 원하는 너비로 조절
+      const resizedHeight = 40; // 원하는 높이로 조절
       const resizedImage = resizeImage(image, resizedWidth, resizedHeight);
 
       // 얼굴 랜드마크의 x, y 좌표
       let { x, y } = point;
 
-      console.log('x: ', x);
-      console.log('y: ', y);
+      // console.log('x: ', x);
+      // console.log('y: ', y);
 
       // 얼굴 랜드마크의 비율을 캔버스의 픽셀 값으로 변환
       x *= canvasWidth;
@@ -105,8 +99,8 @@ export const estimateFace = ({ results, myVideoRef, canvasRef }) => {
       const imageCenterX = x - resizedImage.width / 2;
       const imageCenterY = y - resizedImage.height / 2;
 
-      console.log('imageCenterX: ', imageCenterX);
-      console.log('imageCenterY: ', imageCenterY);
+      // console.log('imageCenterX: ', imageCenterX);
+      // console.log('imageCenterY: ', imageCenterY);
 
       // 그림을 그릴 좌표 설정
       const drawX = imageCenterX < 0 ? 0 : imageCenterX; // 캔버스 좌측 범위를 벗어나지 않도록 설정
