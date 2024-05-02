@@ -9,6 +9,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
 import { RedisCacheService } from './redis-cache/redis-cache.service';
 import { RedisCacheController } from './redis-cache/redis-cache.controller';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 import * as redisStore from 'cache-manager-ioredis';
 import * as fs from 'fs';
 
@@ -43,17 +45,21 @@ import * as fs from 'fs';
     
         synchronize: true,//테이블을 자동으로 생성해주는 옵션 , 실제 환경에서는 사용하지 않는 것이 좋다.
         entities: [], // 여기에 엔티티 클래스를 추가합니다. 
-        ssl: {
-        // 다운로드한 인증서 파일 경로 추가
-          ca: fs.readFileSync("././global-bundle.pem")
-        },
-        extra: {
-        // SSL 연결을 강제 설정
-          ssl: { rejectUnauthorized: false },
-        },
+        // ssl: {
+        // // 다운로드한 인증서 파일 경로 추가
+        //   ca: fs.readFileSync("././global-bundle.pem")
+        // },
+        // extra: {
+        // // SSL 연결을 강제 설정
+        //   ssl: { rejectUnauthorized: false },
+        // },
       }),
       inject: [ConfigService],
     }),
+
+    UserModule,
+
+    AuthModule,
 
   ],
   controllers: [AppController, RedisCacheController, OpenviduController],
