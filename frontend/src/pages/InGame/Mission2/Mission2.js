@@ -11,10 +11,7 @@ const Mission2 = () => {
   const holisticRef = useRef(null);
 
   useEffect(() => {
-    console.log('Mission2 gameMode: ', inGameMode);
-
-    if (inGameMode !== 2) return;
-    if (!myVideoRef.current) return;
+    if (inGameMode !== 2 || !myVideoRef.current) return;
 
     const videoElement = myVideoRef.current;
 
@@ -27,7 +24,7 @@ const Mission2 = () => {
 
     holisticRef.current = new Holistic({
       locateFile: file => {
-        return `https://fastly.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
       },
     });
 
@@ -44,27 +41,32 @@ const Mission2 = () => {
     });
 
     const handleCanPlay = () => {
-      console.log('Mission2 handleCanPlay=========');
       let frameCount = 0;
       const frameSkip = 150;
 
       if (frameCount % (frameSkip + 1) === 0) {
-        holisticRef.current.send({ image: videoElement }).then(() => {
-          requestAnimationFrame(handleCanPlay);
-        });
+        if (holisticRef.current !== null) {
+          holisticRef.current.send({ image: videoElement }).then(() => {
+            requestAnimationFrame(handleCanPlay);
+          });
+        }
       }
 
       frameCount++;
     };
 
-    videoElement.addEventListener('canplay', handleCanPlay);
-    return () => {
-      videoElement.removeEventListener('canplay', handleCanPlay);
-      holisticRef.current.close();
-    };
-  }, [myVideoRef.current, inGameMode]);
+    if (videoElement.readyState >= 3) {
+      handleCanPlay();
+    } else {
+      videoElement.addEventListener('canplay', handleCanPlay);
+    }
 
-  console.log('----Mission2 Mounted----');
+    return () => {
+      holisticRef.current = null;
+      videoElement.removeEventListener('canplay', handleCanPlay);
+    };
+  }, []);
+
   return <Canvas ref={canvasRef} />;
 };
 

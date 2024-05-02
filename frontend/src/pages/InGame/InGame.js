@@ -4,8 +4,6 @@ import { ChallengeContext } from '../../contexts/ChallengeContext';
 import { UserContext } from '../../contexts/UserContext';
 import { GameContext } from '../../contexts/GameContext';
 import { isPastTime } from './functions';
-import * as pose from '@mediapipe/pose';
-import { Holistic } from '@mediapipe/holistic';
 
 import { SimpleBtn, SimpleBtn2 } from '../../components';
 
