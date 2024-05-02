@@ -4,7 +4,7 @@ import * as pose from '@mediapipe/pose';
 import { estimatePose } from '../MissionEstimators/PoseEstimator';
 import styled from 'styled-components';
 
-const GameMode1MediaPipe = () => {
+const Mission1 = () => {
   const { myVideoRef } = useContext(GameContext);
   const canvasRef = useRef(null);
   const msPoseRef = useRef(null);
@@ -18,9 +18,11 @@ const GameMode1MediaPipe = () => {
     });
 
     msPoseRef.current.setOptions({
-      modelComplexity: 1,
+      selfieMode: true,
+      upperBodyOnly: true,
+      modelComplexity: 0,
       smoothLandmarks: true,
-      enableSegmentation: true,
+      enableSegmentation: false,
       smoothSegmentation: true,
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5,
@@ -47,7 +49,7 @@ const GameMode1MediaPipe = () => {
   return <Canvas ref={canvasRef} />;
 };
 
-export default GameMode1MediaPipe;
+export default Mission1;
 
 const Canvas = styled.canvas`
   position: fixed;
