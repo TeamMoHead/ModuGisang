@@ -57,8 +57,8 @@ const Mission1 = () => {
     }
 
     return () => {
-      msPoseRef.current = null;
       videoElement.removeEventListener('canplay', handleCanPlay);
+      msPoseRef.current = null;
     };
   }, []);
 

@@ -45,7 +45,7 @@ const Wrapper = styled.div`
   display: flex;
   width: 100%;
   height: 15vh;
-  margin-bottom: 35px;
+  margin-bottom: 40px;
 
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
@@ -77,7 +77,7 @@ const StatusIcon = styled.div`
 const UserName = styled.span`
   position: absolute;
   width: 98%;
-  bottom: -40px;
+  bottom: -50px;
 
   padding: 5px 10px;
   border-radius: ${({ theme }) => theme.radius.light};
