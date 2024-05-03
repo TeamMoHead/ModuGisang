@@ -51,12 +51,13 @@ const ChallengeContextProvider = ({ children }) => {
   };
 
   const getChallengeData = async challengeId => {
-    try {
-      const response = await challengeServices.getChallengeInfo(challengeId);
-      setChallengeData(response.data);
-    } catch (error) {
-      console.error(error);
-    }
+    // =========IN GAME 로직에서 바르게 Challenge Data 받아오는 것으로 고친 뒤 살릴 예정 ==========
+    // try {
+    //   const response = await challengeServices.getChallengeInfo(challengeId);
+    //   setChallengeData(response.data);
+    // } catch (error) {
+    //   console.error(error);
+    // }
   };
 
   return (

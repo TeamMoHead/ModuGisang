@@ -9,7 +9,7 @@ import {
   JoinChallenge,
   Settings,
 } from './pages';
-import { GameContextProvider } from './contexts/GameContext';
+import { GameContextProvider, OpenViduContextProvider } from './contexts';
 
 function Router() {
   return (
@@ -24,7 +24,9 @@ function Router() {
           path="/startMorning/:challengeId/*"
           element={
             <GameContextProvider>
-              <InGame />
+              <OpenViduContextProvider>
+                <InGame />
+              </OpenViduContextProvider>
             </GameContextProvider>
           }
         />
