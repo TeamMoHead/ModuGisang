@@ -59,6 +59,7 @@ const fonts = {
 };
 
 const radius = {
+  light: '15px',
   basic: '20px',
   round: '40px',
 };

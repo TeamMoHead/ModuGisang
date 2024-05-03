@@ -131,6 +131,7 @@ const OpenViduContextProvider = ({ children }) => {
       }
       if (myStream) {
         myStream.dispose();
+        mateStreams.forEach(stream => stream.dispose());
       }
     };
   }, [videoSession]);

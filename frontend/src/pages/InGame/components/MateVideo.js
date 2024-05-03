@@ -32,7 +32,7 @@ const MateVideo = ({ mateId, mateName }) => {
         <EmptyVideo>Zzz...</EmptyVideo>
       )}
 
-      <UserName $isActive={isMateOnline}>{mateName}</UserName>
+      <UserName $isActive={!isMateOnline}>{mateName}</UserName>
     </Wrapper>
   );
 };
@@ -41,9 +41,11 @@ export default MateVideo;
 
 const Wrapper = styled.div`
   position: relative;
+
   display: flex;
   width: 100%;
   height: 15vh;
+  margin-bottom: 35px;
 
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
@@ -74,14 +76,16 @@ const StatusIcon = styled.div`
 
 const UserName = styled.span`
   position: absolute;
-  bottom: 5px;
+  width: 98%;
+  bottom: -40px;
 
   padding: 5px 10px;
-  border-radius: ${({ theme }) => theme.radius.basic};
+  border-radius: ${({ theme }) => theme.radius.light};
   color: ${({ theme }) => theme.colors.system.black};
-  background-color: ${({ theme, $isActive }) =>
-    $isActive && theme.colors.system.white};
+  background-color: ${({ theme }) => theme.colors.lighter.light};
+
   text-shadow: ${({ theme }) => theme.boxShadow.text};
+  text-align: center;
   font-weight: 800;
   margin-bottom: 8px;
 `;
