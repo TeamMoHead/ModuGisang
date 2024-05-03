@@ -25,7 +25,7 @@ export class AuthService {
         if (!userFind || !validatePassword) {
             throw new UnauthorizedException();
         }
-        const payload = { sub: userFind._id, id: userFind._id, username: userFind.userName };
+        const payload = { sub: userFind._id, _id: userFind._id, username: userFind.userName };
         return this.jwtService.signAsync(payload);
     }
     // 토큰 Payload에 해당하는 아아디의 유저 가져오기
@@ -48,7 +48,7 @@ export class AuthService {
     }
 
     async refresh(refreshTokenDto: RefreshTokenDto): Promise<string> {
-        const { refreshToken } = refreshTokenDto;
+        const refreshToken  = refreshTokenDto.refreshToken;
         try {
             const decodedRefreshToken = this.jwtService.verify(refreshToken, { secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'), });
             const userId = decodedRefreshToken.id;
