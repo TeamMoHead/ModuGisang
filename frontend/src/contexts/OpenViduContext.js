@@ -17,6 +17,7 @@ const OpenViduContextProvider = ({ children }) => {
   const { userId, userName } = userInfo;
 
   // ------ openvidu 관련 state --------
+  const [OVInstance, setOVInstance] = useState(null); // OpenVidu 객체 [openvidu-browser
   const [videoSession, setVideoSession] = useState(null);
   const [connectionToken, setConnectionToken] = useState('');
   const myVideoRef = useRef(null);
@@ -47,42 +48,79 @@ const OpenViduContextProvider = ({ children }) => {
     setMicOn(prev => !prev);
   };
 
+  const leaveSession = () => {
+    if (videoSession) {
+      videoSession.disconnect();
+    }
+
+    setOVInstance(null);
+    setVideoSession(null);
+    setMateStreams([]);
+    setMyStream(null);
+  };
+
   useEffect(() => {
-    const OV = new OpenVidu();
+    if (!challengeData.challengeId) return;
+    getConnectionToken();
+  }, [challengeData]);
+
+  useEffect(() => {
     if (!connectionToken) return;
 
+    const OV = new OpenVidu();
     const newSession = OV.initSession();
+
+    setOVInstance(OV);
     setVideoSession(newSession);
+  }, [connectionToken]);
 
-    console.log('session Created: ', newSession);
+  useEffect(() => {
+    if (!videoSession) return;
 
-    // 발행자 초기화 및 발행
-    const initPublisher = () => {
-      const publisher = OV.initPublisher(myVideoRef, {
+    videoSession.on('streamCreated', event => {
+      const mateStream = videoSession.subscribe(event.stream, undefined);
+      setMateStreams(prev => [...prev, mateStream]);
+    });
+
+    videoSession.on('streamDestroyed', event => {
+      const thisStream = event.stream.streamManager;
+      setMateStreams(prev =>
+        prev.filter(mateStream => mateStream !== thisStream),
+      );
+    });
+
+    videoSession.on('exception', exception => {
+      console.warn(exception);
+    });
+
+    videoSession.on('signal:test', event => {
+      console.log('---Signal Test:: ', event);
+      if (event.data === userId.userId) {
+        leaveSession();
+      }
+    });
+
+    const initPublisher = async () => {
+      const publisher = await OVInstance.initPublisherAsync(undefined, {
         audioSource: undefined,
         videoSource: undefined,
         publishAudio: true,
         publishVideo: true,
-        resolution: '640x480',
+        // resolution: '640x480',
         frameRate: 30,
-        mirror: false,
+        mirror: true,
       });
 
-      // 발행자 스트림 상태 업데이트
+      videoSession.publish(publisher);
       setMyStream(publisher);
-
-      // 세션에 발행자 추가
-      newSession.publish(publisher);
     };
 
     // 세션 연결
-    newSession.connect(connectionToken, error => {
-      console.log('====Connection Try: ', connectionToken);
-      if (error) {
-        console.error('Connection error:', error);
-      } else {
-        console.log('Successfully connected to the session!');
-        initPublisher();
+    videoSession.connect(connectionToken).then(async () => {
+      try {
+        await initPublisher();
+      } catch (error) {
+        console.error('/// Connecting OV error:', error);
       }
     });
 
@@ -95,24 +133,7 @@ const OpenViduContextProvider = ({ children }) => {
         myStream.dispose();
       }
     };
-  }, [connectionToken]);
-
-  useEffect(() => {
-    if (videoSession) {
-      // videoSession.on('streamCreated', event => {
-      //   const newStream = videoSession.subscribe(event.stream, undefined);
-      //   setMateStreams(prevStreams => [...prevStreams, newStream]);
-      //   console.log(`New stream created. Stream ID: ${newStream.streamId}`);
-      // });
-      videoSession.onParticipantPublished = event => {
-        const newStream = videoSession.getRemote(event.stream, undefined);
-        setMateStreams(prevStreams => [...prevStreams, newStream]);
-        console.log(`New stream created. Stream ID: ${newStream.streamId}`);
-      };
-    }
   }, [videoSession]);
-
-  console.log('Mate Streams: ', mateStreams);
 
   return (
     <OpenViduContext.Provider

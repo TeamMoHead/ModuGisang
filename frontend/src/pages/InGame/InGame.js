@@ -47,7 +47,6 @@ const InGame = () => {
   const { userInfo } = useContext(UserContext);
   const { userId: myId } = userInfo;
   const { challengeData, getChallengeData } = useContext(ChallengeContext);
-  const { videoSession, getConnectionToken } = useContext(OpenViduContext);
   const { inGameMode } = useContext(GameContext);
 
   const [mateList, setMateList] = useState([]);
@@ -61,15 +60,8 @@ const InGame = () => {
   useEffect(() => {
     if (challengeData) {
       setMateList(challengeData.mates.filter(mate => mate.userId !== myId));
-      getConnectionToken();
     } else return;
   }, [challengeData]);
-
-  useEffect(() => {
-    if (videoSession) {
-      console.log('세션 생김!!');
-    }
-  }, [videoSession]);
 
   // if (
   //   GAME_MODE[inGameMode] === 'waiting' &&

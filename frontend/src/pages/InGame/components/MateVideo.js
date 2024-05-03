@@ -4,15 +4,13 @@ import styled from 'styled-components';
 
 const MateVideo = ({ mateId, mateName }) => {
   const { mateStreams } = useContext(OpenViduContext);
-  const [name, setName] = useState(mateName);
   const mateVideoRef = useRef(null);
 
   useEffect(() => {
     if (mateStreams.length > 0) {
       const thisMate = mateStreams.find(
-        sub => sub.connection.data.userId === mateId,
+        mate => mate.stream.connection.data.userId === mateId,
       );
-      setName(thisMate.connection.data.userName);
 
       if (thisMate && mateVideoRef.current) {
         thisMate.addVideoElement(mateVideoRef.current);
@@ -20,7 +18,6 @@ const MateVideo = ({ mateId, mateName }) => {
     }
   }, [mateStreams, mateId]);
 
-  console.log('Mate Video: ', mateId, mateStreams, mateVideoRef.current);
   return (
     <Wrapper $mateOffLine={!mateVideoRef.current}>
       <VideoSessionArea>
@@ -32,7 +29,7 @@ const MateVideo = ({ mateId, mateName }) => {
         )}
       </VideoSessionArea>
 
-      <UserName>{name}</UserName>
+      <UserName>{mateName}</UserName>
     </Wrapper>
   );
 };
