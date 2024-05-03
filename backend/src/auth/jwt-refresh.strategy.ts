@@ -11,17 +11,16 @@ import { ConfigService } from "@nestjs/config";
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh-token') {
     constructor(
         private userService: UserService,
-        configService: ConfigService
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // 토큰 분석
             ignoreExpiration: true,
-            secretOrKey: process.env.REFRESH_TOKEN_SECRET_KEY,
+            secretOrKey: process.env.REFRESH_TOKEN_SECRET_KEY,  // 생성자에서 바로 접근
         });
     }
 
     async validate(req: UsersEntity, done: VerifiedCallback): Promise<any> {
-        console.log("secretOrKey .env: ", process.env.ACCESS_TOKEN_SECRET_KEY);
+        console.log("secretOrKey .env: ", process.env.REFRESH_TOKEN_SECRET_KEY);
         const user = await this.userService.getUserRefreshToken(req._id);
         return user;
     }
