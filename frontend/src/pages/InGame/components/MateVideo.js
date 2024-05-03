@@ -3,33 +3,36 @@ import { OpenViduContext } from '../../../contexts';
 import styled from 'styled-components';
 
 const MateVideo = ({ mateId, mateName }) => {
-  const { mateStreams } = useContext(OpenViduContext);
   const mateVideoRef = useRef(null);
+  const { mateStreams } = useContext(OpenViduContext);
+  const [thisMate, setThisMate] = useState(undefined);
+  const isMateOnline = thisMate?.stream.hasVideo;
 
   useEffect(() => {
     if (mateStreams.length > 0) {
       const thisMate = mateStreams.find(
-        mate => mate.stream.connection.data.userId === mateId,
+        mate => JSON.parse(mate.stream.connection.data).userId === `${mateId}`,
       );
-
-      if (thisMate && mateVideoRef.current) {
-        thisMate.addVideoElement(mateVideoRef.current);
-      }
+      setThisMate(thisMate);
     }
-  }, [mateStreams, mateId]);
+  }, [mateStreams]);
+
+  useEffect(() => {
+    if (isMateOnline) {
+      thisMate.addVideoElement(mateVideoRef.current);
+    }
+  }, [thisMate]);
 
   return (
-    <Wrapper $mateOffLine={!mateVideoRef.current}>
-      <VideoSessionArea>
-        <StatusIcon $isActive={mateVideoRef.current} />
-        {mateVideoRef.current ? (
-          <Video ref={mateVideoRef.current} autoPlay playsInline />
-        ) : (
-          <EmptyVideo>Zzz...</EmptyVideo>
-        )}
-      </VideoSessionArea>
+    <Wrapper $mateOffLine={!isMateOnline}>
+      <StatusIcon $isActive={isMateOnline} />
+      {isMateOnline ? (
+        <Video ref={mateVideoRef} autoPlay playsInline />
+      ) : (
+        <EmptyVideo>Zzz...</EmptyVideo>
+      )}
 
-      <UserName>{mateName}</UserName>
+      <UserName $isActive={isMateOnline}>{mateName}</UserName>
     </Wrapper>
   );
 };
@@ -37,6 +40,8 @@ const MateVideo = ({ mateId, mateName }) => {
 export default MateVideo;
 
 const Wrapper = styled.div`
+  position: relative;
+  display: flex;
   width: 100%;
   height: 15vh;
 
@@ -44,21 +49,16 @@ const Wrapper = styled.div`
   flex-direction: column;
   box-shadow: ${({ theme }) => theme.boxShadow.basic};
   background-color: ${({ $mateOffLine, theme }) =>
-    $mateOffLine ? theme.colors.lighter.light : 'none'};
+    $mateOffLine ? theme.colors.lighter.light : 'transparent'};
   border-radius: ${({ theme }) => theme.radius.basic};
-`;
-
-const VideoSessionArea = styled.div`
-  width: 100%;
-  height: 80%;
-  position: relative;
-  display: flex;
 `;
 
 const Video = styled.video`
   width: 100%;
   height: 100%;
   object-fit: cover;
+
+  border-radius: ${({ theme }) => theme.radius.basic};
 `;
 
 const StatusIcon = styled.div`
@@ -73,8 +73,16 @@ const StatusIcon = styled.div`
 `;
 
 const UserName = styled.span`
+  position: absolute;
+  bottom: 5px;
+
+  padding: 5px 10px;
+  border-radius: ${({ theme }) => theme.radius.basic};
   color: ${({ theme }) => theme.colors.system.black};
-  text-shadow: ${({ theme }) => theme.boxShadow.basic};
+  background-color: ${({ theme, $isActive }) =>
+    $isActive && theme.colors.system.white};
+  text-shadow: ${({ theme }) => theme.boxShadow.text};
+  font-weight: 800;
   margin-bottom: 8px;
 `;
 
