@@ -12,6 +12,7 @@ import { UserModule } from 'src/users/users.module';
 // import { jwtConstants } from './constants';
 import { JwtRefreshStrategy } from './jwt-refresh.strategy';
 import { JwtRefreshGuard } from './jwt-refresh.guard';
+import RedisCacheService from 'src/redis-cache/redis-cache.service';
 
 @Module({
   imports: [
@@ -28,6 +29,6 @@ import { JwtRefreshGuard } from './jwt-refresh.guard';
     })
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserService, JwtStrategy, JwtRefreshStrategy]
+  providers: [AuthService, UserService, JwtStrategy, JwtRefreshStrategy, RedisCacheService]
 })
 export class AuthModule { }

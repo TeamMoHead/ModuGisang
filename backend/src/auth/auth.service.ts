@@ -7,6 +7,7 @@ import { Payload } from './payload.interface';
 // import { refreshJwtConstants } from './constants';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ConfigService } from '@nestjs/config';
+import RedisCacheService from 'src/redis-cache/redis-cache.service';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,7 @@ export class AuthService {
         private userService: UserService,
         private jwtService: JwtService,
         private configService: ConfigService,
+        private redisService: RedisCacheService
     ) { }
 
     // accessToken 생성
@@ -70,6 +72,14 @@ export class AuthService {
         }
         const payload = { sub: userFind._id, id: userFind._id, username: userFind.userName };
         return this.jwtService.signAsync(payload);
-
+    }
+    async authNumcheck(email:string, data: string) {
+        console.log("Inservice data :"+data);
+        const serverNum = await this.redisService.get(email);
+        if (serverNum === data) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

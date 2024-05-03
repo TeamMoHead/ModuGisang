@@ -8,13 +8,27 @@ import { UserService } from 'src/users/users.service';
 // import { UsersEntity } from 'src/users/users.entity';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtRefreshGuard } from './jwt-refresh.guard';
+import RedisCacheService from 'src/redis-cache/redis-cache.service';
 
 @Controller('api/auth')
 export class AuthController {
     constructor(
         private authService: AuthService,
-        private userService: UserService
+        private userService: UserService,
     ) { }
+
+    @Post()
+    async authNumCheck(@Res() res: Response, @Body() data: any) {
+        console.log(data);
+        const result = await this.authService.authNumcheck(data.email, data.authNum);
+        console.log(result);
+        if (result) {
+            res.status(HttpStatus.OK).send('인증 성공');
+        } else {
+            res.status(HttpStatus.BAD_REQUEST).send('인증 실패');
+        }
+
+    }
 
     @HttpCode(HttpStatus.OK)
     @Post("login")
@@ -73,3 +87,7 @@ export class AuthController {
         return "Logout Done";
     }
 }
+
+
+
+
