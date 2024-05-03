@@ -16,9 +16,9 @@ const GAME_MODE = {
 
 // mission 당 소요 시간
 const GAME_MODE_DURATION = {
-  1: 10000,
-  2: 10000,
-  3: 10000,
+  1: 15000,
+  2: 15000,
+  3: 15000,
   4: 10000,
   5: 10000,
 };
@@ -27,7 +27,7 @@ const GameContextProvider = ({ children }) => {
   const { challengeData } = useContext(ChallengeContext);
   const [inGameMode, setInGameMode] = useState(() => {
     const savedMode = localStorage.getItem('inGameMode');
-    return savedMode ? JSON.parse(savedMode) : 0;
+    return savedMode ? localStorage.setItem('inGameMode', 0) : 0;
   });
 
   let nextMode = 1;

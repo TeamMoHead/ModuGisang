@@ -63,8 +63,8 @@ const Mission2 = () => {
     }
 
     return () => {
-      holisticRef.current = null;
       videoElement.removeEventListener('canplay', handleCanPlay);
+      holisticRef.current = null;
     };
   }, []);
 

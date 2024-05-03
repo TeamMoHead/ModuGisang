@@ -59,6 +59,7 @@ const fonts = {
 };
 
 const radius = {
+  light: '15px',
   basic: '20px',
   round: '40px',
 };
@@ -88,6 +89,7 @@ const flex = {
 
 const boxShadow = {
   basic: '0 2px 4px 0 rgba(0, 0, 0, 0.15)',
+  text: '0 2px 4px 0 rgba(255, 255, 255, 0.5)',
 };
 
 const theme = {
