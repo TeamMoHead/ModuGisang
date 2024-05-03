@@ -22,8 +22,7 @@ export class AuthController {
         const accessToken = await this.authService.validateUser(user);
         const refreshToken = await this.authService.generateRefreshToken(user);
         await this.userService.setCurrentRefreshToken(refreshToken, user.email);    //db에 저장
-        const userId = this.userService.findUser(user.email);
-
+        const userId = await this.userService.findUser(user.email);
         // res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: 900000, secure: true });
         // res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 900000, secure: true });
         // res.send({
@@ -34,7 +33,7 @@ export class AuthController {
         return {
             accessToken: accessToken,
             refreshToken: refreshToken,
-            userId: userId
+            userId: userId._id
         }
     }
 
