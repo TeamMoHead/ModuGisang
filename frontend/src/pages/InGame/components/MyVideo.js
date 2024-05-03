@@ -3,30 +3,13 @@ import { OpenViduContext } from '../../../contexts';
 import styled from 'styled-components';
 
 const MyVideo = () => {
-  const { myVideoRef, myStream, setMyStream } = useContext(OpenViduContext);
-
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-      setMyStream(stream);
-    } catch (error) {
-      console.error(error);
-      setMyStream(null);
-    }
-  };
+  const { myVideoRef, myStream } = useContext(OpenViduContext);
 
   useEffect(() => {
-    if (myVideoRef.current && myStream) {
-      myVideoRef.current.srcObject = myStream;
+    if (myVideoRef && myStream) {
+      myStream.addVideoElement(myVideoRef.current);
     }
-  }, [myStream]);
-
-  useEffect(() => {
-    startCamera();
-  }, []);
+  }, [myStream, myVideoRef]);
 
   return (
     <Wrapper>
@@ -49,8 +32,4 @@ const Video = styled.video`
   width: 100vw;
   height: 100vh;
   object-fit: cover;
-
-  will-change: transform;
-  transform: rotateY(180deg) translateZ(0);
-  -webkit-transform: rotateY(180deg);
 `;
