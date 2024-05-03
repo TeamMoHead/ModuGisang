@@ -4,18 +4,18 @@ import { Payload } from "./payload.interface";
 import { AuthService } from "./auth.service";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-// import { jwtConstants } from "./constants";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy,'jwt'){
     
     constructor(
         private authService:AuthService,
+        configService: ConfigService  // `private` 키워드를 제거하여 이 인자가 프로퍼티로 저장되지 않도록 함.
         ){
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // 토큰 분석
             ignoreExpiration: true,
-            secretOrKey: process.env.ACCESS_TOKEN_SECRET_KEY,
+            secretOrKey: process.env.ACCESS_TOKEN_SECRET_KEY,  // 생성자에서 바로 접근
         });
     }
     

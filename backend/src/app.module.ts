@@ -59,13 +59,13 @@ import { JwtModule } from '@nestjs/jwt';
         // // SSL 연결을 강제 설정
         //   ssl: { rejectUnauthorized: false },
         // },
-        ssl: configService.get<string>('NODE_ENV') === 'production' ? {
+        ssl: process.env.NODE_ENV === 'development' ? undefined :{
           ca: fs.readFileSync("././global-bundle.pem")
-        } : undefined,
+        },
     
-        extra: configService.get<string>('NODE_ENV') === 'production' ? {
+        extra: process.env.NODE_ENV === 'development' ? undefined: {
           ssl: { rejectUnauthorized: false },
-        } : undefined,
+        },
       }),
       inject: [ConfigService],
     }),
