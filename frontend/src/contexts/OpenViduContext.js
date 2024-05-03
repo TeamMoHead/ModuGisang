@@ -16,7 +16,6 @@ const OpenViduContextProvider = ({ children }) => {
   const { challengeData } = useContext(ChallengeContext);
   const { userId, userName } = userInfo;
 
-  // ------ openvidu 관련 state --------
   const [OVInstance, setOVInstance] = useState(null); // OpenVidu 객체 [openvidu-browser
   const [videoSession, setVideoSession] = useState(null);
   const [connectionToken, setConnectionToken] = useState('');
@@ -25,7 +24,6 @@ const OpenViduContextProvider = ({ children }) => {
   const mateVideoRefs = useRef({});
   const [mateStreams, setMateStreams] = useState([]);
   const [micOn, setMicOn] = useState(false);
-  // -------------------------------------
 
   const getConnectionToken = async () => {
     const userData = {
