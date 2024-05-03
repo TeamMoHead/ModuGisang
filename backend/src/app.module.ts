@@ -9,8 +9,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
 import { RedisCacheService } from './redis-cache/redis-cache.service';
 import { RedisCacheController } from './redis-cache/redis-cache.controller';
+import { EmailController } from './email/email.controller';
+import { EmailService } from './email/email.service';
+import { UserModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 import * as redisStore from 'cache-manager-ioredis';
 import * as fs from 'fs';
+import { UsersEntity } from './users/users.entity';
+import { AuthService } from './auth/auth.service';
+import { AuthController } from './auth/auth.controller';
+import { JwtModule } from '@nestjs/jwt';
 
 
 @Module({
@@ -42,22 +50,32 @@ import * as fs from 'fs';
         password: configService.get<string>('POSTGRESQL_DATABASE_PASSWORD'),
     
         synchronize: true,//테이블을 자동으로 생성해주는 옵션 , 실제 환경에서는 사용하지 않는 것이 좋다.
-        entities: [], // 여기에 엔티티 클래스를 추가합니다. 
-        ssl: {
-        // 다운로드한 인증서 파일 경로 추가
+        entities: [UsersEntity], // 여기에 엔티티 클래스를 추가합니다. 
+        // ssl: {
+        // // 다운로드한 인증서 파일 경로 추가
+        //   ca: fs.readFileSync("././global-bundle.pem")
+        // },
+        // extra: {
+        // // SSL 연결을 강제 설정
+        //   ssl: { rejectUnauthorized: false },
+        // },
+        ssl: configService.get<string>('NODE_ENV') === 'production' ? {
           ca: fs.readFileSync("././global-bundle.pem")
-        },
-        extra: {
-        // SSL 연결을 강제 설정
+        } : undefined,
+    
+        extra: configService.get<string>('NODE_ENV') === 'production' ? {
           ssl: { rejectUnauthorized: false },
-        },
+        } : undefined,
       }),
       inject: [ConfigService],
     }),
 
+    UserModule,
+    AuthModule,
+    JwtModule
   ],
-  controllers: [AppController, RedisCacheController, OpenviduController],
-  providers: [AppService, RedisCacheService, OpenviduService],
+  controllers: [AppController, RedisCacheController, OpenviduController, EmailController, AuthController],
+  providers: [AppService, RedisCacheService, OpenviduService, EmailService, AuthService],
 })
 export class AppModule {
 }
