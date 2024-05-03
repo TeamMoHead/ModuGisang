@@ -34,10 +34,10 @@ const Main = () => {
   const { accessToken } = useContext(AccountContext);
   const { userInfo, setUserInfo, fetchUserData, userId } =
     useContext(UserContext);
-  const { userName, hasChallenge, challengeId } = userInfo;
+  const { userName, challengeId: hasChallenge } = userInfo;
   const { challengeData, setChallengeData, fetchChallengeData } =
     useContext(ChallengeContext);
-  const { wakeTime } = challengeData;
+  const { challengeId, wakeTime } = challengeData;
 
   const greetings = GREETINGS[0] + userName + GREETINGS[1];
 
@@ -64,7 +64,7 @@ const Main = () => {
         alert('챌린지 참여 시간이 지났습니다.');
         return;
       }
-      navigate(`/startMorning/${challengeId}`);
+      navigate(`/startMorning/${challengeId}/waiting`);
     },
   };
 
@@ -173,7 +173,7 @@ const Main = () => {
             btnName={userId}
             onClickHandler={() => {
               setUserInfo(prev => ({ ...prev, userId, userName }));
-              navigate(`/startMorning/${challengeId}`);
+              navigate(`/startMorning/${challengeId}/waiting`);
             }}
           />
         ))}
@@ -205,5 +205,5 @@ const Greetings = styled.h6`
 const CardsWrapper = styled.div`
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 `;

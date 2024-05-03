@@ -11,8 +11,7 @@ const UserContextProvider = ({ children }) => {
     userName: '',
     medals: {},
     streakDays: 0,
-    hasChallenge: false,
-    challengeId: '',
+    challengeId: '55',
     invitationCounts: 0,
     affirmation: '',
   });

@@ -1,46 +1,38 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { GameContext } from '../../../contexts/GameContext';
+import React, { useEffect, useState, useContext, useRef } from 'react';
+import { OpenViduContext } from '../../../contexts';
 import styled from 'styled-components';
 
-const MateVideo = ({ mateId }) => {
-  const { mateVideoRefs, mateStreams } = useContext(GameContext);
-  const [mateStream, setMateStream] = useState(null);
-  const [name, setName] = useState('');
-  const [isActive, setIsActive] = useState(false);
-  const ref = mateVideoRefs.current[mateId];
+const MateVideo = ({ mateId, mateName }) => {
+  const mateVideoRef = useRef(null);
+  const { mateStreams } = useContext(OpenViduContext);
+  const [thisMate, setThisMate] = useState(undefined);
+  const isMateOnline = thisMate?.stream.hasVideo;
 
   useEffect(() => {
     if (mateStreams.length > 0) {
-      const mateStream = mateStreams.streams.find(
-        stream => stream.connection.data.userId === mateId,
+      const thisMate = mateStreams.find(
+        mate => JSON.parse(mate.stream.connection.data).userId === `${mateId}`,
       );
-
-      if (mateStream) {
-        setMateStream(mateStream);
-        setName(mateStream.connection.data.userName);
-        setIsActive(true);
-      } else {
-        setMateStream(null);
-        setName('');
-        setIsActive(false);
-      }
+      setThisMate(thisMate);
     }
   }, [mateStreams]);
 
   useEffect(() => {
-    if (ref.current && mateStream) {
-      ref.current.srcObject = mateStream;
+    if (isMateOnline) {
+      thisMate.addVideoElement(mateVideoRef.current);
     }
-  }, [mateStream, ref]);
+  }, [thisMate]);
 
   return (
-    <Wrapper>
-      <VideoSessionArea>
-        <Video ref={ref} autoPlay playsInline />
-        <StatusIcon isActive={isActive} />
-      </VideoSessionArea>
+    <Wrapper $mateOffLine={!isMateOnline}>
+      <StatusIcon $isActive={isMateOnline} />
+      {isMateOnline ? (
+        <Video ref={mateVideoRef} autoPlay playsInline />
+      ) : (
+        <EmptyVideo>Zzz...</EmptyVideo>
+      )}
 
-      <UserName>{name}</UserName>
+      <UserName $isActive={!isMateOnline}>{mateName}</UserName>
     </Wrapper>
   );
 };
@@ -48,38 +40,61 @@ const MateVideo = ({ mateId }) => {
 export default MateVideo;
 
 const Wrapper = styled.div`
+  position: relative;
+
+  display: flex;
+  width: 100%;
   height: 15vh;
+  margin-bottom: 40px;
 
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
   box-shadow: ${({ theme }) => theme.boxShadow.basic};
-`;
-
-const VideoSessionArea = styled.div`
-  width: 100%;
-  height: 80%;
-  position: relative;
-  display: flex;
+  background-color: ${({ $mateOffLine, theme }) =>
+    $mateOffLine ? theme.colors.lighter.light : 'transparent'};
+  border-radius: ${({ theme }) => theme.radius.basic};
 `;
 
 const Video = styled.video`
   width: 100%;
   height: 100%;
   object-fit: cover;
+
+  border-radius: ${({ theme }) => theme.radius.basic};
 `;
 
 const StatusIcon = styled.div`
   position: absolute;
   top: 10px;
-  right: 10px;
-  width: 10px;
-  height: 10px;
+  right: 15px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: ${({ isActive }) => (isActive ? 'green' : 'red')};
+  background: ${({ $isActive, theme }) =>
+    $isActive ? theme.colors.system.green : theme.colors.system.red};
 `;
 
 const UserName = styled.span`
-  color: ${({ theme }) => theme.colors.black};
-  text-shadow: ${({ theme }) => theme.boxShadow.basic};
+  position: absolute;
+  width: 98%;
+  bottom: -50px;
+
+  padding: 5px 10px;
+  border-radius: ${({ theme }) => theme.radius.light};
+  color: ${({ theme }) => theme.colors.system.black};
+  background-color: ${({ theme }) => theme.colors.lighter.light};
+
+  text-shadow: ${({ theme }) => theme.boxShadow.text};
+  text-align: center;
+  font-weight: 800;
   margin-bottom: 8px;
+`;
+
+const EmptyVideo = styled.div`
+  width: 100%;
+  height: 100%;
+  ${({ theme }) => theme.flex.center};
+  color: ${({ theme }) => theme.colors.text.gray};
+  font-size: 20px;
+  margin: auto;
 `;

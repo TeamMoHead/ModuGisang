@@ -109,10 +109,10 @@ const Title = styled.h2`
 
 const BackBtnStyle = {
   size: 24,
-  color: 'purple',
+  hoverColor: 'purple',
 };
 
 const SettingsBtnStyle = {
   size: 24,
-  color: 'purple',
+  hoverColor: 'purple',
 };

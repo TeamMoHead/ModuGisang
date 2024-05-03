@@ -4,6 +4,7 @@
 .LSOverride
 
 # npm
+*/build
 */node_modules
 
 # settings
@@ -12,3 +13,13 @@
 # environment
 */.env
 */.env.local
+*/.env.*
+
+# build
+/backend/dist
+
+#key
+*.pem
+
+#test
+*.spec.ts

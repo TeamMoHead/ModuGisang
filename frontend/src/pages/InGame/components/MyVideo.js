@@ -1,32 +1,15 @@
 import React, { useContext, useEffect } from 'react';
-import { GameContext } from '../../../contexts/GameContext';
+import { OpenViduContext } from '../../../contexts';
 import styled from 'styled-components';
 
 const MyVideo = () => {
-  const { myVideoRef, myStream, setMyStream } = useContext(GameContext);
-
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-      setMyStream(stream);
-    } catch (error) {
-      console.error(error);
-      setMyStream(null);
-    }
-  };
+  const { myVideoRef, myStream } = useContext(OpenViduContext);
 
   useEffect(() => {
-    if (myVideoRef.current && myStream) {
-      myVideoRef.current.srcObject = myStream;
+    if (myVideoRef && myStream) {
+      myStream.addVideoElement(myVideoRef.current);
     }
-  }, [myStream]);
-
-  useEffect(() => {
-    startCamera();
-  }, []);
+  }, [myStream, myVideoRef]);
 
   return (
     <Wrapper>

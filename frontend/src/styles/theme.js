@@ -5,13 +5,13 @@ const colors = {
     light: '#F0F3FF',
     purple: '#836FFF',
     emerald: '#15F5BA',
-    dark: '#211951',
+    dark: '#202954',
   },
   lighter: {
-    light: 'rgb(240, 243, 255, 0.8)',
+    light: 'rgb(240, 243, 255, 0.7)',
     purple: 'rgb(131, 111, 255, 0.8)',
     emerald: 'rgb(21, 245, 186, 0.8)',
-    dark: 'rgb(33, 25, 81, 0.8)',
+    dark: 'rgb(36, 41, 78, 0.8)',
   },
   neutral: {
     light: '#f5f5f5',
@@ -24,9 +24,9 @@ const colors = {
     lightGray: '#bdbdbd',
   },
   system: {
-    green: '#61FB78',
-    red: '#FF3BA9',
-    yellow: '#FCCB3E',
+    green: '#00FF0F',
+    red: '#FF008F',
+    yellow: '#FFC500',
     white: '#ffffff',
     black: '#000000',
   },
@@ -38,7 +38,7 @@ const fonts = {
     color: ${({ theme }) => theme.colors.primary.dark};
   `,
   button: css`
-    font: 700 18px 'Jua';
+    font: 500 20px 'Jua';
   `,
   content: css`
     font: 400 16px 'Noto Sans KR';
@@ -59,6 +59,7 @@ const fonts = {
 };
 
 const radius = {
+  light: '15px',
   basic: '20px',
   round: '40px',
 };
@@ -88,6 +89,7 @@ const flex = {
 
 const boxShadow = {
   basic: '0 2px 4px 0 rgba(0, 0, 0, 0.15)',
+  text: '0 2px 4px 0 rgba(255, 255, 255, 0.5)',
 };
 
 const theme = {

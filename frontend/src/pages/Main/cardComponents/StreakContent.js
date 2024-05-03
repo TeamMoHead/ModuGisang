@@ -44,6 +44,10 @@ const StreakContent = () => {
   return (
     <Wrapper>
       <LevelIcon src={STREAK_LEVEL_ICON[level]} />
+      <RightArea>
+        <SmallLetter>미라클 모닝</SmallLetter>
+        <BigLetter>12일 차 </BigLetter>
+      </RightArea>
     </Wrapper>
   );
 };
@@ -51,10 +55,24 @@ const StreakContent = () => {
 export default StreakContent;
 
 const Wrapper = styled.div`
-  ${({ theme }) => theme.flex.left}
+  ${({ theme }) => theme.flex.between}
 `;
 
 const LevelIcon = styled.img`
   width: 80px;
   height: 80px;
+`;
+
+const RightArea = styled.div`
+  ${({ theme }) => theme.flex.left}
+  flex-direction: column;
+`;
+
+const BigLetter = styled.span`
+  font: 700 24px 'Jua';
+  color: ${({ theme }) => theme.colors.primary.emerald};
+`;
+
+const SmallLetter = styled.span`
+  ${({ theme }) => theme.fonts.content}
 `;

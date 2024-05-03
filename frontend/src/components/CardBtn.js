@@ -1,6 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
+const btnStyleSample = {
+  bgColor: 'purple',
+  color: 'white',
+};
+
 const CardBtn = ({ content, onClickHandler, btnStyle }) => {
   const isClickable = !!onClickHandler;
   return (

@@ -90,14 +90,9 @@ const acceptInvitation = async ({ accessToken, challengeId, userId }) => {
 };
 
 const getConnectionToken = async ({ userData }) => {
-  const { challengeId, userId, userName } = userData;
-
-  console.log('get token api: ', userData);
-
-  return axios.post(
-    `http://43.203.123.240:5001/api/sessions/${challengeId}/connections`,
+  return axios.post(`https://api.modugisang.site/api/startSession`, {
     userData,
-  );
+  });
 };
 
 export const challengeServices = {

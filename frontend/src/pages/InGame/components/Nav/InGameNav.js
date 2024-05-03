@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GameContext } from '../../../../contexts/GameContext';
+import { GameContext, OpenViduContext } from '../../../../contexts';
 import { Icon } from '../../../../components';
 import { GameRound, MissionTitle, MissionInfo, Timer } from './';
 import styled from 'styled-components';
@@ -17,11 +17,19 @@ const GAME_MODE = {
 
 const InGameNav = () => {
   const navigate = useNavigate();
-  const { inGameMode, micOn, turnMicOnOff } = useContext(GameContext);
-
+  const { inGameMode } = useContext(GameContext);
+  const { micOn, turnMicOnOff, myVideoRef, myStream, setMyStream } =
+    useContext(OpenViduContext);
   const goToMain = () => {
     navigate('/main');
     localStorage.removeItem('inGameMode');
+    if (myVideoRef.current) {
+      if (myStream instanceof MediaStream) {
+        myStream.getTracks().forEach(track => track.stop());
+        myVideoRef.current.srcObject = null; // 비디오 요소에서 스트림 연결을 해제합니다.
+        setMyStream(null);
+      }
+    }
   };
 
   useEffect(() => {}, [inGameMode]);
@@ -78,17 +86,17 @@ const Wrapper = styled.nav`
 
 const BackBtnStyle = {
   size: 24,
-  color: 'purple',
+  hoverColor: 'purple',
 };
 
 const micOnStyle = {
   size: 24,
-  color: 'purple',
+  hoverColor: 'purple',
 };
 
 const micOffStyle = {
   size: 21,
-  color: 'purple',
+  hoverColor: 'purple',
 };
 
 const BtnArea = styled.div`
