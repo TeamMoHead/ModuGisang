@@ -4,12 +4,14 @@ import { EmailService } from './email.service';
 import { retry } from 'rxjs';
 import { AuthService } from 'src/auth/auth.service';
 import { UserService } from 'src/users/users.service';
+import RedisCacheService from 'src/redis-cache/redis-cache.service';
 
 @Controller('/api/email')
 export class EmailController {
     constructor(
         private readonly emailService: EmailService,
-        private userService: UserService
+        private userService: UserService,
+        private redisService: RedisCacheService
     ) { }
 
     @Get('check')
@@ -22,6 +24,7 @@ export class EmailController {
         }
         else {
             const random = await this.emailService.sendMail(email);
+            this.redisService.set(email, random, 180); // 캐시 유지 시간 3분
             res.status(HttpStatus.OK).send("인증번호 전송완료")/*.send(random);*/
         }
         //return random;
