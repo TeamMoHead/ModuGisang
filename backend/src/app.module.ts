@@ -72,10 +72,9 @@ import { JwtModule } from '@nestjs/jwt';
 
     UserModule,
     AuthModule,
-    JwtModule
   ],
-  controllers: [AppController, RedisCacheController, OpenviduController, EmailController, AuthController],
-  providers: [AppService, RedisCacheService, OpenviduService, EmailService, AuthService],
+  controllers: [AppController, RedisCacheController, OpenviduController, EmailController],
+  providers: [AppService, RedisCacheService, OpenviduService, EmailService],
 })
 export class AppModule {
 }

@@ -9,7 +9,6 @@ import { UserService } from 'src/users/users.service';
 export class EmailController {
     constructor(
         private readonly emailService: EmailService,
-        private authService: AuthService,
         private userService: UserService
     ) { }
 
@@ -23,7 +22,7 @@ export class EmailController {
         }
         else {
             const random = await this.emailService.sendMail(email);
-            res.status(HttpStatus.OK).send(random);
+            res.status(HttpStatus.OK).send("인증번호 전송완료")/*.send(random);*/
         }
         //return random;
     }
