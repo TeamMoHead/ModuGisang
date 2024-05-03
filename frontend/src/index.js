@@ -4,6 +4,7 @@ import Router from './Router';
 
 import { UserContextProvider } from './contexts/UserContext';
 import { AccountContextProvider } from './contexts';
+import { ChallengeContextProvider } from './contexts/ChallengeContext';
 
 import GlobalStyle from './styles/GlobalStyle';
 import theme from './styles/theme';
@@ -19,7 +20,9 @@ root.render(
     <ThemeProvider theme={theme}>
       <AccountContextProvider>
         <UserContextProvider>
-          <Router />
+          <ChallengeContextProvider>
+            <Router />
+          </ChallengeContextProvider>
         </UserContextProvider>
       </AccountContextProvider>
     </ThemeProvider>

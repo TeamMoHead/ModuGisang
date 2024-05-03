@@ -1,9 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AccountContext } from '../../contexts/AccountContexts';
+import { UserContext } from '../../contexts/UserContext';
+import { ChallengeContext } from '../../contexts/ChallengeContext';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import useFetch from '../../hooks/useFetch';
-import { NavBar } from '../../components';
+import { NavBar, SimpleBtn } from '../../components';
 import * as S from '../../styles/common';
 
 const Settings = () => {
@@ -20,7 +22,7 @@ const Settings = () => {
       const response = await fetchData(() => handleCheckAuth());
       const {
         isLoading: isAuthLoading,
-        data: authData,
+
         error: authError,
       } = response;
       if (!isAuthLoading) {
@@ -41,11 +43,7 @@ const Settings = () => {
     try {
       setIsLogoutLoading(true);
       const response = await fetchData(() => logOut());
-      const {
-        isLoading: isLogoutLoading,
-        data: logoutData,
-        error: logoutError,
-      } = response;
+      const { isLoading: isLogoutLoading, error: logoutError } = response;
       if (!isLogoutLoading) {
         alert('로그아웃 되었습니다.');
         navigate('/auth');
@@ -73,7 +71,11 @@ const Settings = () => {
 
       <S.PageWrapper>
         Settings
-        <button onClick={handleLogOut}>Log Out</button>
+        <SimpleBtn
+          onClickHandler={handleLogOut}
+          btnName="로그아웃"
+          disabled={isLogoutLoading}
+        />
       </S.PageWrapper>
     </>
   );
