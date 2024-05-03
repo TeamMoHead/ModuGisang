@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useContext } from 'react';
-import { GameContext } from '../../../contexts/GameContext';
+import { GameContext, OpenViduContext } from '../../../contexts';
 import { Holistic } from '@mediapipe/holistic';
 // import * as face from '@mediapipe/face_mesh';
 import { estimateFace } from '../MissionEstimators/FaceEstimator';
 import styled from 'styled-components';
 
 const Mission2 = () => {
-  const { myVideoRef, inGameMode } = useContext(GameContext);
+  const { inGameMode } = useContext(GameContext);
+  const { myVideoRef } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
   const holisticRef = useRef(null);
 

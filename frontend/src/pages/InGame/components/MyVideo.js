@@ -1,9 +1,9 @@
 import React, { useContext, useEffect } from 'react';
-import { GameContext } from '../../../contexts/GameContext';
+import { OpenViduContext } from '../../../contexts';
 import styled from 'styled-components';
 
 const MyVideo = () => {
-  const { myVideoRef, myStream, setMyStream } = useContext(GameContext);
+  const { myVideoRef, myStream, setMyStream } = useContext(OpenViduContext);
 
   const startCamera = async () => {
     try {

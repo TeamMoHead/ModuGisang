@@ -5,7 +5,7 @@ import {
   faAnglesLeft,
   faHome,
   faUser,
-  faUserXmark,
+  faSignOutAlt,
   faUserCheck,
   faTrashCan,
   faSadTear,
@@ -18,8 +18,8 @@ import {
 const iconList = {
   home: faHome,
   back: faAnglesLeft,
-  signin: faUserCheck,
-  signout: faUserXmark,
+  login: faUserCheck,
+  logout: faSignOutAlt,
   user: faUser,
   trash: faTrashCan,
   sadFace: faSadTear,
@@ -27,6 +27,13 @@ const iconList = {
   settings: faGear,
   micOn: faMicrophone,
   micOff: faMicrophoneSlash,
+};
+
+const iconStyleSample = {
+  size: 24,
+  color: 'purple',
+  hoverColor: 'white',
+  disable: false,
 };
 
 const Icon = ({ icon, iconStyle, onClickHandler }) => {
@@ -55,7 +62,10 @@ const IconWrapper = styled.div`
   width: auto;
   padding: 5px;
 
-  color: ${({ theme }) => theme.colors.text.gray};
+  color: ${({ $iconStyle, theme }) =>
+    $iconStyle.color
+      ? theme.colors.primary[$iconStyle.color]
+      : theme.colors.text.gray};
   opacity: 1;
 
   font-size: ${({ $iconStyle }) =>
@@ -65,9 +75,9 @@ const IconWrapper = styled.div`
 
   &:hover {
     color: ${({ theme, $iconStyle }) =>
-      $iconStyle.color
-        ? theme.colors.primary[$iconStyle.color]
-        : theme.colors.secondary.main};
+      $iconStyle.hoverColor
+        ? theme.colors.primary[$iconStyle.hoverColor]
+        : theme.colors.primary.emerald};
   }
 
   ${({ $iconStyle }) =>

@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { AccountContext } from '../../contexts/AccountContexts';
 import { useNavigate } from 'react-router-dom';
+import { AccountContext } from '../../contexts/AccountContexts';
 import useAuth from '../../hooks/useAuth';
 import useFetch from '../../hooks/useFetch';
-import { NavBar } from '../../components';
+import { NavBar, Icon, SimpleBtn, CardBtn } from '../../components';
 import * as S from '../../styles/common';
+import styled from 'styled-components';
 
 const Settings = () => {
   const [isAuthLoading, setIsAuthLoading] = useState(true);
@@ -73,10 +74,34 @@ const Settings = () => {
 
       <S.PageWrapper>
         Settings
-        <button onClick={handleLogOut}>Log Out</button>
+        <CardBtn
+          content={
+            <LogoutWrapper>
+              <Text>LogOut</Text>
+
+              <Icon
+                icon="logout"
+                iconStyle={{ size: 24, color: 'white', disable: true }}
+              />
+            </LogoutWrapper>
+          }
+          btnStyle={{ bgColor: 'purple', color: 'white' }}
+          onClickHandler={handleLogOut}
+        />
       </S.PageWrapper>
     </>
   );
 };
 
 export default Settings;
+
+const LogoutWrapper = styled.div`
+  ${({ theme }) => theme.flex.center};
+  font-weight: 500;
+`;
+
+const Text = styled.div`
+  margin-right: 10px;
+  ${({ theme }) => theme.fonts.button};
+  color: ${({ theme }) => theme.colors.system.white};
+`;
