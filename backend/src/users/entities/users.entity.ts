@@ -24,7 +24,7 @@ export class Users {
 	  this.password = await argon2.hash(this.password);
 	}
 
-  @Column({ type:'text' })
+  @Column({ length: 300 })
   affirmation: string;
 
   @Column({ length: 255 })
