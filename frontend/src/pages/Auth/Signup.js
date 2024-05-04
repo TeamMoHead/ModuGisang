@@ -21,7 +21,6 @@ const Signup = () => {
     useAuth();
 
   const handleEmailChange = e => {
-    console.log('email changed: ', e.target.value);
     setEmail(e.target.value);
     setIsEmailChecked(false);
   };
@@ -35,7 +34,6 @@ const Signup = () => {
   };
 
   const handleVerifyCodeChange = e => {
-    console.log('verify code changed: ', e.target.value);
     setVerifyCode(e.target.value);
   };
 

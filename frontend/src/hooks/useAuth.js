@@ -23,10 +23,9 @@ const useAuth = () => {
         accseeToken: accessToken,
         refreshToken: refreshToken,
       });
-      console.log(response);
       if (response.status === 201) {
-        setAccessToken(response.data.accessToken);
-        setUserId(response.data.userId);
+        setAccessToken(response.data.data.accessToken);
+        setUserId(response.data.data.userId);
         return true;
       } else {
         console.error('Failed to refresh access token', response.status);

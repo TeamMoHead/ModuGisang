@@ -38,7 +38,6 @@ const Auth = () => {
         status: logoutStatus,
         statusText: logoutStatusText,
       } = response;
-      console.log(response);
       if (logoutStatus === 200) {
         alert('로그아웃 되었습니다.');
         navigate('/auth');
