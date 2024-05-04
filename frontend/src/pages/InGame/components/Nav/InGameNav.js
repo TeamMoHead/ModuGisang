@@ -20,6 +20,7 @@ const InGameNav = () => {
   const { inGameMode } = useContext(GameContext);
   const { micOn, turnMicOnOff, myVideoRef, myStream, setMyStream } =
     useContext(OpenViduContext);
+
   const goToMain = () => {
     navigate('/main');
     localStorage.removeItem('inGameMode');
@@ -32,7 +33,9 @@ const InGameNav = () => {
     }
   };
 
-  useEffect(() => {}, [inGameMode]);
+  useEffect(() => {
+    console.log('네비게이터의 게임모드:  ', GAME_MODE[inGameMode]);
+  }, [inGameMode]);
 
   return (
     <Wrapper>

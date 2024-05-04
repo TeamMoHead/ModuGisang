@@ -1,38 +1,60 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
-import { OpenViduContext } from '../../../contexts';
+import { GameContext, OpenViduContext } from '../../../contexts';
 import styled from 'styled-components';
 
 const MateVideo = ({ mateId, mateName }) => {
   const mateVideoRef = useRef(null);
   const { mateStreams } = useContext(OpenViduContext);
+  const { matesMissionStatus } = useContext(GameContext);
   const [thisMate, setThisMate] = useState(undefined);
-  const isMateOnline = thisMate?.stream.hasVideo;
+  const [mateStatus, setMateStatus] = useState({
+    online: false,
+    missionCompleted: false,
+  });
 
   useEffect(() => {
     if (mateStreams.length > 0) {
       const thisMate = mateStreams.find(
         mate => JSON.parse(mate.stream.connection.data).userId === `${mateId}`,
       );
-      setThisMate(thisMate);
+      if (thisMate) {
+        setThisMate(thisMate);
+        setMateStatus(prev => ({ ...prev, online: thisMate?.stream.hasVideo }));
+      } else {
+        setThisMate(null);
+        setMateStatus(prev => ({ ...prev, online: false }));
+      }
+    } else {
+      setThisMate(null);
+      setMateStatus(prev => ({ ...prev, online: false }));
     }
   }, [mateStreams]);
 
   useEffect(() => {
-    if (isMateOnline) {
+    if (mateStatus.online) {
       thisMate.addVideoElement(mateVideoRef.current);
     }
   }, [thisMate]);
 
+  useEffect(() => {
+    if (matesMissionStatus[mateId]) {
+      setMateStatus(prev => ({
+        ...prev,
+        missionCompleted: matesMissionStatus[mateId].missionCompleted,
+      }));
+    }
+  }, [matesMissionStatus]);
+
   return (
-    <Wrapper $mateOffLine={!isMateOnline}>
-      <StatusIcon $isActive={isMateOnline} />
-      {isMateOnline ? (
+    <Wrapper $mateOnLine={mateStatus.online}>
+      <StatusIcon $isCompleted={mateStatus.missionCompleted} />
+      {mateStatus.online ? (
         <Video ref={mateVideoRef} autoPlay playsInline />
       ) : (
         <EmptyVideo>Zzz...</EmptyVideo>
       )}
 
-      <UserName $isActive={!isMateOnline}>{mateName}</UserName>
+      <UserName $isActive={!mateStatus.online}>{mateName}</UserName>
     </Wrapper>
   );
 };
@@ -50,8 +72,8 @@ const Wrapper = styled.div`
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
   box-shadow: ${({ theme }) => theme.boxShadow.basic};
-  background-color: ${({ $mateOffLine, theme }) =>
-    $mateOffLine ? theme.colors.lighter.light : 'transparent'};
+  background-color: ${({ $mateOnLine, theme }) =>
+    $mateOnLine ? 'transparent' : theme.colors.lighter.light};
   border-radius: ${({ theme }) => theme.radius.basic};
 `;
 
@@ -70,8 +92,8 @@ const StatusIcon = styled.div`
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: ${({ $isActive, theme }) =>
-    $isActive ? theme.colors.system.green : theme.colors.system.red};
+  background: ${({ $isCompleted, theme }) =>
+    $isCompleted ? theme.colors.system.green : theme.colors.system.red};
 `;
 
 const UserName = styled.span`

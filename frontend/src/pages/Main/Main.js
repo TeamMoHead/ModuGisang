@@ -58,7 +58,7 @@ const Main = () => {
         alert('챌린지 참여 시간이 지났습니다.');
         return;
       }
-      navigate(`/startMorning/${challengeId}/waiting`);
+      navigate(`/startMorning/${challengeId}`);
     },
   };
 
@@ -102,7 +102,7 @@ const Main = () => {
             btnName={userId}
             onClickHandler={() => {
               setUserInfo(prev => ({ ...prev, userId, userName }));
-              navigate(`/startMorning/${challengeId}/waiting`);
+              navigate(`/startMorning/${challengeId}`);
             }}
           />
         ))}

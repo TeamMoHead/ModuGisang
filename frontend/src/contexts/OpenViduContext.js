@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useContext,
 } from 'react';
-import { UserContext, ChallengeContext } from './';
+import { UserContext, ChallengeContext, GameContext } from './';
 import { challengeServices } from '../apis';
 import { OpenVidu } from 'openvidu-browser';
 
@@ -14,6 +14,7 @@ const OpenViduContext = createContext();
 const OpenViduContextProvider = ({ children }) => {
   const { userInfo } = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
+  const { myMissionStatus, setMatesMissionStatus } = useContext(GameContext);
   const { userId, userName } = userInfo;
 
   const [OVInstance, setOVInstance] = useState(null); // OpenVidu 객체 [openvidu-browser
@@ -34,7 +35,6 @@ const OpenViduContextProvider = ({ children }) => {
 
     try {
       const response = await challengeServices.getConnectionToken({ userData });
-      console.log('====Get openVidu token response: ', response);
       setConnectionToken(response.data.token);
     } catch (error) {
       console.error(error);
@@ -55,6 +55,25 @@ const OpenViduContextProvider = ({ children }) => {
     setVideoSession(null);
     setMateStreams([]);
     setMyStream(null);
+  };
+
+  const sendMissionStatus = async () => {
+    try {
+      videoSession
+        .signal({
+          data: JSON.stringify({ userId, missionCompleted: myMissionStatus }),
+          to: [],
+          type: 'missionStatus',
+        })
+        .then(() => {
+          console.log('this is test!!');
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   useEffect(() => {
@@ -91,11 +110,21 @@ const OpenViduContextProvider = ({ children }) => {
       console.warn(exception);
     });
 
-    videoSession.on('signal:test', event => {
-      console.log('---Signal Test:: ', event);
+    videoSession.on('signal:leave', event => {
+      console.log('---Signal Leave Test:: ', event);
       if (event.data === userId.userId) {
         leaveSession();
       }
+    });
+
+    videoSession.on('signal:missionStatus', event => {
+      console.log('---Signal MISSION STATUS----> ', event.type);
+      console.log('OPEN VIDU MMMission SSStatus: ', event.data);
+      const data = JSON.parse(event.data);
+      setMatesMissionStatus(prev => ({
+        ...prev,
+        [data.userId]: { missionCompleted: data.missionCompleted },
+      }));
     });
 
     const initPublisher = async () => {
@@ -104,7 +133,7 @@ const OpenViduContextProvider = ({ children }) => {
         videoSource: undefined,
         publishAudio: true,
         publishVideo: true,
-        resolution: '640x480',
+        resolution: '480x360',
         frameRate: 20,
         mirror: true,
       });
@@ -134,6 +163,12 @@ const OpenViduContextProvider = ({ children }) => {
     };
   }, [videoSession]);
 
+  useEffect(() => {
+    if (videoSession?.connection) {
+      sendMissionStatus();
+    }
+  }, [videoSession, myMissionStatus]);
+
   return (
     <OpenViduContext.Provider
       value={{
@@ -146,6 +181,7 @@ const OpenViduContextProvider = ({ children }) => {
         setMyStream,
         mateVideoRefs,
         mateStreams,
+        sendMissionStatus,
       }}
     >
       {children}

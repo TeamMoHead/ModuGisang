@@ -2,8 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Router from './Router';
 
-import { UserContextProvider } from './contexts/UserContext';
-import { AccountContextProvider } from './contexts';
+import {
+  AccountContextProvider,
+  UserContextProvider,
+  ChallengeContextProvider,
+} from './contexts';
 
 import GlobalStyle from './styles/GlobalStyle';
 import theme from './styles/theme';
@@ -19,7 +22,9 @@ root.render(
     <ThemeProvider theme={theme}>
       <AccountContextProvider>
         <UserContextProvider>
-          <Router />
+          <ChallengeContextProvider>
+            <Router />
+          </ChallengeContextProvider>
         </UserContextProvider>
       </AccountContextProvider>
     </ThemeProvider>

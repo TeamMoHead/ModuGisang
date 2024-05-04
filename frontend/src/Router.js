@@ -19,39 +19,23 @@ function Router() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <ChallengeContextProvider>
-              <Main />
-            </ChallengeContextProvider>
-          }
-        />
+        <Route path="/" element={<Main />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/myStreak" element={<MyStreak />} />
         <Route path="/joinChallenge" element={<JoinChallenge />} />
         <Route path="/createChallenge" element={<CreateChallenge />} />
         <Route
-          path="/startMorning/:challengeId/*"
+          path="/startMorning/:challengeId"
           element={
-            <ChallengeContextProvider>
-              <GameContextProvider>
-                <OpenViduContextProvider>
-                  <InGame />
-                </OpenViduContextProvider>
-              </GameContextProvider>
-            </ChallengeContextProvider>
+            <GameContextProvider>
+              <OpenViduContextProvider>
+                <InGame />
+              </OpenViduContextProvider>
+            </GameContextProvider>
           }
         />
         <Route path="/settings" element={<Settings />} />
-        <Route
-          path="*"
-          element={
-            <ChallengeContextProvider>
-              <Main />
-            </ChallengeContextProvider>
-          }
-        />
+        <Route path="*" element={<Main />} />
       </Routes>
     </BrowserRouter>
   );
