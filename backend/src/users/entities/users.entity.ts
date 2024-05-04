@@ -10,6 +10,9 @@ export class Users {
   @PrimaryGeneratedColumn()
   _id: number;
 
+  @Column({name:"challenge_id", nullable:true})
+  challengeId: number;
+
 	@Column({unique:true , length:50})
   email: string;
   
@@ -32,9 +35,6 @@ export class Users {
 
   @Column({type:'json'})
   medals: Medals;
-
-  @Column({name:"challenge_id", nullable:true})
-  challengeId: number;
 
   @Column({name:"current_refresh_token", length: 255,nullable:true})
   currentRefreshToken: string;

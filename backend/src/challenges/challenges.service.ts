@@ -13,8 +13,9 @@ export class ChallengesService {
         @InjectRepository(Challenges)
         private challengeRepository: Repository<Challenges>,
         @InjectRepository(Users)
-        private usersRepository: Repository<Users>
-    ){
+        private userRepository: Repository<Users>,
+        private invitationService: InvitationsService,
+    ) {
         this.challengeRepository = challengeRepository;
     }
 
@@ -28,10 +29,9 @@ export class ChallengesService {
     }
     
     async searchAvailableMate(email:string):Promise<boolean>{
-        const availUser = await this.usersRepository.findOne({
+        const availUser = await this.userRepository.findOne({
             where:{email:email}
         });
-        console.log(availUser);
         if (availUser.challengeId > 0){
             return true;
         }else{
@@ -39,10 +39,26 @@ export class ChallengesService {
         }
     }
 
+    async hostChallengeStatus(hostId: number): Promise<number>{
+        const challengeId = await this.challengeRepository.findOne({ where: { hostId } });
+        const user = await this.userRepository.findOneBy({ _id : hostId  });
+        if (user && challengeId) {
+            user.challengeId = challengeId._id;
+            await this.userRepository.save(user);
+            return challengeId._id;
+        }
+        return null;
+    }
+    async sendInvitation(challengeId: number, email: string): Promise<void> {
+        const user = await this.userRepository.findOne({ where: { email : email } });
+        await this.invitationService.createInvitation(challengeId, user._id);
+    }
+
+
     async acceptInvitation(invitation: AcceptInvitationDto){
         const challengeId = invitation.challengeId;
         const guestId = invitation.guestId;
-        return await this.usersRepository.update({_id:guestId},{
+        return await this.userRepository.update({_id:guestId},{
             challengeId:challengeId
         });
 
