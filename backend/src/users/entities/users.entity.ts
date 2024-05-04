@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Attendance } from "src/attendance/attendance.entity";
 import { Invitations } from "src/invitations/invitations.entity";
 import { Streak } from "./streak.entity";
@@ -32,6 +32,9 @@ export class Users {
 
   @Column({type:'json'})
   medals: Medals;
+
+  @Column({name:"challenge_id", nullable:true})
+  challengeId: number;
 
   @Column({name:"current_refresh_token", length: 255,nullable:true})
   currentRefreshToken: string;

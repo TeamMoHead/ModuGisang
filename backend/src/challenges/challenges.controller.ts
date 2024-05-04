@@ -1,6 +1,8 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, NotImplementedException, Post, UseGuards } from '@nestjs/common';
 import { ChallengesService } from './challenges.service';
 import { CreateChallengeDto } from './dto/createChallenge.dto';
+import { AuthenticateGuard } from 'src/auth/auth.guard';
+import { AcceptInvitationDto } from './dto/acceptInvitaion.dto';
 
 @Controller('api/challenge')
 export class ChallengesController {
@@ -19,15 +21,24 @@ export class ChallengesController {
         return 'create';
     }
     @Get('searchmate')
-    searchMate() {
-        return 'searchMate';
+    async searchMate(@Body('email') email:string){
+        const result = await this.challengeService.searchAvailableMate(email);
+        return {
+            isEngaged: result
+        }
     }
     @Get('invitations')
     getInvitations() {
         return 'Invitation challenge list';
     }
     @Post('acceptInvitation')
-    acceptInvitation() {
-        return 'accept';
+    async acceptInvitation(@Body() acceptInvitationDto:AcceptInvitationDto) {
+        const result = await this.challengeService.acceptInvitation(acceptInvitationDto);
+        if(result.affected > 0){
+            return 'accept';
+        }else{
+            throw new BadRequestException("승낙 실패");
+        }
+        
     }
 }
