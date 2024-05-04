@@ -45,7 +45,6 @@ const Icon = ({ icon, iconStyle, onClickHandler }) => {
         e.stopPropagation();
 
         if (onClickHandler) {
-          console.log('try!');
           onClickHandler(e);
         }
       }}

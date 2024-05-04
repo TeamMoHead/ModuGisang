@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AccountContext } from '../../contexts/AccountContexts';
-import { ChallengeContext } from '../../contexts/ChallengeContext';
-import { UserContext } from '../../contexts/UserContext';
+import { AccountContext, UserContext, ChallengeContext } from '../../contexts';
+import useCheckTime from '../../hooks/useCheckTime';
 import useAuth from '../../hooks/useAuth';
 import useFetch from '../../hooks/useFetch';
-import { isPastTime } from '../InGame/functions';
 import { NavBar, CardBtn, SimpleBtn } from '../../components';
 import {
   StreakContent,
@@ -22,23 +20,27 @@ import styled from 'styled-components';
 import * as S from '../../styles/common';
 
 const Main = () => {
-  const [isAuthorized, setIsAuthorized] = useState(false);
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
-  const [isUserInfoLoading, setIsUserInfoLoading] = useState(true);
-  const [isChallengeInfoLoading, setIsChallengeInfoLoading] = useState(true);
   const { fetchData } = useFetch();
   const { handleCheckAuth } = useAuth();
   const navigate = useNavigate();
 
-  // setUserInfo는 Test용으로 사용하는 함수
   const { accessToken } = useContext(AccountContext);
-  const { userInfo, setUserInfo, fetchUserData, userId, setUserId } =
+  // setUserInfo는 Test용으로 사용하는 함수
+  const { userInfo, setUserInfo, fetchUserData, userId } =
     useContext(UserContext);
   const { userName, challengeId: hasChallenge } = userInfo;
   const { challengeData, setChallengeData, fetchChallengeData } =
     useContext(ChallengeContext);
-  const { challengeId, wakeTime } = challengeData;
+  const { challengeId } = challengeData;
+  const { remainingTime, isTooEarly, isTooLate } = useCheckTime(
+    challengeData?.wakeTime,
+  );
 
+  // ---------------현재 페이지에서 쓸 State---------------
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [isUserInfoLoading, setIsUserInfoLoading] = useState(true);
+  const [isChallengeInfoLoading, setIsChallengeInfoLoading] = useState(true);
   const greetings = GREETINGS[0] + userName + GREETINGS[1];
 
   const CARD_CONTENTS = {
@@ -58,13 +60,21 @@ const Main = () => {
     create: () => navigate('/createChallenge'),
     challenge: null,
     enter: () => {
-      // 현재 시간이 challenge 시작 시간보다 늦으면
-      // or 너무 빠르면...등 분기처리 로직
-      if (isPastTime(wakeTime)) {
-        alert('챌린지 참여 시간이 지났습니다.');
-        return;
+      if (isTooEarly) {
+        alert('너무 일찍 오셨습니다. 10분 전부터 입장 가능합니다.');
+      } else if (
+        isTooLate
+        // && !attended    ========> 오늘 챌린지 참여 못한 경우
+      ) {
+        alert('챌린지 참여 시간이 지났습니다. 내일 다시 참여해주세요.');
+      } else if (
+        isTooLate
+        // && attended    ========> 오늘 챌린지 참여한 경우
+      ) {
+        alert('멋져요! 오늘의 미라클 모닝 성공! 내일 또 만나요');
+      } else {
+        navigate(`/startMorning/${challengeId}`);
       }
-      navigate(`/startMorning/${challengeId}`);
     },
   };
 
@@ -169,7 +179,6 @@ const Main = () => {
             }}
           />
         ))}
-
         <CardsWrapper>
           {CARD_TYPES[hasChallenge ? 'hasChallenge' : 'noChallenge'].map(
             type => (
