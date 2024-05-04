@@ -7,6 +7,7 @@ import { UserService } from 'src/users/users.service';
 // import { UsersEntity } from 'src/users/users.entity';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtRefreshGuard } from './jwt-refresh.guard';
+import * as argon2 from 'argon2';
 import RedisCacheService from 'src/redis-cache/redis-cache.service';
 
 @Controller('api/auth')
@@ -33,16 +34,20 @@ export class AuthController {
     @Post("login")
     async login(@Body() user: UserDto) {
         try {
-            const accessToken = await this.authService.validateUser(user);
-            const refreshToken = await this.authService.generateRefreshToken(user);
-            await this.userService.setCurrentRefreshToken(refreshToken, user.email);    //db에 저장
-            const userId = await this.userService.findUser(user.email);
+            const authUser = await this.userService.findUser(user.email);
+            const validatePassword = await argon2.verify(authUser.password, user.password);
+            if (!authUser || !validatePassword) {
+                throw new UnauthorizedException();
+            }
+            const accessToken = await this.authService.validateUser(authUser);
+            const refreshToken = await this.authService.generateRefreshToken(authUser._id);
+            await this.userService.setCurrentRefreshToken(refreshToken, authUser);    //db에 저장
             if (accessToken && refreshToken){
                 console.log("로그인 성공");
                 return {
                     accessToken: accessToken,
                     refreshToken: refreshToken,
-                    userId: userId._id 
+                    userId: authUser._id 
                 }
             
             }else{
