@@ -21,7 +21,7 @@ export class Challenges {
   startDate: Date;
 
   @Column({type: 'time' , name: 'wake_time'})
-  wakeTime: string; // "HH:mm:ss" format
+  wakeTime: Date; // "HH:mm:ss" format
 
   @Column({name:"duration_days"})
   durationDays: number;
