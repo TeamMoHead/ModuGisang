@@ -4,7 +4,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserService } from 'src/users/users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersEntity } from 'src/users/users.entity';
+import { Users } from 'src/users/entities/users.entity';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
@@ -17,7 +17,7 @@ import RedisCacheService from 'src/redis-cache/redis-cache.service';
 @Module({
   imports: [
     UserModule,
-    TypeOrmModule.forFeature([UsersEntity]),
+    TypeOrmModule.forFeature([Users]),
     PassportModule.register({}),
     JwtModule.registerAsync({
       useFactory: async (configService: ConfigService) => ({

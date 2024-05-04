@@ -15,11 +15,18 @@ import { UserModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 // import * as redisStore from 'cache-manager-ioredis';
 import * as fs from 'fs';
-import { UsersEntity } from './users/users.entity';
+import { Users } from './users/entities/users.entity';
 // import { AuthService } from './auth/auth.service';
 // import { AuthController } from './auth/auth.controller';
 // import { JwtModule } from '@nestjs/jwt';
 import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis';
+import { ChallengesModule } from './challenges/challenges.module';
+import { InvitationsModule } from './invitations/invitations.module';
+import { AttendanceModule } from './attendance/attendance.module';
+import { Attendance } from './attendance/attendance.entity';
+import { Challenges } from './challenges/challenges.entity';
+import { Invitations } from './invitations/invitations.entity';
+import { Streak } from './users/entities/streak.entity';
 
 
 @Module({
@@ -61,7 +68,7 @@ import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis';
         password: configService.get<string>('POSTGRESQL_DATABASE_PASSWORD'),
     
         synchronize: true,//테이블을 자동으로 생성해주는 옵션 , 실제 환경에서는 사용하지 않는 것이 좋다.
-        entities: [UsersEntity], // 여기에 엔티티 클래스를 추가합니다. 
+        entities: [Users, Attendance, Challenges, Invitations, Streak], // 여기에 엔티티 클래스를 추가합니다. 
         // ssl: {
         // // 다운로드한 인증서 파일 경로 추가
         //   ca: fs.readFileSync("././global-bundle.pem")
@@ -83,6 +90,9 @@ import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis';
 
     UserModule,
     AuthModule,
+    ChallengesModule,
+    InvitationsModule,
+    AttendanceModule,
   ],
   controllers: [AppController, RedisCacheController, OpenviduController, EmailController],
   providers: [AppService, RedisCacheService, OpenviduService, EmailService],
