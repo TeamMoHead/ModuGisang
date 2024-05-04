@@ -32,7 +32,7 @@ const Main = () => {
 
   // setUserInfo는 Test용으로 사용하는 함수
   const { accessToken } = useContext(AccountContext);
-  const { userInfo, setUserInfo, fetchUserData, userId } =
+  const { userInfo, setUserInfo, fetchUserData, userId, setUserId } =
     useContext(UserContext);
   const { userName, challengeId: hasChallenge } = userInfo;
   const { challengeData, setChallengeData, fetchChallengeData } =
@@ -69,19 +69,11 @@ const Main = () => {
   };
 
   const checkAuthorize = async () => {
-    try {
-      const response = await fetchData(() => handleCheckAuth());
-      const { isLoading: isAuthLoading, error: authError } = response;
-      if (!isAuthLoading) {
-        setIsAuthLoading(false);
-        setIsAuthorized(true);
-      } else if (authError) {
-        setIsAuthLoading(false);
-        setIsAuthorized(false);
-        navigate('/auth');
-      }
-    } catch (error) {
-      console.error(error);
+    setIsAuthLoading(true);
+    const response = await handleCheckAuth();
+    if (response) {
+      setIsAuthLoading(false);
+      setIsAuthorized(true);
     }
   };
 
@@ -141,7 +133,7 @@ const Main = () => {
     console.log('AT', accessToken);
     console.log('RT', localStorage.getItem('refreshToken'));
     console.log('UID', userId);
-  }, []);
+  }, [accessToken]);
 
   // useEffect(() => {
   //   console.log('getting user info...');

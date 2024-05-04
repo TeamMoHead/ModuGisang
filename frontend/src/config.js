@@ -1,5 +1,6 @@
 export const TEST_CONFIG = {
   BASE_URL: process.env.REACT_APP_BASE_URL,
+  BASE_URL_SERVER: process.env.REACT_APP_BASE_URL_SERVER,
   TEST_EMAIL: process.env.REACT_APP_TEST_EMAIL,
   TEST_PASSWORD: process.env.REACT_APP_TEST_PASSWORD,
 };
