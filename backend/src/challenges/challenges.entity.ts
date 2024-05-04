@@ -1,7 +1,7 @@
 import { Attendance } from 'src/attendance/attendance.entity';
 import { Invitations } from 'src/invitations/invitations.entity';
 import { Users } from 'src/users/entities/users.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn, Unique } from 'typeorm';
 
 
 @Entity()
@@ -13,7 +13,7 @@ export class Challenges {
   @JoinColumn({ name: "host_id" })
   host: Users;
   
-  @Column({ name: "host_id" })
+  @Column({ name: "host_id" ,  unique: true})
   hostId: number;
   
 

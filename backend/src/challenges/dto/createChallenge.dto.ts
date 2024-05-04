@@ -1,4 +1,4 @@
-import { IsEnum, IsJSON, IsNotEmpty, IsString, IsDate, IsNumber } from 'class-validator';
+import { IsEnum, IsJSON, IsNotEmpty, IsString, IsDate, IsNumber, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
 
 // 적절한 enum 타입 정의, 예시로 몇 가지 값을 추가함
@@ -27,6 +27,6 @@ export class CreateChallengeDto {
     @IsDate()
     wakeTime: Date; // 기상 시간, 'time' 타입은 JavaScript에서 Date 타입으로 처리
 
-    @IsJSON()
-    miracleMates: any; // JSON 타입 데이터, 구체적인 구조는 클라이언트와 서버 간에 정의 필요
+    @IsArray()
+    miracleMates: string; // JSON 타입 데이터, 구체적인 구조는 클라이언트와 서버 간에 정의 필요
 }
