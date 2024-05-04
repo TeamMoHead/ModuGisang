@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException, flatten } from '@nestjs/common';
-import { UsersEntity } from './users.entity';
+import { Users } from './entities/users.entity';
 import * as argon2 from "argon2";
 import { Repository } from 'typeorm';
 import { UserDto } from 'src/auth/dto/user.dto';
@@ -11,15 +11,15 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class UserService {
     constructor(
-        @InjectRepository(UsersEntity)
-        private userRepository: Repository<UsersEntity>,
+        @InjectRepository(Users)
+        private userRepository: Repository<Users>,
         private configService: ConfigService
     ) {
         this.userRepository = userRepository;
     }
 
-    async createUser(email: string, password: string, username: string): Promise<UsersEntity> {
-        const newUser = new UsersEntity();
+    async createUser(email: string, password: string, username: string): Promise<Users> {
+        const newUser = new Users();
         newUser.userName = username;
         newUser.email = email;
         newUser.password = password;
@@ -33,7 +33,7 @@ export class UserService {
         return this.userRepository.save(newUser);
     }
 
-    async findUser(email: string): Promise<UsersEntity> {
+    async findUser(email: string): Promise<Users> {
         const user = await this.userRepository.findOne({ where: { email } });
         return user;
     }
