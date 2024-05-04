@@ -10,6 +10,9 @@ export class Users {
   @PrimaryGeneratedColumn()
   _id: number;
 
+  @Column({name:"challenge_id", nullable:true})
+  challengeId: number;
+
 	@Column({unique:true , length:50})
   email: string;
   

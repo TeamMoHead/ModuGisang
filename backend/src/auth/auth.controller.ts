@@ -81,19 +81,18 @@ export class AuthController {
 
     @Post('refresh')
     @UseGuards(JwtRefreshGuard)
-    async refresh(
-        @Body() refreshTokenDto: RefreshTokenDto,
-    ) {
+    async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
         try {
-            const newAccessToken = await this.authService.refresh(refreshTokenDto);
-            console.log(newAccessToken);
-            if(newAccessToken){
+            const result = await this.authService.refresh(refreshTokenDto);
+            console.log(result);
+            if(result){
                 console.log("AccessToken 재성성 성공")
                 return {
                     status:"success",
                     message:"AccessToken 생성 성공", 
                     data:{
-                        accessToken: newAccessToken,
+                        accessToken: result.accessToken,
+                        userId: result.userId
                     }
                 }
             }else{

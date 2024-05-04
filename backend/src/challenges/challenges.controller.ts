@@ -16,6 +16,10 @@ export class ChallengesController {
         console.log("create")
         console.log(createChallengeDto)
         const challenge = await this.challengeService.createChallenge(createChallengeDto);
+        const challenge_id = await this.challengeService.hostChallengeStatus(createChallengeDto.hostId);
+        for (let i = 0; i < createChallengeDto.miracleMates.length; i++) {
+            const send = await this.challengeService.sendInvitation(challenge_id, createChallengeDto.miracleMates[i]);
+        }
         return 'create';
     }
     @Get('searchmate')
