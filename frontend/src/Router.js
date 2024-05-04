@@ -25,7 +25,7 @@ function Router() {
         <Route path="/joinChallenge" element={<JoinChallenge />} />
         <Route path="/createChallenge" element={<CreateChallenge />} />
         <Route
-          path="/startMorning/:challengeId/*"
+          path="/startMorning/:challengeId"
           element={
             <GameContextProvider>
               <OpenViduContextProvider>
