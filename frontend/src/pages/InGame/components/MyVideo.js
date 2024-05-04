@@ -1,9 +1,10 @@
 import React, { useContext, useEffect } from 'react';
-import { OpenViduContext } from '../../../contexts';
+import { GameContext, OpenViduContext } from '../../../contexts';
 import styled from 'styled-components';
 
 const MyVideo = () => {
   const { myVideoRef, myStream } = useContext(OpenViduContext);
+  const { missionCompleted } = useContext(GameContext);
 
   useEffect(() => {
     if (myVideoRef && myStream) {

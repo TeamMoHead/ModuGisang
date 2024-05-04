@@ -21,6 +21,7 @@ import {
 } from './';
 import { MyVideo, MateVideo } from './components';
 import styled from 'styled-components';
+import { SimpleBtn } from '../../components';
 
 const GAME_MODE = {
   0: 'waiting',
@@ -47,7 +48,7 @@ const InGame = () => {
   const { userInfo } = useContext(UserContext);
   const { userId: myId } = userInfo;
   const { challengeData, getChallengeData } = useContext(ChallengeContext);
-  const { inGameMode } = useContext(GameContext);
+  const { inGameMode, setMyMissionStatus } = useContext(GameContext);
 
   const [mateList, setMateList] = useState([]);
 
@@ -76,6 +77,20 @@ const InGame = () => {
       <InGameNav />
       <Wrapper>
         <MyVideo />
+
+        <button
+          onClick={() => setMyMissionStatus(prev => !prev)}
+          style={{
+            zIndex: 300,
+            position: 'fixed',
+            top: '150px',
+            right: '50px',
+            backgroundColor: 'orange',
+            padding: '10px',
+          }}
+        >
+          My Mission Status
+        </button>
 
         <React.Fragment key={inGameMode}>
           {GAME_MODE_COMPONENTS[inGameMode]}
