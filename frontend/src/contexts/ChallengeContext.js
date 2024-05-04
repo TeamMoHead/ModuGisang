@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState } from 'react';
 import { challengeServices } from '../apis/challengeServices';
 
 const ChallengeContext = createContext();
@@ -18,7 +18,40 @@ const ChallengeContextProvider = ({ children }) => {
     ],
   });
 
+  const fetchChallengeData = async ({ accessToken, challengeId }) => {
+    try {
+      const response = await challengeServices.getChallengeInfo({
+        accessToken: accessToken,
+        challengeId: challengeId,
+      });
+      if (response.data) {
+        return response;
+      } else {
+        console.error('No challenge data received');
+      }
+    } catch (error) {
+      console.error('Failed to fetch challenge data:', error);
+    }
+  };
+
+  const fetchInvitationData = async ({ accessToken, userId }) => {
+    try {
+      const response = await challengeServices.getInvitationInfo({
+        accessToken,
+        userId,
+      });
+      if (response.data) {
+        return response;
+      } else {
+        console.error('No invitation data received');
+      }
+    } catch (error) {
+      console.error('Failed to fetch invitation data:', error);
+    }
+  };
+
   const getChallengeData = async challengeId => {
+    // =========IN GAME 로직에서 바르게 Challenge Data 받아오는 것으로 고친 뒤 살릴 예정 ==========
     // try {
     //   const response = await challengeServices.getChallengeInfo(challengeId);
     //   setChallengeData(response.data);
@@ -28,7 +61,15 @@ const ChallengeContextProvider = ({ children }) => {
   };
 
   return (
-    <ChallengeContext.Provider value={{ challengeData, getChallengeData }}>
+    <ChallengeContext.Provider
+      value={{
+        challengeData,
+        fetchChallengeData,
+        fetchInvitationData,
+        setChallengeData,
+        getChallengeData,
+      }}
+    >
       {children}
     </ChallengeContext.Provider>
   );

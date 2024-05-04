@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AccountContext } from '../../contexts/AccountContexts';
+import { AccountContext, UserContext, ChallengeContext } from '../../contexts';
 import useAuth from '../../hooks/useAuth';
 import useFetch from '../../hooks/useFetch';
 import { NavBar, Icon, SimpleBtn, CardBtn } from '../../components';
@@ -21,7 +21,7 @@ const Settings = () => {
       const response = await fetchData(() => handleCheckAuth());
       const {
         isLoading: isAuthLoading,
-        data: authData,
+
         error: authError,
       } = response;
       if (!isAuthLoading) {
@@ -42,11 +42,7 @@ const Settings = () => {
     try {
       setIsLogoutLoading(true);
       const response = await fetchData(() => logOut());
-      const {
-        isLoading: isLogoutLoading,
-        data: logoutData,
-        error: logoutError,
-      } = response;
+      const { isLoading: isLogoutLoading, error: logoutError } = response;
       if (!isLogoutLoading) {
         alert('로그아웃 되었습니다.');
         navigate('/auth');

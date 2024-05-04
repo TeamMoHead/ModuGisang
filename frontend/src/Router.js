@@ -9,24 +9,13 @@ import {
   JoinChallenge,
   Settings,
 } from './pages';
-import {
-  ChallengeContextProvider,
-  GameContextProvider,
-  OpenViduContextProvider,
-} from './contexts';
+import { GameContextProvider, OpenViduContextProvider } from './contexts';
 
 function Router() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <ChallengeContextProvider>
-              <Main />
-            </ChallengeContextProvider>
-          }
-        />
+        <Route path="/" element={<Main />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/myStreak" element={<MyStreak />} />
         <Route path="/joinChallenge" element={<JoinChallenge />} />
@@ -34,24 +23,15 @@ function Router() {
         <Route
           path="/startMorning/:challengeId/*"
           element={
-            <ChallengeContextProvider>
-              <GameContextProvider>
-                <OpenViduContextProvider>
-                  <InGame />
-                </OpenViduContextProvider>
-              </GameContextProvider>
-            </ChallengeContextProvider>
+            <GameContextProvider>
+              <OpenViduContextProvider>
+                <InGame />
+              </OpenViduContextProvider>
+            </GameContextProvider>
           }
         />
         <Route path="/settings" element={<Settings />} />
-        <Route
-          path="*"
-          element={
-            <ChallengeContextProvider>
-              <Main />
-            </ChallengeContextProvider>
-          }
-        />
+        <Route path="*" element={<Main />} />
       </Routes>
     </BrowserRouter>
   );
