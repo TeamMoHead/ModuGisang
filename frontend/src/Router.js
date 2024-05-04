@@ -9,11 +9,7 @@ import {
   JoinChallenge,
   Settings,
 } from './pages';
-import {
-  ChallengeContextProvider,
-  GameContextProvider,
-  OpenViduContextProvider,
-} from './contexts';
+import { GameContextProvider, OpenViduContextProvider } from './contexts';
 
 function Router() {
   return (

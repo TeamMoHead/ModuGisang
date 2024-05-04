@@ -7,6 +7,7 @@ import { Payload } from './payload.interface';
 // import { refreshJwtConstants } from './constants';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ConfigService } from '@nestjs/config';
+import RedisCacheService from 'src/redis-cache/redis-cache.service';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,7 @@ export class AuthService {
         private userService: UserService,
         private jwtService: JwtService,
         private configService: ConfigService,
+        private redisService: RedisCacheService
     ) { }
 
     // accessToken 생성
@@ -23,7 +25,7 @@ export class AuthService {
         if (!userFind || !validatePassword) {
             throw new UnauthorizedException();
         }
-        const payload = { sub: userFind._id, id: userFind._id, username: userFind.userName };
+        const payload = { sub: userFind._id, _id: userFind._id, username: userFind.userName };
         return this.jwtService.signAsync(payload);
     }
     // 토큰 Payload에 해당하는 아아디의 유저 가져오기
@@ -46,7 +48,7 @@ export class AuthService {
     }
 
     async refresh(refreshTokenDto: RefreshTokenDto): Promise<string> {
-        const { refreshToken } = refreshTokenDto;
+        const refreshToken  = refreshTokenDto.refreshToken;
         try {
             const decodedRefreshToken = this.jwtService.verify(refreshToken, { secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'), });
             const userId = decodedRefreshToken.id;
@@ -70,6 +72,14 @@ export class AuthService {
         }
         const payload = { sub: userFind._id, id: userFind._id, username: userFind.userName };
         return this.jwtService.signAsync(payload);
-
+    }
+    async authNumcheck(email:string, data: string) {
+        console.log("Inservice data :"+data);
+        const serverNum = await this.redisService.get(email);
+        if (serverNum === data) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

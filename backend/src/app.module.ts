@@ -6,19 +6,20 @@ import { OpenviduController } from './openvidu/openvidu.controller';
 import { OpenviduService } from './openvidu/openvidu.service';
 import { ConfigModule ,ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CacheModule } from '@nestjs/cache-manager';
+// import { CacheModule } from '@nestjs/cache-manager';
 import { RedisCacheService } from './redis-cache/redis-cache.service';
 import { RedisCacheController } from './redis-cache/redis-cache.controller';
 import { EmailController } from './email/email.controller';
 import { EmailService } from './email/email.service';
 import { UserModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import * as redisStore from 'cache-manager-ioredis';
+// import * as redisStore from 'cache-manager-ioredis';
 import * as fs from 'fs';
 import { UsersEntity } from './users/users.entity';
-import { AuthService } from './auth/auth.service';
-import { AuthController } from './auth/auth.controller';
-import { JwtModule } from '@nestjs/jwt';
+// import { AuthService } from './auth/auth.service';
+// import { AuthController } from './auth/auth.controller';
+// import { JwtModule } from '@nestjs/jwt';
+import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis';
 
 
 @Module({
@@ -28,15 +29,25 @@ import { JwtModule } from '@nestjs/jwt';
       envFilePath: process.env.NODE_ENV === 'development' ? '.env.development' : '.env.production',
       //ignoreEnvFile: process.env.NODE_ENV === 'production',
     }),
-    CacheModule.registerAsync({
+    // CacheModule.registerAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: async (configService: ConfigService) => ({
+    //   isGlobal: true,
+    //   store: redisStore,
+    //   host: configService.get<string>('REDIS_HOST'),
+    //   port: configService.get<number>('REDIS_PORT'),
+    //   }),
+    // }),
+    RedisModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-      isGlobal: true,
-      store: redisStore,
-      host: configService.get<string>('REDIS_HOST'),
-      port: configService.get<number>('REDIS_PORT'),
-      }),
+      useFactory: async (configService: ConfigService): Promise<RedisModuleOptions> => {
+        return {
+          type: 'single',  // Redis 연결 타입 지정
+          url: configService.get<string>('REDIS_URL'),  // 환경 변수에서 Redis URL을 가져옵니다.
+        };
+      },
     }),
 
     TypeOrmModule.forRootAsync({
@@ -59,13 +70,13 @@ import { JwtModule } from '@nestjs/jwt';
         // // SSL 연결을 강제 설정
         //   ssl: { rejectUnauthorized: false },
         // },
-        ssl: configService.get<string>('NODE_ENV') === 'production' ? {
+        ssl: process.env.NODE_ENV === 'development' ? undefined :{
           ca: fs.readFileSync("././global-bundle.pem")
-        } : undefined,
+        },
     
-        extra: configService.get<string>('NODE_ENV') === 'production' ? {
+        extra: process.env.NODE_ENV === 'development' ? undefined: {
           ssl: { rejectUnauthorized: false },
-        } : undefined,
+        },
       }),
       inject: [ConfigService],
     }),

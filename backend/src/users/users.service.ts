@@ -97,7 +97,7 @@ export class UserService {
     }
 
     async removeRefreshToken(userId: number): Promise<any> {
-        return await this.userRepository.update(userId, {
+        return await this.userRepository.update({_id:userId}, {
             currentRefreshToken: null,
             currentRefreshTokenExp: null
         });
