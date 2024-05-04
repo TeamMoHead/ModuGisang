@@ -24,6 +24,7 @@ export class UserService {
         newUser.email = email;
         newUser.password = password;
         newUser.affirmation = "오늘 하루도 화이팅!";
+        newUser.challengeId = -1;
         newUser.profile = "https://cdn-icons-png.flaticon.com/512/2919/2919906.png";
         newUser.medals = {
             gold: 0,

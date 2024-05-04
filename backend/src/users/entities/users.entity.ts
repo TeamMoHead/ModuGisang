@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Attendance } from "src/attendance/attendance.entity";
 import { Invitations } from "src/invitations/invitations.entity";
 import { Streak } from "./streak.entity";
