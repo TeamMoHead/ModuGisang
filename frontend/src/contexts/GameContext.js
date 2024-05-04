@@ -25,17 +25,22 @@ const GAME_MODE_DURATION = {
 
 const GameContextProvider = ({ children }) => {
   const { challengeData } = useContext(ChallengeContext);
-  const [inGameMode, setInGameMode] = useState(() => {
-    const savedMode = localStorage.getItem('inGameMode');
-    return savedMode ? localStorage.setItem('inGameMode', 0) : 0;
+  const [inGameMode, setInGameMode] = useState(
+    localStorage.getItem('inGameMode') || 0,
+  );
+  const [myMissionStatus, setMyMissionStatus] = useState(false);
+  const [matesMissionStatus, setMatesMissionStatus] = useState({
+    // [userId]: { missionCompleted: boolean } 형태"
   });
 
   let nextMode = 1;
+
   const updateMode = () => {
     nextMode += 1;
     if (nextMode <= 7) {
       localStorage.setItem('inGameMode', JSON.stringify(nextMode));
       setInGameMode(nextMode);
+      setMyMissionStatus(false); // 미션 수행상태 초기화
 
       if (nextMode !== 6) {
         // result 모드 아니면 다음 모드로 자동 전환
@@ -63,6 +68,7 @@ const GameContextProvider = ({ children }) => {
 
     setTimeout(() => {
       setInGameMode(1); // waiting 끝나면 첫 미션으로 전환
+      setMyMissionStatus(false); // 미션 수행상태 초기화
       setTimeout(updateMode, GAME_MODE_DURATION[1]); // 첫 미션 후 다음 모드로 전환 시작
     }, delay);
   };
@@ -73,10 +79,18 @@ const GameContextProvider = ({ children }) => {
     }
   }, [challengeData]);
 
+  useEffect(() => {
+    console.log('@@@@@ MATE MISSION STATUS @@@@@ => ', matesMissionStatus);
+  }, [matesMissionStatus]);
+
   return (
     <GameContext.Provider
       value={{
         inGameMode,
+        myMissionStatus,
+        setMyMissionStatus,
+        matesMissionStatus,
+        setMatesMissionStatus,
       }}
     >
       {children}
