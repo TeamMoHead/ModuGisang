@@ -44,10 +44,9 @@ export class UserService {
     }
 
     // refreshToken db에 저장
-    async setCurrentRefreshToken(refreshToken: string, userEmail: string) {
+    async setCurrentRefreshToken(refreshToken: string, user: Users) {
         const currentRefreshToken = await this.getCurrentHashedRefreshToken(refreshToken);
         const currentRefreshTokenExp = await this.getCurrentRefreshTokenExp();
-        const user = await this.userRepository.findOne({ where: { email: userEmail } });
         await this.userRepository.update(user._id, {
             currentRefreshToken: currentRefreshToken,
             currentRefreshTokenExp: currentRefreshTokenExp,
