@@ -47,7 +47,7 @@ export class AuthService {
         });
     }
 
-    async refresh(refreshTokenDto: RefreshTokenDto): Promise<string> {
+    async refresh(refreshTokenDto: RefreshTokenDto): Promise<any> {
         const refreshToken  = refreshTokenDto.refreshToken;
         try {
             const decodedRefreshToken = this.jwtService.verify(refreshToken, { secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'), });
@@ -57,9 +57,13 @@ export class AuthService {
                 throw new UnauthorizedException('Invalid user!');
             }
 
-            const accessToekn = await this.generateAccessToken(user); // userdto로 변환
+            const accessToken = await this.generateAccessToken(user); // userdto로 변환
 
-            return accessToekn;
+            return {
+                accessToken: accessToken,
+                userId: userId
+            }
+                
         } catch (err) {
             throw new UnauthorizedException(err);
         }
