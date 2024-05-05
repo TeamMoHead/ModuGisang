@@ -1,17 +1,15 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AccountContext } from '../../contexts/AccountContexts';
-import { UserContext } from '../../contexts/UserContext';
-import { authServices } from '../../apis/authServices';
+import { AccountContext } from '../../contexts';
 import useFetch from '../../hooks/useFetch';
+import { authServices } from '../../apis/authServices';
 import { SimpleBtn } from '../../components';
 
 import * as S from '../../styles/common';
 
 const Auth = () => {
   const { accessToken, setAccessToken } = useContext(AccountContext);
-  const { userId, setUserId } = useContext(UserContext);
-  const { fetchDataWithStatus } = useFetch();
+  const { fetchData } = useFetch();
   const navigate = useNavigate();
   const deleteRefreshToken = async () => {
     try {
@@ -28,7 +26,7 @@ const Auth = () => {
   const handleLogOut = async accessToken => {
     try {
       console.log('AT', accessToken);
-      const response = await fetchDataWithStatus(() =>
+      const response = await fetchData(() =>
         authServices.logOutUser({ accessToken: accessToken }),
       );
       const {
@@ -36,7 +34,6 @@ const Auth = () => {
         data: logoutData,
         error: logoutError,
         status: logoutStatus,
-        statusText: logoutStatusText,
       } = response;
       if (logoutStatus === 200) {
         alert('로그아웃 되었습니다.');
@@ -61,8 +58,7 @@ const Auth = () => {
   useEffect(() => {
     console.log('AT', accessToken);
     console.log('RT', localStorage.getItem('refreshToken'));
-    console.log('UID', userId);
-  }, [accessToken, userId]);
+  }, [accessToken]);
 
   // if (
   //   isLoginLoading ||

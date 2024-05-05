@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { UserContext } from '../../../contexts/UserContext';
 import {
   level0,
@@ -11,7 +11,7 @@ import styled from 'styled-components';
 
 const StreakContent = () => {
   const [level, setLevel] = useState('streak0');
-  const { userInfo } = React.useContext(UserContext);
+  const { userInfo } = useContext(UserContext);
   const { streakDays, medals } = userInfo;
   // calculate user streak level by user streakDays
 

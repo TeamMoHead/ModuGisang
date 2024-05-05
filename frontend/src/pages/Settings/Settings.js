@@ -12,8 +12,7 @@ const Settings = () => {
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
-  const { setUserId } = useContext(UserContext);
-  const { accessToken, setAccessToken } = useContext(AccountContext);
+  const { accessToken, setAccessToken, setUserId } = useContext(AccountContext);
 
   const { fetchData } = useFetch();
   const { handleCheckAuth } = useAuth();
