@@ -16,7 +16,7 @@ export class Attendance {
   userId : number
   
   @ManyToOne(() => Challenges, challenge => challenge.attendances)
-  @JoinColumn({name :"chanllenge_id" }) // 추가
+  @JoinColumn({name :"challenge_id" }) // 추가
   challenge: Challenges;
   
   @Column({name: "challenge_id"})
