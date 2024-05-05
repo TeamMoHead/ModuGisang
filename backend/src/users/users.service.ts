@@ -102,4 +102,13 @@ export class UserService {
             currentRefreshTokenExp: null
         });
     }
+
+    async updateAffirm(user:Users, affirmation: string){
+        console.log(user);
+        const result = await this.userRepository.update({_id:user._id},{
+            affirmation:affirmation
+        });
+        console.log(result);
+        return result;
+    }
 }
