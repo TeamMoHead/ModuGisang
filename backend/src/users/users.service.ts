@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException, flatten } from '@nestjs/common';
-import { UsersEntity } from './users.entity';
+import { Users } from './entities/users.entity';
 import * as argon2 from "argon2";
 import { Repository } from 'typeorm';
 import { UserDto } from 'src/auth/dto/user.dto';
@@ -11,19 +11,20 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class UserService {
     constructor(
-        @InjectRepository(UsersEntity)
-        private userRepository: Repository<UsersEntity>,
+        @InjectRepository(Users)
+        private userRepository: Repository<Users>,
         private configService: ConfigService
     ) {
         this.userRepository = userRepository;
     }
 
-    async createUser(email: string, password: string, username: string): Promise<UsersEntity> {
-        const newUser = new UsersEntity();
+    async createUser(email: string, password: string, username: string): Promise<Users> {
+        const newUser = new Users();
         newUser.userName = username;
         newUser.email = email;
         newUser.password = password;
         newUser.affirmation = "오늘 하루도 화이팅!";
+        newUser.challengeId = -1;
         newUser.profile = "https://cdn-icons-png.flaticon.com/512/2919/2919906.png";
         newUser.medals = {
             gold: 0,
@@ -33,20 +34,19 @@ export class UserService {
         return this.userRepository.save(newUser);
     }
 
-    async findUser(email: string): Promise<UsersEntity> {
+    async findUser(email: string): Promise<Users> {
         const user = await this.userRepository.findOne({ where: { email } });
         return user;
     }
 
-    async findOneByID(_id: number): Promise<any> {
+    async findOneByID(_id: number): Promise<Users> {
         return await this.userRepository.findOne({ where: { _id } });
     }
 
     // refreshToken db에 저장
-    async setCurrentRefreshToken(refreshToken: string, userEmail: string) {
+    async setCurrentRefreshToken(refreshToken: string, user: Users) {
         const currentRefreshToken = await this.getCurrentHashedRefreshToken(refreshToken);
         const currentRefreshTokenExp = await this.getCurrentRefreshTokenExp();
-        const user = await this.userRepository.findOne({ where: { email: userEmail } });
         await this.userRepository.update(user._id, {
             currentRefreshToken: currentRefreshToken,
             currentRefreshTokenExp: currentRefreshTokenExp,
@@ -101,5 +101,14 @@ export class UserService {
             currentRefreshToken: null,
             currentRefreshTokenExp: null
         });
+    }
+
+    async updateAffirm(user:Users, affirmation: string){
+        console.log(user);
+        const result = await this.userRepository.update({_id:user._id},{
+            affirmation:affirmation
+        });
+        console.log(result);
+        return result;
     }
 }

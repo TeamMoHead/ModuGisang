@@ -1,14 +1,18 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
+import { AccountContext, UserContext } from './';
 import { challengeServices } from '../apis/challengeServices';
 
 const ChallengeContext = createContext();
 
 const ChallengeContextProvider = ({ children }) => {
+  const { accessToken, userId } = useContext(AccountContext);
+  const { userInfo } = useContext(UserContext);
+  const { challengeId } = userInfo;
   // 임시 데이터
   const [challengeData, setChallengeData] = useState({
     challengeId: '333',
     startDate: '2021-09-01T00:00:00.000Z',
-    wakeTime: '22:05',
+    wakeTime: '17:30',
     mates: [
       { userId: 0, userName: '천사뿅뿅뿅' },
       { userId: 1, userName: '귀요미이시현' },
@@ -18,7 +22,7 @@ const ChallengeContextProvider = ({ children }) => {
     ],
   });
 
-  const fetchChallengeData = async ({ accessToken, challengeId }) => {
+  const fetchChallengeData = async () => {
     try {
       const response = await challengeServices.getChallengeInfo({
         accessToken: accessToken,
@@ -34,7 +38,7 @@ const ChallengeContextProvider = ({ children }) => {
     }
   };
 
-  const fetchInvitationData = async ({ accessToken, userId }) => {
+  const fetchInvitationData = async () => {
     try {
       const response = await challengeServices.getInvitationInfo({
         accessToken,
@@ -51,7 +55,7 @@ const ChallengeContextProvider = ({ children }) => {
   };
 
   const getChallengeData = async challengeId => {
-    // =========IN GAME 로직에서 바르게 Challenge Data 받아오는 것으로 고친 뒤 살릴 예정 ==========
+    // =========API 연동후 주석 풀 예정 ==========
     // try {
     //   const response = await challengeServices.getChallengeInfo(challengeId);
     //   setChallengeData(response.data);
@@ -59,7 +63,6 @@ const ChallengeContextProvider = ({ children }) => {
     //   console.error(error);
     // }
   };
-
   return (
     <ChallengeContext.Provider
       value={{

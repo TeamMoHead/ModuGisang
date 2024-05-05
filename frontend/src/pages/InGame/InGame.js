@@ -1,15 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams } from 'react-router-dom';
-import {
-  UserContext,
-  ChallengeContext,
-  GameContext,
-  OpenViduContext,
-} from '../../contexts';
-
-import { isPastTime } from './functions';
+import { useParams, useNavigate } from 'react-router-dom';
+import { UserContext, ChallengeContext, GameContext } from '../../contexts';
+import useCheckTime from '../../hooks/useCheckTime';
 
 import InGameNav from './components/Nav/InGameNav';
+import { MyVideo, MateVideo } from './components';
 import {
   Waiting,
   Mission1,
@@ -19,9 +14,7 @@ import {
   Affirmation,
   Result,
 } from './';
-import { MyVideo, MateVideo } from './components';
 import styled from 'styled-components';
-import { SimpleBtn } from '../../components';
 
 const GAME_MODE = {
   0: 'waiting',
@@ -44,11 +37,14 @@ const GAME_MODE_COMPONENTS = {
 };
 
 const InGame = () => {
+  const navigate = useNavigate();
   const { challengeId } = useParams();
   const { userInfo } = useContext(UserContext);
   const { userId: myId } = userInfo;
   const { challengeData, getChallengeData } = useContext(ChallengeContext);
+  const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
   const { inGameMode, setMyMissionStatus } = useContext(GameContext);
+  const [redirected, setRedirected] = useState(false);
 
   const [mateList, setMateList] = useState([]);
 
@@ -64,14 +60,24 @@ const InGame = () => {
     } else return;
   }, [challengeData]);
 
-  // if (
-  //   GAME_MODE[inGameMode] === 'waiting' &&
-  //   isPastTime(challengeData.wakeTime)
-  // ) {
-  //   alert('챌린지 참여 시간이 지났습니다. 메인 화면으로 이동합니다.');
-  //   navigate('/main');
-  //   return;
-  // } else {
+  useEffect(() => {
+    // ================== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
+    // -------------⭐️ 개발 완료 후 주석 해제 필요 ⭐️ -------------
+    // ================== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
+    // if (GAME_MODE[inGameMode] === 'waiting') {
+    //   if (isTooLate) {
+    //     alert('챌린지 참여 시간이 지났습니다.');
+    //     setRedirected(true);
+    //     navigate('/main');
+    //   } else if (isTooEarly) {
+    //     alert('챌린지 시작 시간이 아닙니다.');
+    //     setRedirected(true);
+    //     navigate('/main');
+    //   }
+    // }
+  }, [inGameMode, isTooEarly, isTooLate, redirected]);
+
+  if (redirected) return null;
   return (
     <>
       <InGameNav />
@@ -106,7 +112,6 @@ const InGame = () => {
       </Wrapper>
     </>
   );
-  // }
 };
 
 export default InGame;

@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AccountContext, UserContext, ChallengeContext } from '../../contexts';
+import { AccountContext, UserContext } from '../../contexts';
+import { authServices } from '../../apis';
 import useAuth from '../../hooks/useAuth';
 import useFetch from '../../hooks/useFetch';
 import { NavBar, Icon, SimpleBtn, CardBtn } from '../../components';
@@ -11,49 +12,37 @@ const Settings = () => {
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
-  const { logOut } = useContext(AccountContext);
+  const { accessToken, setAccessToken, setUserId } = useContext(AccountContext);
+
   const { fetchData } = useFetch();
   const { handleCheckAuth } = useAuth();
   const navigate = useNavigate();
 
   const checkAuthorize = async () => {
-    try {
-      const response = await fetchData(() => handleCheckAuth());
-      const {
-        isLoading: isAuthLoading,
-
-        error: authError,
-      } = response;
-      if (!isAuthLoading) {
-        setIsAuthLoading(false);
-        setIsAuthorized(true);
-      } else if (authError) {
-        setIsAuthLoading(false);
-        setIsAuthorized(false);
-        navigate('/auth');
-      }
-    } catch (error) {
-      console.error(error);
-      alert(error);
+    setIsAuthLoading(true);
+    const response = await handleCheckAuth();
+    if (response) {
+      setIsAuthLoading(false);
+      setIsAuthorized(true);
     }
   };
 
   const handleLogOut = async () => {
-    try {
-      setIsLogoutLoading(true);
-      const response = await fetchData(() => logOut());
-      const { isLoading: isLogoutLoading, error: logoutError } = response;
-      if (!isLogoutLoading) {
-        alert('로그아웃 되었습니다.');
-        navigate('/auth');
-        setIsLogoutLoading(false);
-      } else if (logoutError) {
-        alert(logoutError);
-        setIsLogoutLoading(false);
-      }
-    } catch (error) {
-      console.error(error);
-      alert(error);
+    setIsLogoutLoading(true);
+    const response = await fetchData(() =>
+      authServices.logOutUser({ accessToken }),
+    );
+    const { isLoading: isLogoutLoading, error: logoutError } = response;
+    if (!isLogoutLoading) {
+      setUserId(null);
+      setAccessToken(null);
+      setIsLogoutLoading(false);
+      localStorage.removeItem('refreshToken');
+      alert('로그아웃 되었습니다.');
+      navigate('/auth');
+    } else if (logoutError) {
+      setIsLogoutLoading(false);
+      alert(logoutError);
     }
   };
 
@@ -69,7 +58,6 @@ const Settings = () => {
       <NavBar />
 
       <S.PageWrapper>
-        Settings
         <CardBtn
           content={
             <LogoutWrapper>

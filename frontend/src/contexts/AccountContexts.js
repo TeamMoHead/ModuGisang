@@ -5,6 +5,7 @@ const AccountContext = createContext();
 
 const AccountContextProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   const logOut = async () => {
     try {
@@ -27,6 +28,8 @@ const AccountContextProvider = ({ children }) => {
       value={{
         setAccessToken,
         accessToken,
+        setUserId,
+        userId,
         logOut,
       }}
     >

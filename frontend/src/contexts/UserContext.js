@@ -5,6 +5,7 @@ import { AccountContext } from './AccountContexts';
 const UserContext = createContext();
 
 const UserContextProvider = ({ children }) => {
+  const { accessToken, userId } = useContext(AccountContext);
   // 임시 유저 정보
   const [userInfo, setUserInfo] = useState({
     userId: '',
@@ -15,10 +16,8 @@ const UserContextProvider = ({ children }) => {
     invitationCounts: 0,
     affirmation: '',
   });
-  const [userId, setUserId] = useState(null);
-  const { accessToken } = useContext(AccountContext);
 
-  const fetchUserData = async ({ accessToken, userId }) => {
+  const fetchUserData = async () => {
     try {
       const response = await userServices.getUserInfo({
         accessToken: accessToken,
@@ -31,9 +30,7 @@ const UserContextProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider
-      value={{ userInfo, fetchUserData, setUserInfo, userId, setUserId }}
-    >
+    <UserContext.Provider value={{ userInfo, fetchUserData, setUserInfo }}>
       {children}
     </UserContext.Provider>
   );
