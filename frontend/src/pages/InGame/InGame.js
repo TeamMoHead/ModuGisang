@@ -61,17 +61,20 @@ const InGame = () => {
   }, [challengeData]);
 
   useEffect(() => {
-    if (GAME_MODE[inGameMode] === 'waiting') {
-      if (isTooLate) {
-        alert('챌린지 참여 시간이 지났습니다.');
-        setRedirected(true);
-        navigate('/main');
-      } else if (isTooEarly) {
-        alert('챌린지 시작 시간이 아닙니다.');
-        setRedirected(true);
-        navigate('/main');
-      }
-    }
+    // ================== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
+    // -------------⭐️ 개발 완료 후 주석 해제 필요 ⭐️ -------------
+    // ================== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
+    // if (GAME_MODE[inGameMode] === 'waiting') {
+    //   if (isTooLate) {
+    //     alert('챌린지 참여 시간이 지났습니다.');
+    //     setRedirected(true);
+    //     navigate('/main');
+    //   } else if (isTooEarly) {
+    //     alert('챌린지 시작 시간이 아닙니다.');
+    //     setRedirected(true);
+    //     navigate('/main');
+    //   }
+    // }
   }, [inGameMode, isTooEarly, isTooLate, redirected]);
 
   if (redirected) return null;

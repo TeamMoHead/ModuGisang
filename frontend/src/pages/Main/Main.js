@@ -58,21 +58,25 @@ const Main = () => {
     create: () => navigate('/createChallenge'),
     challenge: null,
     enter: () => {
-      if (isTooEarly) {
-        alert('너무 일찍 오셨습니다. 10분 전부터 입장 가능합니다.');
-      } else if (
-        isTooLate
-        // && !attended    ========> 오늘 챌린지 참여 못한 경우
-      ) {
-        alert('챌린지 참여 시간이 지났습니다. 내일 다시 참여해주세요.');
-      } else if (
-        isTooLate
-        // && attended    ========> 오늘 챌린지 참여한 경우
-      ) {
-        alert('멋져요! 오늘의 미라클 모닝 성공! 내일 또 만나요');
-      } else {
-        navigate(`/startMorning/${challengeId}`);
-      }
+      // ================== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
+      // -------------⭐️ 개발 완료 후 주석 해제 필요 ⭐️ -------------
+      // ================== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
+
+      // if (isTooEarly) {
+      //   alert('너무 일찍 오셨습니다. 10분 전부터 입장 가능합니다.');
+      // } else if (
+      //   isTooLate
+      //   // && !attended    ========> 오늘 챌린지 참여 못한 경우
+      // ) {
+      //   alert('챌린지 참여 시간이 지났습니다. 내일 다시 참여해주세요.');
+      // } else if (
+      //   isTooLate
+      //   // && attended    ========> 오늘 챌린지 참여한 경우
+      // ) {
+      //   alert('멋져요! 오늘의 미라클 모닝 성공! 내일 또 만나요');
+      // } else {
+      navigate(`/startMorning/${challengeId}`);
+      // }
     },
   };
 
