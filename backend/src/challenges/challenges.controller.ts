@@ -1,8 +1,9 @@
-import { BadRequestException, Body, Controller, Get, NotImplementedException, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, NotFoundException, NotImplementedException, Post, Query, UseGuards } from '@nestjs/common';
 import { ChallengesService } from './challenges.service';
 import { CreateChallengeDto } from './dto/createChallenge.dto';
 import { AuthenticateGuard } from 'src/auth/auth.guard';
 import { AcceptInvitationDto } from './dto/acceptInvitaion.dto';
+import { ChallengeResponseDto } from './dto/challengeResponse.dto';
 
 @Controller('api/challenge')
 export class ChallengesController {
@@ -10,9 +11,13 @@ export class ChallengesController {
         private readonly challengeService:ChallengesService,
     ){}
     @Get()
-    getChallengeInfo(){
-        return 'challengeInfo';
-    }
+    async getChallengeInfo(@Query('challengeId') challengeId: number): Promise<ChallengeResponseDto> {
+        const challenge = await this.challengeService.getChallengeInfo(challengeId);
+        if (!challenge) {
+          throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
+        }
+        return challenge;
+      }
     @Post('create')
     async createChallenge(@Body() createChallengeDto:CreateChallengeDto) {
         console.log("create")

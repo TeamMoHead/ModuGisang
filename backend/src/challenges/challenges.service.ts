@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Challenges } from './challenges.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, createQueryBuilder } from 'typeorm';
 import { CreateChallengeDto } from './dto/createChallenge.dto';
 import { InvitationsService } from 'src/invitations/invitations.service';
 import { Users } from 'src/users/entities/users.entity';
 import { AcceptInvitationDto } from './dto/acceptInvitaion.dto';
+import { ChallengeResponseDto, ParticipantDto } from './dto/challengeResponse.dto';
 
 @Injectable()
 export class ChallengesService {
@@ -62,6 +63,35 @@ export class ChallengesService {
             challengeId:challengeId
         });
 
+    }
+
+    async getChallengeInfo(challengeId: number): Promise<ChallengeResponseDto | null> {
+        // 먼저 챌린지 정보를 가져옵니다.
+        const challenge = await this.challengeRepository.findOne({
+            where: { _id: challengeId }
+        });
+        if (!challenge) {
+            return null; // 챌린지가 없으면 null 반환
+        }
+
+        // 해당 챌린지 ID를 가진 모든 사용자 검색
+        const participants = await this.userRepository.find({
+            where: { challengeId: challenge._id }
+        });
+
+        // 참가자 정보를 DTO 형식으로 변환
+        const participantDtos: ParticipantDto[] = participants.map(user => ({
+            userId: user._id,
+            email: user.email
+        }));
+        
+        return {
+            _id: challenge._id,
+            startDate: challenge.startDate,
+            wakeTime: challenge.wakeTime,
+            durationDays: challenge.durationDays,
+            mates: participantDtos
+        };
     }
 
 }
