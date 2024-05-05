@@ -9,6 +9,8 @@ import {
   JoinChallenge,
   Settings,
 } from './pages';
+import SignIn from './pages/Auth/Signin';
+import SignUp from './pages/Auth/Signup';
 import { GameContextProvider, OpenViduContextProvider } from './contexts';
 
 function Router() {
@@ -17,6 +19,8 @@ function Router() {
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/auth/signIn" element={<SignIn />} />
+        <Route path="/auth/signUp" element={<SignUp />} />
         <Route path="/myStreak" element={<MyStreak />} />
         <Route path="/joinChallenge" element={<JoinChallenge />} />
         <Route path="/createChallenge" element={<CreateChallenge />} />
