@@ -32,9 +32,7 @@ const Main = () => {
   const { challengeData, setChallengeData, fetchChallengeData } =
     useContext(ChallengeContext);
   const { challengeId } = challengeData;
-  const { remainingTime, isTooEarly, isTooLate } = useCheckTime(
-    challengeData?.wakeTime,
-  );
+  const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
 
   // ---------------현재 페이지에서 쓸 State---------------
   const [isAuthorized, setIsAuthorized] = useState(false);
