@@ -66,6 +66,7 @@ import { Streak } from './users/entities/streak.entity';
         username: configService.get<string>('POSTGRESQL_DATABASE_USER'),
         database: configService.get<string>('POSTGRESQL_DATABASE_NAME'),
         password: configService.get<string>('POSTGRESQL_DATABASE_PASSWORD'),
+        logging : true,
     
         synchronize: true,//테이블을 자동으로 생성해주는 옵션 , 실제 환경에서는 사용하지 않는 것이 좋다.
         entities: [Users, Attendance, Challenges, Invitations, Streak], // 여기에 엔티티 클래스를 추가합니다. 
