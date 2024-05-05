@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Challenges } from './challenges.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, createQueryBuilder } from 'typeorm';
+import { Between, Repository, createQueryBuilder } from 'typeorm';
 import { CreateChallengeDto } from './dto/createChallenge.dto';
 import { InvitationsService } from 'src/invitations/invitations.service';
 import { Users } from 'src/users/entities/users.entity';
 import { AcceptInvitationDto } from './dto/acceptInvitaion.dto';
 import { ChallengeResponseDto, ParticipantDto } from './dto/challengeResponse.dto';
+import { Attendance } from 'src/attendance/attendance.entity';
 
 @Injectable()
 export class ChallengesService {
@@ -15,6 +16,8 @@ export class ChallengesService {
         private challengeRepository: Repository<Challenges>,
         @InjectRepository(Users)
         private userRepository: Repository<Users>,
+        @InjectRepository(Attendance)
+        private attendanceRepository: Repository<Attendance>,
         private invitationService: InvitationsService,
     ) {
         this.challengeRepository = challengeRepository;
@@ -92,6 +95,19 @@ export class ChallengesService {
             durationDays: challenge.durationDays,
             mates: participantDtos
         };
+    }
+    async getChallengeCalendar(userId: number, month: number): Promise<string[]> {
+        const currentYear = new Date().getFullYear();  // 현재 연도를 가져옴
+        const startDate = new Date(currentYear, month - 1, 1);  // 월은 0부터 시작하므로 month - 1
+        const endDate = new Date(currentYear, month, 0);  // 해당 월의 마지막 날짜를 구함
+    
+        const attendances = await this.attendanceRepository.find({
+            where: {
+                user: { _id: userId },
+                date: Between(startDate, endDate)
+            }
+        });
+        return attendances.map(attendance => attendance.date.toISOString().split('T')[0]);  // 날짜만 반환
     }
 
 }
