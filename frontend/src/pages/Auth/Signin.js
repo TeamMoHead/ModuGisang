@@ -10,7 +10,7 @@ const Signin = () => {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [isLoginLoading, setIsLoginLoading] = useState(false);
-  const { handleLogInSubmit } = useAuth();
+  const { handleSubmitLogIn } = useAuth();
 
   const handleLoginEmailChange = e => {
     setLoginEmail(e.target.value);
@@ -44,7 +44,7 @@ const Signin = () => {
         </form>
         <SimpleBtn
           onClickHandler={async e =>
-            await handleLogInSubmit({
+            await handleSubmitLogIn({
               e,
               loginEmail,
               loginPassword,

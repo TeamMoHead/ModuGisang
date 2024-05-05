@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { AccountContext, UserContext } from './';
 import { challengeServices } from '../apis/challengeServices';
+import useFetch from '../hooks/useFetch';
 
 const ChallengeContext = createContext();
 
@@ -8,6 +9,8 @@ const ChallengeContextProvider = ({ children }) => {
   const { accessToken, userId } = useContext(AccountContext);
   const { userInfo } = useContext(UserContext);
   const { challengeId } = userInfo;
+  const fetchData = useFetch();
+
   // 임시 데이터
   const [challengeData, setChallengeData] = useState({
     challengeId: '333',
@@ -22,37 +25,7 @@ const ChallengeContextProvider = ({ children }) => {
     ],
   });
 
-  const fetchChallengeData = async () => {
-    try {
-      const response = await challengeServices.getChallengeInfo({
-        accessToken: accessToken,
-        challengeId: challengeId,
-      });
-      if (response.data) {
-        return response;
-      } else {
-        console.error('No challenge data received');
-      }
-    } catch (error) {
-      console.error('Failed to fetch challenge data:', error);
-    }
-  };
-
-  const fetchInvitationData = async () => {
-    try {
-      const response = await challengeServices.getInvitationInfo({
-        accessToken,
-        userId,
-      });
-      if (response.data) {
-        return response;
-      } else {
-        console.error('No invitation data received');
-      }
-    } catch (error) {
-      console.error('Failed to fetch invitation data:', error);
-    }
-  };
+  const getInvitationData = async () => {};
 
   const getChallengeData = async challengeId => {
     // =========API 연동후 주석 풀 예정 ==========
@@ -63,14 +36,39 @@ const ChallengeContextProvider = ({ children }) => {
     //   console.error(error);
     // }
   };
+
+  const handleCreateChallenge = async ({
+    accessToken,
+    newChallengeData,
+    setIsCreateChallengeLoading,
+  }) => {
+    setIsCreateChallengeLoading(true);
+    const response = await challengeServices.createChallenge({
+      accessToken,
+      newChallengeData,
+    });
+    const {
+      isLoading: isCreateChallengeLoading,
+      data: createChallengeData,
+      error: createChallengeError,
+    } = response;
+    if (!isCreateChallengeLoading && createChallengeData) {
+      console.log('createChallengeData:', createChallengeData);
+      setIsCreateChallengeLoading(false);
+    } else if (!isCreateChallengeLoading && createChallengeError) {
+      console.error(createChallengeError);
+      setIsCreateChallengeLoading(false);
+    }
+  };
+
   return (
     <ChallengeContext.Provider
       value={{
         challengeData,
-        fetchChallengeData,
-        fetchInvitationData,
+        getInvitationData,
         setChallengeData,
         getChallengeData,
+        handleCreateChallenge,
       }}
     >
       {children}

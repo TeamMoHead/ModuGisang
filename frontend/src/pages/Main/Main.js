@@ -23,7 +23,7 @@ const Main = () => {
   const navigate = useNavigate();
 
   // setUserInfo는 Test용으로 사용하는 함수
-  const { userInfo, setUserInfo, fetchUserData } = useContext(UserContext);
+  const { userInfo, setUserInfo, getUserData } = useContext(UserContext);
   const { userName, challengeId } = userInfo;
   const hasChallenge = challengeId >= 0;
   const { challengeData, setChallengeData, fetchChallengeData } =
@@ -76,51 +76,9 @@ const Main = () => {
     },
   };
 
-  const getUserInfo = async () => {
-    setIsUserInfoLoading(true);
-    try {
-      const response = await fetchData(() => fetchUserData());
-      const {
-        isLoading: isUserInfoLoading,
-        data: userInfoData,
-        error: userInfoError,
-      } = response;
-      if (!isUserInfoLoading && userInfoData) {
-        setUserInfo(userInfoData);
-        setIsUserInfoLoading(false);
-      } else if (userInfoError) {
-        setIsUserInfoLoading(false);
-        console.error(userInfoError);
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-      alert(error);
-    }
-  };
-
-  const getChallengeInfo = async () => {
-    setIsChallengeInfoLoading(true);
-    try {
-      const response = await fetchData(() => fetchChallengeData());
-      const {
-        isLoading: isChallengeInfoLoading,
-        data: challengeInfoData,
-        error: challengeInfoError,
-      } = response;
-      if (!isChallengeInfoLoading && challengeInfoData) {
-        setChallengeData(challengeInfoData);
-        setIsChallengeInfoLoading(false);
-      } else if (challengeInfoError) {
-        console.error(challengeInfoError);
-        setIsChallengeInfoLoading(false);
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-      alert(error);
-    }
-  };
+  useEffect(() => {
+    // getUserData({ setIsUserInfoLoading });
+  }, []);
 
   return (
     <>
@@ -148,6 +106,14 @@ const Main = () => {
               />
             ),
           )}
+        </CardsWrapper>
+        <CardsWrapper>
+          <CardBtn
+            key={CARD_TYPES.create}
+            content={CARD_CONTENTS.create}
+            onClickHandler={CARD_ON_CLICK_HANDLERS.create}
+            btnStyle={CARD_STYLES.create}
+          />
         </CardsWrapper>
       </S.PageWrapper>
     </>

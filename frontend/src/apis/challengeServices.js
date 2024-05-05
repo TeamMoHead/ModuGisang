@@ -47,6 +47,36 @@ const acceptInvitation = async ({ accessToken, challengeId, userId }) => {
   return API.post(url, payload, config);
 };
 
+const createChallenge = async ({ accessToken, newChallengeData }) => {
+  const url = '/challenge/create';
+  const payload = {
+    hostId: newChallengeData.hostId,
+    duration: newChallengeData.duration,
+    startDate: newChallengeData.startDate,
+    wakeupTime: newChallengeData.wakeupTime,
+    miracleMates: newChallengeData.miracleMates,
+  };
+  const config = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  };
+
+  console.log(payload);
+  const response = API.post(url, payload, config);
+  console.log(response);
+  return response;
+};
+
+const checkMateAvailability = async ({ accessToken, email }) => {
+  const url = '/challenge/searchmate';
+  const config = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    params: { email: email },
+  };
+  const response = API.get(url, config);
+  console.log(response);
+  return response;
+};
+
 const getConnectionToken = async ({ userData }) => {
   return axios.post(`https://api.modugisang.site/api/startSession`, {
     userData,
@@ -57,5 +87,7 @@ export const challengeServices = {
   getChallengeInfo,
   getInvitationInfo,
   acceptInvitation,
+  createChallenge,
+  checkMateAvailability,
   getConnectionToken,
 };
