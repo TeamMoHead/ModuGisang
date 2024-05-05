@@ -7,6 +7,7 @@ import { InvitationsService } from 'src/invitations/invitations.service';
 import { Users } from 'src/users/entities/users.entity';
 import { AcceptInvitationDto } from './dto/acceptInvitaion.dto';
 import { ChallengeResponseDto, ParticipantDto } from './dto/challengeResponse.dto';
+import { Invitations } from 'src/invitations/invitations.entity';
 
 @Injectable()
 export class ChallengesService {
@@ -16,6 +17,8 @@ export class ChallengesService {
         @InjectRepository(Users)
         private userRepository: Repository<Users>,
         private invitationService: InvitationsService,
+        @InjectRepository(Invitations)
+        private invitaionRepository: Repository<Invitations>
     ) {
         this.challengeRepository = challengeRepository;
     }
@@ -94,4 +97,9 @@ export class ChallengesService {
         };
     }
 
+    async getInvitaions(guestId:number){
+        const invitations = await this.invitaionRepository.find({where: {guestId : guestId}});
+
+        return invitations;
+    }
 }

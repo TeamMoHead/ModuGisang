@@ -33,38 +33,32 @@ export class AuthController {
 
     @Post("login")
     async login(@Body() user: UserDto) {
-        try {
-            const authUser = await this.userService.findUser(user.email);
-            const validatePassword = await argon2.verify(authUser.password, user.password);
-            if (!authUser || !validatePassword) {
-                throw new UnauthorizedException();
-            }
-            const accessToken = await this.authService.validateUser(authUser);
-            const refreshToken = await this.authService.generateRefreshToken(authUser._id);
-            await this.userService.setCurrentRefreshToken(refreshToken, authUser);    //db에 저장
-            if (accessToken && refreshToken){
-                console.log("로그인 성공");
-                return {
-                    accessToken: accessToken,
-                    refreshToken: refreshToken,
-                    userId: authUser._id 
-                }
-            
-            }else{
-                throw new UnauthorizedException("로그인 실패");
-            }
-            // res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: 900000, secure: true });
-            // res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 900000, secure: true });
-            // res.send({
-            //     accessToken: accessToken,
-            //     refreshToken: refreshToken
-            // });
-        } catch (error) {
-            throw new HttpException({
-                status: "error",
-                message: "로그인 실패, 서버 에러"
-            }, HttpStatus.INTERNAL_SERVER_ERROR);
+        const authUser = await this.userService.findUser(user.email);
+        const validatePassword = await argon2.verify(authUser.password, user.password);
+        if (!authUser || !validatePassword) {
+            throw new UnauthorizedException();
         }
+        const accessToken = await this.authService.validateUser(authUser);
+        const refreshToken = await this.authService.generateRefreshToken(authUser._id);
+        await this.userService.setCurrentRefreshToken(refreshToken, authUser);    //db에 저장
+        if (accessToken && refreshToken){
+            console.log("로그인 성공");
+            return {
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+                userId: authUser._id 
+            }
+        
+        }else{
+            throw new UnauthorizedException("로그인 실패");
+        }
+        // res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: 900000, secure: true });
+        // res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 900000, secure: true });
+        // res.send({
+        //     accessToken: accessToken,
+        //     refreshToken: refreshToken
+        // });
+
 
     }
 
