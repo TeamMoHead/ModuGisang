@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 
 import { ChallengeContext } from './';
+import useCheckTime from '../hooks/useCheckTime';
 
 const GameContext = createContext();
 
@@ -25,6 +26,7 @@ const GAME_MODE_DURATION = {
 
 const GameContextProvider = ({ children }) => {
   const { challengeData } = useContext(ChallengeContext);
+  const { remainingTime } = useCheckTime(challengeData?.wakeTime);
   const [inGameMode, setInGameMode] = useState(
     localStorage.getItem('inGameMode') || 0,
   );
@@ -53,29 +55,17 @@ const GameContextProvider = ({ children }) => {
     }
   };
 
-  const scheduleFirstMission = wakeTime => {
-    const now = new Date();
-    const wakeTimeDate = new Date(now);
-    const [hours, minutes] = wakeTime.split(':').map(Number);
-    wakeTimeDate.setHours(hours, minutes, 0, 0);
-
-    // 이미 지난 시간인 경우 다음날로 설정
-    if (wakeTimeDate < now) {
-      wakeTimeDate.setDate(now.getDate() + 1);
-    }
-
-    const delay = wakeTimeDate - now;
-
+  const scheduleFirstMission = () => {
     setTimeout(() => {
       setInGameMode(1); // waiting 끝나면 첫 미션으로 전환
       setMyMissionStatus(false); // 미션 수행상태 초기화
       setTimeout(updateMode, GAME_MODE_DURATION[1]); // 첫 미션 후 다음 모드로 전환 시작
-    }, delay);
+    }, remainingTime);
   };
 
   useEffect(() => {
     if (challengeData) {
-      scheduleFirstMission(challengeData.wakeTime);
+      scheduleFirstMission();
     }
   }, [challengeData]);
 
@@ -83,6 +73,7 @@ const GameContextProvider = ({ children }) => {
     console.log('@@@@@ MATE MISSION STATUS @@@@@ => ', matesMissionStatus);
   }, [matesMissionStatus]);
 
+  console.log('^^^^^^GAME CONTEXT^^^^^ => ', inGameMode, remainingTime);
   return (
     <GameContext.Provider
       value={{

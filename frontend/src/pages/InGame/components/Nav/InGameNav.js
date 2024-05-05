@@ -33,10 +33,6 @@ const InGameNav = () => {
     }
   };
 
-  useEffect(() => {
-    console.log('네비게이터의 게임모드:  ', GAME_MODE[inGameMode]);
-  }, [inGameMode]);
-
   return (
     <Wrapper>
       <BtnArea
@@ -84,7 +80,8 @@ const Wrapper = styled.nav`
   width: 100vw;
   height: 100px;
 
-  background-color: ${({ theme }) => theme.colors.lighter.light};
+  /* background-color: ${({ theme }) => theme.colors.lighter.light}; */
+  ${({ theme }) => theme.gradient.navBar}
 `;
 
 const BackBtnStyle = {
@@ -115,9 +112,9 @@ const BtnArea = styled.div`
 
 const TextArea = styled.div`
   width: 100vw;
-  height: 50px;
-  padding: 20px;
-  margin-top: -50px;
+  /* height: 50px; */
+  /* padding: 20px; */
+  margin-top: 80px;
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
 `;

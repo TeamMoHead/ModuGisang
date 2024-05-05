@@ -90,10 +90,11 @@ const useAuth = () => {
     loginPassword,
     setIsLoginLoading,
   }) => {
-    if (loginEmail === '' || loginPassword === '') {
-      alert('이메일과 비밀번호를 입력해주세요.');
-      return;
-    }
+    // ============= ⭐️⭐️개발 끝나고 나서 풀어주기⭐️⭐️ ============
+    // if (loginEmail === '' || loginPassword === '') {
+    //   alert('이메일과 비밀번호를 입력해주세요.');
+    //   return;
+    // }
     setIsLoginLoading(true);
     const response = await fetchData(() =>
       authServices.logInUser({
