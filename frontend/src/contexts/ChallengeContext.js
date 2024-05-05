@@ -1,10 +1,13 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
+import { AccountContext, UserContext } from './';
 import { challengeServices } from '../apis/challengeServices';
-import useCheckTime from '../hooks/useCheckTime';
 
 const ChallengeContext = createContext();
 
 const ChallengeContextProvider = ({ children }) => {
+  const { accessToken, userId } = useContext(AccountContext);
+  const { userInfo } = useContext(UserContext);
+  const { challengeId } = userInfo;
   // 임시 데이터
   const [challengeData, setChallengeData] = useState({
     challengeId: '333',
@@ -19,7 +22,7 @@ const ChallengeContextProvider = ({ children }) => {
     ],
   });
 
-  const fetchChallengeData = async ({ accessToken, challengeId }) => {
+  const fetchChallengeData = async () => {
     try {
       const response = await challengeServices.getChallengeInfo({
         accessToken: accessToken,
@@ -35,7 +38,7 @@ const ChallengeContextProvider = ({ children }) => {
     }
   };
 
-  const fetchInvitationData = async ({ accessToken, userId }) => {
+  const fetchInvitationData = async () => {
     try {
       const response = await challengeServices.getInvitationInfo({
         accessToken,

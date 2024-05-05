@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AccountContext, UserContext, ChallengeContext } from '../../contexts';
+import { UserContext, ChallengeContext } from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
-import useAuth from '../../hooks/useAuth';
 import useFetch from '../../hooks/useFetch';
 import { NavBar, CardBtn, SimpleBtn } from '../../components';
 import {
@@ -21,32 +20,29 @@ import * as S from '../../styles/common';
 
 const Main = () => {
   const { fetchData } = useFetch();
-  const { handleCheckAuth } = useAuth();
   const navigate = useNavigate();
 
-  const { accessToken } = useContext(AccountContext);
   // setUserInfo는 Test용으로 사용하는 함수
-  const { userInfo, setUserInfo, fetchUserData, userId } =
-    useContext(UserContext);
-  const { userName, challengeId: hasChallenge } = userInfo;
+  const { userInfo, setUserInfo, fetchUserData } = useContext(UserContext);
+  const { userName, challengeId } = userInfo;
+  const hasChallenge = challengeId >= 0;
   const { challengeData, setChallengeData, fetchChallengeData } =
     useContext(ChallengeContext);
-  const { challengeId } = challengeData;
+
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
 
   // ---------------현재 페이지에서 쓸 State---------------
-  const [isAuthorized, setIsAuthorized] = useState(false);
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [isUserInfoLoading, setIsUserInfoLoading] = useState(true);
   const [isChallengeInfoLoading, setIsChallengeInfoLoading] = useState(true);
+
   const greetings = GREETINGS[0] + userName + GREETINGS[1];
 
   const CARD_CONTENTS = {
-    streak: <StreakContent userInfo={userInfo} />,
-    invitations: <InvitationsContent id={userId} />,
-    create: <CreateContent id={userId} />,
-    challenge: <ChallengeContent id={userId} data={challengeData} />,
-    enter: <EnterContent id={userId} />,
+    streak: <StreakContent />,
+    invitations: <InvitationsContent />,
+    create: <CreateContent />,
+    challenge: <ChallengeContent />,
+    enter: <EnterContent />,
   };
 
   const CARD_ON_CLICK_HANDLERS = {
@@ -80,21 +76,10 @@ const Main = () => {
     },
   };
 
-  const checkAuthorize = async () => {
-    setIsAuthLoading(true);
-    const response = await handleCheckAuth();
-    if (response) {
-      setIsAuthLoading(false);
-      setIsAuthorized(true);
-    }
-  };
-
-  const getUserInfo = async ({ accessToken, userId }) => {
+  const getUserInfo = async () => {
     setIsUserInfoLoading(true);
     try {
-      const response = await fetchData(() =>
-        fetchUserData({ accessToken, userId }),
-      );
+      const response = await fetchData(() => fetchUserData());
       const {
         isLoading: isUserInfoLoading,
         data: userInfoData,
@@ -114,12 +99,10 @@ const Main = () => {
     }
   };
 
-  const getChallengeInfo = async ({ accessToken, challengeId }) => {
+  const getChallengeInfo = async () => {
     setIsChallengeInfoLoading(true);
     try {
-      const response = await fetchData(() =>
-        fetchChallengeData({ accessToken, challengeId }),
-      );
+      const response = await fetchData(() => fetchChallengeData());
       const {
         isLoading: isChallengeInfoLoading,
         data: challengeInfoData,
@@ -138,33 +121,6 @@ const Main = () => {
       alert(error);
     }
   };
-
-  useEffect(() => {
-    checkAuthorize();
-    console.log('checking authorization...');
-    console.log('AT', accessToken);
-    console.log('RT', localStorage.getItem('refreshToken'));
-    console.log('UID', userId);
-  }, [accessToken]);
-
-  // useEffect(() => {
-  //   console.log('getting user info...');
-  //   console.log('user id is : ', userId);
-  //   if (userId && isAuthorized) {
-  //     getUserInfo({ userId });
-  //   }
-  // }, [userId, isAuthorized]);
-
-  // useEffect(() => {
-  //   if (hasChallenge && !isUserInfoLoading && isAuthorized) {
-  //     getChallengeInfo({ accessToken, challengeId });
-  //   } else {
-  //     setIsChallengeInfoLoading(false);
-  //   }
-  // }, [hasChallenge, isUserInfoLoading, isAuthorized]);
-
-  if (isAuthLoading) return <div>Loading...</div>;
-  if (!isAuthorized) return <div>접근이 허용되지 않은 페이지입니다.</div>;
 
   return (
     <>

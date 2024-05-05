@@ -2,15 +2,14 @@ import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authServices } from '../apis/authServices';
 import { AccountContext } from '../contexts/AccountContexts';
-import { UserContext } from '../contexts/UserContext';
 import useFetch from '../hooks/useFetch';
 
 const useAuth = () => {
   const navigate = useNavigate();
 
   const { fetchData } = useFetch();
-  const { accessToken, setAccessToken } = useContext(AccountContext);
-  const { setUserId } = useContext(UserContext);
+  const { accessToken, setAccessToken, setUserId } = useContext(AccountContext);
+
   const refreshToken = localStorage.getItem('refreshToken');
 
   const refreshAuthorization = async () => {
