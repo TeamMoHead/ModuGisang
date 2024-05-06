@@ -1,7 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { GameContextProvider, OpenViduContextProvider } from './contexts';
+import { Auth, Signin, Signup, ProtectedRoute } from './pages/Auth';
+import { PageNotFound } from './components';
 import {
-  Auth,
   Main,
   InGame,
   MyStreak,
@@ -9,29 +11,33 @@ import {
   JoinChallenge,
   Settings,
 } from './pages';
-import { GameContextProvider, OpenViduContextProvider } from './contexts';
 
 function Router() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Main />} />
         <Route path="/auth" element={<Auth />} />
-        <Route path="/myStreak" element={<MyStreak />} />
-        <Route path="/joinChallenge" element={<JoinChallenge />} />
-        <Route path="/createChallenge" element={<CreateChallenge />} />
-        <Route
-          path="/startMorning/:challengeId/*"
-          element={
-            <GameContextProvider>
-              <OpenViduContextProvider>
-                <InGame />
-              </OpenViduContextProvider>
-            </GameContextProvider>
-          }
-        />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="*" element={<Main />} />
+        <Route path="/auth/signIn" element={<Signin />} />
+        <Route path="/auth/signUp" element={<Signup />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<Main />} />
+          <Route path="/main" element={<Main />} />
+          <Route path="/myStreak" element={<MyStreak />} />
+          <Route path="/joinChallenge" element={<JoinChallenge />} />
+          <Route path="/createChallenge" element={<CreateChallenge />} />
+          <Route
+            path="/startMorning/:challengeId"
+            element={
+              <GameContextProvider>
+                <OpenViduContextProvider>
+                  <InGame />
+                </OpenViduContextProvider>
+              </GameContextProvider>
+            }
+          />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>
   );

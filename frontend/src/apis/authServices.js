@@ -1,8 +1,8 @@
 import axios from 'axios';
-import PageWrapper from '../styles/common/PageWrapper';
+import { TEST_CONFIG } from '../config';
 
 const API = axios.create({
-  baseURL: 'http://3.38.107.25:5000/api',
+  baseURL: TEST_CONFIG.BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -11,8 +11,8 @@ const API = axios.create({
 const logInUser = async ({ email, password }) => {
   const url = '/auth/login';
   const payload = {
-    email: email,
-    password: password,
+    email: TEST_CONFIG.TEST_EMAIL,
+    password: TEST_CONFIG.TEST_PASSWORD,
   };
   const response = await API.post(url, payload);
   console.log(response);
@@ -20,7 +20,6 @@ const logInUser = async ({ email, password }) => {
 };
 
 const logOutUser = async ({ accessToken }) => {
-  console.log('accessToken', accessToken);
   const url = '/auth/logout';
   const config = {
     headers: {
@@ -28,18 +27,6 @@ const logOutUser = async ({ accessToken }) => {
     },
   };
   const response = await API.get(url, config);
-  console.log(response);
-  return response;
-};
-
-const signUpUser = async ({ email, password, userName }) => {
-  const url = '/user/signUp';
-  const payload = {
-    email: email,
-    password: password,
-    userName: userName,
-  };
-  const response = await API.post(url, payload);
   console.log(response);
   return response;
 };
@@ -57,10 +44,21 @@ const checkEmailAvailability = async ({ email }) => {
 };
 
 const verifyAuthCode = async ({ verifyCode, email }) => {
-  console.log('verifyCode', verifyCode);
-  console.log('email', email);
   const url = '/auth';
-  const payload = { authNum: verifyCode, email: email };
+  const config = {};
+  const payload = { email: email, authNum: verifyCode };
+  const response = await API.post(url, payload, config);
+  console.log(response);
+  return response;
+};
+
+const signUpUser = async ({ email, password, userName }) => {
+  const url = '/user/signUp';
+  const payload = {
+    email: email,
+    password: password,
+    userName: userName,
+  };
   const response = await API.post(url, payload);
   console.log(response);
   return response;

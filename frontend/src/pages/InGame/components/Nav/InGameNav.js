@@ -20,6 +20,7 @@ const InGameNav = () => {
   const { inGameMode } = useContext(GameContext);
   const { micOn, turnMicOnOff, myVideoRef, myStream, setMyStream } =
     useContext(OpenViduContext);
+
   const goToMain = () => {
     navigate('/main');
     localStorage.removeItem('inGameMode');
@@ -31,8 +32,6 @@ const InGameNav = () => {
       }
     }
   };
-
-  useEffect(() => {}, [inGameMode]);
 
   return (
     <Wrapper>
@@ -81,7 +80,8 @@ const Wrapper = styled.nav`
   width: 100vw;
   height: 100px;
 
-  background-color: ${({ theme }) => theme.colors.lighter.light};
+  /* background-color: ${({ theme }) => theme.colors.lighter.light}; */
+  ${({ theme }) => theme.gradient.navBar}
 `;
 
 const BackBtnStyle = {
@@ -112,9 +112,9 @@ const BtnArea = styled.div`
 
 const TextArea = styled.div`
   width: 100vw;
-  height: 50px;
-  padding: 20px;
-  margin-top: -50px;
+  /* height: 50px; */
+  /* padding: 20px; */
+  margin-top: 80px;
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
 `;

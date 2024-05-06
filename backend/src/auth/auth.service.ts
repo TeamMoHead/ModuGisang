@@ -8,6 +8,7 @@ import { Payload } from './payload.interface';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ConfigService } from '@nestjs/config';
 import RedisCacheService from 'src/redis-cache/redis-cache.service';
+import { Users } from 'src/users/entities/users.entity';
 
 @Injectable()
 export class AuthService {
@@ -19,13 +20,8 @@ export class AuthService {
     ) { }
 
     // accessToken 생성
-    async validateUser(userDto: UserDto): Promise<string> {
-        const userFind = await this.userService.findUser(userDto.email);
-        const validatePassword = await argon2.verify(userFind.password, userDto.password);
-        if (!userFind || !validatePassword) {
-            throw new UnauthorizedException();
-        }
-        const payload = { sub: userFind._id, _id: userFind._id, username: userFind.userName };
+    async validateUser(user: Users): Promise<string> {
+        const payload = { sub: user._id, _id: user._id, username: user.userName };
         return this.jwtService.signAsync(payload);
     }
     // 토큰 Payload에 해당하는 아아디의 유저 가져오기
@@ -39,15 +35,14 @@ export class AuthService {
     }
 
     // refreshToken 생성
-    async generateRefreshToken(userDto: UserDto): Promise<string> {
-        const user = this.userService.findUser(userDto.email);
-        return this.jwtService.signAsync({ id: (await user)._id }, {
+    async generateRefreshToken(_id: number): Promise<string> {
+        return this.jwtService.signAsync({ id: _id }, {
             secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),
             expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXP')
         });
     }
 
-    async refresh(refreshTokenDto: RefreshTokenDto): Promise<string> {
+    async refresh(refreshTokenDto: RefreshTokenDto): Promise<any> {
         const refreshToken  = refreshTokenDto.refreshToken;
         try {
             const decodedRefreshToken = this.jwtService.verify(refreshToken, { secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'), });
@@ -57,9 +52,13 @@ export class AuthService {
                 throw new UnauthorizedException('Invalid user!');
             }
 
-            const accessToekn = await this.generateAccessToken(user); // userdto로 변환
+            const accessToken = await this.generateAccessToken(user); // userdto로 변환
 
-            return accessToekn;
+            return {
+                accessToken: accessToken,
+                userId: userId
+            }
+                
         } catch (err) {
             throw new UnauthorizedException(err);
         }

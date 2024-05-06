@@ -8,7 +8,7 @@ const colors = {
     dark: '#202954',
   },
   lighter: {
-    light: 'rgb(240, 243, 255, 0.7)',
+    light: 'rgb(240, 243, 255, 0.6)',
     purple: 'rgb(131, 111, 255, 0.8)',
     emerald: 'rgb(21, 245, 186, 0.8)',
     dark: 'rgb(36, 41, 78, 0.8)',
@@ -92,12 +92,25 @@ const boxShadow = {
   text: '0 2px 4px 0 rgba(255, 255, 255, 0.5)',
 };
 
+const gradient = {
+  navBar: css`
+    background: linear-gradient(
+      to bottom,
+      rgb(240, 243, 255, 0.6) 0%,
+      rgb(240, 243, 255, 0.6) 30%,
+      rgb(240, 243, 255, 0.6) 20%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  `,
+};
+
 const theme = {
   colors,
   fonts,
   radius,
   flex,
   boxShadow,
+  gradient,
 };
 
 export default theme;
