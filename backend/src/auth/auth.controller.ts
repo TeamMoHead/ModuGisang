@@ -32,7 +32,7 @@ export class AuthController {
     }
 
     @Post("login")
-    async login(@Body() user: UserDto) {
+    async login(@Body() user: UserDto) { // 로그인 시 예외처리 더 자세하게 구현 필요 ( DB에 값을 제대로 저장을 못했을 때, 서버 쪽 에러가 있을 때 등 )
         const authUser = await this.userService.findUser(user.email);
         const validatePassword = await argon2.verify(authUser.password, user.password);
         if (!authUser || !validatePassword) {
