@@ -1,25 +1,26 @@
-import { BadRequestException, Body, Controller, Get, NotFoundException, NotImplementedException, Post, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, NotFoundException, NotImplementedException, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ChallengesService } from './challenges.service';
 import { CreateChallengeDto } from './dto/createChallenge.dto';
 import { AuthenticateGuard } from 'src/auth/auth.guard';
 import { AcceptInvitationDto } from './dto/acceptInvitaion.dto';
 import { ChallengeResponseDto } from './dto/challengeResponse.dto';
+import { ChallengeResultDto } from './dto/challengeResult.dto';
 
 @Controller('api/challenge')
 export class ChallengesController {
     constructor(
-        private readonly challengeService:ChallengesService,
-    ){}
+        private readonly challengeService: ChallengesService,
+    ) { }
     @Get()
     async getChallengeInfo(@Query('challengeId') challengeId: number): Promise<ChallengeResponseDto> {
         const challenge = await this.challengeService.getChallengeInfo(challengeId);
         if (!challenge) {
-          throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
+            throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
         }
         return challenge;
-      }
+    }
     @Post('create')
-    async createChallenge(@Body() createChallengeDto:CreateChallengeDto) {
+    async createChallenge(@Body() createChallengeDto: CreateChallengeDto) {
         console.log("create")
         console.log(createChallengeDto)
         const challenge = await this.challengeService.createChallenge(createChallengeDto);
@@ -30,26 +31,39 @@ export class ChallengesController {
         return 'create';
     }
     @Get('searchmate')
-    async searchMate(@Body('email') email:string){
+    async searchMate(@Query('email') email: string) {
         const result = await this.challengeService.searchAvailableMate(email);
         return {
             isEngaged: result
         }
     }
     @Get('invitations')
-    getInvitations(@Body('guestId') guestId:number) {
+    getInvitations(@Query('guestId') guestId: number) {
         console.log(guestId);
-        const invitations = this.challengeService.getInvitaions(guestId);
+        const invitations = this.challengeService.getInvitations(guestId);
         return invitations; // 데이터 반환 값 수정 예정
     }
     @Post('acceptInvitation')
-    async acceptInvitation(@Body() acceptInvitationDto:AcceptInvitationDto) {
+    async acceptInvitation(@Body() acceptInvitationDto: AcceptInvitationDto) {
         const result = await this.challengeService.acceptInvitation(acceptInvitationDto);
-        if(result.affected > 0){
+        if (result.success === true) {
             return 'accept';
-        }else{
+        } else {
             throw new BadRequestException("승낙 실패");
         }
-        
+    }
+
+    @Get('calendar/:userId/:month')
+    async getChallengeCalendar(@Param('userId') userId: number, @Param('month') month: number,): Promise<string[]> {
+        return this.challengeService.getChallengeCalendar(userId, month);
+    }
+
+    @Get('/:userId/results/:date')
+    async getChallengeResults(
+        @Param('userId') userId: number,
+        @Param('date') date: Date,
+    ): Promise<ChallengeResultDto[]> {
+        const result = await this.challengeService.getResultsByDateAndUser(userId, date);
+        return result
     }
 }

@@ -60,8 +60,3 @@ interface Medals{
     silver:number;
     bronze:number;
 }
-
-
-
-
-
