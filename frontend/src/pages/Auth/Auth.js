@@ -60,14 +60,6 @@ const Auth = () => {
     console.log('RT', localStorage.getItem('refreshToken'));
   }, [accessToken]);
 
-  // if (
-  //   isLoginLoading ||
-  //   isSignUpLoading ||
-  //   isEmailCheckLoading ||
-  //   isLogoutLoading
-  // )
-  //   return <div>Loading...</div>;
-
   return (
     <S.PageWrapper>
       Auth

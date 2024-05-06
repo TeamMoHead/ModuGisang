@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserContext, ChallengeContext } from '../../contexts';
+import { UserContext, ChallengeContext, AccountContext } from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
 import useFetch from '../../hooks/useFetch';
 import { NavBar, CardBtn, SimpleBtn } from '../../components';
@@ -11,6 +11,7 @@ import {
   ChallengeContent,
   EnterContent,
 } from './cardComponents';
+import { challengeServices, userServices } from '../../apis';
 import { GREETINGS, CARD_TYPES, CARD_STYLES } from './DATA';
 
 import { TEST_USER_INFO } from './TEST_DATA';
@@ -23,11 +24,12 @@ const Main = () => {
   const navigate = useNavigate();
 
   // setUserInfo는 Test용으로 사용하는 함수
-  const { userInfo, setUserInfo, fetchUserData } = useContext(UserContext);
-  const { userName, challengeId } = userInfo;
-  const hasChallenge = challengeId >= 0;
-  const { challengeData, setChallengeData, fetchChallengeData } =
-    useContext(ChallengeContext);
+  const { accessToken, userId } = useContext(AccountContext);
+  const { userInfo, setUserInfo, challengeId, setChallengeId } =
+    useContext(UserContext);
+  const { userName } = userInfo;
+  const { challengeData, setChallengeData } = useContext(ChallengeContext);
+  const hasChallenge = Number(challengeId) !== -1;
 
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
 
@@ -76,51 +78,77 @@ const Main = () => {
     },
   };
 
-  const getUserInfo = async () => {
-    setIsUserInfoLoading(true);
-    try {
-      const response = await fetchData(() => fetchUserData());
-      const {
-        isLoading: isUserInfoLoading,
-        data: userInfoData,
-        error: userInfoError,
-      } = response;
-      if (!isUserInfoLoading && userInfoData) {
-        setUserInfo(userInfoData);
+  const getUser = async () => {
+    const response = await fetchData(() =>
+      userServices.getUserInfo({ accessToken, userId }),
+    );
+    const {
+      isLoading: isUserDataLoading,
+      data: userData,
+      error: userDataError,
+    } = response;
+    if (!isUserDataLoading && userData) {
+      setUserInfo(userData);
+      // ==== Test용 ===
+      if (userData.userName === '박경원') {
+        setChallengeData(challengeData);
         setIsUserInfoLoading(false);
-      } else if (userInfoError) {
-        setIsUserInfoLoading(false);
-        console.error(userInfoError);
-        return;
       }
-    } catch (error) {
-      console.error(error);
-      alert(error);
+      // ==============
+      else if (userData.challengeId === -1) {
+        setChallengeId(-1);
+        setIsUserInfoLoading(false);
+      } else {
+        setUserInfo(userData);
+        setChallengeId(userData.challengeId);
+        setIsUserInfoLoading(false);
+      }
+    } else if (!isUserDataLoading && userDataError) {
+      console.error(userDataError);
+      setIsUserInfoLoading(false);
     }
   };
 
-  const getChallengeInfo = async () => {
-    setIsChallengeInfoLoading(true);
-    try {
-      const response = await fetchData(() => fetchChallengeData());
-      const {
-        isLoading: isChallengeInfoLoading,
-        data: challengeInfoData,
-        error: challengeInfoError,
-      } = response;
-      if (!isChallengeInfoLoading && challengeInfoData) {
-        setChallengeData(challengeInfoData);
-        setIsChallengeInfoLoading(false);
-      } else if (challengeInfoError) {
-        console.error(challengeInfoError);
-        setIsChallengeInfoLoading(false);
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-      alert(error);
+  const getChallenge = async () => {
+    if (challengeId === -1) {
+      return;
+    }
+    const response = await fetchData(() =>
+      challengeServices.getChallengeInfo({
+        accessToken,
+        challengeId: challengeId,
+      }),
+    );
+    const {
+      isLoading: isChallengeDataLoading,
+      data: userChallengeData,
+      error: challengeDataError,
+    } = response;
+    if (!isChallengeDataLoading && userChallengeData) {
+      setChallengeData(userChallengeData);
+      setIsChallengeInfoLoading(false);
+    } else if (!isChallengeDataLoading && challengeDataError) {
+      console.error(challengeDataError);
+      setIsChallengeInfoLoading(false);
     }
   };
+
+  console.log(challengeId);
+
+  useEffect(() => {
+    if (userId !== null) {
+      getUser();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (challengeId !== 55) {
+      getChallenge();
+    }
+  }, [challengeId]);
+
+  console.log('userInfo: ', userInfo);
+  console.log('challengeData: ', challengeData);
 
   return (
     <>
@@ -137,6 +165,7 @@ const Main = () => {
             }}
           />
         ))}
+
         <CardsWrapper>
           {CARD_TYPES[hasChallenge ? 'hasChallenge' : 'noChallenge'].map(
             type => (

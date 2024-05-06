@@ -2,7 +2,7 @@ import axios from 'axios';
 import { TEST_CONFIG } from '../config';
 
 const API = axios.create({
-  baseURL: TEST_CONFIG.BASE_URL_SERVER,
+  baseURL: TEST_CONFIG.BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -18,7 +18,7 @@ const getChallengeInfo = async ({ accessToken, challengeId }) => {
       challengeId: challengeId,
     },
   };
-  return API.get(url, config);
+  return await API.get(url, config);
 };
 
 const getInvitationInfo = async ({ accessToken, userId }) => {
@@ -28,14 +28,15 @@ const getInvitationInfo = async ({ accessToken, userId }) => {
       Authorization: `Bearer ${accessToken}`,
     },
     params: {
-      userId: userId,
+      guestId: userId,
     },
   };
-  return API.get(url, config);
+
+  return await API.get(url, config);
 };
 
 const acceptInvitation = async ({ accessToken, challengeId, userId }) => {
-  const url = '/challenge/acceptinvitation/';
+  const url = '/challenge/acceptinvitation';
   const payload = {
     challengeId: challengeId,
     guestId: userId,
@@ -43,8 +44,47 @@ const acceptInvitation = async ({ accessToken, challengeId, userId }) => {
   const config = {
     headers: { Authorization: `Bearer ${accessToken}` },
   };
+  return await API.post(url, payload, config);
+};
 
-  return API.post(url, payload, config);
+const createChallenge = async ({ accessToken, newChallengeData }) => {
+  const url = '/challenge/create';
+  const payload = {
+    hostId: newChallengeData.hostId,
+    duration: newChallengeData.duration,
+    startDate: newChallengeData.startDate,
+    wakeTime: newChallengeData.wakeTime,
+    mates: newChallengeData.mates,
+  };
+  const config = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  };
+  return await API.post(url, payload, config);
+};
+
+const checkMateAvailability = async ({ accessToken, email }) => {
+  const url = '/challenge/searchmate';
+  const config = {
+    params: { email: email },
+    headers: { Authorization: `Bearer ${accessToken}` },
+  };
+  return await API.get(url, config);
+};
+
+const getCallendarInfo = async ({ accessToken, userId, month }) => {
+  const url = `/challenge/calendar/${userId}/${month}`;
+  const config = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  };
+  return await API.get(url, config);
+};
+
+const getCallendarInfoByDate = async ({ accessToken, userId, date }) => {
+  const url = `/challenge/${userId}/results/${date}`;
+  const config = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  };
+  return await API.get(url, config);
 };
 
 const getConnectionToken = async ({ userData }) => {
@@ -57,5 +97,9 @@ export const challengeServices = {
   getChallengeInfo,
   getInvitationInfo,
   acceptInvitation,
+  createChallenge,
+  checkMateAvailability,
+  getCallendarInfo,
+  getCallendarInfoByDate,
   getConnectionToken,
 };

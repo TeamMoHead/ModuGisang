@@ -1,6 +1,7 @@
-import React, { useState, createContext, useContext, useEffect } from 'react';
+import React, { useState, createContext, useContext } from 'react';
 import { userServices } from '../apis/userServices';
 import { AccountContext } from './AccountContexts';
+import useFetch from '../hooks/useFetch';
 
 const UserContext = createContext();
 
@@ -8,29 +9,20 @@ const UserContextProvider = ({ children }) => {
   const { accessToken, userId } = useContext(AccountContext);
   // 임시 유저 정보
   const [userInfo, setUserInfo] = useState({
-    userId: '',
     userName: '',
     medals: {},
     streakDays: 0,
-    challengeId: '55',
+    challengeId: 55,
     invitationCounts: 0,
     affirmation: '',
   });
 
-  const fetchUserData = async () => {
-    try {
-      const response = await userServices.getUserInfo({
-        accessToken: accessToken,
-        userId: userId,
-      });
-      return response;
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const [challengeId, setChallengeId] = useState(Number(userInfo.challengeId));
 
   return (
-    <UserContext.Provider value={{ userInfo, fetchUserData, setUserInfo }}>
+    <UserContext.Provider
+      value={{ userInfo, setUserInfo, challengeId, setChallengeId }}
+    >
       {children}
     </UserContext.Provider>
   );

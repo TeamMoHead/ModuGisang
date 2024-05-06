@@ -6,6 +6,7 @@ import InputLine from './InputLine';
 import Modal from './Modal';
 import NavBar from './NavBar';
 import PageNotFound from './PageNotFound';
+import Dropdown from './Dropdown';
 
 export {
   Icon,
@@ -16,4 +17,5 @@ export {
   Modal,
   NavBar,
   PageNotFound,
+  Dropdown,
 };

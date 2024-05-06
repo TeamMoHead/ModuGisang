@@ -1,15 +1,24 @@
-import React from 'react';
+import React, { useContext } from 'react';
+
+import { ChallengeContext } from '../../../contexts';
 import styled from 'styled-components';
 
 const ChallengeContent = () => {
+  const { challengeData } = useContext(ChallengeContext);
+  const { duration, wakeTime, mates } = challengeData;
   return (
     <Wrapper>
-      챌린지 완료까지
-      <OneLineWrapper>
-        <BigLetter>D-26 </BigLetter>
+      <LeftArea>
+        챌린지 완료까지
+        <BigLetter>D-{duration}</BigLetter>
         <SmallLetter>남았습니다</SmallLetter>
-      </OneLineWrapper>
-      <p>기상시간: 05:30</p>
+      </LeftArea>
+      <RightArea>
+        <p>기상시간: {wakeTime}</p>
+        {mates.map(mate => (
+          <SmallLetter key={mate.userId}>{mate.userName}</SmallLetter>
+        ))}
+      </RightArea>
     </Wrapper>
   );
 };
@@ -17,10 +26,17 @@ const ChallengeContent = () => {
 export default ChallengeContent;
 
 const Wrapper = styled.div`
-  ${({ theme }) => theme.flex.center};
-  align-items: flex-start;
+  ${({ theme }) => theme.flex.between}
+`;
+
+const RightArea = styled.div`
+  ${({ theme }) => theme.flex.left}
   flex-direction: column;
-  gap: 5px;
+`;
+
+const LeftArea = styled.div`
+  ${({ theme }) => theme.flex.right}
+  flex-direction: column;
 `;
 
 const OneLineWrapper = styled.div`

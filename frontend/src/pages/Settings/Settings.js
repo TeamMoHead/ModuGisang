@@ -1,31 +1,20 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AccountContext, UserContext } from '../../contexts';
-import { authServices } from '../../apis';
-import useAuth from '../../hooks/useAuth';
+import { AccountContext } from '../../contexts';
+import { authServices, userServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
-import { NavBar, Icon, SimpleBtn, CardBtn } from '../../components';
+import { NavBar, Icon, CardBtn, SimpleBtn, InputBox } from '../../components';
 import * as S from '../../styles/common';
 import styled from 'styled-components';
 
 const Settings = () => {
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
-  const [isAuthorized, setIsAuthorized] = useState(false);
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
-  const { accessToken, setAccessToken, setUserId } = useContext(AccountContext);
+  const [affirmation, setAffirmation] = useState('');
+  const { accessToken, setAccessToken, setUserId, userId } =
+    useContext(AccountContext);
 
   const { fetchData } = useFetch();
-  const { handleCheckAuth } = useAuth();
   const navigate = useNavigate();
-
-  const checkAuthorize = async () => {
-    setIsAuthLoading(true);
-    const response = await handleCheckAuth();
-    if (response) {
-      setIsAuthLoading(false);
-      setIsAuthorized(true);
-    }
-  };
 
   const handleLogOut = async () => {
     setIsLogoutLoading(true);
@@ -46,18 +35,43 @@ const Settings = () => {
     }
   };
 
-  useEffect(() => {
-    checkAuthorize();
-  }, []);
+  const handleAffirmationChange = e => {
+    setAffirmation(e.target.value);
+  };
 
-  if (isLogoutLoading || isAuthLoading) return <div>Loading...</div>;
-  if (!isAuthorized) return <div>접근이 허용되지 않은 페이지입니다.</div>;
+  const handleChangeAffirmation = async () => {
+    const response = await fetchData(() =>
+      userServices.changeAffirmation({ accessToken, affirmation, userId }),
+    );
+    const {
+      isLoading: isChangeAffirmationLoading,
+      error: changeAffirmationError,
+    } = response;
+    if (!isChangeAffirmationLoading) {
+      alert('변경되었습니다.');
+      setAffirmation('');
+    } else if (changeAffirmationError) {
+      alert(changeAffirmationError);
+    }
+  };
 
   return (
     <>
       <NavBar />
 
       <S.PageWrapper>
+        <InputBox
+          label="오늘의 한마디 "
+          type="text"
+          value={affirmation}
+          onChange={handleAffirmationChange}
+        />
+        <SimpleBtn
+          btnName="오늘의 한마디 수정하기"
+          onClickHandler={() => {
+            handleChangeAffirmation({ accessToken, affirmation });
+          }}
+        />
         <CardBtn
           content={
             <LogoutWrapper>
