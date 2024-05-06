@@ -24,7 +24,7 @@ export class Challenges {
   wakeTime: Date; // "HH:mm:ss" format
 
   @Column({name:"duration_days"})
-  durationDays: number;
+  duration: number;
 
   @OneToMany(() => Attendance, attendance => attendance.challenge)
   attendances: Attendance[];

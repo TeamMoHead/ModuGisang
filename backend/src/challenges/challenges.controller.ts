@@ -4,6 +4,7 @@ import { CreateChallengeDto } from './dto/createChallenge.dto';
 import { AuthenticateGuard } from 'src/auth/auth.guard';
 import { AcceptInvitationDto } from './dto/acceptInvitaion.dto';
 import { ChallengeResponseDto } from './dto/challengeResponse.dto';
+import { ChallengeResultDto } from './dto/challengeResult.dto';
 
 @Controller('api/challenge')
 export class ChallengesController {
@@ -30,7 +31,7 @@ export class ChallengesController {
         return 'create';
     }
     @Get('searchmate')
-    async searchMate(@Body('email') email: string) {
+    async searchMate(@Query('email') email: string) {
         const result = await this.challengeService.searchAvailableMate(email);
         return {
             isEngaged: result
@@ -45,7 +46,7 @@ export class ChallengesController {
     @Post('acceptInvitation')
     async acceptInvitation(@Body() acceptInvitationDto: AcceptInvitationDto) {
         const result = await this.challengeService.acceptInvitation(acceptInvitationDto);
-        if (result.affected > 0) {
+        if (result.success === true) {
             return 'accept';
         } else {
             throw new BadRequestException("승낙 실패");
@@ -55,5 +56,14 @@ export class ChallengesController {
     @Get('calendar/:userId/:month')
     async getChallengeCalendar(@Param('userId') userId: number, @Param('month') month: number,): Promise<string[]> {
         return this.challengeService.getChallengeCalendar(userId, month);
+    }
+
+    @Get('/:userId/results/:date')
+    async getChallengeResults(
+        @Param('userId') userId: number,
+        @Param('date') date: Date,
+    ): Promise<ChallengeResultDto[]> {
+        const result = await this.challengeService.getResultsByDateAndUser(userId, date);
+        return result
     }
 }

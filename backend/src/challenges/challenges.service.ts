@@ -9,6 +9,7 @@ import { AcceptInvitationDto } from './dto/acceptInvitaion.dto';
 import { ChallengeResponseDto, ParticipantDto } from './dto/challengeResponse.dto';
 import { Attendance } from 'src/attendance/attendance.entity';
 import { Invitations } from 'src/invitations/invitations.entity';
+import { ChallengeResultDto } from './dto/challengeResult.dto';
 
 @Injectable()
 export class ChallengesService {
@@ -31,24 +32,24 @@ export class ChallengesService {
         newChallenge.hostId = challenge.hostId;
         newChallenge.startDate = challenge.startDate;
         newChallenge.wakeTime = challenge.wakeTime;
-        newChallenge.durationDays = challenge.duration;
+        newChallenge.duration = challenge.duration;
         return await this.challengeRepository.save(challenge);
     }
-    
-    async searchAvailableMate(email:string):Promise<boolean>{
+
+    async searchAvailableMate(email: string): Promise<boolean> {
         const availUser = await this.userRepository.findOne({
-            where:{email:email}
+            where: { email: email }
         });
-        if (availUser.challengeId > 0){
+        if (availUser.challengeId > 0) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
-    async hostChallengeStatus(hostId: number): Promise<number>{
+    async hostChallengeStatus(hostId: number): Promise<number> {
         const challengeId = await this.challengeRepository.findOne({ where: { hostId } });
-        const user = await this.userRepository.findOneBy({ _id : hostId  });
+        const user = await this.userRepository.findOneBy({ _id: hostId });
         if (user && challengeId) {
             user.challengeId = challengeId._id;
             await this.userRepository.save(user);
@@ -57,17 +58,31 @@ export class ChallengesService {
         return null;
     }
     async sendInvitation(challengeId: number, email: string): Promise<void> {
-        const user = await this.userRepository.findOne({ where: { email : email } });
+        const user = await this.userRepository.findOne({ where: { email: email } });
         await this.invitationService.createInvitation(challengeId, user._id);
     }
 
 
-    async acceptInvitation(invitation: AcceptInvitationDto){
+    async acceptInvitation(invitation: AcceptInvitationDto) {
         const challengeId = invitation.challengeId;
         const guestId = invitation.guestId;
-        return await this.userRepository.update({_id:guestId},{
-            challengeId:challengeId
-        });
+        // const { challengeId, guestId } = invitation;
+        const responseDatedate = new Date();
+        try {
+            await Promise.all([
+                this.invitaionRepository.update({ challengeId, guestId }, {
+                    
+                    responseDate: responseDatedate
+                }),
+                this.userRepository.update({ _id: guestId }, {
+                    challengeId: challengeId
+                })
+            ]); // 여러개의 비동기 함수를 동시에 실행
+            return { success: true, message: "승낙 성공" };
+        } catch (e) {
+            console.error("Failed to accept invitation or update user:", e);
+            throw new Error("Error processing your invitation acceptance.");
+        }
 
     }
 
@@ -90,12 +105,11 @@ export class ChallengesService {
             userId: user._id,
             email: user.email
         }));
-        
         return {
             _id: challenge._id,
             startDate: challenge.startDate,
             wakeTime: challenge.wakeTime,
-            durationDays: challenge.durationDays,
+            duration: challenge.duration,
             mates: participantDtos
         };
     }
@@ -103,7 +117,6 @@ export class ChallengesService {
         const currentYear = new Date().getFullYear();  // 현재 연도를 가져옴
         const startDate = new Date(currentYear, month - 1, 1);  // 월은 0부터 시작하므로 month - 1
         const endDate = new Date(currentYear, month, 0);  // 해당 월의 마지막 날짜를 구함
-    
         const attendances = await this.attendanceRepository.find({
             where: {
                 user: { _id: userId },
@@ -113,9 +126,34 @@ export class ChallengesService {
         return attendances.map(attendance => attendance.date.toISOString().split('T')[0]);  // 날짜만 반환
     }
 
-    async getInvitaions(guestId:number){
-        const invitations = await this.invitaionRepository.find({where: {guestId : guestId}});
+    async getInvitaions(guestId: number) {
+        const invitations = await this.invitaionRepository.find({ where: { guestId: guestId } });
 
         return invitations;
+    }
+
+    async getResultsByDateAndUser(userId: number, date: Date): Promise<ChallengeResultDto[]> {
+        // 먼저 사용자가 참여하고 있는 챌린지 ID를 조회
+        const userWithChallenge = await this.userRepository.findOne({
+            where: { _id: userId }
+        });
+        if (!userWithChallenge || !userWithChallenge.challengeId) {
+            throw new Error('No challenge found for the user.');
+        }
+
+        const challengeId = userWithChallenge.challengeId;
+
+        // 해당 챌린지 ID와 일치하는 날짜에 모든 참석 기록을 조회
+        const attendances = await this.attendanceRepository.createQueryBuilder('attendance')
+            .leftJoinAndSelect('attendance.user', 'user')
+            .select(['attendance.score', 'user.userName', 'user._id'])  // 필요한 필드만 선택
+            .where('attendance.challengeId = :challengeId AND attendance.date = :date', { challengeId, date })
+            .getMany();
+
+        // 결과 데이터 매핑
+        return attendances.map(attendance => ({
+            userName: attendance.user.userName,
+            score: attendance.score
+        }));
     }
 }
