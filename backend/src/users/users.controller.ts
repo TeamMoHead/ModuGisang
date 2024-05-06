@@ -22,6 +22,7 @@ export class UserController {
         const reuslt = await this.userService.getInvis(userId);
         const invitations = reuslt.invitations;
         return {
+            userId: invitations._id,
             userName: invitations.userName,
             streakDays: 0, // streak 구현 후 처리 예정
             medals: {
