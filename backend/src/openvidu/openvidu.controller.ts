@@ -20,7 +20,8 @@ export class OpenviduController {
             throw new HttpException('Missing required fields', HttpStatus.BAD_REQUEST);
         }
 
-
+        body.userData.challengeId = challengeId.toString();
+        body.userData.userId = userId.toString();
         const token = await this.openviduService.openviduTotalService(body); // 사용자 데이터에 대한 정보로 세션과 커넥션 생성 후 토큰 반환
         return {
             "token": token

@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { OpenVidu,OpenViduRole } from 'openvidu-node-client';
+import { OpenVidu, OpenViduRole } from 'openvidu-node-client';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -9,12 +9,12 @@ export class OpenviduService {
     private OPENVIDU_SECRET = this.configService.get<string>('OPENVIDU_SECRET');
 
     constructor(
-        private configService:ConfigService
-    ){
+        private configService: ConfigService
+    ) {
         this.openvidu = new OpenVidu(this.OPENVIDU_URL, this.OPENVIDU_SECRET);
     }
 
-    async openviduTotalService(body:any){
+    async openviduTotalService(body: any) {
         try {
             const session = await this.findSession(body.userData.challengeId); // 동일한 세션이 있는지 검사
             return session ? await this.createToken(session.sessionId, body) : await this.handleNoSessionFound(body);
@@ -32,25 +32,25 @@ export class OpenviduService {
         }
     }
 
-    async createToken(sessionId:string, body:any){
+    async createToken(sessionId: string, body: any) {
         const session = await this.findSession(sessionId);
-        
-        if(!session){
+
+        if (!session) {
             throw new HttpException('Session not found', HttpStatus.NOT_FOUND);
-        }else{
+        } else {
             try {
                 const tokenOptions = {
                     data: `{"userId": "${body.userData.userId}", "userName": "${body.userData.userName}"}`,
                     role: OpenViduRole.PUBLISHER
                 };
                 const response = await session.generateToken(tokenOptions);
-                console.log("Generated Token: ",response);
-                if (response != null){
+                console.log("Generated Token: ", response);
+                if (response != null) {
                     return response;
-                }else{
-                    throw new HttpException('Token generation failed',HttpStatus.INTERNAL_SERVER_ERROR);
+                } else {
+                    throw new HttpException('Token generation failed', HttpStatus.INTERNAL_SERVER_ERROR);
                 }
-                
+
             } catch (error) {
                 console.error("Error creating connection: ", error);
                 throw new HttpException('Error creating connection: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -58,15 +58,15 @@ export class OpenviduService {
         }
     }
 
-    async findSession(challengeId: string){
+    async findSession(challengeId: string) {
         await this.listActiveSessions();
         return this.openvidu.activeSessions.find((s) => s.sessionId === challengeId);
     }
 
-    async handleNoSessionFound(body:any){
+    async handleNoSessionFound(body: any) {
         try {
             console.log("No existing session found, creating new session");
-            const session = await this.openvidu.createSession({ customSessionId: body.userData.challengeId});
+            const session = await this.openvidu.createSession({ customSessionId: body.userData.challengeId });
             return this.createToken(session.sessionId, body);
         } catch (error) {
             console.error("Error creating new session : ", error);
@@ -76,7 +76,7 @@ export class OpenviduService {
 
     async listActiveSessions() {
         try {
-            this.openvidu.activeSessions.find((s) => console.log("sessionlist : "+s.sessionId));
+            this.openvidu.activeSessions.find((s) => console.log("sessionlist : " + s.sessionId));
         } catch (error) {
             console.error('Error fetching active sessions:', error);
         }
