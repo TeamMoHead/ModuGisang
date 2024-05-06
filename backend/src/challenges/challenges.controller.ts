@@ -25,8 +25,8 @@ export class ChallengesController {
         console.log(createChallengeDto)
         const challenge = await this.challengeService.createChallenge(createChallengeDto);
         const challenge_id = await this.challengeService.hostChallengeStatus(createChallengeDto.hostId);
-        for (let i = 0; i < createChallengeDto.miracleMates.length; i++) {
-            const send = await this.challengeService.sendInvitation(challenge_id, createChallengeDto.miracleMates[i]);
+        for (let i = 0; i < createChallengeDto.mates.length; i++) {
+            const send = await this.challengeService.sendInvitation(challenge_id, createChallengeDto.mates[i]);
         }
         return 'create';
     }
