@@ -9,9 +9,6 @@ const API = axios.create({
 });
 
 const logInUser = async ({ email, password }) => {
-  console.log("API logInUser's PARAMS");
-  console.log('email: ', email);
-  console.log('password: ', password);
   const url = '/auth/login';
   const payload = {
     email: TEST_CONFIG.TEST_EMAIL,
@@ -21,7 +18,6 @@ const logInUser = async ({ email, password }) => {
 };
 
 const logOutUser = async ({ accessToken }) => {
-  console.log("API logOutUser's PARAMS");
   const url = '/auth/logout';
   const config = {
     headers: {
@@ -32,8 +28,6 @@ const logOutUser = async ({ accessToken }) => {
 };
 
 const checkEmailAvailability = async ({ email }) => {
-  console.log("API checkEmailAvailability's PARAMS");
-  console.log('email: ', email);
   const url = '/email/check';
   const config = {
     params: {
@@ -44,9 +38,6 @@ const checkEmailAvailability = async ({ email }) => {
 };
 
 const verifyAuthCode = async ({ verifyCode, email }) => {
-  console.log("API verifyAuthCode's PARAMS");
-  console.log('verifyCode: ', verifyCode);
-  console.log('email: ', email);
   const url = '/auth';
   const config = {};
   const payload = { email: email, authNum: verifyCode };
@@ -54,10 +45,6 @@ const verifyAuthCode = async ({ verifyCode, email }) => {
 };
 
 const signUpUser = async ({ email, password, userName }) => {
-  console.log("API signUpUser's PARAMS");
-  console.log('email: ', email);
-  console.log('password: ', password);
-  console.log('userName: ', userName);
   const url = '/user/signUp';
   const payload = {
     email: email,
@@ -68,9 +55,6 @@ const signUpUser = async ({ email, password, userName }) => {
 };
 
 const refreshAccessToken = async ({ accessToken, refreshToken }) => {
-  console.log("API refreshAccessToken's PARAMS");
-  console.log('accessToken: ', accessToken);
-  console.log('refreshToken: ', refreshToken);
   if (!accessToken) {
     accessToken = null;
   }

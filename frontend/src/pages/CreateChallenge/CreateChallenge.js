@@ -30,7 +30,6 @@ const CreateChallenge = () => {
       accessToken,
       email: emailInput,
     });
-    console.log(response);
     e.preventDefault();
     if (!response.data.isEngaged) {
       setMiracleMates([...miracleMates, emailInput]);
@@ -99,6 +98,7 @@ const CreateChallenge = () => {
           btnName="친구 추가"
           onClickHandler={e => {
             checkEmail(e);
+            console.log(miracleMates);
           }}
         />
         <div>

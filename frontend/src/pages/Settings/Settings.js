@@ -36,7 +36,6 @@ const Settings = () => {
   };
 
   const handleAffirmationChange = e => {
-    console.log(e.target.value);
     setAffirmation(e.target.value);
   };
 
@@ -44,7 +43,16 @@ const Settings = () => {
     const response = await fetchData(() =>
       userServices.changeAffirmation({ accessToken, affirmation, userId }),
     );
-    console.log(response);
+    const {
+      isLoading: isChangeAffirmationLoading,
+      error: changeAffirmationError,
+    } = response;
+    if (!isChangeAffirmationLoading) {
+      alert('변경되었습니다.');
+      setAffirmation('');
+    } else if (changeAffirmationError) {
+      alert(changeAffirmationError);
+    }
   };
 
   return (

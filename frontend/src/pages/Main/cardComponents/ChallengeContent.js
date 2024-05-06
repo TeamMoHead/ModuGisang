@@ -1,15 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
+
+import { ChallengeContext } from '../../../contexts';
 import styled from 'styled-components';
 
 const ChallengeContent = () => {
+  const { challengeData } = useContext(ChallengeContext);
+  const { duration, wakeTime } = challengeData;
   return (
     <Wrapper>
       챌린지 완료까지
       <OneLineWrapper>
-        <BigLetter>D-26 </BigLetter>
+        <BigLetter>D-{duration}</BigLetter>
         <SmallLetter>남았습니다</SmallLetter>
       </OneLineWrapper>
-      <p>기상시간: 05:30</p>
+      <p>기상시간: {wakeTime}</p>
     </Wrapper>
   );
 };

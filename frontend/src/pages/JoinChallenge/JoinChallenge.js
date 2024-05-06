@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { NavBar, SimpleBtn } from '../../components';
 import { AccountContext, ChallengeContext } from '../../contexts';
 import { challengeServices } from '../../apis';
@@ -9,7 +8,6 @@ import * as S from '../../styles/common';
 
 const JoinChallenge = () => {
   const [invitations, setInvitations] = useState([]);
-  const [inviChallengeId, setInviChallengeId] = useState('');
   const [isInvitationLoading, setIsInvitationLoading] = useState(true);
   const [isAcceptInviLoading, setIsAcceptInviLoading] = useState(false);
 
@@ -22,23 +20,15 @@ const JoinChallenge = () => {
     const response = await fetchData(() =>
       challengeServices.getInvitationInfo({ accessToken, userId }),
     );
-    const {
-      isLoading: isGetInvitationLoading,
-      data: invitationData,
-      error: invitationError,
-    } = response;
-    console.log('response:', response);
-    if (!isGetInvitationLoading && invitationData) {
-      if (invitationData.length > 0) {
-        setInvitations(invitationData);
-      } else {
-        setInvitations(['초대된 챌린지가 없습니다.']);
-      }
-      setIsInvitationLoading(false);
+    const { data: invitationData, error: invitationError } = response;
+    console.log('invitationData', invitationData);
+    if (invitationData) {
+      setInvitations(invitationData);
     } else if (invitationError) {
       console.error(invitationError);
-      setIsInvitationLoading(false);
+      setInvitations([]);
     }
+    setIsInvitationLoading(false);
   };
 
   useEffect(() => {
@@ -52,31 +42,41 @@ const JoinChallenge = () => {
         <div>
           초대 목록: <br />
           {invitations.length > 0 ? (
-            invitations[0] === '초대된 챌린지가 없습니다.' ? (
-              <p>{invitations[0]}</p>
-            ) : (
-              <ul>
-                {invitations.map((invitation, index) => (
-                  <li key={index}>
-                    {invitation.description || '챌린지 초대'} -
-                    <SimpleBtn
-                      btnName="초대 수락"
-                      onClickHandler={() => {
-                        setInviChallengeId(invitation.challengeId);
-                        handleAcceptInvitation({
-                          accessToken,
-                          challengeId: invitation.challengeId,
-                          userId,
-                          setIsAcceptInviLoading,
-                        });
-                      }}
-                    />
-                  </li>
-                ))}
-              </ul>
-            )
+            <ul>
+              {invitations.map(invitation => (
+                <li key={invitation.challengeId}>
+                  {'초대자: ' + invitation.userName}
+                  <br />
+                  <br />
+                  {'챌린지 기간: ' + invitation.duration + '일'}
+                  <br />
+                  <br />
+                  {'시작일: ' +
+                    new Date(invitation.startDate).toLocaleDateString()}
+                  <br />
+                  <br />
+                  {'초대 받은 날짜: ' +
+                    new Date(invitation.sendDate).toLocaleDateString()}
+                  <br />
+                  <br />
+                  <SimpleBtn
+                    key={invitation.challengeId}
+                    btnName="초대 수락"
+                    onClickHandler={() => {
+                      handleAcceptInvitation({
+                        accessToken,
+                        challengeId: invitation.challengeId,
+                        userId,
+                        setIsAcceptInviLoading,
+                      });
+                      alert(`${invitation.userName}의 챌린지에 참여했습니다.`);
+                    }}
+                  />
+                </li>
+              ))}
+            </ul>
           ) : (
-            <p>초대 정보를 불러오는 중...</p>
+            <p>초대된 챌린지가 없습니다.</p>
           )}
         </div>
       </S.PageWrapper>

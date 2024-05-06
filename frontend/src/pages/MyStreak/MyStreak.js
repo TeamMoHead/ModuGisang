@@ -37,7 +37,6 @@ const MyStreak = () => {
     <>
       <NavBar />
       <S.PageWrapper>
-        <div>유저아이디: {userId}</div>
         <div>유저이름: {userName}</div>
         <div>연속일수: {streakDays}</div>
         <div>금메달: {medals.gold}</div>

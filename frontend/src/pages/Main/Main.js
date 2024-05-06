@@ -29,7 +29,7 @@ const Main = () => {
     useContext(UserContext);
   const { userName } = userInfo;
   const { challengeData, setChallengeData } = useContext(ChallengeContext);
-  const hasChallenge = challengeId >= 0;
+  const hasChallenge = Number(challengeId) >= 0;
 
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
 
@@ -87,12 +87,16 @@ const Main = () => {
       data: userData,
       error: userDataError,
     } = response;
-    console.log('userData:', userData);
     if (!isUserDataLoading && userData) {
       setUserInfo(userData);
-      setChallengeId(userData.challengeId);
-      console.log('challengeId', userData.challengeId);
-      setIsUserInfoLoading(false);
+      if (userData.challengeId === -1) {
+        setChallengeData(challengeData);
+        setIsUserInfoLoading(false);
+      } else {
+        setUserInfo(userData);
+        setChallengeId(userData.challengeId);
+        setIsUserInfoLoading(false);
+      }
     } else if (!isUserDataLoading && userDataError) {
       console.error(userDataError);
       setIsUserInfoLoading(false);
@@ -100,6 +104,9 @@ const Main = () => {
   };
 
   const getChallenge = async () => {
+    if (challengeId === -1) {
+      return;
+    }
     const response = await fetchData(() =>
       challengeServices.getChallengeInfo({
         accessToken,
@@ -108,12 +115,11 @@ const Main = () => {
     );
     const {
       isLoading: isChallengeDataLoading,
-      data: challengeData,
+      data: userChallengeData,
       error: challengeDataError,
     } = response;
-    console.log('challengeData:', challengeData);
-    if (!isChallengeDataLoading && challengeData) {
-      setChallengeData(challengeData);
+    if (!isChallengeDataLoading && userChallengeData) {
+      setChallengeData(userChallengeData);
       setIsChallengeInfoLoading(false);
     } else if (!isChallengeDataLoading && challengeDataError) {
       console.error(challengeDataError);
@@ -122,14 +128,19 @@ const Main = () => {
   };
 
   useEffect(() => {
-    getUser();
-  }, []);
+    if (userId !== null) {
+      getUser();
+    }
+  }, [userId]);
 
   useEffect(() => {
-    if (challengeId >= 0) {
+    if (challengeId !== 55) {
       getChallenge();
     }
   }, [challengeId]);
+
+  console.log('userInfo: ', userInfo);
+  console.log('challengeData: ', challengeData);
 
   return (
     <>
@@ -146,6 +157,7 @@ const Main = () => {
             }}
           />
         ))}
+
         <CardsWrapper>
           {CARD_TYPES[hasChallenge ? 'hasChallenge' : 'noChallenge'].map(
             type => (
@@ -158,7 +170,7 @@ const Main = () => {
             ),
           )}
         </CardsWrapper>
-        <CardsWrapper>
+        {/* <CardsWrapper>
           <CardBtn
             key={CARD_TYPES.invitations}
             content={CARD_CONTENTS.invitations}
@@ -166,7 +178,6 @@ const Main = () => {
             btnStyle={CARD_STYLES.invitations}
           />
         </CardsWrapper>
-
         <CardsWrapper>
           <CardBtn
             key={CARD_TYPES.create}
@@ -174,7 +185,7 @@ const Main = () => {
             onClickHandler={CARD_ON_CLICK_HANDLERS.create}
             btnStyle={CARD_STYLES.create}
           />
-        </CardsWrapper>
+        </CardsWrapper> */}
       </S.PageWrapper>
     </>
   );

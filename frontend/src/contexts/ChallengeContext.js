@@ -13,6 +13,7 @@ const ChallengeContextProvider = ({ children }) => {
     challengeId: '333',
     startDate: '2021-09-01T00:00:00.000Z',
     wakeTime: '17:30',
+    duration: 7,
     mates: [
       { userId: 0, userName: '천사뿅뿅뿅' },
       { userId: 1, userName: '귀요미이시현' },
@@ -60,7 +61,7 @@ const ChallengeContextProvider = ({ children }) => {
 
   const handleAcceptInvitation = async ({
     accessToken,
-    inviChallengeId,
+    challengeId,
     userId,
     setIsAcceptInviLoading,
   }) => {
@@ -68,7 +69,7 @@ const ChallengeContextProvider = ({ children }) => {
     const response = await fetchData(() =>
       challengeServices.acceptInvitation({
         accessToken,
-        challengeId: 17,
+        challengeId: challengeId,
         userId,
       }),
     );
