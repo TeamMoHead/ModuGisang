@@ -58,6 +58,7 @@ export class ChallengesService {
         return null;
     }
     async sendInvitation(challengeId: number, email: string): Promise<void> {
+        console.log("sendInvitation",email)
         const user = await this.userRepository.findOne({ where: { email: email } });
         await this.invitationService.createInvitation(challengeId, user._id);
     }
@@ -70,13 +71,13 @@ export class ChallengesService {
         const responseDatedate = new Date();
         try {
             await Promise.all([
-                this.invitaionRepository.update({ challengeId, guestId }, {
-                    
-                    responseDate: responseDatedate
+                this.invitaionRepository.update({ guestId }, {
+                    responseDate: responseDatedate,
+                    isExpired: true
                 }),
                 this.userRepository.update({ _id: guestId }, {
                     challengeId: challengeId
-                })
+                }),
             ]); // 여러개의 비동기 함수를 동시에 실행
             return { success: true, message: "승낙 성공" };
         } catch (e) {
@@ -135,7 +136,7 @@ export class ChallengesService {
                 },
             relations: ['challenge', 'challenge.host']
         });
-
+        console.log("invi",invitations)
         return invitations.map(inv => ({
             challengeId: inv.challengeId,
             startDate: inv.challenge.startDate,
