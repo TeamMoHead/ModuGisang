@@ -37,8 +37,10 @@ export class ChallengesController {
         }
     }
     @Get('invitations')
-    getInvitations() {
-        return 'Invitation challenge list';
+    getInvitations(@Body('guestId') guestId:number) {
+        console.log(guestId);
+        const invitations = this.challengeService.getInvitaions(guestId);
+        return invitations; // 데이터 반환 값 수정 예정
     }
     @Post('acceptInvitation')
     async acceptInvitation(@Body() acceptInvitationDto: AcceptInvitationDto) {
