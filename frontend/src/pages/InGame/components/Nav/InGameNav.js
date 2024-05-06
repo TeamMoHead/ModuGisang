@@ -59,8 +59,10 @@ const InGameNav = () => {
         {GAME_MODE[inGameMode] !== 'waiting' && (
           <>
             <GameRound text={inGameMode} />
-            <MissionTitle text={INFO_BY_GAME_MODE[inGameMode].title} />
-            <MissionInst text={INFO_BY_GAME_MODE[inGameMode].instruction} />
+            <InstructionArea>
+              <MissionTitle text={INFO_BY_GAME_MODE[inGameMode].title} />
+              <MissionInst text={INFO_BY_GAME_MODE[inGameMode].instruction} />
+            </InstructionArea>
           </>
         )}
         {GAME_MODE[inGameMode] === 'waiting' && <Timer />}
@@ -80,8 +82,35 @@ const Wrapper = styled.nav`
   width: 100vw;
   height: 100px;
 
-  /* background-color: ${({ theme }) => theme.colors.lighter.light}; */
-  ${({ theme }) => theme.gradient.navBar}
+  background-color: ${({ theme }) => theme.colors.lighter.light};
+`;
+
+const BtnArea = styled.div`
+  position: fixed;
+  width: 100vw;
+  height: 50px;
+  padding: 0 20px;
+
+  ${({ theme, $hasLeftBtn }) =>
+    $hasLeftBtn ? theme.flex.between : theme.flex.right}
+`;
+
+const TextArea = styled.div`
+  width: 100vw;
+
+  ${({ theme }) => theme.flex.center}
+  flex-direction: column;
+`;
+
+const InstructionArea = styled.div`
+  position: absolute;
+  margin: 0 auto;
+
+  ${({ theme }) => theme.flex.center}
+  flex-direction: column;
+
+  ${({ theme }) => theme.fonts.instruction}
+  color: ${({ theme }) => theme.colors.primary.dark};
 `;
 
 const BackBtnStyle = {
@@ -98,23 +127,3 @@ const micOffStyle = {
   size: 21,
   hoverColor: 'purple',
 };
-
-const BtnArea = styled.div`
-  position: fixed;
-  top: 0;
-
-  width: 100vw;
-  height: 50px;
-  padding: 0 20px;
-  ${({ theme, $hasLeftBtn }) =>
-    $hasLeftBtn ? theme.flex.between : theme.flex.right}
-`;
-
-const TextArea = styled.div`
-  width: 100vw;
-  /* height: 50px; */
-  /* padding: 20px; */
-  margin-top: 80px;
-  ${({ theme }) => theme.flex.center}
-  flex-direction: column;
-`;

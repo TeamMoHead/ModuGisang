@@ -1,56 +1,84 @@
 import React, { createContext, useContext, useState } from 'react';
-import { AccountContext, UserContext } from './';
 import { challengeServices } from '../apis/challengeServices';
+import { useNavigate } from 'react-router-dom';
+import useFetch from '../hooks/useFetch';
+
+import { AccountContext } from './';
 
 const ChallengeContext = createContext();
 
 const ChallengeContextProvider = ({ children }) => {
-  const { accessToken, userId } = useContext(AccountContext);
-  const { userInfo } = useContext(UserContext);
-  const { challengeId } = userInfo;
+  const { accessToken } = useContext(AccountContext);
+  const { fetchData } = useFetch();
+  const navigate = useNavigate();
+
   // 임시 데이터
   const [challengeData, setChallengeData] = useState({
-    challengeId: '55',
-    startDate: '2021-09-01T00:00:00.000Z',
-    wakeTime: '12:20',
-    mates: [
-      { userId: 1, userName: '천사박경원' },
-      { userId: 2, userName: '귀요미이시현' },
-      { userId: 3, userName: '깜찍이이재원' },
-      { userId: 4, userName: '상큼이금도현' },
-      { userId: 5, userName: '똑똑이연선애' },
-    ],
+    // challengeId: '55',
+    // startDate: '2021-09-01T00:00:00.000Z',
+    // wakeTime: '17:30',
+    // duration: 7,
+    // mates: [
+    //   { userId: 1, userName: '천사박경원' },
+    //   { userId: 2, userName: '귀요미이시현' },
+    //   { userId: 3, userName: '깜찍이이재원' },
+    //   { userId: 4, userName: '상큼이금도현' },
+    //   { userId: 5, userName: '똑똑이연선애' },
+    // ],
   });
 
-  const fetchChallengeData = async () => {
-    try {
-      const response = await challengeServices.getChallengeInfo({
-        accessToken: accessToken,
-        challengeId: challengeId,
-      });
-      if (response.data) {
-        return response;
-      } else {
-        console.error('No challenge data received');
-      }
-    } catch (error) {
-      console.error('Failed to fetch challenge data:', error);
+  const handleCreateChallenge = async ({
+    newChallengeData,
+    setIsCreateChallengeLoading,
+  }) => {
+    setIsCreateChallengeLoading(true);
+    const response = await fetchData(() =>
+      challengeServices.createChallenge({
+        accessToken,
+        newChallengeData,
+      }),
+    );
+    const {
+      isLoading: isCreateChallengeLoading,
+      data: createChallengeData,
+      error: createChallengeError,
+    } = response;
+    if (!isCreateChallengeLoading && createChallengeData) {
+      console.log('createChallengeData:', createChallengeData);
+      setIsCreateChallengeLoading(false);
+      alert('챌린지가 생성되었습니다.');
+      navigate('/');
+    } else if (!isCreateChallengeLoading && createChallengeError) {
+      console.error(createChallengeError);
+      setIsCreateChallengeLoading(false);
     }
   };
 
-  const fetchInvitationData = async () => {
-    try {
-      const response = await challengeServices.getInvitationInfo({
+  const handleAcceptInvitation = async ({
+    accessToken,
+    challengeId,
+    userId,
+    setIsAcceptInviLoading,
+  }) => {
+    setIsAcceptInviLoading(true);
+    const response = await fetchData(() =>
+      challengeServices.acceptInvitation({
         accessToken,
+        challengeId: challengeId,
         userId,
-      });
-      if (response.data) {
-        return response;
-      } else {
-        console.error('No invitation data received');
-      }
-    } catch (error) {
-      console.error('Failed to fetch invitation data:', error);
+      }),
+    );
+    const {
+      isLoading: isAcceptInviLoading,
+      data: acceptInviData,
+      error: acceptInviError,
+    } = response;
+    if (!isAcceptInviLoading && acceptInviData) {
+      console.log('acceptInviData:', acceptInviData);
+      setIsAcceptInviLoading(false);
+    } else if (!isAcceptInviLoading && acceptInviError) {
+      console.error(acceptInviError);
+      setIsAcceptInviLoading(false);
     }
   };
 
@@ -58,9 +86,9 @@ const ChallengeContextProvider = ({ children }) => {
     <ChallengeContext.Provider
       value={{
         challengeData,
-        fetchChallengeData,
-        fetchInvitationData,
         setChallengeData,
+        handleCreateChallenge,
+        handleAcceptInvitation,
       }}
     >
       {children}

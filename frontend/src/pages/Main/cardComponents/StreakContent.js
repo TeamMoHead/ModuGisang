@@ -46,7 +46,7 @@ const StreakContent = () => {
       <LevelIcon src={STREAK_LEVEL_ICON[level]} />
       <RightArea>
         <SmallLetter>미라클 모닝</SmallLetter>
-        <BigLetter>12일 차 </BigLetter>
+        <BigLetter>{streakDays}일 차</BigLetter>
       </RightArea>
     </Wrapper>
   );

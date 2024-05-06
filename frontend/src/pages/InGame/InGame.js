@@ -43,10 +43,9 @@ const GAME_MODE_COMPONENTS = {
 
 const InGame = () => {
   const navigate = useNavigate();
-  const { challengeId } = useParams();
   const { userInfo } = useContext(UserContext);
   const { userId: myId } = userInfo;
-  const { challengeData, fetchChallengeData } = useContext(ChallengeContext);
+  const { challengeData } = useContext(ChallengeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
   const { isGameLoading, inGameMode, setMyMissionStatus } =
     useContext(GameContext);
@@ -56,14 +55,8 @@ const InGame = () => {
   const [mateList, setMateList] = useState([]);
 
   useEffect(() => {
-    if (challengeId) {
-      fetchChallengeData();
-    }
-  }, [challengeId]);
-
-  useEffect(() => {
     if (challengeData) {
-      setMateList(challengeData.mates.filter(mate => mate.userId !== myId));
+      setMateList(challengeData?.mates?.filter(mate => mate.userId !== myId));
     } else return;
   }, [challengeData]);
 
@@ -120,9 +113,9 @@ const InGame = () => {
           {GAME_MODE_COMPONENTS[inGameMode]}
         </React.Fragment>
 
-        {mateList.length > 0 && (
-          <MatesVideoWrapper $isSingle={mateList.length === 1}>
-            {mateList.map(({ userId, userName }) => (
+        {mateList?.length > 0 && (
+          <MatesVideoWrapper $isSingle={mateList?.length === 1}>
+            {mateList?.map(({ userId, userName }) => (
               <MateVideo key={userId} mateId={userId} mateName={userName} />
             ))}
           </MatesVideoWrapper>

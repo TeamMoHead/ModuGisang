@@ -5,15 +5,14 @@ import React, {
   useEffect,
   useContext,
 } from 'react';
-import { UserContext, ChallengeContext, GameContext } from './';
+import { UserContext, GameContext } from './';
 import { challengeServices } from '../apis';
 import { OpenVidu } from 'openvidu-browser';
 
 const OpenViduContext = createContext();
 
 const OpenViduContextProvider = ({ children }) => {
-  const { userInfo } = useContext(UserContext);
-  const { challengeData } = useContext(ChallengeContext);
+  const { userInfo, challengeId } = useContext(UserContext);
   const { inGameMode, myMissionStatus, setMatesMissionStatus } =
     useContext(GameContext);
 
@@ -30,7 +29,7 @@ const OpenViduContextProvider = ({ children }) => {
 
   const getConnectionToken = async () => {
     const userData = {
-      challengeId: challengeData.challengeId,
+      challengeId: challengeId,
       userId,
       userName,
     };
@@ -79,9 +78,10 @@ const OpenViduContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (!challengeData.challengeId) return;
+    console.log('재바오의 챌린지: ', challengeId, userInfo);
+    if (!challengeId) return;
     getConnectionToken();
-  }, [challengeData]);
+  }, [challengeId]);
 
   useEffect(() => {
     if (!connectionToken) return;
