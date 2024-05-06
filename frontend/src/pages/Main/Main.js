@@ -1,11 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AccountContext } from '../../contexts/AccountContexts';
-import { ChallengeContext } from '../../contexts/ChallengeContext';
-import { UserContext } from '../../contexts/UserContext';
-import useAuth from '../../hooks/useAuth';
+import { UserContext, ChallengeContext } from '../../contexts';
+import useCheckTime from '../../hooks/useCheckTime';
 import useFetch from '../../hooks/useFetch';
-import { isPastTime } from '../InGame/functions';
 import { NavBar, CardBtn, SimpleBtn } from '../../components';
 import {
   StreakContent,
@@ -22,31 +19,30 @@ import styled from 'styled-components';
 import * as S from '../../styles/common';
 
 const Main = () => {
-  const [isAuthorized, setIsAuthorized] = useState(false);
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
-  const [isUserInfoLoading, setIsUserInfoLoading] = useState(true);
-  const [isChallengeInfoLoading, setIsChallengeInfoLoading] = useState(true);
   const { fetchData } = useFetch();
-  const { handleCheckAuth } = useAuth();
   const navigate = useNavigate();
 
   // setUserInfo는 Test용으로 사용하는 함수
-  const { accessToken } = useContext(AccountContext);
-  const { userInfo, setUserInfo, fetchUserData, userId, setUserId } =
-    useContext(UserContext);
-  const { userName, challengeId: hasChallenge } = userInfo;
+  const { userInfo, setUserInfo, fetchUserData } = useContext(UserContext);
+  const { userName, challengeId } = userInfo;
+  const hasChallenge = challengeId >= 0;
   const { challengeData, setChallengeData, fetchChallengeData } =
     useContext(ChallengeContext);
-  const { challengeId, wakeTime } = challengeData;
+
+  const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
+
+  // ---------------현재 페이지에서 쓸 State---------------
+  const [isUserInfoLoading, setIsUserInfoLoading] = useState(true);
+  const [isChallengeInfoLoading, setIsChallengeInfoLoading] = useState(true);
 
   const greetings = GREETINGS[0] + userName + GREETINGS[1];
 
   const CARD_CONTENTS = {
-    streak: <StreakContent userInfo={userInfo} />,
-    invitations: <InvitationsContent id={userId} />,
-    create: <CreateContent id={userId} />,
-    challenge: <ChallengeContent id={userId} data={challengeData} />,
-    enter: <EnterContent id={userId} />,
+    streak: <StreakContent />,
+    invitations: <InvitationsContent />,
+    create: <CreateContent />,
+    challenge: <ChallengeContent />,
+    enter: <EnterContent />,
   };
 
   const CARD_ON_CLICK_HANDLERS = {
@@ -58,31 +54,32 @@ const Main = () => {
     create: () => navigate('/createChallenge'),
     challenge: null,
     enter: () => {
-      // 현재 시간이 challenge 시작 시간보다 늦으면
-      // or 너무 빠르면...등 분기처리 로직
-      if (isPastTime(wakeTime)) {
-        alert('챌린지 참여 시간이 지났습니다.');
-        return;
-      }
+      // ================== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
+      // -------------⭐️ 개발 완료 후 주석 해제 필요 ⭐️ -------------
+      // ================== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
+
+      // if (isTooEarly) {
+      //   alert('너무 일찍 오셨습니다. 10분 전부터 입장 가능합니다.');
+      // } else if (
+      //   isTooLate
+      //   // && !attended    ========> 오늘 챌린지 참여 못한 경우
+      // ) {
+      //   alert('챌린지 참여 시간이 지났습니다. 내일 다시 참여해주세요.');
+      // } else if (
+      //   isTooLate
+      //   // && attended    ========> 오늘 챌린지 참여한 경우
+      // ) {
+      //   alert('멋져요! 오늘의 미라클 모닝 성공! 내일 또 만나요');
+      // } else {
       navigate(`/startMorning/${challengeId}`);
+      // }
     },
   };
 
-  const checkAuthorize = async () => {
-    setIsAuthLoading(true);
-    const response = await handleCheckAuth();
-    if (response) {
-      setIsAuthLoading(false);
-      setIsAuthorized(true);
-    }
-  };
-
-  const getUserInfo = async ({ accessToken, userId }) => {
+  const getUserInfo = async () => {
     setIsUserInfoLoading(true);
     try {
-      const response = await fetchData(() =>
-        fetchUserData({ accessToken, userId }),
-      );
+      const response = await fetchData(() => fetchUserData());
       const {
         isLoading: isUserInfoLoading,
         data: userInfoData,
@@ -102,12 +99,10 @@ const Main = () => {
     }
   };
 
-  const getChallengeInfo = async ({ accessToken, challengeId }) => {
+  const getChallengeInfo = async () => {
     setIsChallengeInfoLoading(true);
     try {
-      const response = await fetchData(() =>
-        fetchChallengeData({ accessToken, challengeId }),
-      );
+      const response = await fetchData(() => fetchChallengeData());
       const {
         isLoading: isChallengeInfoLoading,
         data: challengeInfoData,
@@ -127,33 +122,6 @@ const Main = () => {
     }
   };
 
-  useEffect(() => {
-    checkAuthorize();
-    console.log('checking authorization...');
-    console.log('AT', accessToken);
-    console.log('RT', localStorage.getItem('refreshToken'));
-    console.log('UID', userId);
-  }, [accessToken]);
-
-  // useEffect(() => {
-  //   console.log('getting user info...');
-  //   console.log('user id is : ', userId);
-  //   if (userId && isAuthorized) {
-  //     getUserInfo({ userId });
-  //   }
-  // }, [userId, isAuthorized]);
-
-  // useEffect(() => {
-  //   if (hasChallenge && !isUserInfoLoading && isAuthorized) {
-  //     getChallengeInfo({ accessToken, challengeId });
-  //   } else {
-  //     setIsChallengeInfoLoading(false);
-  //   }
-  // }, [hasChallenge, isUserInfoLoading, isAuthorized]);
-
-  if (isAuthLoading) return <div>Loading...</div>;
-  if (!isAuthorized) return <div>접근이 허용되지 않은 페이지입니다.</div>;
-
   return (
     <>
       <NavBar />
@@ -169,7 +137,6 @@ const Main = () => {
             }}
           />
         ))}
-
         <CardsWrapper>
           {CARD_TYPES[hasChallenge ? 'hasChallenge' : 'noChallenge'].map(
             type => (

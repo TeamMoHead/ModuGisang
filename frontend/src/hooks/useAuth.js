@@ -2,15 +2,14 @@ import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authServices } from '../apis/authServices';
 import { AccountContext } from '../contexts/AccountContexts';
-import { UserContext } from '../contexts/UserContext';
 import useFetch from '../hooks/useFetch';
 
 const useAuth = () => {
   const navigate = useNavigate();
 
   const { fetchData } = useFetch();
-  const { accessToken, setAccessToken } = useContext(AccountContext);
-  const { setUserId } = useContext(UserContext);
+  const { accessToken, setAccessToken, setUserId } = useContext(AccountContext);
+
   const refreshToken = localStorage.getItem('refreshToken');
 
   const refreshAuthorization = async () => {
@@ -90,10 +89,11 @@ const useAuth = () => {
     loginPassword,
     setIsLoginLoading,
   }) => {
-    if (loginEmail === '' || loginPassword === '') {
-      alert('이메일과 비밀번호를 입력해주세요.');
-      return;
-    }
+    // ============= ⭐️⭐️개발 끝나고 나서 풀어주기⭐️⭐️ ============
+    // if (loginEmail === '' || loginPassword === '') {
+    //   alert('이메일과 비밀번호를 입력해주세요.');
+    //   return;
+    // }
     setIsLoginLoading(true);
     const response = await fetchData(() =>
       authServices.logInUser({

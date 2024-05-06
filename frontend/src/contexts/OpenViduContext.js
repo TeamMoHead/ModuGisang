@@ -14,7 +14,8 @@ const OpenViduContext = createContext();
 const OpenViduContextProvider = ({ children }) => {
   const { userInfo } = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
-  const { myMissionStatus, setMatesMissionStatus } = useContext(GameContext);
+  const { inGameMode, myMissionStatus, setMatesMissionStatus } =
+    useContext(GameContext);
   const { userId, userName } = userInfo;
 
   const [OVInstance, setOVInstance] = useState(null); // OpenVidu 객체 [openvidu-browser
@@ -24,7 +25,7 @@ const OpenViduContextProvider = ({ children }) => {
   const [myStream, setMyStream] = useState(null);
   const mateVideoRefs = useRef({});
   const [mateStreams, setMateStreams] = useState([]);
-  const [micOn, setMicOn] = useState(false);
+  const [micOn, setMicOn] = useState(true);
 
   const getConnectionToken = async () => {
     const userData = {
@@ -42,7 +43,7 @@ const OpenViduContextProvider = ({ children }) => {
   };
 
   const turnMicOnOff = () => {
-    myStream.publishAudio(micOn);
+    myStream.publishAudio(!micOn);
     setMicOn(prev => !prev);
   };
 
@@ -168,6 +169,17 @@ const OpenViduContextProvider = ({ children }) => {
       sendMissionStatus();
     }
   }, [videoSession, myMissionStatus]);
+
+  useEffect(() => {
+    if (videoSession) {
+      if (inGameMode === 4 || inGameMode === 5) {
+        turnMicOnOff(false);
+      }
+      if (inGameMode === 6) {
+        turnMicOnOff(true);
+      }
+    }
+  }, [videoSession, inGameMode]);
 
   return (
     <OpenViduContext.Provider

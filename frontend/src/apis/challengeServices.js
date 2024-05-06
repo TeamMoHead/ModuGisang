@@ -41,10 +41,9 @@ const acceptInvitation = async ({ accessToken, challengeId, userId }) => {
     guestId: userId,
   };
   const config = {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    headers: { Authorization: `Bearer ${accessToken}` },
   };
+
   return API.post(url, payload, config);
 };
 
