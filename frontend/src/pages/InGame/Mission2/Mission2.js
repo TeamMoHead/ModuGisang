@@ -6,8 +6,13 @@ import { estimateFace } from '../MissionEstimators/FaceEstimator';
 import styled from 'styled-components';
 
 const Mission2 = () => {
-  const { inGameMode, myMissionStatus, setMyMissionStatus } =
-    useContext(GameContext);
+  const {
+    inGameMode,
+    myMissionStatus,
+    setMyMissionStatus,
+    isGameLoading,
+    setIsGameLoading,
+  } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
   const holisticRef = useRef(null);
@@ -40,6 +45,7 @@ const Mission2 = () => {
 
     holisticRef.current.onResults(results => {
       setMyMissionStatus(estimateFace({ results, myVideoRef, canvasRef }));
+      if (isGameLoading) setIsGameLoading(false);
     });
 
     const handleCanPlay = () => {

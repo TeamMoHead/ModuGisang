@@ -2,7 +2,8 @@ import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GameContext, OpenViduContext } from '../../../../contexts';
 import { Icon } from '../../../../components';
-import { GameRound, MissionTitle, MissionInfo, Timer } from './';
+import { GameRound, MissionTitle, MissionInst, Timer } from './';
+import { INFO_BY_GAME_MODE } from './DATA';
 import styled from 'styled-components';
 
 const GAME_MODE = {
@@ -57,9 +58,9 @@ const InGameNav = () => {
       <TextArea>
         {GAME_MODE[inGameMode] !== 'waiting' && (
           <>
-            <GameRound />
-            <MissionTitle />
-            <MissionInfo />
+            <GameRound text={inGameMode} />
+            <MissionTitle text={INFO_BY_GAME_MODE[inGameMode].title} />
+            <MissionInst text={INFO_BY_GAME_MODE[inGameMode].instruction} />
           </>
         )}
         {GAME_MODE[inGameMode] === 'waiting' && <Timer />}
