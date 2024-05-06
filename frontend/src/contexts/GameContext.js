@@ -28,7 +28,7 @@ const GameContextProvider = ({ children }) => {
   const { challengeData } = useContext(ChallengeContext);
   const { remainingTime } = useCheckTime(challengeData?.wakeTime);
   const [inGameMode, setInGameMode] = useState(
-    localStorage.getItem('inGameMode') || 0,
+    parseInt(localStorage.getItem('inGameMode')) || 0,
   );
   const [myMissionStatus, setMyMissionStatus] = useState(false);
   const [matesMissionStatus, setMatesMissionStatus] = useState({
@@ -73,7 +73,12 @@ const GameContextProvider = ({ children }) => {
     console.log('@@@@@ MATE MISSION STATUS @@@@@ => ', matesMissionStatus);
   }, [matesMissionStatus]);
 
-  console.log('^^^^^^GAME CONTEXT^^^^^ => ', inGameMode, remainingTime);
+  console.log(
+    '^^^^^^GAME CONTEXT^^^^^ game mode, remaining time, my mission status=> ',
+    inGameMode,
+    remainingTime,
+    myMissionStatus,
+  );
   return (
     <GameContext.Provider
       value={{

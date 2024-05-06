@@ -1,16 +1,18 @@
 import * as pose from '@mediapipe/pose';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 
-let newScore = 0; // 새로운 점수 변수 초기화
-let prevScore = 0;
-let status;
+import { POSES } from './POSE_DATA';
+
+let currentScore = 0; // 현재 점수
+let maxScore = 50; // 목표 점수
+let myMissionStatus = false; // 측정 결과
+let isEstimated = false; // 측정 완료 여부
+let selectedPose; // 선택된 자세
+const keypoints = {}; // 측정에 사용할 각 포인트의 위치 저장
+const timeoutDuration = 7000; // 제한 시간
 
 export const estimatePose = ({ results, myVideoRef, canvasRef }) => {
   if (!myVideoRef.current || !canvasRef.current) return;
-
-  // ------성능 test용-----
-  let count = 0;
-  // ---------------------
 
   const canvasElement = canvasRef.current;
   const canvasCtx = canvasElement.getContext('2d');
@@ -19,54 +21,39 @@ export const estimatePose = ({ results, myVideoRef, canvasRef }) => {
   canvasElement.height = myVideoRef.current.videoHeight;
 
   const stretchingGame = poseLandmarks => {
-    const leftShoulder = poseLandmarks[pose.POSE_LANDMARKS.LEFT_SHOULDER]; // 왼쪽 어깨
-    const leftElbow = poseLandmarks[pose.POSE_LANDMARKS.LEFT_ELBOW]; // 왼쪽 팔꿈치
-    const leftWrist = poseLandmarks[pose.POSE_LANDMARKS.LEFT_WRIST]; // 왼쪽 손목
-    const rightShoulder = poseLandmarks[pose.POSE_LANDMARKS.RIGHT_SHOULDER]; // 오른쪽 어깨
-    const rightElbow = poseLandmarks[pose.POSE_LANDMARKS.RIGHT_ELBOW]; //  오른쪽 팔꿈치
-    const rightWrist = poseLandmarks[pose.POSE_LANDMARKS.RIGHT_WRIST]; // 오른쪽 손목
-
-    console.log('---------- leftwrist :', leftWrist);
-
-    // 오른쪽으로 스트레칭
-    if (
-      leftWrist.y < leftElbow.y &&
-      leftElbow.y < leftShoulder.y &&
-      leftWrist.x < leftElbow.x &&
-      leftElbow.x < leftShoulder.x &&
-      rightWrist.y < rightElbow.y &&
-      rightElbow.y < rightShoulder.y &&
-      rightWrist.x < rightElbow.x &&
-      rightElbow.x < rightShoulder.x &&
-      leftShoulder.y < rightShoulder.y
-    ) {
-      status = '오른쪽으로 스트레칭! RIGHT!';
-      newScore = 5; // 임시 점수
-    }
-    // 오른쪽 팔을 올렸을 때
-    else if (
-      leftWrist.y < leftElbow.y &&
-      leftElbow.y < leftShoulder.y &&
-      leftWrist.x > leftElbow.x &&
-      leftElbow.x > leftShoulder.x &&
-      rightWrist.y < rightElbow.y &&
-      rightElbow.y < rightShoulder.y &&
-      rightWrist.x > rightElbow.x &&
-      rightElbow.x > rightShoulder.x &&
-      leftShoulder.y > rightShoulder.y
-    ) {
-      status = '왼쪽으로 스트레칭! LEFT!';
-      newScore = 10; // 임시 점수
-    }
-    // 팔의 상태가 변하지 않았을 때
-    else {
-      status = '득점 없음';
+    if (!selectedPose) {
+      selectedPose = POSES[Math.floor(Math.random() * POSES.length)];
+      console.log('Selected pose:', selectedPose.name);
     }
 
-    // 현재 점수와 새로운 점수를 비교하여 더 큰 값을 새로운 점수로 설정
-    prevScore = Math.max(prevScore, newScore);
-    console.log('---------- Score:', prevScore);
-    console.log('---------- Status:', status);
+    if (!myMissionStatus) {
+      selectedPose.keypoints.forEach(keypoint => {
+        keypoints[keypoint] = poseLandmarks[keypoint];
+      });
+      if (selectedPose && selectedPose.condition(keypoints)) {
+        currentScore = Math.min(maxScore, currentScore + selectedPose.score);
+      }
+
+      console.log('currentScore:', currentScore);
+    }
+
+    if (!isEstimated) {
+      setTimeout(() => {
+        if (currentScore >= maxScore) {
+          console.log(
+            `------------POSE RESULT: ${selectedPose.name} 자세를 취했습니다.`,
+          );
+          myMissionStatus = true;
+        } else {
+          console.log('------------POSE RESULT: 자세 취하기 실패');
+          myMissionStatus = false;
+        }
+
+        console.log('---------- Final Score:', currentScore);
+      }, timeoutDuration);
+
+      isEstimated = true;
+    }
   };
 
   canvasCtx.save();
@@ -91,10 +78,7 @@ export const estimatePose = ({ results, myVideoRef, canvasRef }) => {
 
   stretchingGame(results.poseLandmarks);
 
-  // ------성능 test용-----
-  console.log('===Pose Estimator: ', count);
-  count++;
-  // ---------------------
-
   canvasCtx.restore();
+
+  return myMissionStatus;
 };
