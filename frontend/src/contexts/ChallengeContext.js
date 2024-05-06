@@ -10,9 +10,9 @@ const ChallengeContextProvider = ({ children }) => {
   const { challengeId } = userInfo;
   // 임시 데이터
   const [challengeData, setChallengeData] = useState({
-    challengeId: '333',
+    challengeId: '55',
     startDate: '2021-09-01T00:00:00.000Z',
-    wakeTime: '17:30',
+    wakeTime: '12:00',
     mates: [
       { userId: 0, userName: '천사뿅뿅뿅' },
       { userId: 1, userName: '귀요미이시현' },
@@ -54,15 +54,6 @@ const ChallengeContextProvider = ({ children }) => {
     }
   };
 
-  const getChallengeData = async challengeId => {
-    // =========API 연동후 주석 풀 예정 ==========
-    // try {
-    //   const response = await challengeServices.getChallengeInfo(challengeId);
-    //   setChallengeData(response.data);
-    // } catch (error) {
-    //   console.error(error);
-    // }
-  };
   return (
     <ChallengeContext.Provider
       value={{
@@ -70,7 +61,6 @@ const ChallengeContextProvider = ({ children }) => {
         fetchChallengeData,
         fetchInvitationData,
         setChallengeData,
-        getChallengeData,
       }}
     >
       {children}

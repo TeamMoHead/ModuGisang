@@ -13,6 +13,8 @@ const logInUser = async ({ email, password }) => {
   const payload = {
     email: TEST_CONFIG.TEST_EMAIL,
     password: TEST_CONFIG.TEST_PASSWORD,
+    // email,
+    // password,
   };
   const response = await API.post(url, payload);
   console.log(response);

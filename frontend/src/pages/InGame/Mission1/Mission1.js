@@ -6,8 +6,11 @@ import { estimatePose } from '../MissionEstimators/PoseEstimator';
 import styled from 'styled-components';
 
 const Mission1 = () => {
-  const { inGameMode } = useContext(GameContext);
+  const { inGameMode, isGameLoading, setIsGameLoading } =
+    useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
+  const [isPoseModelLoading, setIsPoseModelLoading] = useState(true);
+
   const canvasRef = useRef(null);
   const msPoseRef = useRef(null);
 
@@ -22,9 +25,9 @@ const Mission1 = () => {
     });
 
     msPoseRef.current.setOptions({
-      modelComplexity: 1,
+      modelComplexity: 0.5,
       selfieMode: true,
-      smoothLandmarks: true,
+      smoothLandmarks: false,
       enableSegmentation: true,
       smoothSegmentation: true,
       minDetectionConfidence: 0.5,
@@ -33,6 +36,7 @@ const Mission1 = () => {
 
     msPoseRef.current.onResults(results => {
       estimatePose({ results, myVideoRef, canvasRef });
+      setIsPoseModelLoading(false);
     });
 
     const handleCanPlay = () => {
@@ -61,6 +65,12 @@ const Mission1 = () => {
       msPoseRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    if (!isPoseModelLoading) {
+      if (isGameLoading) setIsGameLoading(false);
+    }
+  }, [isPoseModelLoading]);
 
   return <Canvas ref={canvasRef} />;
 };

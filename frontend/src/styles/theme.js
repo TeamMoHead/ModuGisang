@@ -44,6 +44,11 @@ const fonts = {
     font: 400 16px 'Noto Sans KR';
     color: ${({ theme }) => theme.colors.primary.light};
   `,
+  loading: css`
+    font: 700 28px 'Jua';
+    color: ${({ theme }) => theme.colors.primary.light};
+  `,
+
   info: css`
     font: 300 15px 'Noto Sans KR';
     color: ${({ theme }) => theme.colors.system.green};

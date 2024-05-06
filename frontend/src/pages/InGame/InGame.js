@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { UserContext, ChallengeContext, GameContext } from '../../contexts';
+import {
+  UserContext,
+  ChallengeContext,
+  GameContext,
+  OpenViduContext,
+} from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
 
 import InGameNav from './components/Nav/InGameNav';
-import { MyVideo, MateVideo } from './components';
+import { MyVideo, MateVideo, GameLoading } from './components';
 import {
   Waiting,
   Mission1,
@@ -41,16 +46,18 @@ const InGame = () => {
   const { challengeId } = useParams();
   const { userInfo } = useContext(UserContext);
   const { userId: myId } = userInfo;
-  const { challengeData, getChallengeData } = useContext(ChallengeContext);
+  const { challengeData, fetchChallengeData } = useContext(ChallengeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
-  const { inGameMode, setMyMissionStatus } = useContext(GameContext);
+  const { isGameLoading, inGameMode, setMyMissionStatus } =
+    useContext(GameContext);
+  const { myStream, myVideoRef } = useContext(OpenViduContext);
   const [redirected, setRedirected] = useState(false);
 
   const [mateList, setMateList] = useState([]);
 
   useEffect(() => {
     if (challengeId) {
-      getChallengeData(challengeId);
+      fetchChallengeData();
     }
   }, [challengeId]);
 
@@ -75,6 +82,15 @@ const InGame = () => {
     //     navigate('/main');
     //   }
     // }
+    return () => {
+      localStorage.removeItem('inGameMode');
+      if (myVideoRef.current) {
+        if (myStream instanceof MediaStream) {
+          myStream.getTracks().forEach(track => track.stop());
+          myVideoRef.current.srcObject = null; // 비디오 요소에서 스트림 연결을 해제합니다.
+        }
+      }
+    };
   }, [inGameMode, isTooEarly, isTooLate, redirected]);
 
   if (redirected) return null;
@@ -82,6 +98,8 @@ const InGame = () => {
     <>
       <InGameNav />
       <Wrapper>
+        {isGameLoading && <GameLoading />}
+
         <MyVideo />
 
         <button

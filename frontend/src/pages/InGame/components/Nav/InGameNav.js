@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GameContext, OpenViduContext } from '../../../../contexts';
 import { Icon } from '../../../../components';
@@ -18,7 +18,7 @@ const GAME_MODE = {
 const InGameNav = () => {
   const navigate = useNavigate();
   const { inGameMode } = useContext(GameContext);
-  const { micOn, turnMicOnOff, myVideoRef, myStream, setMyStream } =
+  const { micOn, turnMicOnOff, myVideoRef, myStream } =
     useContext(OpenViduContext);
 
   const goToMain = () => {
@@ -28,7 +28,6 @@ const InGameNav = () => {
       if (myStream instanceof MediaStream) {
         myStream.getTracks().forEach(track => track.stop());
         myVideoRef.current.srcObject = null; // 비디오 요소에서 스트림 연결을 해제합니다.
-        setMyStream(null);
       }
     }
   };

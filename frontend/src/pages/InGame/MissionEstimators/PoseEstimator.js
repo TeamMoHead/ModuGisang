@@ -6,11 +6,12 @@ let prevScore = 0;
 let status;
 
 export const estimatePose = ({ results, myVideoRef, canvasRef }) => {
-  if (!myVideoRef.current || !canvasRef.current) return;
-
-  // ------성능 test용-----
-  let count = 0;
-  // ---------------------
+  if (
+    !myVideoRef.current ||
+    !canvasRef.current ||
+    !results?.poseLandmarks?.length > 0
+  )
+    return;
 
   const canvasElement = canvasRef.current;
   const canvasCtx = canvasElement.getContext('2d');
@@ -90,11 +91,6 @@ export const estimatePose = ({ results, myVideoRef, canvasRef }) => {
   });
 
   stretchingGame(results.poseLandmarks);
-
-  // ------성능 test용-----
-  console.log('===Pose Estimator: ', count);
-  count++;
-  // ---------------------
 
   canvasCtx.restore();
 };

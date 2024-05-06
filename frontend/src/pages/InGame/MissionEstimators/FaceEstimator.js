@@ -8,7 +8,12 @@ let prevLeftCheekPosition = null;
 let prevRightCheekPosition = null;
 
 export const estimateFace = ({ results, myVideoRef, canvasRef }) => {
-  if (!myVideoRef.current || !canvasRef.current) return;
+  if (
+    !myVideoRef.current ||
+    !canvasRef.current ||
+    !results?.faceLandmarks?.length > 0
+  )
+    return;
 
   const canvasElement = canvasRef.current;
   const canvasCtx = canvasElement.getContext('2d');

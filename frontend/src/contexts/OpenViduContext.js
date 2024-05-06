@@ -16,6 +16,7 @@ const OpenViduContextProvider = ({ children }) => {
   const { challengeData } = useContext(ChallengeContext);
   const { inGameMode, myMissionStatus, setMatesMissionStatus } =
     useContext(GameContext);
+
   const { userId, userName } = userInfo;
 
   const [OVInstance, setOVInstance] = useState(null); // OpenVidu 객체 [openvidu-browser
@@ -43,7 +44,7 @@ const OpenViduContextProvider = ({ children }) => {
   };
 
   const turnMicOnOff = () => {
-    myStream.publishAudio(!micOn);
+    myStream?.publishAudio(!micOn);
     setMicOn(prev => !prev);
   };
 
