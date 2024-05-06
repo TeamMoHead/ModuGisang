@@ -37,7 +37,8 @@ const GameContextProvider = ({ children }) => {
 
   const [isGameLoading, setIsGameLoading] = useState(false);
   const [inGameMode, setInGameMode] = useState(
-    parseInt(localStorage.getItem('inGameMode')) || 0,
+    // parseInt(localStorage.getItem('inGameMode')) || 0,
+    0,
   );
 
   let nextGameMode = 1;
@@ -45,7 +46,7 @@ const GameContextProvider = ({ children }) => {
   const updateMode = () => {
     nextGameMode += 1;
     if (nextGameMode <= 7) {
-      localStorage.setItem('inGameMode', JSON.stringify(nextGameMode));
+      // localStorage.setItem('inGameMode', JSON.stringify(nextGameMode));
       setInGameMode(nextGameMode);
       setIsGameLoading(true);
       setMyMissionStatus(false); // 미션 수행상태 초기화
@@ -55,7 +56,7 @@ const GameContextProvider = ({ children }) => {
       }
 
       if (GAME_MODE[nextGameMode] === 'result') {
-        localStorage.setItem('inGameMode', JSON.stringify(6));
+        // localStorage.setItem('inGameMode', JSON.stringify(6));
       }
     }
   };

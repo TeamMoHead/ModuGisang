@@ -23,7 +23,7 @@ const InGameNav = () => {
 
   const goToMain = () => {
     navigate('/main');
-    localStorage.removeItem('inGameMode');
+    // localStorage.removeItem('inGameMode');
     if (myVideoRef.current) {
       if (myStream instanceof MediaStream) {
         myStream.getTracks().forEach(track => track.stop());

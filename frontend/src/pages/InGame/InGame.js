@@ -83,7 +83,7 @@ const InGame = () => {
     //   }
     // }
     return () => {
-      localStorage.removeItem('inGameMode');
+      // localStorage.removeItem('inGameMode');
       if (myVideoRef.current) {
         if (myStream instanceof MediaStream) {
           myStream.getTracks().forEach(track => track.stop());
@@ -98,7 +98,7 @@ const InGame = () => {
     <>
       <InGameNav />
       <Wrapper>
-        {isGameLoading && <GameLoading />}
+        {/* {isGameLoading && <GameLoading />} */}
 
         <MyVideo />
 
