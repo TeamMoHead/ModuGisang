@@ -6,7 +6,7 @@ import { estimatePose } from '../MissionEstimators/PoseEstimator';
 import styled from 'styled-components';
 
 const Mission1 = () => {
-  const { inGameMode, isGameLoading, setIsGameLoading } =
+  const { inGameMode, isGameLoading, setIsGameLoading, setMyMissionStatus } =
     useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const [isPoseModelLoading, setIsPoseModelLoading] = useState(true);
@@ -35,7 +35,7 @@ const Mission1 = () => {
     });
 
     msPoseRef.current.onResults(results => {
-      estimatePose({ results, myVideoRef, canvasRef });
+      setMyMissionStatus(estimatePose({ results, myVideoRef, canvasRef }));
       setIsPoseModelLoading(false);
     });
 

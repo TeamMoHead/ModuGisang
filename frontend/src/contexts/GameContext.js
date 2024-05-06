@@ -80,11 +80,11 @@ const GameContextProvider = ({ children }) => {
   }, [matesMissionStatus]);
 
   console.log(
-    '^^^^^^GAME CONTEXT^^^^^ mode, time=> ',
+    '^^^^^^GAME CONTEXT^^^^^ game mode, remaining time, my mission status=> ',
     inGameMode,
     remainingTime,
+    myMissionStatus,
   );
-
   return (
     <GameContext.Provider
       value={{
