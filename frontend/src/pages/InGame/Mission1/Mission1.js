@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useContext, useState } from 'react';
+import React, { useRef, useEffect, useContext } from 'react';
 import { GameContext, OpenViduContext } from '../../../contexts';
 import { Pose } from '@mediapipe/pose';
 import { estimatePose } from '../MissionEstimators/PoseEstimator';
