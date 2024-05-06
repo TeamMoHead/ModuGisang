@@ -25,7 +25,7 @@ export class UserService {
         newUser.password = password;
         newUser.affirmation = "오늘 하루도 화이팅!";
         newUser.challengeId = -1;
-        newUser.profile = "https://cdn-icons-png.flaticon.com/512/2919/2919906.png";
+        newUser.profile = `https://api.dicebear.com/8.x/open-peeps/svg?seed=${username}`;
         newUser.medals = {
             gold: 0,
             silver: 0,
@@ -97,18 +97,27 @@ export class UserService {
     }
 
     async removeRefreshToken(userId: number): Promise<any> {
-        return await this.userRepository.update({_id:userId}, {
+        return await this.userRepository.update({ _id: userId }, {
             currentRefreshToken: null,
             currentRefreshTokenExp: null
         });
     }
 
-    async updateAffirm(user:Users, affirmation: string){
+    async updateAffirm(user: Users, affirmation: string) {
         console.log(user);
-        const result = await this.userRepository.update({_id:user._id},{
-            affirmation:affirmation
+        const result = await this.userRepository.update({ _id: user._id }, {
+            affirmation: affirmation
         });
         console.log(result);
         return result;
+    }
+
+    async getInvis(userId: number) {
+        const invitations = await this.userRepository.findOne({ where: { _id: userId }, relations: ['invitations'] });
+        const count = invitations?.invitations.filter(invitation => !invitation.isExpired).length; // 초대받은 챌린지의 수 
+        return {
+            invitations: invitations,
+            count: count
+        };
     }
 }
