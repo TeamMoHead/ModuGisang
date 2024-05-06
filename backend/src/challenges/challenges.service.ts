@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Challenges } from './challenges.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, Repository, createQueryBuilder } from 'typeorm';
+import { Between, IsNull, Repository, createQueryBuilder } from 'typeorm';
 import { CreateChallengeDto } from './dto/createChallenge.dto';
 import { InvitationsService } from 'src/invitations/invitations.service';
 import { Users } from 'src/users/entities/users.entity';
@@ -126,10 +126,26 @@ export class ChallengesService {
         return attendances.map(attendance => attendance.date.toISOString().split('T')[0]);  // 날짜만 반환
     }
 
-    async getInvitaions(guestId: number) {
-        const invitations = await this.invitaionRepository.find({ where: { guestId: guestId } });
+    async getInvitations(guestId: number) {
+        const invitations = await this.invitaionRepository.find({
+            where: {
+                guestId : guestId,
+                isExpired: false,
+                responseDate: IsNull()
+                },
+            relations: ['challenge', 'challenge.host']
+        });
 
-        return invitations;
+        return invitations.map(inv => ({
+            challengeId: inv.challengeId,
+            startDate: inv.challenge.startDate,
+            wakeTime: inv.challenge.wakeTime,
+            duration: inv.challenge.duration,
+            isExpired: inv.isExpired,
+            userName: inv.challenge.host.userName,
+            sendDate: inv.sendDate,
+            responseDate: inv.responseDate
+        }));
     }
 
     async getResultsByDateAndUser(userId: number, date: Date): Promise<ChallengeResultDto[]> {

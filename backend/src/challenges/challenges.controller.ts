@@ -40,7 +40,7 @@ export class ChallengesController {
     @Get('invitations')
     getInvitations(@Body('guestId') guestId:number) {
         console.log(guestId);
-        const invitations = this.challengeService.getInvitaions(guestId);
+        const invitations = this.challengeService.getInvitations(guestId);
         return invitations; // 데이터 반환 값 수정 예정
     }
     @Post('acceptInvitation')
