@@ -107,7 +107,7 @@ export class ChallengesService {
             userName: user.userName
         }));
         return {
-            _id: challenge._id,
+            challengeId: challenge._id,
             startDate: challenge.startDate,
             wakeTime: challenge.wakeTime,
             duration: challenge.duration,

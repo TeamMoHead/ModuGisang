@@ -1,5 +1,5 @@
 export class ChallengeResponseDto {
-  _id: number;
+  challengeId: number;
   startDate: Date;
   wakeTime: Date;
   duration: number;
