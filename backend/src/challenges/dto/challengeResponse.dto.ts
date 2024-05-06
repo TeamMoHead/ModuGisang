@@ -7,5 +7,5 @@ export class ChallengeResponseDto {
 }
 export class ParticipantDto {
   userId: number;
-  email: string;
+  userName: string;
 }

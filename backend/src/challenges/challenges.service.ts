@@ -58,7 +58,7 @@ export class ChallengesService {
         return null;
     }
     async sendInvitation(challengeId: number, email: string): Promise<void> {
-        console.log("sendInvitation",email)
+        console.log("sendInvitation", email)
         const user = await this.userRepository.findOne({ where: { email: email } });
         await this.invitationService.createInvitation(challengeId, user._id);
     }
@@ -104,7 +104,7 @@ export class ChallengesService {
         // 참가자 정보를 DTO 형식으로 변환
         const participantDtos: ParticipantDto[] = participants.map(user => ({
             userId: user._id,
-            email: user.email
+            userName: user.userName
         }));
         return {
             _id: challenge._id,
@@ -130,13 +130,13 @@ export class ChallengesService {
     async getInvitations(guestId: number) {
         const invitations = await this.invitaionRepository.find({
             where: {
-                guestId : guestId,
+                guestId: guestId,
                 isExpired: false,
                 responseDate: IsNull()
-                },
+            },
             relations: ['challenge', 'challenge.host']
         });
-        console.log("invi",invitations)
+        console.log("invi", invitations)
         return invitations.map(inv => ({
             challengeId: inv.challengeId,
             startDate: inv.challenge.startDate,
