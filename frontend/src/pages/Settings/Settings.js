@@ -61,7 +61,7 @@ const Settings = () => {
 
       <S.PageWrapper>
         <InputBox
-          label="Affirmation"
+          label="오늘의 한마디 "
           type="text"
           value={affirmation}
           onChange={handleAffirmationChange}

@@ -8,7 +8,7 @@ const CreateChallenge = () => {
   const [duration, setDuration] = useState('');
   const [startDate, setStartDate] = useState('');
   const [wakeTime, setWakeTime] = useState('');
-  const [miracleMates, setMiracleMates] = useState([]);
+  const [mates, setMates] = useState([]);
   const [emailInput, setEmailInput] = useState('');
   const { accessToken, userId } = useContext(AccountContext);
   const { handleCreateChallenge } = useContext(ChallengeContext);
@@ -32,7 +32,7 @@ const CreateChallenge = () => {
     });
     e.preventDefault();
     if (!response.data.isEngaged) {
-      setMiracleMates([...miracleMates, emailInput]);
+      setMates([...mates, emailInput]);
       setEmailInput('');
     } else if (response.data.isEngaged) {
       alert('메이트가 이미 다른 챌린지에 참여 중입니다.');
@@ -55,7 +55,7 @@ const CreateChallenge = () => {
           duration: Number(duration),
           startDate,
           wakeTime,
-          miracleMates,
+          mates,
         },
         setIsCreateChallengeLoading,
       });
@@ -98,13 +98,13 @@ const CreateChallenge = () => {
           btnName="친구 추가"
           onClickHandler={e => {
             checkEmail(e);
-            console.log(miracleMates);
+            console.log(mates);
           }}
         />
         <div>
           <h3>초대된 친구 목록: </h3>
           <ul>
-            {miracleMates.map((mate, index) => (
+            {mates.map((mate, index) => (
               <li key={index}>{mate}</li>
             ))}
           </ul>

@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState } from 'react';
-import { AccountContext, UserContext } from './';
 import { challengeServices } from '../apis/challengeServices';
+import { useNavigate } from 'react-router-dom';
 import useFetch from '../hooks/useFetch';
 
 const ChallengeContext = createContext();
 
 const ChallengeContextProvider = ({ children }) => {
   const { fetchData } = useFetch();
+  const navigate = useNavigate();
 
   // 임시 데이터
   const [challengeData, setChallengeData] = useState({
@@ -53,6 +54,8 @@ const ChallengeContextProvider = ({ children }) => {
     if (!isCreateChallengeLoading && createChallengeData) {
       console.log('createChallengeData:', createChallengeData);
       setIsCreateChallengeLoading(false);
+      alert('챌린지가 생성되었습니다.');
+      navigate('/');
     } else if (!isCreateChallengeLoading && createChallengeError) {
       console.error(createChallengeError);
       setIsCreateChallengeLoading(false);

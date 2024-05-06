@@ -21,7 +21,6 @@ const JoinChallenge = () => {
       challengeServices.getInvitationInfo({ accessToken, userId }),
     );
     const { data: invitationData, error: invitationError } = response;
-    console.log('invitationData', invitationData);
     if (invitationData) {
       setInvitations(invitationData);
     } else if (invitationError) {
@@ -70,6 +69,7 @@ const JoinChallenge = () => {
                         setIsAcceptInviLoading,
                       });
                       alert(`${invitation.userName}의 챌린지에 참여했습니다.`);
+                      getInvitations();
                     }}
                   />
                 </li>

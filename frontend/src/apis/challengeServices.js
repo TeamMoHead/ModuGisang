@@ -54,7 +54,7 @@ const createChallenge = async ({ accessToken, newChallengeData }) => {
     duration: newChallengeData.duration,
     startDate: newChallengeData.startDate,
     wakeTime: newChallengeData.wakeTime,
-    miracleMates: newChallengeData.miracleMates,
+    mates: newChallengeData.mates,
   };
   const config = {
     headers: { Authorization: `Bearer ${accessToken}` },

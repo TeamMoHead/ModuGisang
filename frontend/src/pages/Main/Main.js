@@ -29,7 +29,7 @@ const Main = () => {
     useContext(UserContext);
   const { userName } = userInfo;
   const { challengeData, setChallengeData } = useContext(ChallengeContext);
-  const hasChallenge = Number(challengeId) >= 0;
+  const hasChallenge = Number(challengeId) !== -1;
 
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
 
@@ -89,8 +89,14 @@ const Main = () => {
     } = response;
     if (!isUserDataLoading && userData) {
       setUserInfo(userData);
-      if (userData.challengeId === -1) {
+      // ==== Test용 ===
+      if (userData.userName === '박경원') {
         setChallengeData(challengeData);
+        setIsUserInfoLoading(false);
+      }
+      // ==============
+      else if (userData.challengeId === -1) {
+        setChallengeId(-1);
         setIsUserInfoLoading(false);
       } else {
         setUserInfo(userData);
@@ -126,6 +132,8 @@ const Main = () => {
       setIsChallengeInfoLoading(false);
     }
   };
+
+  console.log(challengeId);
 
   useEffect(() => {
     if (userId !== null) {
@@ -170,22 +178,6 @@ const Main = () => {
             ),
           )}
         </CardsWrapper>
-        {/* <CardsWrapper>
-          <CardBtn
-            key={CARD_TYPES.invitations}
-            content={CARD_CONTENTS.invitations}
-            onClickHandler={CARD_ON_CLICK_HANDLERS.invitations}
-            btnStyle={CARD_STYLES.invitations}
-          />
-        </CardsWrapper>
-        <CardsWrapper>
-          <CardBtn
-            key={CARD_TYPES.create}
-            content={CARD_CONTENTS.create}
-            onClickHandler={CARD_ON_CLICK_HANDLERS.create}
-            btnStyle={CARD_STYLES.create}
-          />
-        </CardsWrapper> */}
       </S.PageWrapper>
     </>
   );
