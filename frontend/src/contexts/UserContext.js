@@ -6,6 +6,7 @@ import useFetch from '../hooks/useFetch';
 const UserContext = createContext();
 
 const UserContextProvider = ({ children }) => {
+  const { accessToken, userId } = useContext(AccountContext);
   // 임시 유저 정보
   const [userInfo, setUserInfo] = useState({
     userName: '',

@@ -3,9 +3,14 @@ import { challengeServices } from '../apis/challengeServices';
 import { useNavigate } from 'react-router-dom';
 import useFetch from '../hooks/useFetch';
 
+import { AccountContext, UserContext } from './';
+
 const ChallengeContext = createContext();
 
 const ChallengeContextProvider = ({ children }) => {
+  const { accessToken, userId } = useContext(AccountContext);
+  const { userInfo } = useContext(UserContext);
+  const { challengeId } = userInfo;
   const { fetchData } = useFetch();
   const navigate = useNavigate();
 
@@ -35,7 +40,6 @@ const ChallengeContextProvider = ({ children }) => {
   };
 
   const handleCreateChallenge = async ({
-    accessToken,
     newChallengeData,
     setIsCreateChallengeLoading,
   }) => {

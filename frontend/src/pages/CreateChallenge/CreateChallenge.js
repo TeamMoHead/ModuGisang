@@ -49,7 +49,6 @@ const CreateChallenge = () => {
     e.preventDefault();
     if (canSubmit()) {
       await handleCreateChallenge({
-        accessToken,
         newChallengeData: {
           hostId: userId,
           duration: Number(duration),
