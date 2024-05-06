@@ -19,20 +19,20 @@ export class UserController {
 
     @Get('/:userId')
     async searchUser(@Param('userId') userId: number) {
-        const user = await this.userService.findOneByID(userId);
-        const invitationCounts = await this.userService.getInvis(userId);
+        const reuslt = await this.userService.getInvis(userId);
+        const invitations = reuslt.invitations;
         return {
-            userName: user.userName,
+            userName: invitations.userName,
             streakDays: 0, // streak 구현 후 처리 예정
             medals: {
-                gold: user.medals.gold,
-                silver: user.medals.silver,
-                bronze: user.medals.bronze
+                gold: invitations.medals.gold,
+                silver: invitations.medals.silver,
+                bronze: invitations.medals.bronze
             },
-            invitationCounts: invitationCounts,
-            affirmation: user.affirmation,
-            challengeId: user.challengeId,
-            profile: user.profile
+            invitationCounts: reuslt.count,
+            affirmation: invitations.affirmation,
+            challengeId: invitations.challengeId,
+            profile: invitations.profile
         }
     }
 

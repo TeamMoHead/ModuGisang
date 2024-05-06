@@ -113,8 +113,11 @@ export class UserService {
     }
 
     async getInvis(userId: number) {
-        const invis = await this.userRepository.findOne({ where: { _id: userId }, relations: ['invitations'] });
-        const count = invis?.invitations.filter(invitation => !invitation.isExpired).length; // 초대받은 챌린지의 수 
-        return count;
+        const invitations = await this.userRepository.findOne({ where: { _id: userId }, relations: ['invitations'] });
+        const count = invitations?.invitations.filter(invitation => !invitation.isExpired).length; // 초대받은 챌린지의 수 
+        return {
+            invitations: invitations,
+            count: count
+        };
     }
 }
