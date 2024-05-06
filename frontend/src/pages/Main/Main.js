@@ -122,11 +122,37 @@ const Main = () => {
     }
   };
 
+  // ⭐️⭐️⭐️⭐️ TEST 용 wake time 설정 ⭐️⭐️⭐️⭐️
+  // ========challenge data setting=======
+  const [wakeTime, setWakeTime] = useState('');
+  const changeWakeTime = () => {
+    console.log(wakeTime);
+    setChallengeData(prev => ({ ...prev, wakeTime }));
+  };
+  // ============ 나중에 지우기!! =============
+
   return (
     <>
       <NavBar />
       <S.PageWrapper>
         <Greetings>{greetings}</Greetings>
+        <span>기상시간 세팅 00:00 형태</span>
+        <input
+          type="text"
+          onChange={e => setWakeTime(e.target.value)}
+          style={{ backgroundColor: 'white' }}
+        />
+        <button
+          onClick={changeWakeTime}
+          style={{
+            backgroundColor: 'orange',
+            padding: '10px',
+            borderRadius: '5px',
+          }}
+        >
+          기상 시간 세팅하기{' '}
+        </button>
+
         {TEST_USER_INFO.map(({ userId, userName }) => (
           <SimpleBtn
             key={userId}
