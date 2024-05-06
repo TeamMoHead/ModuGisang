@@ -19,27 +19,12 @@ const UserContextProvider = ({ children }) => {
     affirmation: '',
   });
 
-  const getUserData = async ({ setIsUserInfoLoading }) => {
-    setIsUserInfoLoading(true);
-    const response = await fetchData(() =>
-      userServices.getUserInfo({ accessToken, userId }),
-    );
-    const {
-      isLoading: isUserDataLoading,
-      data: userData,
-      error: userDataError,
-    } = response;
-    if (!isUserDataLoading && userData) {
-      console.log('userData:', userData);
-      setIsUserInfoLoading(false);
-    } else if (!isUserDataLoading && userDataError) {
-      console.error(userDataError);
-      setIsUserInfoLoading(false);
-    }
-  };
+  const [challengeId, setChallengeId] = useState(userInfo.challengeId);
 
   return (
-    <UserContext.Provider value={{ userInfo, getUserData, setUserInfo }}>
+    <UserContext.Provider
+      value={{ userInfo, setUserInfo, challengeId, setChallengeId }}
+    >
       {children}
     </UserContext.Provider>
   );

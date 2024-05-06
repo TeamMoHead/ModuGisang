@@ -6,10 +6,7 @@ import useFetch from '../hooks/useFetch';
 const ChallengeContext = createContext();
 
 const ChallengeContextProvider = ({ children }) => {
-  const { accessToken, userId } = useContext(AccountContext);
-  const { userInfo } = useContext(UserContext);
-  const { challengeId } = userInfo;
-  const fetchData = useFetch();
+  const { fetchData } = useFetch();
 
   // 임시 데이터
   const [challengeData, setChallengeData] = useState({
@@ -24,8 +21,6 @@ const ChallengeContextProvider = ({ children }) => {
       { userId: 4, userName: '똑똑이연선애' },
     ],
   });
-
-  const getInvitationData = async () => {};
 
   const getChallengeData = async challengeId => {
     // =========API 연동후 주석 풀 예정 ==========
@@ -43,10 +38,12 @@ const ChallengeContextProvider = ({ children }) => {
     setIsCreateChallengeLoading,
   }) => {
     setIsCreateChallengeLoading(true);
-    const response = await challengeServices.createChallenge({
-      accessToken,
-      newChallengeData,
-    });
+    const response = await fetchData(() =>
+      challengeServices.createChallenge({
+        accessToken,
+        newChallengeData,
+      }),
+    );
     const {
       isLoading: isCreateChallengeLoading,
       data: createChallengeData,
@@ -61,14 +58,42 @@ const ChallengeContextProvider = ({ children }) => {
     }
   };
 
+  const handleAcceptInvitation = async ({
+    accessToken,
+    inviChallengeId,
+    userId,
+    setIsAcceptInviLoading,
+  }) => {
+    setIsAcceptInviLoading(true);
+    const response = await fetchData(() =>
+      challengeServices.acceptInvitation({
+        accessToken,
+        challengeId: 17,
+        userId,
+      }),
+    );
+    const {
+      isLoading: isAcceptInviLoading,
+      data: acceptInviData,
+      error: acceptInviError,
+    } = response;
+    if (!isAcceptInviLoading && acceptInviData) {
+      console.log('acceptInviData:', acceptInviData);
+      setIsAcceptInviLoading(false);
+    } else if (!isAcceptInviLoading && acceptInviError) {
+      console.error(acceptInviError);
+      setIsAcceptInviLoading(false);
+    }
+  };
+
   return (
     <ChallengeContext.Provider
       value={{
         challengeData,
-        getInvitationData,
         setChallengeData,
         getChallengeData,
         handleCreateChallenge,
+        handleAcceptInvitation,
       }}
     >
       {children}

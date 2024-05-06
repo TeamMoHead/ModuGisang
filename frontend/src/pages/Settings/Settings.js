@@ -1,15 +1,17 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AccountContext } from '../../contexts';
-import { authServices } from '../../apis';
+import { authServices, userServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
-import { NavBar, Icon, CardBtn } from '../../components';
+import { NavBar, Icon, CardBtn, SimpleBtn, InputBox } from '../../components';
 import * as S from '../../styles/common';
 import styled from 'styled-components';
 
 const Settings = () => {
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
-  const { accessToken, setAccessToken, setUserId } = useContext(AccountContext);
+  const [affirmation, setAffirmation] = useState('');
+  const { accessToken, setAccessToken, setUserId, userId } =
+    useContext(AccountContext);
 
   const { fetchData } = useFetch();
   const navigate = useNavigate();
@@ -33,11 +35,35 @@ const Settings = () => {
     }
   };
 
+  const handleAffirmationChange = e => {
+    console.log(e.target.value);
+    setAffirmation(e.target.value);
+  };
+
+  const handleChangeAffirmation = async () => {
+    const response = await fetchData(() =>
+      userServices.changeAffirmation({ accessToken, affirmation, userId }),
+    );
+    console.log(response);
+  };
+
   return (
     <>
       <NavBar />
 
       <S.PageWrapper>
+        <InputBox
+          label="Affirmation"
+          type="text"
+          value={affirmation}
+          onChange={handleAffirmationChange}
+        />
+        <SimpleBtn
+          btnName="오늘의 한마디 수정하기"
+          onClickHandler={() => {
+            handleChangeAffirmation({ accessToken, affirmation });
+          }}
+        />
         <CardBtn
           content={
             <LogoutWrapper>

@@ -9,6 +9,9 @@ const API = axios.create({
 });
 
 const getChallengeInfo = async ({ accessToken, challengeId }) => {
+  console.log("API getChallengeInfo's PARAMS");
+  console.log('accessToken: ', accessToken);
+  console.log('challengeId: ', challengeId);
   const url = '/challenge';
   const config = {
     headers: {
@@ -22,6 +25,9 @@ const getChallengeInfo = async ({ accessToken, challengeId }) => {
 };
 
 const getInvitationInfo = async ({ accessToken, userId }) => {
+  console.log("API getInvitationInfo's PARAMS");
+  console.log('accessToken: ', accessToken);
+  console.log('userId: ', userId);
   const url = '/challenge/invitations';
   const config = {
     headers: {
@@ -35,7 +41,11 @@ const getInvitationInfo = async ({ accessToken, userId }) => {
 };
 
 const acceptInvitation = async ({ accessToken, challengeId, userId }) => {
-  const url = '/challenge/acceptinvitation/';
+  console.log("API acceptInvitation's PARAMS");
+  console.log('accessToken: ', accessToken);
+  console.log('challengeId: ', challengeId);
+  console.log('userId: ', userId);
+  const url = '/challenge/acceptinvitation';
   const payload = {
     challengeId: challengeId,
     guestId: userId,
@@ -43,38 +53,59 @@ const acceptInvitation = async ({ accessToken, challengeId, userId }) => {
   const config = {
     headers: { Authorization: `Bearer ${accessToken}` },
   };
-
   return API.post(url, payload, config);
 };
 
 const createChallenge = async ({ accessToken, newChallengeData }) => {
+  console.log("API createChallenge's PARAMS");
+  console.log('accessToken: ', accessToken);
+  console.log('newChallengeData: ', newChallengeData);
   const url = '/challenge/create';
   const payload = {
     hostId: newChallengeData.hostId,
     duration: newChallengeData.duration,
     startDate: newChallengeData.startDate,
-    wakeupTime: newChallengeData.wakeupTime,
+    wakeTime: newChallengeData.wakeTime,
     miracleMates: newChallengeData.miracleMates,
   };
   const config = {
     headers: { Authorization: `Bearer ${accessToken}` },
   };
-
-  console.log(payload);
-  const response = API.post(url, payload, config);
-  console.log(response);
-  return response;
+  return API.post(url, payload, config);
 };
 
 const checkMateAvailability = async ({ accessToken, email }) => {
+  console.log("API checkMateAvailability's PARAMS");
+  console.log('accessToken: ', accessToken);
+  console.log('email: ', email);
   const url = '/challenge/searchmate';
   const config = {
-    headers: { Authorization: `Bearer ${accessToken}` },
     params: { email: email },
+    headers: { Authorization: `Bearer ${accessToken}` },
   };
-  const response = API.get(url, config);
-  console.log(response);
-  return response;
+  return await API.get(url, config);
+};
+
+const getCallendarInfo = async ({ accessToken, userId, month }) => {
+  console.log("API getCallendarInfo's PARAMS");
+  console.log('accessToken: ', accessToken);
+  console.log('userId: ', userId);
+  const url = `/challenge/calendar/${userId}/${month}`;
+  const config = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  };
+  return await API.get(url, config);
+};
+
+const getCallendarInfoByDate = async ({ accessToken, userId, date }) => {
+  console.log("API getCallendarInfoByDate's PARAMS");
+  console.log('accessToken: ', accessToken);
+  console.log('userId: ', userId);
+  const url = `/challenge/${userId}/results/${date}`;
+  const config = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  };
+  return await API.get(url, config);
 };
 
 const getConnectionToken = async ({ userData }) => {
@@ -89,5 +120,7 @@ export const challengeServices = {
   acceptInvitation,
   createChallenge,
   checkMateAvailability,
+  getCallendarInfo,
+  getCallendarInfoByDate,
   getConnectionToken,
 };

@@ -7,7 +7,7 @@ import * as S from '../../styles/common';
 const CreateChallenge = () => {
   const [duration, setDuration] = useState('');
   const [startDate, setStartDate] = useState('');
-  const [wakeupTime, setWakeupTime] = useState('');
+  const [wakeTime, setWakeTime] = useState('');
   const [miracleMates, setMiracleMates] = useState([]);
   const [emailInput, setEmailInput] = useState('');
   const { accessToken, userId } = useContext(AccountContext);
@@ -25,23 +25,25 @@ const CreateChallenge = () => {
     setEmailInput(e.target.value);
   };
 
-  const checkEmail = async () => {
+  const checkEmail = async e => {
     const response = await challengeServices.checkMateAvailability({
       accessToken,
       email: emailInput,
     });
     console.log(response);
+    e.preventDefault();
     if (!response.data.isEngaged) {
       setMiracleMates([...miracleMates, emailInput]);
       setEmailInput('');
-    } else {
-      alert('Invalid email address or not available.');
+    } else if (response.data.isEngaged) {
+      alert('메이트가 이미 다른 챌린지에 참여 중입니다.');
+      setEmailInput('');
     }
   };
 
   const canSubmit = () => {
-    console.log(userId, duration, startDate, wakeupTime);
-    return userId && duration && startDate && wakeupTime;
+    console.log(userId, duration, startDate, wakeTime);
+    return userId && duration && startDate && wakeTime;
   };
 
   const handleSubmit = async e => {
@@ -53,7 +55,7 @@ const CreateChallenge = () => {
           hostId: userId,
           duration: Number(duration),
           startDate,
-          wakeupTime,
+          wakeTime,
           miracleMates,
         },
         setIsCreateChallengeLoading,
@@ -70,30 +72,35 @@ const CreateChallenge = () => {
         <h1>챌린지 생성</h1>
 
         <Dropdown
-          label="Duration"
+          label="챌린지 기간"
           options={durations}
           selectedValue={duration}
           onChange={e => setDuration(e.target.value)}
         />
         <InputBox
-          label="Start Date"
+          label="챌린지 시작일"
           type="date"
           value={startDate}
           onChange={e => setStartDate(e.target.value)}
         />
         <InputBox
-          label="Wakeup Time"
+          label="기상 시간"
           type="time"
-          value={wakeupTime}
-          onChange={e => setWakeupTime(e.target.value)}
+          value={wakeTime}
+          onChange={e => setWakeTime(e.target.value)}
         />
         <InputBox
-          label="Friend's Email"
+          label="초대할 챌린지 메이트"
           type="email"
           value={emailInput}
           onChange={handleEmailChange}
         />
-        <SimpleBtn btnName="친구 추가" onClickHandler={checkEmail} />
+        <SimpleBtn
+          btnName="친구 추가"
+          onClickHandler={e => {
+            checkEmail(e);
+          }}
+        />
         <div>
           <h3>초대된 친구 목록: </h3>
           <ul>

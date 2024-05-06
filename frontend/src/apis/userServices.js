@@ -9,16 +9,22 @@ const API = axios.create({
 });
 
 const getUserInfo = async ({ accessToken, userId }) => {
-  const url = '/user';
+  console.log("API getUserInfo's PARAMS");
+  console.log('accessToken: ', accessToken);
+  console.log('userId: ', userId);
+  const url = `/user/${userId}`;
   const config = {
     headers: { Authorization: `Bearer ${accessToken}` },
-    params: { userId: userId },
   };
   return API.get(url, config);
 };
 
-const updateAffirmation = async (userId, affirmation, accessToken) => {
-  const url = `/user/${userId}/updateAffir`;
+const changeAffirmation = async ({ accessToken, affirmation, userId }) => {
+  console.log("API changeAffirmation's PARAMS");
+  console.log('accessToken: ', accessToken);
+  console.log('affirmation: ', affirmation);
+  console.log('userId: ', userId);
+  const url = `/user/${userId}/updateAffirm`;
   const payload = {
     affirmation: affirmation,
   };
@@ -26,11 +32,8 @@ const updateAffirmation = async (userId, affirmation, accessToken) => {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
-    params: {
-      userId: userId,
-    },
   };
   return API.post(url, payload, config);
 };
 
-export const userServices = { getUserInfo, updateAffirmation };
+export const userServices = { getUserInfo, changeAffirmation };

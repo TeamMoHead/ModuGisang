@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserContext, ChallengeContext } from '../../contexts';
+import { UserContext, ChallengeContext, AccountContext } from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
 import useFetch from '../../hooks/useFetch';
 import { NavBar, CardBtn, SimpleBtn } from '../../components';
@@ -11,6 +11,7 @@ import {
   ChallengeContent,
   EnterContent,
 } from './cardComponents';
+import { challengeServices, userServices } from '../../apis';
 import { GREETINGS, CARD_TYPES, CARD_STYLES } from './DATA';
 
 import { TEST_USER_INFO } from './TEST_DATA';
@@ -23,11 +24,12 @@ const Main = () => {
   const navigate = useNavigate();
 
   // setUserInfo는 Test용으로 사용하는 함수
-  const { userInfo, setUserInfo, getUserData } = useContext(UserContext);
-  const { userName, challengeId } = userInfo;
+  const { accessToken, userId } = useContext(AccountContext);
+  const { userInfo, setUserInfo, challengeId, setChallengeId } =
+    useContext(UserContext);
+  const { userName } = userInfo;
+  const { challengeData, setChallengeData } = useContext(ChallengeContext);
   const hasChallenge = challengeId >= 0;
-  const { challengeData, setChallengeData, fetchChallengeData } =
-    useContext(ChallengeContext);
 
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
 
@@ -76,9 +78,58 @@ const Main = () => {
     },
   };
 
+  const getUser = async () => {
+    const response = await fetchData(() =>
+      userServices.getUserInfo({ accessToken, userId }),
+    );
+    const {
+      isLoading: isUserDataLoading,
+      data: userData,
+      error: userDataError,
+    } = response;
+    console.log('userData:', userData);
+    if (!isUserDataLoading && userData) {
+      setUserInfo(userData);
+      setChallengeId(userData.challengeId);
+      console.log('challengeId', userData.challengeId);
+      setIsUserInfoLoading(false);
+    } else if (!isUserDataLoading && userDataError) {
+      console.error(userDataError);
+      setIsUserInfoLoading(false);
+    }
+  };
+
+  const getChallenge = async () => {
+    const response = await fetchData(() =>
+      challengeServices.getChallengeInfo({
+        accessToken,
+        challengeId: challengeId,
+      }),
+    );
+    const {
+      isLoading: isChallengeDataLoading,
+      data: challengeData,
+      error: challengeDataError,
+    } = response;
+    console.log('challengeData:', challengeData);
+    if (!isChallengeDataLoading && challengeData) {
+      setChallengeData(challengeData);
+      setIsChallengeInfoLoading(false);
+    } else if (!isChallengeDataLoading && challengeDataError) {
+      console.error(challengeDataError);
+      setIsChallengeInfoLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // getUserData({ setIsUserInfoLoading });
+    getUser();
   }, []);
+
+  useEffect(() => {
+    if (challengeId >= 0) {
+      getChallenge();
+    }
+  }, [challengeId]);
 
   return (
     <>
@@ -107,6 +158,15 @@ const Main = () => {
             ),
           )}
         </CardsWrapper>
+        <CardsWrapper>
+          <CardBtn
+            key={CARD_TYPES.invitations}
+            content={CARD_CONTENTS.invitations}
+            onClickHandler={CARD_ON_CLICK_HANDLERS.invitations}
+            btnStyle={CARD_STYLES.invitations}
+          />
+        </CardsWrapper>
+
         <CardsWrapper>
           <CardBtn
             key={CARD_TYPES.create}

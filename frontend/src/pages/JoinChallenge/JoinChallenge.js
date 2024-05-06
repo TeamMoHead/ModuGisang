@@ -1,41 +1,43 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavBar, SimpleBtn } from '../../components';
-import { ChallengeContext } from '../../contexts/ChallengeContext';
+import { AccountContext, ChallengeContext } from '../../contexts';
+import { challengeServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
 
 import * as S from '../../styles/common';
 
 const JoinChallenge = () => {
-  const navigate = useNavigate();
   const [invitations, setInvitations] = useState([]);
+  const [inviChallengeId, setInviChallengeId] = useState('');
   const [isInvitationLoading, setIsInvitationLoading] = useState(true);
+  const [isAcceptInviLoading, setIsAcceptInviLoading] = useState(false);
 
-  const { fetchInvitationData } = useContext(ChallengeContext);
+  const { accessToken, userId } = useContext(AccountContext);
+  const { handleAcceptInvitation } = useContext(ChallengeContext);
   const { fetchData } = useFetch();
 
   const getInvitations = async () => {
     setIsInvitationLoading(true);
-    try {
-      const response = await fetchData(() => fetchInvitationData());
-      const {
-        isLoading: isInvitationLoading,
-        data: invitationData,
-        error: invitationError,
-      } = response;
-      console.log(response);
-      if (!isInvitationLoading && invitationData) {
-        console.log(invitationData);
+    const response = await fetchData(() =>
+      challengeServices.getInvitationInfo({ accessToken, userId }),
+    );
+    const {
+      isLoading: isGetInvitationLoading,
+      data: invitationData,
+      error: invitationError,
+    } = response;
+    console.log('response:', response);
+    if (!isGetInvitationLoading && invitationData) {
+      if (invitationData.length > 0) {
         setInvitations(invitationData);
-        setIsInvitationLoading(false);
-      } else if (invitationError) {
-        setIsInvitationLoading(false);
-        console.error(invitationError);
-        return;
+      } else {
+        setInvitations(['초대된 챌린지가 없습니다.']);
       }
-    } catch (error) {
-      console.error(error);
-      alert(error);
+      setIsInvitationLoading(false);
+    } else if (invitationError) {
+      console.error(invitationError);
+      setIsInvitationLoading(false);
     }
   };
 
@@ -46,7 +48,38 @@ const JoinChallenge = () => {
   return (
     <>
       <NavBar />
-      <S.PageWrapper>JoinChallenge</S.PageWrapper>
+      <S.PageWrapper>
+        <div>
+          초대 목록: <br />
+          {invitations.length > 0 ? (
+            invitations[0] === '초대된 챌린지가 없습니다.' ? (
+              <p>{invitations[0]}</p>
+            ) : (
+              <ul>
+                {invitations.map((invitation, index) => (
+                  <li key={index}>
+                    {invitation.description || '챌린지 초대'} -
+                    <SimpleBtn
+                      btnName="초대 수락"
+                      onClickHandler={() => {
+                        setInviChallengeId(invitation.challengeId);
+                        handleAcceptInvitation({
+                          accessToken,
+                          challengeId: invitation.challengeId,
+                          userId,
+                          setIsAcceptInviLoading,
+                        });
+                      }}
+                    />
+                  </li>
+                ))}
+              </ul>
+            )
+          ) : (
+            <p>초대 정보를 불러오는 중...</p>
+          )}
+        </div>
+      </S.PageWrapper>
     </>
   );
 };
