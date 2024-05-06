@@ -1,11 +1,17 @@
 import * as face from '@mediapipe/face_mesh';
-import { drawConnectors } from '@mediapipe/drawing_utils';
+// import vision from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3';
+// import { drawConnectors } from '@mediapipe/drawing_utils';
 import stickyNoteImage from '../../../assets/sticky_note.png';
 
 let leftScore = 0;
 let rightScore = 0;
+let targetNumber = 10;
+let myMissionStatus = false; // 측정 결과
 let prevLeftCheekPosition = null;
 let prevRightCheekPosition = null;
+
+// TASK VISION 테스트용 코드
+// const { FaceLandmarker, FilesetResolver, DrawingUtils } = vision;
 
 export const estimateFace = ({ results, myVideoRef, canvasRef }) => {
   if (
@@ -25,8 +31,37 @@ export const estimateFace = ({ results, myVideoRef, canvasRef }) => {
   const image = new Image();
   image.src = stickyNoteImage;
 
+  // ------------ TASK VISION 테스트용 코드 시작
+  // --------------------------------------
+
+  // console.log('----------- 0:', results.faceBlendshapes[0]);
+
+  // const blendShapesData = results.blendShapes;
+  // console.log('---------- blendShapesData: ', blendShapesData.categories[33]);
+
+  // results.blendShapes가 유효한지 확인
+  // if (results.blendShapes && results.blendShapes.length > 0) {
+  //   const blendShapesData = results.blendShapes;
+  // blendShapesData 배열이 존재하고 비어있지 않은 경우에만 접근
+  //   if (
+  //     blendShapesData[0].categories &&
+  //     blendShapesData[0].categories.length > 9
+  //   ) {
+  //     const category9 = blendShapesData[0].categories[33];
+  //     console.log(category9);
+  //     // category9 또는 해당하는 데이터를 사용하는 코드 작성
+  //   } else {
+  //     console.log('Blend shapes data does not contain category 33.');
+  //   }
+  // } else {
+  //   console.log('No blend shapes data available.');
+  // }
+
+  // ------------ TASK VISION 테스트용 코드 끝
+  // --------------------------------------
+
   const postitGame = faceLandmarks => {
-    let targetNumber = 100;
+    if (!faceLandmarks) return;
 
     // Check left cheek movement
     const leftCheekIndex = 61; // Left cheek landmark index
@@ -61,9 +96,8 @@ export const estimateFace = ({ results, myVideoRef, canvasRef }) => {
           rightScore = rightScore + 1;
           console.log('----rightScore:  ', rightScore);
         }
-      } else {
-        console.log('----계산 안 되었음!!!!!!!');
       }
+
       prevRightCheekPosition = { x: rightCheek.x, y: rightCheek.y };
       // console.log('prevRightCheekPosition:', prevRightCheekPosition);
 
@@ -73,6 +107,15 @@ export const estimateFace = ({ results, myVideoRef, canvasRef }) => {
       }
       if (rightScore < targetNumber) {
         drawImageOnFace(canvasCtx, results.faceLandmarks, 425, image);
+      }
+
+      if (
+        !myMissionStatus &&
+        leftScore >= targetNumber &&
+        rightScore >= targetNumber
+      ) {
+        myMissionStatus = true;
+        console.log('---------- Final RESULT: ', myMissionStatus);
       }
     }
   };
@@ -85,9 +128,13 @@ export const estimateFace = ({ results, myVideoRef, canvasRef }) => {
       const canvasWidth = canvasCtx.canvas.width;
       const canvasHeight = canvasCtx.canvas.height;
 
+      // 얼굴 크기 계산
+      const faceWidth =
+        Math.abs(landmarks[123].x - landmarks[352].x) * canvasWidth; // 왼쪽 끝점과 오른쪽 끝점의 x 좌표 차이를 얼굴 너비로 사용
+
       // 이미지 크기 조절
-      const resizedWidth = 40; // 원하는 너비로 조절
-      const resizedHeight = 40; // 원하는 높이로 조절
+      const resizedWidth = faceWidth * 0.33; // 얼굴 너비의 절반 크기로 조절
+      const resizedHeight = faceWidth * 0.33; // 얼굴 높이의 절반 크기로 조절
       const resizedImage = resizeImage(image, resizedWidth, resizedHeight);
 
       // 얼굴 랜드마크의 x, y 좌표
@@ -147,22 +194,14 @@ export const estimateFace = ({ results, myVideoRef, canvasRef }) => {
 
   // canvasCtx.globalCompositeOperation = 'source-over';
 
-  drawConnectors(canvasCtx, results.faceLandmarks, face.FACEMESH_TESSELATION, {
-    color: '#C0C0C070',
-    lineWidth: 1,
-  });
-
-  // setInterval을 사용하여 일정 시간 간격으로 estimateFace 함수 호출
-  const intervalId = setInterval(() => {
-    // estimateFace 함수 호출
-    postitGame(results.faceLandmarks);
-  }, 1000); // 1초마다 호출하도록 설정 (1000ms = 1초)
-
-  // clearInterval을 사용하여 interval 정지
-  // 일정 시간이 지나면 주기적으로 호출되는 estimateFace 함수를 멈출 수 있습니다.
-  // clearInterval(intervalId); // intervalId는 setInterval 함수의 반환값으로, 정지하려는 interval의 식별자입니다.
+  // drawConnectors(canvasCtx, results.faceLandmarks, face.FACEMESH_TESSELATION, {
+  //   color: '#C0C0C070',
+  //   lineWidth: 1,
+  // });
 
   postitGame(results.faceLandmarks);
 
   canvasCtx.restore();
+
+  return myMissionStatus;
 };

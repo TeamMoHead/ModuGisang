@@ -1,11 +1,11 @@
 import React, { useRef, useEffect, useContext } from 'react';
 import { GameContext, OpenViduContext } from '../../../contexts';
 import { Pose } from '@mediapipe/pose';
-import { estimateHead } from '../MissionEstimators/HeadEstimator';
+import { estimatePose } from '../MissionEstimators/PoseEstimator';
 
 import styled from 'styled-components';
 
-const Mission3 = () => {
+const Mission1 = () => {
   const { inGameMode, myMissionStatus, setMyMissionStatus } =
     useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
@@ -13,7 +13,7 @@ const Mission3 = () => {
   const msPoseRef = useRef(null);
 
   useEffect(() => {
-    if (inGameMode !== 3 || !myVideoRef.current) return;
+    if (inGameMode !== 1 || !myVideoRef.current) return;
 
     const videoElement = myVideoRef.current;
 
@@ -33,7 +33,7 @@ const Mission3 = () => {
     });
 
     msPoseRef.current.onResults(results => {
-      setMyMissionStatus(estimateHead({ results, myVideoRef, canvasRef }));
+      setMyMissionStatus(estimatePose({ results, myVideoRef, canvasRef }));
     });
 
     const handleCanPlay = () => {
@@ -66,7 +66,7 @@ const Mission3 = () => {
   return <Canvas ref={canvasRef} />;
 };
 
-export default Mission3;
+export default Mission1;
 
 const Canvas = styled.canvas`
   position: fixed;

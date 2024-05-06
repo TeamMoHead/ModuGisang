@@ -8,7 +8,7 @@ export class Attendance {
   @PrimaryGeneratedColumn()
   _id: number;
 
-  @ManyToOne(() => Users, user => user.attendances,{lazy: true,onDelete:'CASCADE'})
+  @ManyToOne(() => Users, user => user.attendances,{onDelete:'CASCADE'})
   @JoinColumn({name :"user_id" }) // 추가
   user: Users;
   
@@ -16,7 +16,7 @@ export class Attendance {
   userId : number
   
   @ManyToOne(() => Challenges, challenge => challenge.attendances)
-  @JoinColumn({name :"chanllenge_id" }) // 추가
+  @JoinColumn({name :"challenge_id" }) // 추가
   challenge: Challenges;
   
   @Column({name: "challenge_id"})

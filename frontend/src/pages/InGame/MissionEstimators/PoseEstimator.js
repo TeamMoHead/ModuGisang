@@ -26,6 +26,8 @@ export const estimatePose = ({ results, myVideoRef, canvasRef }) => {
   canvasElement.height = myVideoRef.current.videoHeight;
 
   const stretchingGame = poseLandmarks => {
+    if (!poseLandmarks) return;
+
     if (!selectedPose) {
       selectedPose = POSES[Math.floor(Math.random() * POSES.length)];
       console.log('Selected pose:', selectedPose.name);
