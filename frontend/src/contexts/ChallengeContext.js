@@ -14,11 +14,11 @@ const ChallengeContextProvider = ({ children }) => {
     startDate: '2021-09-01T00:00:00.000Z',
     wakeTime: '12:20',
     mates: [
-      { userId: 0, userName: '천사뿅뿅뿅' },
-      { userId: 1, userName: '귀요미이시현' },
-      { userId: 2, userName: '깜찍이이재원' },
-      { userId: 3, userName: '상큼이금도현' },
-      { userId: 4, userName: '똑똑이연선애' },
+      { userId: 1, userName: '천사박경원' },
+      { userId: 2, userName: '귀요미이시현' },
+      { userId: 3, userName: '깜찍이이재원' },
+      { userId: 4, userName: '상큼이금도현' },
+      { userId: 5, userName: '똑똑이연선애' },
     ],
   });
 

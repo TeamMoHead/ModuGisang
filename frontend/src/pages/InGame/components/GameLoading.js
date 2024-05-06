@@ -5,6 +5,10 @@ const GameLoading = () => {
   const [timer, setTimer] = useState(3);
   const [isOver, setIsOver] = useState(false);
 
+  // ⭐️⭐️⭐️⭐️ TO DO ⭐️⭐️⭐️⭐️⭐️
+  // 실제 model이 3초보다 일찍 initialize되었더라도,
+  // 고정적으로 3초를 timer에서 모두 소요할 수 있도록 설정하기
+  // ========================================
   useEffect(() => {
     console.log('💕💕💕IS GAME LOADING MOUNTED!💕💕');
     const interval = setInterval(() => {

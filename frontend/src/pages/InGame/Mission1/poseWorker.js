@@ -1,35 +1,58 @@
-// poseWorker.js
-onmessage = function (e) {
-  // 이미지 데이터 수신
-  const image = e.data.image;
+try {
+  const scriptUrl = `${process.env.REACT_APP_CLIENT_URL}/pose/pose.js`;
+  console.log('!!!!@@!!!@ PATH TO MODULE:: ', process.env.REACT_APP_CLIENT_URL);
+  self.importScripts(scriptUrl);
+} catch (error) {
+  console.error('Failed to load the pose script:', error);
+}
 
-  // MediaPipe 포즈 로직 (가상 코드)
-  try {
-    importScripts('https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js');
+// const scriptUrl = `${process.env.PUBLIC_URL}/pose/pose.js`;
+// console.log('-------Loading script from:', scriptUrl);
+// self.importScripts(scriptUrl);
 
-    // MediaPipe 포즈 인스턴스 생성
-    const pose = new Pose({
-      locateFile: file =>
-        `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
-    });
+// let pose;
 
-    pose.setOptions({
-      modelComplexity: 1,
-      smoothLandmarks: true,
-      enableSegmentation: true,
-      smoothSegmentation: true,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5,
-    });
+// onmessage = function (e) {
+//   const { data } = e;
+//   switch (data.command) {
+//     case 'load':
+//       pose = new Pose({
+//         locateFile: file =>
+//           `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
+//       });
 
-    // 결과 처리
-    pose.onResults(results => {
-      postMessage({ results });
-    });
+//       pose.setOptions({
+//         modelComplexity: 0.5,
+//         selfieMode: true,
+//         smoothLandmarks: false,
+//         enableSegmentation: true,
+//         smoothSegmentation: true,
+//         minDetectionConfidence: 0.5,
+//         minTrackingConfidence: 0.5,
+//       });
 
-    // 이미지 처리
-    pose.send({ image: image });
-  } catch (error) {
-    postMessage({ error: error.message });
-  }
-};
+//       pose.onResults(results => {
+//         postMessage({ type: 'results', results });
+//       });
+//       break;
+
+//     case 'send':
+//       pose
+//         .send({ image: data.image })
+//         .then(results => {
+//           if (results.poseLandmarks) {
+//             // latency 최적화를 위해, 여기 위치에 inference된 결과를 축소할 수 있음
+//             postMessage({
+//               type: 'results',
+//               poseLandmarks: results.poseLandmarks,
+//             });
+//           }
+//         })
+//         .catch(error => {
+//           postMessage({ type: 'error', error: error.toString() });
+//         });
+//       break;
+//     default:
+//       break;
+//   }
+// };

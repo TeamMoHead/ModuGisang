@@ -98,7 +98,7 @@ const InGame = () => {
     <>
       <InGameNav />
       <Wrapper>
-        {/* {isGameLoading && <GameLoading />} */}
+        {isGameLoading && <GameLoading />}
 
         <MyVideo />
 

@@ -126,8 +126,8 @@ const Main = () => {
   // ========challenge data setting=======
   const [wakeTime, setWakeTime] = useState('');
   const changeWakeTime = () => {
-    console.log(wakeTime);
     setChallengeData(prev => ({ ...prev, wakeTime }));
+    alert('세팅 완료!');
   };
   // ============ 나중에 지우기!! =============
 
@@ -157,7 +157,7 @@ const Main = () => {
         {TEST_USER_INFO.map(({ userId, userName }) => (
           <SimpleBtn
             key={userId}
-            btnName={userId}
+            btnName={userName}
             onClickHandler={() => {
               setUserInfo(prev => ({ ...prev, userId, userName }));
               navigate(`/startMorning/${challengeId}`);

@@ -1,6 +1,6 @@
 export const TEST_USER_INFO = [
   {
-    userId: 0,
+    userId: 1,
     userEmail: 'aaa@aaa.com',
     userPassword: '1234',
     userName: '천사박경원',
@@ -13,7 +13,7 @@ export const TEST_USER_INFO = [
     affirmation: '시간은 금이다',
   },
   {
-    userId: 1,
+    userId: 2,
     userEmail: 'bbb@bbb.com',
     userPassword: '1234',
     userName: '귀요미이시현',
@@ -26,7 +26,7 @@ export const TEST_USER_INFO = [
     affirmation: '내가 제일 귀여워!',
   },
   {
-    userId: 2,
+    userId: 3,
     userEmail: 'ccc@ccc.com',
     userPassword: '1234',
     userName: '깜찍이이재원',
@@ -39,7 +39,7 @@ export const TEST_USER_INFO = [
     affirmation: 'I am the best!',
   },
   {
-    userId: 3,
+    userId: 4,
     userEmail: 'ddd@ddd.com',
     userPassword: '1234',
     userName: '상큼이금도현',
@@ -52,7 +52,7 @@ export const TEST_USER_INFO = [
     affirmation: 'I am king!',
   },
   {
-    userId: 4,
+    userId: 5,
     userEmail: 'eee@eee.com',
     userPassword: '1234',
     userName: '똑똑이연선애',
@@ -73,11 +73,11 @@ export const TEST_CHALLENGE_INFO = [
     wakeTime: '01:14',
     duration: 7,
     mates: [
-      { userId: 0, userName: '천사뿅뿅뿅' },
-      { userId: 1, userName: '귀요미이시현' },
-      { userId: 2, userName: '깜찍이이재원' },
-      { userId: 3, userName: '상큼이금도현' },
-      { userId: 4, userName: '똑똑이연선애' },
+      { userId: 1, userName: '천사뿅뿅뿅' },
+      { userId: 2, userName: '귀요미이시현' },
+      { userId: 3, userName: '깜찍이이재원' },
+      { userId: 4, userName: '상큼이금도현' },
+      { userId: 5, userName: '똑똑이연선애' },
     ],
   },
 ];
