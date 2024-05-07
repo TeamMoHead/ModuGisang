@@ -4,8 +4,8 @@ import { UserContext } from '../../../contexts';
 import styled from 'styled-components';
 
 const InvitationsContent = () => {
-  const { userInfo } = useContext(UserContext);
-  const { invitationCounts } = userInfo;
+  const { userData } = useContext(UserContext);
+  const { invitationCounts } = userData;
   return (
     <Wrapper>
       <div>초대장 확인하기</div>

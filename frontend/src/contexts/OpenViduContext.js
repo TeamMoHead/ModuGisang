@@ -5,18 +5,18 @@ import React, {
   useEffect,
   useContext,
 } from 'react';
-import { UserContext, ChallengeContext, GameContext } from './';
+import { UserContext, GameContext } from './';
 import { challengeServices } from '../apis';
 import { OpenVidu } from 'openvidu-browser';
 
 const OpenViduContext = createContext();
 
 const OpenViduContextProvider = ({ children }) => {
-  const { userInfo } = useContext(UserContext);
-  const { challengeData } = useContext(ChallengeContext);
+  const { userData, challengeId } = useContext(UserContext);
   const { inGameMode, myMissionStatus, setMatesMissionStatus } =
     useContext(GameContext);
-  const { userId, userName } = userInfo;
+
+  const { userId, userName } = userData;
 
   const [OVInstance, setOVInstance] = useState(null); // OpenVidu 객체 [openvidu-browser
   const [videoSession, setVideoSession] = useState(null);
@@ -29,7 +29,7 @@ const OpenViduContextProvider = ({ children }) => {
 
   const getConnectionToken = async () => {
     const userData = {
-      challengeId: challengeData.challengeId,
+      challengeId: challengeId,
       userId,
       userName,
     };
@@ -43,7 +43,7 @@ const OpenViduContextProvider = ({ children }) => {
   };
 
   const turnMicOnOff = () => {
-    myStream.publishAudio(!micOn);
+    myStream?.publishAudio(!micOn);
     setMicOn(prev => !prev);
   };
 
@@ -78,9 +78,10 @@ const OpenViduContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (!challengeData.challengeId) return;
+    console.log('OPEN VIDU USER DATA: ', challengeId, userData);
+    if (!challengeId) return;
     getConnectionToken();
-  }, [challengeData]);
+  }, [challengeId]);
 
   useEffect(() => {
     if (!connectionToken) return;

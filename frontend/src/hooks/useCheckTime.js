@@ -1,4 +1,7 @@
 const useCheckTime = wakeTime => {
+  if (wakeTime === undefined)
+    return { isTooEarly: false, isTooLate: false, remainingTime: 0 };
+
   const now = new Date();
   const wakeTimeDate = new Date(
     now.getFullYear(),
@@ -16,7 +19,7 @@ const useCheckTime = wakeTime => {
     0,
   );
 
-  const [hours, minutes] = wakeTime.split(':').map(Number);
+  const [hours, minutes] = wakeTime.split(':')?.map(Number);
   wakeTimeDate.setHours(hours, minutes, 0, 0);
 
   // isTooEarly: 현재가 wakeTime의 10분 전보다 더 일찍인 경우

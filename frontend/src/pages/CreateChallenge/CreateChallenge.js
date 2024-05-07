@@ -1,10 +1,12 @@
 import React, { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { NavBar, InputBox, SimpleBtn, Dropdown } from '../../components';
-import { AccountContext, ChallengeContext, UserContext } from '../../contexts';
+import { AccountContext, ChallengeContext } from '../../contexts';
 import { challengeServices } from '../../apis/challengeServices';
 import * as S from '../../styles/common';
 
 const CreateChallenge = () => {
+  const navigate = useNavigate();
   const [duration, setDuration] = useState('');
   const [startDate, setStartDate] = useState('');
   const [wakeTime, setWakeTime] = useState('');
@@ -48,7 +50,7 @@ const CreateChallenge = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     if (canSubmit()) {
-      await handleCreateChallenge({
+      const response = await handleCreateChallenge({
         newChallengeData: {
           hostId: userId,
           duration: Number(duration),
@@ -56,8 +58,12 @@ const CreateChallenge = () => {
           wakeTime,
           mates,
         },
-        setIsCreateChallengeLoading,
       });
+      setIsCreateChallengeLoading(false);
+      if (response.data) {
+        alert('챌린지가 생성되었습니다.');
+        navigate('/main');
+      }
     } else {
       alert('Please fill in all fields.');
     }

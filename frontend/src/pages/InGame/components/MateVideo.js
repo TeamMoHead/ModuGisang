@@ -101,7 +101,7 @@ const UserName = styled.span`
   width: 98%;
   bottom: -50px;
 
-  padding: 5px 10px;
+  padding: 3px 10px;
   border-radius: ${({ theme }) => theme.radius.light};
   color: ${({ theme }) => theme.colors.system.black};
   background-color: ${({ theme }) => theme.colors.lighter.light};
