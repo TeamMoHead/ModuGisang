@@ -8,9 +8,9 @@ import { AuthService } from 'src/auth/auth.service';
 import { Streak } from './entities/streak.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Users, Streak])],
+  imports: [TypeOrmModule.forFeature([Users, Streak])],
   controllers: [UserController],
   providers: [UserService],
-  exports:[UserService, TypeOrmModule]
+  exports: [UserService, TypeOrmModule],
 })
 export class UserModule {}
