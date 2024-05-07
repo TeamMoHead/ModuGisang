@@ -2,10 +2,10 @@ import React, { useRef, useEffect, useContext, useState } from 'react';
 import { GameContext, OpenViduContext } from '../../../contexts';
 import { Pose } from '@mediapipe/pose';
 import { estimateHead } from '../MissionEstimators/HeadEstimator';
-import bottomArrow from '../../../assets/arrows/bottom.png';
-import topArrow from '../../../assets/arrows/top.png';
-import leftArrow from '../../../assets/arrows/left.png';
-import rightArrow from '../../../assets/arrows/right.png';
+import bottomArrow from '../../../assets/arrows/bottom.svg';
+import topArrow from '../../../assets/arrows/top.svg';
+import leftArrow from '../../../assets/arrows/left.svg';
+import rightArrow from '../../../assets/arrows/right.svg';
 
 import styled from 'styled-components';
 
@@ -17,17 +17,17 @@ const arrowImages = {
 };
 
 const round1 = [
-  { direction: 'top', active: false },
-  { direction: 'bottom', active: false },
-  { direction: 'left', active: false },
-  { direction: 'right', active: false },
+  { id: 1, direction: 'top', active: true },
+  { id: 2, direction: 'bottom', active: false },
+  { id: 3, direction: 'left', active: false },
+  { id: 4, direction: 'right', active: true },
 ];
 
 const round2 = [
-  { direction: 'bottom', active: false },
-  { direction: 'right', active: false },
-  { direction: 'left', active: false },
-  { direction: 'right', active: false },
+  { id: 5, direction: 'bottom', active: false },
+  { id: 6, direction: 'right', active: false },
+  { id: 7, direction: 'left', active: false },
+  { id: 8, direction: 'right', active: false },
 ];
 
 const Mission3 = () => {
@@ -130,8 +130,13 @@ const Mission3 = () => {
     <>
       <Canvas ref={canvasRef} />
       <ArrowBox>
-        {arrowRound[currentRoundIdx].map(({ direction, active }) => (
-          <Arrows src={arrowImages[direction]} alt={active} />
+        {arrowRound[currentRoundIdx].map(({ id, direction, active }) => (
+          <Arrows
+            key={id}
+            src={arrowImages[direction]}
+            active={active}
+            alt={id}
+          />
         ))}
 
         {/* <Arrows src={leftArrow} alt="bottomArrow" />
@@ -167,4 +172,6 @@ const ArrowBox = styled.div`
 const Arrows = styled.img`
   width: 80px;
   height: 50px;
+  filter: ${({ active }) =>
+    active ? 'hue-rotate(60deg) saturate(200%)' : 'none'};
 `;
