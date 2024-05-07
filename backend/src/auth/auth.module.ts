@@ -23,12 +23,20 @@ import RedisCacheService from 'src/redis-cache/redis-cache.service';
       useFactory: async (configService: ConfigService) => ({
         global: true,
         secret: configService.get<string>('ACCESS_TOKEN_SECRET_KEY'),
-        signOptions: { expiresIn: configService.get<string>('ACCESS_TOKEN_EXP') },
+        signOptions: {
+          expiresIn: configService.get<string>('ACCESS_TOKEN_EXP'),
+        },
       }),
       inject: [ConfigService],
-    })
+    }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserService, JwtStrategy, JwtRefreshStrategy, RedisCacheService]
+  providers: [
+    AuthService,
+    UserService,
+    JwtStrategy,
+    JwtRefreshStrategy,
+    RedisCacheService,
+  ],
 })
-export class AuthModule { }
+export class AuthModule {}

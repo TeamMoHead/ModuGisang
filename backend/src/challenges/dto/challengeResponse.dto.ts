@@ -3,7 +3,7 @@ export class ChallengeResponseDto {
   startDate: Date;
   wakeTime: Date;
   duration: number;
-  mates: ParticipantDto[]
+  mates: ParticipantDto[];
 }
 export class ParticipantDto {
   userId: number;
