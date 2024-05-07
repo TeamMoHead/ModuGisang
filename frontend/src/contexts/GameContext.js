@@ -38,7 +38,7 @@ const GameContextProvider = ({ children }) => {
   const [isGameLoading, setIsGameLoading] = useState(false);
   const [inGameMode, setInGameMode] = useState(
     // parseInt(localStorage.getItem('inGameMode')) || 0,
-    3,
+    3, // 게임 모드 번호
   );
 
   let nextGameMode = 1;
