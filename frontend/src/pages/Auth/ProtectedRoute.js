@@ -9,13 +9,13 @@ import useAuth from '../../hooks/useAuth';
 
 const ProtectedRoute = () => {
   const { accessToken, userId } = useContext(AccountContext);
-  const { handleCheckAuth } = useAuth();
+  const { checkAuth } = useAuth();
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   const checkAuthorize = async () => {
     setIsAuthLoading(true);
-    const response = await handleCheckAuth();
+    const response = await checkAuth();
     if (response) {
       setIsAuthLoading(false);
       setIsAuthorized(true);
@@ -24,6 +24,7 @@ const ProtectedRoute = () => {
 
   useEffect(() => {
     checkAuthorize();
+
     console.log('checking authorization...');
     console.log('AT', accessToken);
     console.log('RT', localStorage.getItem('refreshToken'));

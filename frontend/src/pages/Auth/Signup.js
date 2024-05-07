@@ -17,7 +17,7 @@ const Signup = () => {
     useState(false);
   const [isSignUpLoading, setIsSignUpLoading] = useState(false);
 
-  const { handleEmailCheck, handleCheckVerifyCode, handleSignUpSubmit } =
+  const { handleCheckEmail, handleCheckVerifyCode, handleSubmitSignUp } =
     useAuth();
 
   const handleEmailChange = e => {
@@ -54,7 +54,7 @@ const Signup = () => {
         />
         <SimpleBtn
           onClickHandler={async e =>
-            await handleEmailCheck({
+            await handleCheckEmail({
               e,
               email,
               setIsEmailChecked,
@@ -103,7 +103,7 @@ const Signup = () => {
           type="submit"
           btnName="회원가입"
           onClickHandler={async e =>
-            await handleSignUpSubmit({
+            await handleSubmitSignUp({
               e,
               email,
               password,

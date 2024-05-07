@@ -13,10 +13,10 @@ const logInUser = async ({ email, password }) => {
   const payload = {
     email: TEST_CONFIG.TEST_EMAIL,
     password: TEST_CONFIG.TEST_PASSWORD,
+    // email,
+    // password,
   };
-  const response = await API.post(url, payload);
-  console.log(response);
-  return response;
+  return await API.post(url, payload);
 };
 
 const logOutUser = async ({ accessToken }) => {
@@ -26,9 +26,7 @@ const logOutUser = async ({ accessToken }) => {
       Authorization: `Bearer ${accessToken}`,
     },
   };
-  const response = await API.get(url, config);
-  console.log(response);
-  return response;
+  return await API.get(url, config);
 };
 
 const checkEmailAvailability = async ({ email }) => {
@@ -38,18 +36,14 @@ const checkEmailAvailability = async ({ email }) => {
       email: email,
     },
   };
-  const response = await API.get(url, config);
-  console.log(response);
-  return response;
+  return await API.get(url, config);
 };
 
 const verifyAuthCode = async ({ verifyCode, email }) => {
   const url = '/auth';
   const config = {};
   const payload = { email: email, authNum: verifyCode };
-  const response = await API.post(url, payload, config);
-  console.log(response);
-  return response;
+  return await API.post(url, payload, config);
 };
 
 const signUpUser = async ({ email, password, userName }) => {
@@ -59,9 +53,7 @@ const signUpUser = async ({ email, password, userName }) => {
     password: password,
     userName: userName,
   };
-  const response = await API.post(url, payload);
-  console.log(response);
-  return response;
+  return await API.post(url, payload);
 };
 
 const refreshAccessToken = async ({ accessToken, refreshToken }) => {
@@ -75,9 +67,7 @@ const refreshAccessToken = async ({ accessToken, refreshToken }) => {
   const config = {
     headers: { Authorization: `Bearer ${accessToken}` },
   };
-  const response = await API.post(url, payload, config);
-  console.log(response);
-  return response;
+  return await API.post(url, payload, config);
 };
 
 export const authServices = {

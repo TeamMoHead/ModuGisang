@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserContext, ChallengeContext } from '../../contexts';
+import { UserContext, ChallengeContext, AccountContext } from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
-import useFetch from '../../hooks/useFetch';
-import { NavBar, CardBtn, SimpleBtn } from '../../components';
+import { NavBar, CardBtn } from '../../components';
 import {
   StreakContent,
   InvitationsContent,
@@ -13,26 +12,22 @@ import {
 } from './cardComponents';
 import { GREETINGS, CARD_TYPES, CARD_STYLES } from './DATA';
 
-import { TEST_USER_INFO } from './TEST_DATA';
-
 import styled from 'styled-components';
 import * as S from '../../styles/common';
 
 const Main = () => {
-  const { fetchData } = useFetch();
   const navigate = useNavigate();
 
-  // setUserInfo는 Test용으로 사용하는 함수
-  const { userInfo, setUserInfo, fetchUserData } = useContext(UserContext);
-  const { userName, challengeId } = userInfo;
-  const hasChallenge = challengeId >= 0;
-  const { challengeData, setChallengeData, fetchChallengeData } =
-    useContext(ChallengeContext);
-
+  // setUserData는 Test용으로 사용하는 함수
+  const { accessToken, userId } = useContext(AccountContext);
+  const { userData, challengeId, getUserData } = useContext(UserContext);
+  const { userName } = userData;
+  const { challengeData, setChallengeData } = useContext(ChallengeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
 
   // ---------------현재 페이지에서 쓸 State---------------
-  const [isUserInfoLoading, setIsUserInfoLoading] = useState(true);
+  const hasChallenge = Number(challengeId) !== -1;
+  const [isUserDataLoading, setIsUserDataLoading] = useState(true);
   const [isChallengeInfoLoading, setIsChallengeInfoLoading] = useState(true);
 
   const greetings = GREETINGS[0] + userName + GREETINGS[1];
@@ -71,72 +66,50 @@ const Main = () => {
       // ) {
       //   alert('멋져요! 오늘의 미라클 모닝 성공! 내일 또 만나요');
       // } else {
-      navigate(`/startMorning/${challengeId}`);
+      navigate(`/startMorning`);
       // }
     },
   };
-
-  const getUserInfo = async () => {
-    setIsUserInfoLoading(true);
-    try {
-      const response = await fetchData(() => fetchUserData());
-      const {
-        isLoading: isUserInfoLoading,
-        data: userInfoData,
-        error: userInfoError,
-      } = response;
-      if (!isUserInfoLoading && userInfoData) {
-        setUserInfo(userInfoData);
-        setIsUserInfoLoading(false);
-      } else if (userInfoError) {
-        setIsUserInfoLoading(false);
-        console.error(userInfoError);
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-      alert(error);
-    }
+  // ⭐️⭐️⭐️⭐️ TEST 용 wake time 설정 ⭐️⭐️⭐️⭐️
+  // ========challenge data setting=======
+  const [wakeTime, setWakeTime] = useState('');
+  const changeWakeTime = () => {
+    setChallengeData(prev => ({ ...prev, wakeTime }));
+    alert('세팅 완료!');
   };
+  // ============ 나중에 지우기!! =============
 
-  const getChallengeInfo = async () => {
-    setIsChallengeInfoLoading(true);
-    try {
-      const response = await fetchData(() => fetchChallengeData());
-      const {
-        isLoading: isChallengeInfoLoading,
-        data: challengeInfoData,
-        error: challengeInfoError,
-      } = response;
-      if (!isChallengeInfoLoading && challengeInfoData) {
-        setChallengeData(challengeInfoData);
-        setIsChallengeInfoLoading(false);
-      } else if (challengeInfoError) {
-        console.error(challengeInfoError);
-        setIsChallengeInfoLoading(false);
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-      alert(error);
+  // 💕💕💕💕💕💕💕이제 웹워커 적용하기!!!!!!!!💕💕💕💕💕💕💕💕
+
+  useEffect(() => {
+    if (accessToken && userId) {
+      getUserData();
     }
-  };
+  }, [challengeData]);
 
+  if (!userId || !challengeData) return <div>Loading...</div>;
   return (
     <>
       <NavBar />
       <S.PageWrapper>
         <Greetings>{greetings}</Greetings>
-        {TEST_USER_INFO.map(({ userId, userName }) => (
-          <SimpleBtn
-            key={userId}
-            btnName={userId}
-            onClickHandler={() => {
-              setUserInfo(prev => ({ ...prev, userId, userName }));
-              navigate(`/startMorning/${challengeId}`);
-            }}
-          />
-        ))}
+        <span>기상시간 세팅 00:00 형태</span>
+        <input
+          type="text"
+          onChange={e => setWakeTime(e.target.value)}
+          style={{ backgroundColor: 'white' }}
+        />
+        <button
+          onClick={changeWakeTime}
+          style={{
+            backgroundColor: 'orange',
+            padding: '10px',
+            borderRadius: '5px',
+          }}
+        >
+          기상 시간 세팅하기{' '}
+        </button>
+
         <CardsWrapper>
           {CARD_TYPES[hasChallenge ? 'hasChallenge' : 'noChallenge'].map(
             type => (

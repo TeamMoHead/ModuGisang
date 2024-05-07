@@ -70,4 +70,29 @@ self.addEventListener('message', event => {
   }
 });
 
-// Any other custom service worker logic can go here.
+// ========mediaPipe web workers에서 이용하기 위한 작업========
+// mediaPipe pose_landmark_lite.tflite file fetch
+self.addEventListener('fetch', event => {
+  if (event.request.url.includes('pose_landmark_lite.tflite')) {
+    const newUrl = event.request.url.replace(
+      'cdn.jsdelivr.net',
+      'http://localhost:3000',
+    ); // Change the URL to your hosted file if needed
+    event.respondWith(
+      fetch(newUrl, {
+        mode: 'cors', // Ensure CORS policies are respected
+        headers: {
+          'Content-Type': 'application/octet-stream', // Set the appropriate content type
+        },
+      })
+        .then(response => {
+          // Optionally modify the response here if needed
+          return response;
+        })
+        .catch(error => {
+          console.error('Failed to fetch the modified request:', error);
+          return fetch(event.request); // Fallback to the original request if the fetch fails
+        }),
+    );
+  }
+});

@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { UserContext, ChallengeContext, GameContext } from '../../contexts';
+import {
+  UserContext,
+  ChallengeContext,
+  GameContext,
+  OpenViduContext,
+} from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
 
 import InGameNav from './components/Nav/InGameNav';
-import { MyVideo, MateVideo } from './components';
+import { MyVideo, MateVideo, GameLoading } from './components';
 import {
   Waiting,
   Mission1,
@@ -38,25 +43,20 @@ const GAME_MODE_COMPONENTS = {
 
 const InGame = () => {
   const navigate = useNavigate();
-  const { challengeId } = useParams();
-  const { userInfo } = useContext(UserContext);
-  const { userId: myId } = userInfo;
-  const { challengeData, getChallengeData } = useContext(ChallengeContext);
+  const { userData } = useContext(UserContext);
+  const { userId: myId } = userData;
+  const { challengeData } = useContext(ChallengeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
-  const { inGameMode, setMyMissionStatus } = useContext(GameContext);
+  const { isGameLoading, inGameMode, myMissionStatus, setMyMissionStatus } =
+    useContext(GameContext);
+  const { myStream, myVideoRef } = useContext(OpenViduContext);
   const [redirected, setRedirected] = useState(false);
 
   const [mateList, setMateList] = useState([]);
 
   useEffect(() => {
-    if (challengeId) {
-      getChallengeData(challengeId);
-    }
-  }, [challengeId]);
-
-  useEffect(() => {
     if (challengeData) {
-      setMateList(challengeData.mates.filter(mate => mate.userId !== myId));
+      setMateList(challengeData?.mates?.filter(mate => mate.userId !== myId));
     } else return;
   }, [challengeData]);
 
@@ -75,6 +75,15 @@ const InGame = () => {
     //     navigate('/main');
     //   }
     // }
+    return () => {
+      // localStorage.removeItem('inGameMode');
+      if (myVideoRef.current) {
+        if (myStream instanceof MediaStream) {
+          myStream.getTracks().forEach(track => track.stop());
+          myVideoRef.current.srcObject = null; // 비디오 요소에서 스트림 연결을 해제합니다.
+        }
+      }
+    };
   }, [inGameMode, isTooEarly, isTooLate, redirected]);
 
   if (redirected) return null;
@@ -82,29 +91,16 @@ const InGame = () => {
     <>
       <InGameNav />
       <Wrapper>
+        {/* {inGameMode < 3 && isGameLoading && <GameLoading />} */}
         <MyVideo />
-
-        <button
-          onClick={() => setMyMissionStatus(prev => !prev)}
-          style={{
-            zIndex: 300,
-            position: 'fixed',
-            top: '150px',
-            right: '50px',
-            backgroundColor: 'orange',
-            padding: '10px',
-          }}
-        >
-          My Mission Status
-        </button>
 
         <React.Fragment key={inGameMode}>
           {GAME_MODE_COMPONENTS[inGameMode]}
         </React.Fragment>
 
-        {mateList.length > 0 && (
-          <MatesVideoWrapper $isSingle={mateList.length === 1}>
-            {mateList.map(({ userId, userName }) => (
+        {mateList?.length > 0 && (
+          <MatesVideoWrapper $isSingle={mateList?.length === 1}>
+            {mateList?.map(({ userId, userName }) => (
               <MateVideo key={userId} mateId={userId} mateName={userName} />
             ))}
           </MatesVideoWrapper>

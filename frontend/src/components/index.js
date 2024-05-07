@@ -6,6 +6,8 @@ import InputLine from './InputLine';
 import Modal from './Modal';
 import NavBar from './NavBar';
 import PageNotFound from './PageNotFound';
+import LoadingWithText from './LoadingWithText';
+import Dropdown from './Dropdown';
 
 export {
   Icon,
@@ -16,4 +18,6 @@ export {
   Modal,
   NavBar,
   PageNotFound,
+  LoadingWithText,
+  Dropdown,
 };

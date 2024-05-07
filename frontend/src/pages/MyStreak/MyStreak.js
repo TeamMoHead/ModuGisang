@@ -1,7 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavBar, SimpleBtn } from '../../components';
-import { UserContext } from '../../contexts/UserContext';
+import { AccountContext, UserContext } from '../../contexts';
+import { challengeServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
 
 import * as S from '../../styles/common';
@@ -9,48 +10,44 @@ import * as S from '../../styles/common';
 const MyStreak = () => {
   const navigate = useNavigate();
   const { fetchData } = useFetch();
-  const [isUserInfoLoading, setIsUserInfoLoading] = useState(true);
-  const { userInfo, setUserInfo, fetchUserData } = useContext(UserContext);
-  const { userId, userName, streakDays, medals, affirmation } = userInfo;
+  const { accessToken, userId } = useContext(AccountContext);
+  const { userData } = useContext(UserContext);
+  const { userName, streakDays, medals, affirmation } = userData;
 
-  const getUserInfo = async () => {
-    setIsUserInfoLoading(true);
-    try {
-      const response = await fetchData(() => fetchUserData());
-      const {
-        isLoading: isUserInfoLoading,
-        data: userInfoData,
-        error: userInfoError,
-      } = response;
-      if (!isUserInfoLoading && userInfoData) {
-        setUserInfo(userInfoData);
-        setIsUserInfoLoading(false);
-      } else if (userInfoError) {
-        setIsUserInfoLoading(false);
-        console.error(userInfoError);
-        return;
-      }
-    } catch (error) {
-      console.error(error);
-      alert(error);
-    }
+  const getCallendar = async ({ accessToken, userId, month }) => {
+    const response = await fetchData(() =>
+      challengeServices.getCallendarInfo({ accessToken, userId, month }),
+    );
+    console.log(response);
+  };
+
+  const handleClickOnDate = async ({ accessToken, userId, date }) => {
+    const response = await fetchData(() =>
+      challengeServices.getCallendarInfoByDate({ accessToken, userId, date }),
+    );
+    console.log(response);
   };
 
   useEffect(() => {
-    getUserInfo();
+    getCallendar({ accessToken, userId, month: 4 });
   }, []);
 
   return (
     <>
       <NavBar />
       <S.PageWrapper>
-        <SimpleBtn key={userId} btnName={userId} />
-        <SimpleBtn key={userName} btnName={userName} />
-        <SimpleBtn key={streakDays} btnName={streakDays} />
-        <SimpleBtn key={medals.gold} btnName={medals.gold} />
-        <SimpleBtn key={medals.silver} btnName={medals.silver} />
-        <SimpleBtn key={medals.bronze} btnName={medals.bronze} />
-        <SimpleBtn key={medals.bronze} btnName={affirmation} />
+        <div>유저이름: {userName}</div>
+        <div>연속일수: {streakDays}</div>
+        <div>금메달: {medals?.gold}</div>
+        <div>은메달: {medals?.silver}</div>
+        <div>동메달: {medals?.bronze}</div>
+        <div>오늘의한마디: {affirmation}</div>
+        <SimpleBtn
+          onClickHandler={() => {
+            handleClickOnDate({ accessToken, userId, date: '2024-05-09' });
+          }}
+          btnName="5월 9일 확인하기"
+        />
       </S.PageWrapper>
     </>
   );

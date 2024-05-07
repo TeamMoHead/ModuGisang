@@ -18,10 +18,12 @@ const useAuth = () => {
         console.log('No refresh token');
         return false;
       }
+
       const response = await authServices.refreshAccessToken({
         accseeToken: accessToken,
         refreshToken: refreshToken,
       });
+
       if (response.status === 201) {
         setAccessToken(response.data.data.accessToken);
         setUserId(response.data.data.userId);
@@ -36,7 +38,7 @@ const useAuth = () => {
     }
   };
 
-  const handleCheckAuth = async () => {
+  const checkAuth = async () => {
     if (accessToken === null) {
       const isRefreshed = await refreshAuthorization();
       if (!isRefreshed) {
@@ -48,7 +50,7 @@ const useAuth = () => {
     return true;
   };
 
-  const handleEmailCheck = async ({
+  const handleCheckEmail = async ({
     e,
     email,
     setIsEmailChecked,
@@ -84,7 +86,7 @@ const useAuth = () => {
     }
   };
 
-  const handleLogInSubmit = async ({
+  const handleSubmitLogIn = async ({
     loginEmail,
     loginPassword,
     setIsLoginLoading,
@@ -151,7 +153,7 @@ const useAuth = () => {
     }
   };
 
-  const handleSignUpSubmit = async ({
+  const handleSubmitSignUp = async ({
     e,
     email,
     password,
@@ -197,11 +199,11 @@ const useAuth = () => {
 
   return {
     refreshAuthorization,
-    handleCheckAuth,
-    handleLogInSubmit,
-    handleEmailCheck,
-    handleSignUpSubmit,
+    checkAuth,
+    handleCheckEmail,
+    handleSubmitLogIn,
     handleCheckVerifyCode,
+    handleSubmitSignUp,
   };
 };
 
