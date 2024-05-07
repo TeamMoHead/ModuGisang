@@ -17,10 +17,10 @@ const arrowImages = {
 };
 
 const round1 = [
-  { id: 1, direction: 'top', active: true },
+  { id: 1, direction: 'top', active: false },
   { id: 2, direction: 'bottom', active: false },
   { id: 3, direction: 'left', active: false },
-  { id: 4, direction: 'right', active: true },
+  { id: 4, direction: 'right', active: false },
 ];
 
 const round2 = [
