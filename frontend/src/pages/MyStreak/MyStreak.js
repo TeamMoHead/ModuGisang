@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavBar, SimpleBtn } from '../../components';
 import { AccountContext, UserContext } from '../../contexts';
-import { userServices, challengeServices } from '../../apis';
+import { challengeServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
 
 import * as S from '../../styles/common';
@@ -10,10 +10,9 @@ import * as S from '../../styles/common';
 const MyStreak = () => {
   const navigate = useNavigate();
   const { fetchData } = useFetch();
-  const [isUserInfoLoading, setIsUserInfoLoading] = useState(true);
   const { accessToken, userId } = useContext(AccountContext);
-  const { userInfo, setUserInfo } = useContext(UserContext);
-  const { userName, streakDays, medals, affirmation } = userInfo;
+  const { userData } = useContext(UserContext);
+  const { userName, streakDays, medals, affirmation } = userData;
 
   const getCallendar = async ({ accessToken, userId, month }) => {
     const response = await fetchData(() =>
@@ -39,9 +38,9 @@ const MyStreak = () => {
       <S.PageWrapper>
         <div>유저이름: {userName}</div>
         <div>연속일수: {streakDays}</div>
-        <div>금메달: {medals.gold}</div>
-        <div>은메달: {medals.silver}</div>
-        <div>동메달: {medals.bronze}</div>
+        <div>금메달: {medals?.gold}</div>
+        <div>은메달: {medals?.silver}</div>
+        <div>동메달: {medals?.bronze}</div>
         <div>오늘의한마디: {affirmation}</div>
         <SimpleBtn
           onClickHandler={() => {

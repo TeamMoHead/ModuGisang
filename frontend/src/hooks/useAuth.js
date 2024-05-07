@@ -18,10 +18,12 @@ const useAuth = () => {
         console.log('No refresh token');
         return false;
       }
+
       const response = await authServices.refreshAccessToken({
         accseeToken: accessToken,
         refreshToken: refreshToken,
       });
+
       if (response.status === 201) {
         setAccessToken(response.data.data.accessToken);
         setUserId(response.data.data.userId);

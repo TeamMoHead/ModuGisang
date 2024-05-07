@@ -1,8 +1,9 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GameContext, OpenViduContext } from '../../../../contexts';
 import { Icon } from '../../../../components';
-import { GameRound, MissionTitle, MissionInfo, Timer } from './';
+import { GameRound, MissionTitle, MissionInst, Timer } from './';
+import { INFO_BY_GAME_MODE } from './DATA';
 import styled from 'styled-components';
 
 const GAME_MODE = {
@@ -18,17 +19,16 @@ const GAME_MODE = {
 const InGameNav = () => {
   const navigate = useNavigate();
   const { inGameMode } = useContext(GameContext);
-  const { micOn, turnMicOnOff, myVideoRef, myStream, setMyStream } =
+  const { micOn, turnMicOnOff, myVideoRef, myStream } =
     useContext(OpenViduContext);
 
   const goToMain = () => {
     navigate('/main');
-    localStorage.removeItem('inGameMode');
+    // localStorage.removeItem('inGameMode');
     if (myVideoRef.current) {
       if (myStream instanceof MediaStream) {
         myStream.getTracks().forEach(track => track.stop());
         myVideoRef.current.srcObject = null; // 비디오 요소에서 스트림 연결을 해제합니다.
-        setMyStream(null);
       }
     }
   };
@@ -58,9 +58,11 @@ const InGameNav = () => {
       <TextArea>
         {GAME_MODE[inGameMode] !== 'waiting' && (
           <>
-            <GameRound />
-            <MissionTitle />
-            <MissionInfo />
+            <GameRound text={inGameMode} />
+            <InstructionArea>
+              <MissionTitle text={INFO_BY_GAME_MODE[inGameMode].title} />
+              <MissionInst text={INFO_BY_GAME_MODE[inGameMode].instruction} />
+            </InstructionArea>
           </>
         )}
         {GAME_MODE[inGameMode] === 'waiting' && <Timer />}
@@ -80,8 +82,37 @@ const Wrapper = styled.nav`
   width: 100vw;
   height: 100px;
 
-  /* background-color: ${({ theme }) => theme.colors.lighter.light}; */
-  ${({ theme }) => theme.gradient.navBar}
+  background-color: ${({ theme }) => theme.colors.lighter.light};
+`;
+
+const BtnArea = styled.div`
+  position: fixed;
+  width: 100vw;
+  height: 50px;
+  padding: 0 20px;
+
+  ${({ theme, $hasLeftBtn }) =>
+    $hasLeftBtn ? theme.flex.between : theme.flex.right}
+`;
+
+const TextArea = styled.div`
+  width: 100vw;
+  padding: 0 20px;
+
+  ${({ theme }) => theme.flex.center}
+  flex-direction: column;
+`;
+
+const InstructionArea = styled.div`
+  position: absolute;
+  margin: 0 auto;
+  padding: 0 80px;
+  ${({ theme }) => theme.flex.center}
+  flex-direction: column;
+
+  ${({ theme }) => theme.fonts.instruction}
+  color: ${({ theme }) => theme.colors.primary.dark};
+  text-align: center;
 `;
 
 const BackBtnStyle = {
@@ -98,23 +129,3 @@ const micOffStyle = {
   size: 21,
   hoverColor: 'purple',
 };
-
-const BtnArea = styled.div`
-  position: fixed;
-  top: 0;
-
-  width: 100vw;
-  height: 50px;
-  padding: 0 20px;
-  ${({ theme, $hasLeftBtn }) =>
-    $hasLeftBtn ? theme.flex.between : theme.flex.right}
-`;
-
-const TextArea = styled.div`
-  width: 100vw;
-  /* height: 50px; */
-  /* padding: 20px; */
-  margin-top: 80px;
-  ${({ theme }) => theme.flex.center}
-  flex-direction: column;
-`;

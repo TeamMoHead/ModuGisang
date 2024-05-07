@@ -14,8 +14,8 @@ const ChallengeContent = () => {
         <SmallLetter>남았습니다</SmallLetter>
       </LeftArea>
       <RightArea>
-        <p>기상시간: {wakeTime}</p>
-        {mates.map(mate => (
+        <p>기상시간: {wakeTime?.split(':')?.slice(0, 2)?.join(':')}</p>
+        {mates?.map(mate => (
           <SmallLetter key={mate.userId}>{mate.userName}</SmallLetter>
         ))}
       </RightArea>

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useContext } from 'react';
+import React, { useRef, useEffect, useContext, useState } from 'react';
 import { GameContext, OpenViduContext } from '../../../contexts';
 import { Pose } from '@mediapipe/pose';
 import { estimateHead } from '../MissionEstimators/HeadEstimator';
@@ -6,8 +6,13 @@ import { estimateHead } from '../MissionEstimators/HeadEstimator';
 import styled from 'styled-components';
 
 const Mission3 = () => {
-  const { inGameMode, myMissionStatus, setMyMissionStatus } =
-    useContext(GameContext);
+  const {
+    inGameMode,
+    myMissionStatus,
+    setMyMissionStatus,
+    isGameLoading,
+    setIsGameLoading,
+  } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
   const msPoseRef = useRef(null);
@@ -34,6 +39,7 @@ const Mission3 = () => {
 
     msPoseRef.current.onResults(results => {
       setMyMissionStatus(estimateHead({ results, myVideoRef, canvasRef }));
+      if (isGameLoading) setIsGameLoading(false);
     });
 
     const handleCanPlay = () => {

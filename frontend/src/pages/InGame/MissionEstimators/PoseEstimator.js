@@ -12,7 +12,12 @@ const keypoints = {}; // 측정에 사용할 각 포인트의 위치 저장
 const timeoutDuration = 7000; // 제한 시간
 
 export const estimatePose = ({ results, myVideoRef, canvasRef }) => {
-  if (!myVideoRef.current || !canvasRef.current) return;
+  if (
+    !myVideoRef.current ||
+    !canvasRef.current ||
+    !results?.poseLandmarks?.length > 0
+  )
+    return;
 
   const canvasElement = canvasRef.current;
   const canvasCtx = canvasElement.getContext('2d');

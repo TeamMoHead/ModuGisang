@@ -95,10 +95,10 @@ const getConnectionToken = async ({ userData }) => {
 
 export const challengeServices = {
   getChallengeInfo,
-  getInvitationInfo,
-  acceptInvitation,
   createChallenge,
   checkMateAvailability,
+  getInvitationInfo,
+  acceptInvitation,
   getCallendarInfo,
   getCallendarInfoByDate,
   getConnectionToken,

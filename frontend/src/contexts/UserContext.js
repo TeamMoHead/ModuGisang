@@ -1,27 +1,56 @@
-import React, { useState, createContext, useContext } from 'react';
-import { userServices } from '../apis/userServices';
+import React, { useState, createContext, useContext, useEffect } from 'react';
 import { AccountContext } from './AccountContexts';
 import useFetch from '../hooks/useFetch';
+import { userServices } from '../apis';
 
 const UserContext = createContext();
 
 const UserContextProvider = ({ children }) => {
+  const { fetchData } = useFetch();
   const { accessToken, userId } = useContext(AccountContext);
-  // 임시 유저 정보
-  const [userInfo, setUserInfo] = useState({
-    userName: '',
-    medals: {},
-    streakDays: 0,
-    challengeId: 55,
-    invitationCounts: 0,
-    affirmation: '',
+  const [userData, setUserData] = useState({
+    // userId: 1,
+    // userName: '',
+    // medals: {},
+    // streakDays: 0,
+    // challengeId: 0,
+    // invitationCounts: 0,
+    // affirmation: '',
   });
+  const [challengeId, setChallengeId] = useState(-1);
 
-  const [challengeId, setChallengeId] = useState(Number(userInfo.challengeId));
+  const getUserData = async () => {
+    const response = await fetchData(() =>
+      userServices.getUserInfo({ accessToken, userId }),
+    );
+
+    const { isLoading, data, error } = response;
+
+    if (!isLoading && data) {
+      setUserData(data);
+      setChallengeId(data.challengeId);
+    } else {
+      console.error(error);
+    }
+
+    return response;
+  };
+
+  useEffect(() => {
+    if (accessToken && userId) {
+      getUserData();
+    }
+  }, [userId]);
 
   return (
     <UserContext.Provider
-      value={{ userInfo, setUserInfo, challengeId, setChallengeId }}
+      value={{
+        userData,
+        setUserData,
+        challengeId,
+        setChallengeId,
+        getUserData,
+      }}
     >
       {children}
     </UserContext.Provider>

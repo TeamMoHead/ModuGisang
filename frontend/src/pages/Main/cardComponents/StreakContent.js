@@ -11,8 +11,8 @@ import styled from 'styled-components';
 
 const StreakContent = () => {
   const [level, setLevel] = useState('streak0');
-  const { userInfo } = useContext(UserContext);
-  const { streakDays, medals } = userInfo;
+  const { userData } = useContext(UserContext);
+  const { streakDays, medals } = userData;
   // calculate user streak level by user streakDays
 
   const getStreakLevel = streakDays => {
@@ -39,7 +39,7 @@ const StreakContent = () => {
 
   // useEffect(() => {
   //   setLevel(getStreakLevel(streakDays));
-  // }, [userInfo]);
+  // }, [userData]);
 
   return (
     <Wrapper>
