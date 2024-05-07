@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { OpenviduModule } from './openvidu/openvidu.module';
 import { OpenviduController } from './openvidu/openvidu.controller';
 import { OpenviduService } from './openvidu/openvidu.service';
-import { ConfigModule ,ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 // import { CacheModule } from '@nestjs/cache-manager';
 import { RedisCacheService } from './redis-cache/redis-cache.service';
@@ -28,12 +28,15 @@ import { Challenges } from './challenges/challenges.entity';
 import { Invitations } from './invitations/invitations.entity';
 import { Streak } from './users/entities/streak.entity';
 
-
 @Module({
   imports: [
-    OpenviduModule, ConfigModule.forRoot({
+    OpenviduModule,
+    ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'development' ? '.env.development' : '.env.production',
+      envFilePath:
+        process.env.NODE_ENV === 'development'
+          ? '.env.development'
+          : '.env.production',
       //ignoreEnvFile: process.env.NODE_ENV === 'production',
     }),
     // CacheModule.registerAsync({
@@ -49,10 +52,12 @@ import { Streak } from './users/entities/streak.entity';
     RedisModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService): Promise<RedisModuleOptions> => {
+      useFactory: async (
+        configService: ConfigService,
+      ): Promise<RedisModuleOptions> => {
         return {
-          type: 'single',  // Redis 연결 타입 지정
-          url: configService.get<string>('REDIS_URL'),  // 환경 변수에서 Redis URL을 가져옵니다.
+          type: 'single', // Redis 연결 타입 지정
+          url: configService.get<string>('REDIS_URL'), // 환경 변수에서 Redis URL을 가져옵니다.
         };
       },
     }),
@@ -66,11 +71,10 @@ import { Streak } from './users/entities/streak.entity';
         username: configService.get<string>('POSTGRESQL_DATABASE_USER'),
         database: configService.get<string>('POSTGRESQL_DATABASE_NAME'),
         password: configService.get<string>('POSTGRESQL_DATABASE_PASSWORD'),
-        logging : true,
+        logging: true,
 
-    
-        synchronize: true,//테이블을 자동으로 생성해주는 옵션 , 실제 환경에서는 사용하지 않는 것이 좋다.
-        entities: [Users, Attendance, Challenges, Invitations, Streak], // 여기에 엔티티 클래스를 추가합니다. 
+        synchronize: true, //테이블을 자동으로 생성해주는 옵션 , 실제 환경에서는 사용하지 않는 것이 좋다.
+        entities: [Users, Attendance, Challenges, Invitations, Streak], // 여기에 엔티티 클래스를 추가합니다.
         // ssl: {
         // // 다운로드한 인증서 파일 경로 추가
         //   ca: fs.readFileSync("././global-bundle.pem")
@@ -79,13 +83,19 @@ import { Streak } from './users/entities/streak.entity';
         // // SSL 연결을 강제 설정
         //   ssl: { rejectUnauthorized: false },
         // },
-        ssl: process.env.NODE_ENV === 'development' ? undefined :{
-          ca: fs.readFileSync("././global-bundle.pem")
-        },
-    
-        extra: process.env.NODE_ENV === 'development' ? undefined: {
-          ssl: { rejectUnauthorized: false },
-        },
+        ssl:
+          process.env.NODE_ENV === 'development'
+            ? undefined
+            : {
+                ca: fs.readFileSync('././global-bundle.pem'),
+              },
+
+        extra:
+          process.env.NODE_ENV === 'development'
+            ? undefined
+            : {
+                ssl: { rejectUnauthorized: false },
+              },
       }),
       inject: [ConfigService],
     }),
@@ -96,8 +106,12 @@ import { Streak } from './users/entities/streak.entity';
     InvitationsModule,
     AttendanceModule,
   ],
-  controllers: [AppController, RedisCacheController, OpenviduController, EmailController],
+  controllers: [
+    AppController,
+    RedisCacheController,
+    OpenviduController,
+    EmailController,
+  ],
   providers: [AppService, RedisCacheService, OpenviduService, EmailService],
 })
-export class AppModule {
-}
+export class AppModule {}

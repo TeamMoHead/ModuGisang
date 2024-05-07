@@ -1,11 +1,11 @@
-import { IsNotEmpty, IsNumber } from "class-validator";
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
-export class AcceptInvitationDto{
-    @IsNotEmpty()
-    @IsNumber()
-    challengeId:number;
+export class AcceptInvitationDto {
+  @IsNotEmpty()
+  @IsNumber()
+  challengeId: number;
 
-    @IsNotEmpty()
-    @IsNumber()
-    guestId:number;
+  @IsNotEmpty()
+  @IsNumber()
+  guestId: number;
 }

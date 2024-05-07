@@ -6,9 +6,9 @@ import { Challenges } from 'src/challenges/challenges.entity';
 import { Attendance } from './attendance.entity';
 
 @Module({
-  imports : [TypeOrmModule.forFeature([Attendance])],
+  imports: [TypeOrmModule.forFeature([Attendance])],
   providers: [AttendanceService],
   controllers: [AttendanceController],
-  exports:[AttendanceService, TypeOrmModule]
+  exports: [AttendanceService, TypeOrmModule],
 })
 export class AttendanceModule {}
