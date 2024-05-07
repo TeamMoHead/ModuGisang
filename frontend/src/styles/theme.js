@@ -45,7 +45,7 @@ const fonts = {
     color: ${({ theme }) => theme.colors.primary.light};
   `,
   instruction: css`
-    font: 400 16px 'IBM Plex Sans';
+    font: 400 16px 'IBM Plex Sans KR';
     color: ${({ theme }) => theme.colors.primary.light};
   `,
   loading: css`

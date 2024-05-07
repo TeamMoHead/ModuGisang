@@ -1,20 +1,18 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { challengeServices } from '../apis/challengeServices';
-import { useNavigate } from 'react-router-dom';
 import useFetch from '../hooks/useFetch';
 
-import { AccountContext } from './';
+import { AccountContext, UserContext } from './';
 
 const ChallengeContext = createContext();
 
 const ChallengeContextProvider = ({ children }) => {
   const { accessToken } = useContext(AccountContext);
+  const { challengeId } = useContext(UserContext);
   const { fetchData } = useFetch();
-  const navigate = useNavigate();
 
-  // 임시 데이터
   const [challengeData, setChallengeData] = useState({
-    // challengeId: '55',
+    // challengeId: 6,
     // startDate: '2021-09-01T00:00:00.000Z',
     // wakeTime: '17:30',
     // duration: 7,
@@ -27,11 +25,28 @@ const ChallengeContextProvider = ({ children }) => {
     // ],
   });
 
-  const handleCreateChallenge = async ({
-    newChallengeData,
-    setIsCreateChallengeLoading,
-  }) => {
-    setIsCreateChallengeLoading(true);
+  const getChallenge = async () => {
+    const response = await fetchData(() =>
+      challengeServices.getChallengeInfo({
+        accessToken,
+        challengeId: challengeId,
+      }),
+    );
+
+    const {
+      isLoading: isChallengeDataLoading,
+      data: userChallengeData,
+      error: challengeDataError,
+    } = response;
+
+    if (!isChallengeDataLoading && userChallengeData) {
+      setChallengeData(userChallengeData);
+    } else if (!isChallengeDataLoading && challengeDataError) {
+      console.error(challengeDataError);
+    }
+  };
+
+  const handleCreateChallenge = async ({ newChallengeData }) => {
     const response = await fetchData(() =>
       challengeServices.createChallenge({
         accessToken,
@@ -45,13 +60,10 @@ const ChallengeContextProvider = ({ children }) => {
     } = response;
     if (!isCreateChallengeLoading && createChallengeData) {
       console.log('createChallengeData:', createChallengeData);
-      setIsCreateChallengeLoading(false);
-      alert('챌린지가 생성되었습니다.');
-      navigate('/');
     } else if (!isCreateChallengeLoading && createChallengeError) {
       console.error(createChallengeError);
-      setIsCreateChallengeLoading(false);
     }
+    return response;
   };
 
   const handleAcceptInvitation = async ({
@@ -81,6 +93,12 @@ const ChallengeContextProvider = ({ children }) => {
       setIsAcceptInviLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (challengeId !== -1) {
+      getChallenge();
+    }
+  }, [challengeId]);
 
   return (
     <ChallengeContext.Provider

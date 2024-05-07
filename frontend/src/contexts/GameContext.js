@@ -38,7 +38,7 @@ const GameContextProvider = ({ children }) => {
   const [isGameLoading, setIsGameLoading] = useState(false);
   const [inGameMode, setInGameMode] = useState(
     // parseInt(localStorage.getItem('inGameMode')) || 0,
-    0,
+    3,
   );
 
   let nextGameMode = 1;
@@ -72,7 +72,10 @@ const GameContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (challengeData && !isTooEarly && !isTooLate) {
-      scheduleFirstMission();
+      // ⭐️⭐️⭐️⭐️⭐️⭐️ 개발 편의 용 주석 ⭐️⭐️⭐️⭐️⭐️//
+      // 나중에 다시 풀어야 함
+      // scheduleFirstMission();
+      // ===== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
     }
   }, [challengeData]);
 

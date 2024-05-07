@@ -16,22 +16,22 @@ const Wrapper = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
-  padding: 20px 0;
+  padding: 15px 0;
   ${({ theme }) => theme.flex.between}
 `;
 
 const Text = styled.div`
   position: absolute;
-  top: -18px;
-  left: 80px;
+  top: -20px;
+  left: -3px;
   ${({ theme }) => theme.fonts.content}
-  color: ${({ theme }) => theme.colors.primary.light};
+  color: ${({ theme }) => theme.colors.primary.purple};
 `;
 
 const Number = styled.div`
   position: absolute;
   top: 5px;
-  left: 85px;
+  left: 0px;
   ${({ theme }) => theme.flex.center}
   padding-top: 3px;
   width: 40px;

@@ -97,6 +97,7 @@ const BtnArea = styled.div`
 
 const TextArea = styled.div`
   width: 100vw;
+  padding: 0 20px;
 
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
@@ -105,12 +106,13 @@ const TextArea = styled.div`
 const InstructionArea = styled.div`
   position: absolute;
   margin: 0 auto;
-
+  padding: 0 80px;
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
 
   ${({ theme }) => theme.fonts.instruction}
   color: ${({ theme }) => theme.colors.primary.dark};
+  text-align: center;
 `;
 
 const BackBtnStyle = {

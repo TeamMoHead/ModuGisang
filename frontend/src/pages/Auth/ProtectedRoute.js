@@ -24,6 +24,7 @@ const ProtectedRoute = () => {
 
   useEffect(() => {
     checkAuthorize();
+
     console.log('checking authorization...');
     console.log('AT', accessToken);
     console.log('RT', localStorage.getItem('refreshToken'));

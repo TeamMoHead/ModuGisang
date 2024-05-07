@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 const MyVideo = () => {
   const { myVideoRef, myStream } = useContext(OpenViduContext);
-  const { missionCompleted } = useContext(GameContext);
+  const { myMissionStatus } = useContext(GameContext);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const MyVideo = () => {
   }, [myVideoRef]);
 
   return (
-    <Wrapper>
+    <Wrapper $myMissionStatus={myMissionStatus}>
       {isVideoLoading && (
         <LoadingWithText loadingMSG="카메라를 인식 중이에요" />
       )}
@@ -44,6 +44,8 @@ export default MyVideo;
 
 const Wrapper = styled.div`
   ${({ theme }) => theme.flex.center}
+  border: ${({ theme, $myMissionStatus }) =>
+    $myMissionStatus && `solid 5px ${theme.colors.primary.emerald}`};
 `;
 
 const Video = styled.video`

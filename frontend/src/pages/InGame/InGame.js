@@ -43,11 +43,11 @@ const GAME_MODE_COMPONENTS = {
 
 const InGame = () => {
   const navigate = useNavigate();
-  const { userInfo } = useContext(UserContext);
-  const { userId: myId } = userInfo;
+  const { userData } = useContext(UserContext);
+  const { userId: myId } = userData;
   const { challengeData } = useContext(ChallengeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
-  const { isGameLoading, inGameMode, setMyMissionStatus } =
+  const { isGameLoading, inGameMode, myMissionStatus, setMyMissionStatus } =
     useContext(GameContext);
   const { myStream, myVideoRef } = useContext(OpenViduContext);
   const [redirected, setRedirected] = useState(false);
@@ -92,22 +92,7 @@ const InGame = () => {
       <InGameNav />
       <Wrapper>
         {/* {inGameMode < 3 && isGameLoading && <GameLoading />} */}
-
         <MyVideo />
-
-        <button
-          onClick={() => setMyMissionStatus(prev => !prev)}
-          style={{
-            zIndex: 300,
-            position: 'fixed',
-            top: '150px',
-            right: '50px',
-            backgroundColor: 'orange',
-            padding: '10px',
-          }}
-        >
-          My Mission Status
-        </button>
 
         <React.Fragment key={inGameMode}>
           {GAME_MODE_COMPONENTS[inGameMode]}

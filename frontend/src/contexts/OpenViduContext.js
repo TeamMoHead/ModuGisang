@@ -12,11 +12,11 @@ import { OpenVidu } from 'openvidu-browser';
 const OpenViduContext = createContext();
 
 const OpenViduContextProvider = ({ children }) => {
-  const { userInfo, challengeId } = useContext(UserContext);
+  const { userData, challengeId } = useContext(UserContext);
   const { inGameMode, myMissionStatus, setMatesMissionStatus } =
     useContext(GameContext);
 
-  const { userId, userName } = userInfo;
+  const { userId, userName } = userData;
 
   const [OVInstance, setOVInstance] = useState(null); // OpenVidu 객체 [openvidu-browser
   const [videoSession, setVideoSession] = useState(null);
@@ -78,7 +78,7 @@ const OpenViduContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    console.log('재바오의 챌린지: ', challengeId, userInfo);
+    console.log('OPEN VIDU USER DATA: ', challengeId, userData);
     if (!challengeId) return;
     getConnectionToken();
   }, [challengeId]);
