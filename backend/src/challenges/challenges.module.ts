@@ -8,9 +8,14 @@ import { InvitationsModule } from 'src/invitations/invitations.module';
 import { UserModule } from 'src/users/users.module';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Challenges]),InvitationsModule,UserModule,AttendanceModule],
+  imports: [
+    TypeOrmModule.forFeature([Challenges]),
+    InvitationsModule,
+    UserModule,
+    AttendanceModule,
+  ],
   providers: [ChallengesService],
   controllers: [ChallengesController],
-  exports:[ChallengesService, TypeOrmModule]
+  exports: [ChallengesService, TypeOrmModule],
 })
 export class ChallengesModule {}

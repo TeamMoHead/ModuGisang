@@ -1,5 +1,4 @@
 export class ChallengeResultDto {
-    userName: string;
-    score: number;
-  }
-  
+  userName: string;
+  score: number;
+}
