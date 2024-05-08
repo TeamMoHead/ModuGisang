@@ -1,7 +1,8 @@
-import React, { useRef, useEffect, useContext } from 'react';
+import React, { useRef, useEffect, useContext, useState } from 'react';
 import { GameContext, OpenViduContext } from '../../../contexts';
 import { Pose } from '@mediapipe/pose';
 import { estimatePose } from '../MissionEstimators/PoseEstimator';
+import Guide from './Guide';
 
 import styled from 'styled-components';
 
@@ -16,6 +17,8 @@ const Mission1 = () => {
   const { myVideoRef } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
   const msPoseRef = useRef(null);
+
+  const [isProcessingComplete, setIsProcessingComplete] = useState(false);
 
   useEffect(() => {
     if (inGameMode !== 1 || !myVideoRef.current) return;
@@ -50,6 +53,7 @@ const Mission1 = () => {
         if (msPoseRef.current !== null) {
           msPoseRef.current.send({ image: videoElement }).then(() => {
             requestAnimationFrame(handleCanPlay);
+            setIsProcessingComplete(true);
           });
         }
       }
@@ -62,14 +66,18 @@ const Mission1 = () => {
     } else {
       videoElement.addEventListener('canplay', handleCanPlay);
     }
-
     return () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
       msPoseRef.current = null;
     };
   }, []);
 
-  return <Canvas ref={canvasRef} />;
+  return (
+    <>
+      <Canvas ref={canvasRef} />
+      {isProcessingComplete && <Guide poseCorrect={myMissionStatus} />}
+    </>
+  );
 };
 
 export default Mission1;
@@ -82,4 +90,5 @@ const Canvas = styled.canvas`
   width: 100vw;
   height: 100vh;
   object-fit: cover;
+  z-index: 1;
 `;
