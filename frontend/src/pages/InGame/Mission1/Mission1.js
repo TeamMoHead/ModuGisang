@@ -43,18 +43,11 @@ const Mission1 = () => {
     });
 
     const handleCanPlay = () => {
-      let frameCount = 0;
-      const frameSkip = 150;
-
-      if (frameCount % (frameSkip + 1) === 0) {
-        if (msPoseRef.current !== null) {
-          msPoseRef.current.send({ image: videoElement }).then(() => {
-            requestAnimationFrame(handleCanPlay);
-          });
-        }
+      if (msPoseRef.current !== null) {
+        msPoseRef.current.send({ image: videoElement }).then(() => {
+          requestAnimationFrame(handleCanPlay);
+        });
       }
-
-      frameCount++;
     };
 
     if (videoElement.readyState >= 3) {

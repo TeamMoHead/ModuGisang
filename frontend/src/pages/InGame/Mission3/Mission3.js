@@ -71,18 +71,11 @@ const Mission3 = () => {
     });
 
     const handleCanPlay = () => {
-      let frameCount = 0;
-      const frameSkip = 150;
-
-      if (frameCount % (frameSkip + 1) === 0) {
-        if (msPoseRef.current !== null) {
-          msPoseRef.current.send({ image: videoElement }).then(() => {
-            requestAnimationFrame(handleCanPlay);
-          });
-        }
+      if (msPoseRef.current !== null) {
+        msPoseRef.current.send({ image: videoElement }).then(() => {
+          requestAnimationFrame(handleCanPlay);
+        });
       }
-
-      frameCount++;
     };
 
     if (videoElement.readyState >= 3) {
@@ -118,10 +111,12 @@ const Mission3 = () => {
         });
 
         if (currentRoundIdx === 1 && currentArrowIdx === 3) {
-          setMyMissionStatus(true);
+          setMyMissionStatus(true); // 성공
         } else if (currentRoundIdx === 0 && currentArrowIdx === 3) {
-          setCurrentRoundIdx(currentRoundIdx + 1); // 다음 라운드로 넘어감
-          setCurrentArrowIdx(0); // 첫 번째 화살표로 초기화
+          setTimeout(() => {
+            setCurrentRoundIdx(currentRoundIdx + 1); // 다음 라운드로 넘어감
+            setCurrentArrowIdx(0); // 첫 번째 화살표로 초기화
+          }, 1000); // 1초 뒤에 실행되도록 설정
         } else {
           setCurrentArrowIdx(currentArrowIdx + 1); // 다음 화살표로 이동
         }

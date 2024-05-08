@@ -2,7 +2,6 @@ import * as pose from '@mediapipe/pose';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 
 let currentStatus; // 현재 고개를 돌린 방향
-let myMissionStatus = false; // 측정 결과
 // const rotateDirections = ['top', 'bottom', 'left', 'right']; // 회전 방향 배열
 const numberDirections = 8; // 선택할 방향 수
 const timeoutDuration = 15000; // 총 제한 시간
@@ -10,15 +9,13 @@ let isTimeOut = false; // 타임 아웃 여부
 let isEstimated = false; // 측정 완료 여부
 let isCentered = false;
 
-let isDirectionCorrect = false;
+let isDirectionCorrect = false; // 화살표 별 측정 결과
 
 let currentSuccessCount = 0; // 성공 횟수 카운트
 let isGameStart = false; // 게임 시작 여부
 
 export const estimateHead = ({ results, myVideoRef, canvasRef, direction }) => {
   if (!myVideoRef.current || !canvasRef.current) return;
-
-  console.log('------------ direction: ', direction);
 
   const canvasElement = canvasRef.current;
   const canvasCtx = canvasElement.getContext('2d');
@@ -41,13 +38,10 @@ export const estimateHead = ({ results, myVideoRef, canvasRef, direction }) => {
     const centerSholderY = (leftShoulder.y + rightShoulder.y) / 2;
     const centerMouthY = (leftMouth.y + rightMouth.y) / 2;
 
-    // 머리가 일정 범위 내에서 움직이는지 확인
-    const rangeShoulderX = Math.abs(leftShoulder.x - rightShoulder.x) * 0.1; // 어깨 간 거리의 30%로 범위 설정
-
     // 정해진 시간이 지나면 타임아웃
     const handleTimeout = () => {
       isTimeOut = true;
-      console.log('---------- 시간 초과! 게임 종료!');
+      console.log('---------- 제한 시간 종료!');
     };
 
     // 1. 얼굴을 top, bottom, left, right 중 어느 쪽으로 돌려야 할지 미리 정한다.
@@ -58,8 +52,8 @@ export const estimateHead = ({ results, myVideoRef, canvasRef, direction }) => {
     ) {
       isGameStart = true; // 여러 번 안 넣도록 임시 안전 장치
 
-      // ============= 특정 순서만 출력bottom도록 변경되어 주석 처리
-      // 8번 반복bottom여 방향을 랜덤bottom게 선택bottom여 리스트에 추가
+      // ============= 특정 순서만 출력하도록 변경되어 주석 처리
+      // 8번 반복하여 방향을 랜덤하게 선택하여 리스트에 추가
       // for (let i = 0; i < numberDirections; i++) {
       //   const randomDirectionIndex = Math.floor(Math.random() * 4); // 0부터 3까지의 랜덤한 인덱스 선택
       //   selectedDirection.push(rotateDirections[randomDirectionIndex]); // 랜덤한 방향을 리스트에 추가
@@ -75,7 +69,7 @@ export const estimateHead = ({ results, myVideoRef, canvasRef, direction }) => {
     if (!isTimeOut) {
       isDirectionCorrect = false;
       // 머리가 일정 범위 내에서 움직이는지 확인
-      // 머리가 topbottom로 돌아갔는지 확인
+      // 머리가 상하로 돌아갔는지 확인
       if (
         nose.x < leftEar.x &&
         nose.x > rightEar.x &&
@@ -88,7 +82,7 @@ export const estimateHead = ({ results, myVideoRef, canvasRef, direction }) => {
       } else if (
         nose.x < leftEar.x &&
         nose.x > rightEar.x &&
-        centerSholderY - centerMouthY < (centerMouthY - nose.y) * 1.7 &&
+        centerSholderY - centerMouthY < (centerMouthY - nose.y) * 1.8 &&
         isCentered
       ) {
         currentStatus = 'bottom';
@@ -131,37 +125,10 @@ export const estimateHead = ({ results, myVideoRef, canvasRef, direction }) => {
         // currentStatus === selectedDirection[0]
         currentStatus === direction
       ) {
-        // 현재 top태가 다음 방향과 일치bottom는지 확인
+        // 현재 상태가 다음 방향과 일치하는지 확인
         // selectedDirection.shift(); // 다음 방향으로 이동
-        currentSuccessCount += 1;
         isDirectionCorrect = true;
-        // 이것 false로 바꿔주기!!!!
-        console.log('------------ CURRENT SCORE: ', currentSuccessCount);
       }
-    }
-
-    // 4. 1~3을 3번 반복해서 점수가 일정 이top 쌓였다면 성공으로 판별한다.
-    if (
-      !myMissionStatus &&
-      !isTimeOut &&
-      !isEstimated &&
-      currentSuccessCount >= numberDirections
-    ) {
-      // 방향을 모두 수행했을 경right
-      myMissionStatus = true; // 성공
-      console.log('------------ FINAL RESULT: 성공!!!!!!!');
-      console.log('---------- Final Score:', currentSuccessCount);
-    } else if (
-      isTimeOut &&
-      !isEstimated &&
-      currentSuccessCount < numberDirections
-    ) {
-      myMissionStatus = false; // 실패
-      console.log('------------ FINAL RESULT: 실패.......');
-      console.log('---------- Final Score:', currentSuccessCount);
-
-      // 한 번만 출력 결과를 출력bottom도록
-      isEstimated = true;
     }
   };
 
@@ -175,15 +142,15 @@ export const estimateHead = ({ results, myVideoRef, canvasRef, direction }) => {
     canvasElement.height,
   );
 
-  drawConnectors(canvasCtx, results.poseLandmarks, pose.POSE_CONNECTIONS, {
-    color: '#FFFFFF',
-    lineWidth: 4,
-  });
+  // drawConnectors(canvasCtx, results.poseLandmarks, pose.POSE_CONNECTIONS, {
+  //   color: '#FFFFFF',
+  //   lineWidth: 4,
+  // });
 
-  drawLandmarks(canvasCtx, results.poseLandmarks, {
-    color: '#F0A000',
-    radius: 2,
-  });
+  // drawLandmarks(canvasCtx, results.poseLandmarks, {
+  //   color: '#F0A000',
+  //   radius: 2,
+  // });
 
   NeckGame(results.poseLandmarks);
 
