@@ -49,18 +49,11 @@ const Mission2 = () => {
     });
 
     const handleCanPlay = () => {
-      let frameCount = 0;
-      const frameSkip = 150;
-
-      if (frameCount % (frameSkip + 1) === 0) {
-        if (holisticRef.current !== null) {
-          holisticRef.current.send({ image: videoElement }).then(() => {
-            requestAnimationFrame(handleCanPlay);
-          });
-        }
+      if (holisticRef.current !== null) {
+        holisticRef.current.send({ image: videoElement }).then(() => {
+          requestAnimationFrame(handleCanPlay);
+        });
       }
-
-      frameCount++;
     };
 
     if (videoElement.readyState >= 3) {
