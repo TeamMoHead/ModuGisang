@@ -166,6 +166,5 @@ const Arrows = styled.img`
         : direction === 'left'
           ? 'rotate(180deg)'
           : 'rotate(0deg)'};
-  filter: ${({ active }) =>
-    active ? 'hue-rotate(180deg) saturate(200%)' : 'none'};
+  filter: ${({ active }) => (active ? 'none' : 'grayscale(100%)')};
 `;
