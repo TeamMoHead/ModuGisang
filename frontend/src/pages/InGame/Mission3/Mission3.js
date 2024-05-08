@@ -30,10 +30,6 @@ const round2 = [
   { id: 7, direction: 'right', active: false },
 ];
 
-let direction;
-let currentRoundIdx = 0;
-let currentArrowIdx = 0;
-
 const Mission3 = () => {
   const {
     inGameMode,
@@ -51,11 +47,8 @@ const Mission3 = () => {
     0: round1,
     1: round2,
   });
-  // const [currentArrowId, setCurrentArrowIdx] = useState(0);
-  // const [currentRoundIdx, setCurrentRoundIdx] = useState(0);
-  // const [currentArrowIdx, setCurrentArrowIdx] = useState(0);
-
-  direction = arrowRound[currentRoundIdx][currentArrowIdx].direction;
+  const [currentRoundIdx, setCurrentRoundIdx] = useState(0);
+  const [currentArrowIdx, setCurrentArrowIdx] = useState(0);
 
   useEffect(() => {
     if (inGameMode !== 3 || !myVideoRef.current) return;
@@ -75,45 +68,6 @@ const Mission3 = () => {
       smoothSegmentation: true,
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5,
-    });
-
-    msPoseRef.current.onResults(results => {
-      // console.log('------------ direction: ', direction);
-      const result = estimateHead({
-        results,
-        myVideoRef,
-        canvasRef,
-        direction,
-      });
-      // console.log('------------ result: ', result);
-      // setMyMissionStatus(result);
-
-      // 해당 동작이 성공했다고 가정
-      if (result) {
-        setArrowRound(prevState => {
-          const newState = { ...prevState };
-          newState[currentRoundIdx][currentArrowIdx].active = true;
-          return newState;
-        });
-        console.log(
-          // '------------ current Idx: ',
-          currentRoundIdx,
-          currentArrowIdx,
-        );
-
-        if (currentRoundIdx === 1 && currentArrowIdx === 3) {
-          //게임 끝
-          console.log('게임 끝');
-          setMyMissionStatus(true);
-        } else if (currentRoundIdx === 0 && currentArrowIdx === 3) {
-          currentRoundIdx = currentRoundIdx + 1;
-          currentArrowIdx = 0;
-        } else {
-          currentArrowIdx = currentArrowIdx + 1;
-        }
-      }
-
-      if (isGameLoading) setIsGameLoading(false);
     });
 
     const handleCanPlay = () => {
@@ -141,9 +95,42 @@ const Mission3 = () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
       msPoseRef.current = null;
     };
-  }, []);
+  }, [inGameMode, myVideoRef]);
 
-  console.log('======Arrow Round:: ', arrowRound);
+  useEffect(() => {
+    if (!msPoseRef.current) return;
+
+    const direction = arrowRound[currentRoundIdx][currentArrowIdx].direction;
+
+    msPoseRef.current.onResults(results => {
+      const result = estimateHead({
+        results,
+        myVideoRef,
+        canvasRef,
+        direction,
+      });
+
+      if (result) {
+        setArrowRound(prevState => {
+          const newState = { ...prevState };
+          newState[currentRoundIdx][currentArrowIdx].active = true;
+          return newState;
+        });
+
+        if (currentRoundIdx === 1 && currentArrowIdx === 3) {
+          setMyMissionStatus(true);
+        } else if (currentRoundIdx === 0 && currentArrowIdx === 3) {
+          setCurrentRoundIdx(currentRoundIdx + 1); // 다음 라운드로 넘어감
+          setCurrentArrowIdx(0); // 첫 번째 화살표로 초기화
+        } else {
+          setCurrentArrowIdx(currentArrowIdx + 1); // 다음 화살표로 이동
+        }
+      }
+
+      if (isGameLoading) setIsGameLoading(false);
+    });
+  }, [currentRoundIdx, currentArrowIdx, arrowRound, myMissionStatus]);
+
   return (
     <>
       <Canvas ref={canvasRef} />
@@ -186,7 +173,7 @@ const ArrowBox = styled.div`
   ${({ theme }) => theme.flex.between}
   background-color: ${({ theme }) => theme.colors.lighter.dark};
 `;
-// 위치 배열 조절하고 판정하는 코드로부터 값 받아오면 색상 변경
+
 const Arrows = styled.img`
   width: 80px;
   height: 50px;
