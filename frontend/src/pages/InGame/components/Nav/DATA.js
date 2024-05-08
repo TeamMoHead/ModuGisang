@@ -5,7 +5,7 @@ export const INFO_BY_GAME_MODE = {
     instruction: '노란선 영역에 맞춰 5초간 스트레칭 해주세요.',
   },
   2: {
-    title: '이목구비 되찾기',
+    title: '안면 근육 풀기',
     instruction: '눈썹과 입을 움직여 포스트잇을 떼주세요.',
   },
   3: {
@@ -13,8 +13,8 @@ export const INFO_BY_GAME_MODE = {
     instruction: '주어지는 화살표 방향으로 고개를 돌려주세요.',
   },
   4: {
-    title: '전방에 힘찬 함성 5초간 발사',
-    instruction: '주어진 데시벨 수치에 맞춰 외쳐주세요.',
+    title: '성대 풀기',
+    instruction: '전방에 힘찬 함성 5초간 발사!',
   },
   5: {
     title: '오늘의 다짐!',

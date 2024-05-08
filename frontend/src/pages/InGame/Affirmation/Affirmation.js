@@ -6,22 +6,37 @@ const Affirmation = () => {
   const user = useContext(UserContext);
   return (
     <>
-      <Affir>{user.userData.affirmation}</Affir>
+      <Wrapper>
+        <Text>{user?.userData?.affirmation}</Text>
+      </Wrapper>
     </>
   );
 };
 
 export default Affirmation;
 
-const Affir = styled.div`
-  position: fixed;
-  top: 200px;
-  width: 100%;
-  height: auto;
-  padding: 0 30px;
+const Wrapper = styled.div`
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+`;
+
+const Text = styled.p`
+  position: absolute;
+  top: 33%;
+  left: 50%;
+  transform: translate(-50%, -33%);
+
   ${({ theme }) => theme.flex.center}
-  font: ${({ theme }) => theme.fonts.content};
-  line-height: 1.2;
-  font-size: 30px;
-  /* background-color: ${({ theme }) => theme.colors.lighter.dark}; */
+  width: 90%;
+  height: 50%;
+
+  ${({ theme }) => theme.fonts.content}
+  color:${({ theme }) => theme.colors.primary.dark};
+  font-size: 2rem;
+  text-align: center;
+
+  background-color: ${({ theme }) => theme.colors.lighter.light};
+  border-radius: ${({ theme }) => theme.radius.basic};
+  border: 3px solid ${({ theme }) => theme.colors.lighter.purple};
 `;

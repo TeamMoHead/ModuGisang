@@ -171,17 +171,6 @@ const OpenViduContextProvider = ({ children }) => {
     }
   }, [videoSession, myMissionStatus]);
 
-  useEffect(() => {
-    if (videoSession) {
-      if (inGameMode === 4 || inGameMode === 5) {
-        turnMicOnOff(false);
-      }
-      if (inGameMode === 6) {
-        turnMicOnOff(true);
-      }
-    }
-  }, [videoSession, inGameMode]);
-
   return (
     <OpenViduContext.Provider
       value={{

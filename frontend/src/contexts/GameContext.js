@@ -20,7 +20,7 @@ const GAME_MODE_DURATION = {
   1: 15000,
   2: 15000,
   3: 15000,
-  4: 10000,
+  4: 15000,
   5: 10000,
 };
 
@@ -39,7 +39,7 @@ const GameContextProvider = ({ children }) => {
   const [inGameMode, setInGameMode] = useState(
     // parseInt(localStorage.getItem('inGameMode')) || 0,
     // 0,
-    4,
+    5,
   );
 
   let nextGameMode = 1;
@@ -75,7 +75,7 @@ const GameContextProvider = ({ children }) => {
     if (challengeData && !isTooEarly && !isTooLate) {
       // ⭐️⭐️⭐️⭐️⭐️⭐️ 개발 편의 용 주석 ⭐️⭐️⭐️⭐️⭐️//
       // 나중에 다시 풀어야 함
-      // scheduleFirstMission();
+      scheduleFirstMission();
       // ===== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
     }
   }, [challengeData]);
