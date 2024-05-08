@@ -72,8 +72,8 @@ const Mission1 = () => {
       <GameLoading />
       {isGameLoading || (
         <>
-          <Guide poseCorrect={myMissionStatus} />
           <Canvas ref={canvasRef} />
+          <Guide poseCorrect={myMissionStatus} />
         </>
       )}
     </>
@@ -90,5 +90,4 @@ const Canvas = styled.canvas`
   width: 100vw;
   height: 100vh;
   object-fit: cover;
-  z-index: 1;
 `;

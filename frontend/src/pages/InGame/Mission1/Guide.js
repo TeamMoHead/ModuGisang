@@ -50,7 +50,6 @@ const GuideWrapper = styled.div`
   justify-content: flex-end;
   align-items: flex-end;
   object-fit: cover;
-  z-index: 2;
 `;
 
 const StyledSVG = styled.svg`
