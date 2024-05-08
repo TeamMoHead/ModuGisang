@@ -30,6 +30,7 @@ const round2 = [
   { id: 7, direction: 'right', active: false },
 ];
 
+let direction;
 let currentRoundIdx = 0;
 let currentArrowIdx = 0;
 
@@ -51,8 +52,10 @@ const Mission3 = () => {
     1: round2,
   });
   // const [currentArrowId, setCurrentArrowIdx] = useState(0);
-  const [currentRoundIdx, setCurrentRoundIdx] = useState(0);
-  const [currentArrowIdx, setCurrentArrowIdx] = useState(0);
+  // const [currentRoundIdx, setCurrentRoundIdx] = useState(0);
+  // const [currentArrowIdx, setCurrentArrowIdx] = useState(0);
+
+  direction = arrowRound[currentRoundIdx][currentArrowIdx].direction;
 
   useEffect(() => {
     if (inGameMode !== 3 || !myVideoRef.current) return;
@@ -75,13 +78,6 @@ const Mission3 = () => {
     });
 
     msPoseRef.current.onResults(results => {
-      let direction = arrowRound[currentRoundIdx][currentArrowIdx].direction;
-
-      // console.log(
-      //   // '------------ current Idx: ',
-      //   currentRoundIdx,
-      //   currentArrowIdx,
-      // );
       // console.log('------------ direction: ', direction);
       const result = estimateHead({
         results,
@@ -99,16 +95,21 @@ const Mission3 = () => {
           newState[currentRoundIdx][currentArrowIdx].active = true;
           return newState;
         });
+        console.log(
+          // '------------ current Idx: ',
+          currentRoundIdx,
+          currentArrowIdx,
+        );
 
         if (currentRoundIdx === 1 && currentArrowIdx === 3) {
           //게임 끝
           console.log('게임 끝');
           setMyMissionStatus(true);
         } else if (currentRoundIdx === 0 && currentArrowIdx === 3) {
-          setCurrentRoundIdx(currentRoundIdx + 1);
-          setCurrentArrowIdx(0);
+          currentRoundIdx = currentRoundIdx + 1;
+          currentArrowIdx = 0;
         } else {
-          setCurrentArrowIdx(currentArrowIdx + 1);
+          currentArrowIdx = currentArrowIdx + 1;
         }
       }
 
