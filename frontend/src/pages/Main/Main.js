@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext, ChallengeContext, AccountContext } from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
-import { NavBar, CardBtn } from '../../components';
+import { NavBar, CardBtn, WarmUpModel } from '../../components';
 import {
   StreakContent,
   InvitationsContent,
@@ -79,8 +79,6 @@ const Main = () => {
   };
   // ============ 나중에 지우기!! =============
 
-  // 💕💕💕💕💕💕💕이제 웹워커 적용하기!!!!!!!!💕💕💕💕💕💕💕💕
-
   useEffect(() => {
     if (accessToken && userId) {
       getUserData();
@@ -123,6 +121,7 @@ const Main = () => {
           )}
         </CardsWrapper>
       </S.PageWrapper>
+      <WarmUpModel />
     </>
   );
 };

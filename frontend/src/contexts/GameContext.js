@@ -35,7 +35,7 @@ const GameContextProvider = ({ children }) => {
     // [userId]: { missionCompleted: boolean } 형태"
   });
 
-  const [isGameLoading, setIsGameLoading] = useState(false);
+  const [isGameLoading, setIsGameLoading] = useState(true);
   const [inGameMode, setInGameMode] = useState(
     // parseInt(localStorage.getItem('inGameMode')) || 0,
     1,
@@ -76,7 +76,7 @@ const GameContextProvider = ({ children }) => {
     if (challengeData && !isTooEarly && !isTooLate) {
       // ⭐️⭐️⭐️⭐️⭐️⭐️ 개발 편의 용 주석 ⭐️⭐️⭐️⭐️⭐️//
       // 나중에 다시 풀어야 함
-      // scheduleFirstMission();
+      scheduleFirstMission();
       // ===== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
     }
   }, [challengeData]);
@@ -86,9 +86,9 @@ const GameContextProvider = ({ children }) => {
   }, [matesMissionStatus]);
 
   console.log(
-    '^^^^^^GAME CONTEXT^^^^^ game mode, remaining time, my mission status=> ',
+    '^^^^^^GAME CONTEXT^^^^^ GameMode// isGameLoading// myMissionStatus=> ',
     inGameMode,
-    remainingTime,
+    isGameLoading,
     myMissionStatus,
   );
   return (

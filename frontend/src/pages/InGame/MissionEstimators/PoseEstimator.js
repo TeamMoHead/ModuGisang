@@ -17,8 +17,9 @@ export const estimatePose = ({ results, myVideoRef, canvasRef, round }) => {
     !myVideoRef.current ||
     !canvasRef.current ||
     !results?.poseLandmarks?.length > 0
-  )
+  ) {
     return;
+  }
 
   const canvasElement = canvasRef.current;
   const canvasCtx = canvasElement.getContext('2d');
@@ -30,15 +31,15 @@ export const estimatePose = ({ results, myVideoRef, canvasRef, round }) => {
     if (!poseLandmarks) return;
 
     if (!selectedPose) {
-      if (round === 1) {
-        console.log('Round:', round);
-        selectedPose = POSES[0];
-        console.log('Selected pose:', selectedPose.name);
-      } else if (round === 2) {
-        console.log('Round:', round);
-        selectedPose = POSES[1];
-        console.log('Selected pose:', selectedPose.name);
-      }
+      // if (round === 1) {
+      //   console.log('Round:', round);
+      selectedPose = POSES[0];
+      //   console.log('Selected pose:', selectedPose.name);
+      // } else if (round === 2) {
+      //   console.log('Round:', round);
+      //   selectedPose = POSES[1];
+      //   console.log('Selected pose:', selectedPose.name);
+      // }
     }
 
     if (!myMissionStatus) {

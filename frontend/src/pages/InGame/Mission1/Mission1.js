@@ -1,6 +1,10 @@
-import React, { useRef, useEffect, useContext, useState } from 'react';
-import { GameContext, OpenViduContext } from '../../../contexts';
-import { Pose } from '@mediapipe/pose';
+import React, { useRef, useEffect, useContext } from 'react';
+import {
+  MediaPipeContext,
+  GameContext,
+  OpenViduContext,
+} from '../../../contexts';
+import { GameLoading } from '../components';
 import { estimatePose } from '../MissionEstimators/PoseEstimator';
 import Guide from './Guide';
 
@@ -9,73 +13,51 @@ import styled from 'styled-components';
 let resultOne = false;
 
 const Mission1 = () => {
-  const {
-    inGameMode,
-    myMissionStatus,
-    setMyMissionStatus,
-    isGameLoading,
-    setIsGameLoading,
-  } = useContext(GameContext);
+  const { poseModel } = useContext(MediaPipeContext);
+  const { isGameLoading, inGameMode, myMissionStatus, setMyMissionStatus } =
+    useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
-  const msPoseRef = useRef(null);
-
-  const [isProcessingComplete, setIsProcessingComplete] = useState(false);
 
   useEffect(() => {
-    if (inGameMode !== 1 || !myVideoRef.current) return;
-
+    if (
+      inGameMode !== 1 ||
+      !myVideoRef.current ||
+      !poseModel.current ||
+      isGameLoading
+    ) {
+      return;
+    }
     const videoElement = myVideoRef.current;
 
-    msPoseRef.current = new Pose({
-      locateFile: file =>
-        `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
-    });
+    poseModel.current.onResults(results => {
+      estimatePose({ results, myVideoRef, canvasRef });
 
-    msPoseRef.current.setOptions({
-      modelComplexity: 1,
-      selfieMode: true,
-      smoothLandmarks: true,
-      enableSegmentation: true,
-      smoothSegmentation: true,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5,
-    });
-
-    msPoseRef.current.onResults(results => {
-      if (!resultOne) {
-        resultOne = estimatePose({
-          results,
-          myVideoRef,
-          canvasRef,
-          round: 1,
-        });
-      }
-      if (resultOne) {
-        const resultTwo = estimatePose({
-          results,
-          myVideoRef,
-          canvasRef,
-          round: 2,
-        });
-      }
+      // if (!resultOne) {
+      //   resultOne = estimatePose({
+      //     results,
+      //     myVideoRef,
+      //     canvasRef,
+      //     round: 1,
+      //   });
+      // }
+      // if (resultOne) {
+      //   const resultTwo = estimatePose({
+      //     results,
+      //     myVideoRef,
+      //     canvasRef,
+      //     round: 2,
+      //   });
+      // }
       console.log('resultOne:', resultOne);
     });
 
     const handleCanPlay = () => {
-      let frameCount = 0;
-      const frameSkip = 150;
-
-      if (frameCount % (frameSkip + 1) === 0) {
-        if (msPoseRef.current !== null) {
-          msPoseRef.current.send({ image: videoElement }).then(() => {
-            requestAnimationFrame(handleCanPlay);
-            setIsProcessingComplete(true);
-          });
-        }
+      if (poseModel.current !== null) {
+        poseModel.current.send({ image: videoElement }).then(() => {
+          requestAnimationFrame(handleCanPlay);
+        });
       }
-
-      frameCount++;
     };
 
     if (videoElement.readyState >= 3) {
@@ -85,14 +67,18 @@ const Mission1 = () => {
     }
     return () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
-      msPoseRef.current = null;
     };
-  }, []);
+  }, [isGameLoading, poseModel]);
 
   return (
     <>
-      <Canvas ref={canvasRef} />
-      {isProcessingComplete && <Guide poseCorrect={myMissionStatus} />}
+      <GameLoading />
+      {isGameLoading || (
+        <>
+          <Guide poseCorrect={myMissionStatus} />
+          <Canvas ref={canvasRef} />
+        </>
+      )}
     </>
   );
 };
