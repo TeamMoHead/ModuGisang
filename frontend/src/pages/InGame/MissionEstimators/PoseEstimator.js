@@ -9,10 +9,9 @@ let myMissionStatus = false; // 측정 결과
 let isEstimated = false; // 측정 완료 여부
 let selectedPose; // 선택된 자세
 const keypoints = {}; // 측정에 사용할 각 포인트의 위치 저장
-const timeoutDuration = 7000; // 제한 시간
+const timeoutDuration = 10000; // 제한 시간
 
-export const estimatePose = ({ results, myVideoRef, canvasRef, round }) => {
-  console.log(`Round ${round} processing started.`);
+export const estimatePose = ({ results, myVideoRef, canvasRef }) => {
   if (
     !myVideoRef.current ||
     !canvasRef.current ||
@@ -95,6 +94,5 @@ export const estimatePose = ({ results, myVideoRef, canvasRef, round }) => {
   stretchingGame(results.poseLandmarks);
 
   canvasCtx.restore();
-  console.log(`Round ${round} processing completed.`);
   return myMissionStatus;
 };

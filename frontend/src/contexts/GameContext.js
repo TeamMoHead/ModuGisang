@@ -17,7 +17,7 @@ const GAME_MODE = {
 
 // mission 당 소요 시간
 const GAME_MODE_DURATION = {
-  1: 12000,
+  1: 15000,
   2: 15000,
   3: 15000,
   4: 10000,
@@ -37,8 +37,7 @@ const GameContextProvider = ({ children }) => {
 
   const [isGameLoading, setIsGameLoading] = useState(true);
   const [inGameMode, setInGameMode] = useState(
-    // parseInt(localStorage.getItem('inGameMode')) || 0,
-    1,
+    parseInt(localStorage.getItem('inGameMode')) || 0,
   );
 
   const [myRoundStatus, setMyRoundStatus] = useState([]);

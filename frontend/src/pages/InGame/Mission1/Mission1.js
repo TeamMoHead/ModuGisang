@@ -10,8 +10,6 @@ import Guide from './Guide';
 
 import styled from 'styled-components';
 
-let resultOne = false;
-
 const Mission1 = () => {
   const { poseModel } = useContext(MediaPipeContext);
   const { isGameLoading, inGameMode, myMissionStatus, setMyMissionStatus } =
@@ -31,7 +29,7 @@ const Mission1 = () => {
     const videoElement = myVideoRef.current;
 
     poseModel.current.onResults(results => {
-      estimatePose({ results, myVideoRef, canvasRef });
+      setMyMissionStatus(estimatePose({ results, myVideoRef, canvasRef }));
 
       // if (!resultOne) {
       //   resultOne = estimatePose({
@@ -49,7 +47,6 @@ const Mission1 = () => {
       //     round: 2,
       //   });
       // }
-      console.log('resultOne:', resultOne);
     });
 
     const handleCanPlay = () => {

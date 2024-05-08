@@ -2,21 +2,21 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const Guide = ({ poseCorrect }) => {
-  const [isFlipped, setIsFlipped] = useState(false);
-  const [color, setColor] = useState(poseCorrect ? 'green' : 'red');
+  // const [isFlipped, setIsFlipped] = useState(false);
+  const [color, setColor] = useState(poseCorrect ? 'green' : 'white');
 
   useEffect(() => {
-    setColor(poseCorrect ? 'green' : 'red');
+    setColor(poseCorrect ? 'green' : 'white');
   }, [poseCorrect]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsFlipped(true);
-      setColor('red');
-    }, 8000);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setIsFlipped(true);
+  //     setColor('red');
+  //   }, 8000);
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   return (
     <GuideWrapper>
@@ -24,7 +24,7 @@ const Guide = ({ poseCorrect }) => {
         preserveAspectRatio="xMaxYMax meet"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="230 0 100 480"
-        isFlipped={isFlipped}
+        // isFlipped={isFlipped}
       >
         <g transform="rotate(10)">
           <path
@@ -56,7 +56,7 @@ const GuideWrapper = styled.div`
 const StyledSVG = styled.svg`
   width: 100%;
   height: 100%;
-  opacity: 0.4;
+  opacity: 0.5;
   transition: 0.5s ease-in-out;
   path {
     transition: fill 0.7s ease-in-out;
