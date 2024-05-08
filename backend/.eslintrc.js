@@ -21,5 +21,8 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    'prettier/prettier': ['error', {
+      endOfLine: 'auto'  // 여기에 endOfLine 규칙을 추가합니다.
+    }],
   },
 };

@@ -82,7 +82,7 @@ export const estimateHead = ({ results, myVideoRef, canvasRef, direction }) => {
       } else if (
         nose.x < leftEar.x &&
         nose.x > rightEar.x &&
-        centerSholderY - centerMouthY < (centerMouthY - nose.y) * 1.8 &&
+        centerSholderY - centerMouthY < (centerMouthY - nose.y) * 1.9 &&
         isCentered
       ) {
         currentStatus = 'bottom';
@@ -110,7 +110,7 @@ export const estimateHead = ({ results, myVideoRef, canvasRef, direction }) => {
         nose.x < leftEar.x &&
         nose.x > rightEar.x &&
         centerSholderY - centerMouthY < (centerMouthY - nose.y) * 4 &&
-        centerSholderY - centerMouthY > (centerMouthY - nose.y) * 2
+        centerSholderY - centerMouthY > (centerMouthY - nose.y) * 2.2
         // && nose.y > leftShoulder.y - rangeShoulderY &&
         // nose.y < leftShoulder.y + rangeShoulderY
       ) {
