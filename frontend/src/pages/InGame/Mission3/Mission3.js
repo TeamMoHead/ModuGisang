@@ -2,19 +2,9 @@ import React, { useRef, useEffect, useContext, useState } from 'react';
 import { GameContext, OpenViduContext } from '../../../contexts';
 import { Pose } from '@mediapipe/pose';
 import { estimateHead } from '../MissionEstimators/HeadEstimator';
-import bottomArrow from '../../../assets/arrows/bottom.svg';
-import topArrow from '../../../assets/arrows/top.svg';
-import leftArrow from '../../../assets/arrows/left.svg';
-import rightArrow from '../../../assets/arrows/right.svg';
+import arrow from '../../../assets/arrows/arrow.svg';
 
 import styled from 'styled-components';
-
-const arrowImages = {
-  top: topArrow,
-  bottom: bottomArrow,
-  left: leftArrow,
-  right: rightArrow,
-};
 
 const round1 = [
   { id: 0, direction: 'top', active: false },
@@ -133,16 +123,12 @@ const Mission3 = () => {
         {arrowRound[currentRoundIdx].map(({ id, direction, active }) => (
           <Arrows
             key={`${id}_${active}`}
-            src={arrowImages[direction]}
+            src={arrow}
+            direction={direction}
             active={active}
             alt={id}
           />
         ))}
-
-        {/* <Arrows src={leftArrow} alt="bottomArrow" />
-        <Arrows src={bottomArrow} alt="bottomArrow" />
-        <Arrows src={topArrow} alt="bottomArrow" />
-        <Arrows src={bottomArrow} alt="bottomArrow" /> */}
       </ArrowBox>
     </>
   );
@@ -172,6 +158,14 @@ const ArrowBox = styled.div`
 const Arrows = styled.img`
   width: 80px;
   height: 50px;
+  transform: ${({ direction }) =>
+    direction === 'top'
+      ? 'rotate(-90deg)'
+      : direction === 'bottom'
+        ? 'rotate(90deg)'
+        : direction === 'left'
+          ? 'rotate(180deg)'
+          : 'rotate(0deg)'};
   filter: ${({ active }) =>
-    active ? 'hue-rotate(60deg) saturate(200%)' : 'none'};
+    active ? 'hue-rotate(180deg) saturate(200%)' : 'none'};
 `;
