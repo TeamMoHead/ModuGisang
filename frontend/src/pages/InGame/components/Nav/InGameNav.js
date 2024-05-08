@@ -58,7 +58,9 @@ const InGameNav = () => {
       <TextArea>
         {GAME_MODE[inGameMode] !== 'waiting' && (
           <>
-            <GameRound text={inGameMode} />
+            {GAME_MODE[inGameMode] !== 'result' && (
+              <GameRound text={inGameMode} />
+            )}
             <InstructionArea>
               <MissionTitle text={INFO_BY_GAME_MODE[inGameMode].title} />
               <MissionInst text={INFO_BY_GAME_MODE[inGameMode].instruction} />
