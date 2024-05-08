@@ -43,6 +43,8 @@ const Wrapper = styled.div`
   ${({ theme }) => theme.flex.center};
 
   margin: auto;
+
+  font: 700 50px 'Jua';
 `;
 
 const AnimatedNumber = styled.div`
