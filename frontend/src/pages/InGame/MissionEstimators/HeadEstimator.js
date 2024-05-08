@@ -3,19 +3,22 @@ import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 
 let currentStatus; // 현재 고개를 돌린 방향
 let myMissionStatus = false; // 측정 결과
-// const rotateDirections = ['상', '하', '좌', '우']; // 회전 방향 배열
+// const rotateDirections = ['top', 'bottom', 'left', 'right']; // 회전 방향 배열
 const numberDirections = 8; // 선택할 방향 수
-let selectedDirection = ['좌', '우', '좌', '상', '하', '우', '하', '상']; // 시도해야 할 방향 목록
 const timeoutDuration = 15000; // 총 제한 시간
 let isTimeOut = false; // 타임 아웃 여부
 let isEstimated = false; // 측정 완료 여부
 let isCentered = false;
 
+let isDerectionCorrect = false;
+
 let currentSuccessCount = 0; // 성공 횟수 카운트
 let isGameStart = false; // 게임 시작 여부
 
-export const estimateHead = ({ results, myVideoRef, canvasRef }) => {
+export const estimateHead = ({ results, myVideoRef, canvasRef, direction }) => {
   if (!myVideoRef.current || !canvasRef.current) return;
+
+  console.log('------------ direction: ', direction);
 
   const canvasElement = canvasRef.current;
   const canvasCtx = canvasElement.getContext('2d');
@@ -41,17 +44,13 @@ export const estimateHead = ({ results, myVideoRef, canvasRef }) => {
     // 머리가 일정 범위 내에서 움직이는지 확인
     const rangeShoulderX = Math.abs(leftShoulder.x - rightShoulder.x) * 0.1; // 어깨 간 거리의 30%로 범위 설정
 
-    const distanceShoulderY = Math.abs(centerSholderY - nose.y); // 어깨와 코의 y 좌표 차이
-    const distanceLeftHeadX = Math.abs(leftEar.x - nose.x);
-    const distanceRightHeadX = Math.abs(rightEar.x - nose.x);
-
     // 정해진 시간이 지나면 타임아웃
     const handleTimeout = () => {
       isTimeOut = true;
       console.log('---------- 시간 초과! 게임 종료!');
     };
 
-    // 1. 얼굴을 상, 하, 좌, 우 중 어느 쪽으로 돌려야 할지 미리 정한다.
+    // 1. 얼굴을 top, bottom, left, right 중 어느 쪽으로 돌려야 할지 미리 정한다.
     // 어느 방향으로 돌릴지 선택
     if (
       // selectedDirection.length === 0 &&
@@ -59,8 +58,8 @@ export const estimateHead = ({ results, myVideoRef, canvasRef }) => {
     ) {
       isGameStart = true; // 여러 번 안 넣도록 임시 안전 장치
 
-      // ============= 특정 순서만 출력하도록 변경되어 주석 처리
-      // 8번 반복하여 방향을 랜덤하게 선택하여 리스트에 추가
+      // ============= 특정 순서만 출력bottom도록 변경되어 주석 처리
+      // 8번 반복bottom여 방향을 랜덤bottom게 선택bottom여 리스트에 추가
       // for (let i = 0; i < numberDirections; i++) {
       //   const randomDirectionIndex = Math.floor(Math.random() * 4); // 0부터 3까지의 랜덤한 인덱스 선택
       //   selectedDirection.push(rotateDirections[randomDirectionIndex]); // 랜덤한 방향을 리스트에 추가
@@ -74,15 +73,16 @@ export const estimateHead = ({ results, myVideoRef, canvasRef }) => {
     // 2. N초 동안 얼굴을 해당 방향으로 돌렸는지 확인한다.
     // 한 번 고개를 돌린 뒤에는 정면을 봐야 점수를 줌
     if (!isTimeOut) {
+      isDerectionCorrect = false;
       // 머리가 일정 범위 내에서 움직이는지 확인
-      // 머리가 상하로 돌아갔는지 확인
+      // 머리가 topbottom로 돌아갔는지 확인
       if (
         nose.x < leftEar.x &&
         nose.x > rightEar.x &&
         centerSholderY - centerMouthY > (centerMouthY - nose.y) * 4.5 &&
         isCentered
       ) {
-        currentStatus = '상';
+        currentStatus = 'top';
         isCentered = false;
         console.log('------------ ', currentStatus);
       } else if (
@@ -91,7 +91,7 @@ export const estimateHead = ({ results, myVideoRef, canvasRef }) => {
         centerSholderY - centerMouthY < (centerMouthY - nose.y) * 1.7 &&
         isCentered
       ) {
-        currentStatus = '하';
+        currentStatus = 'bottom';
         isCentered = false;
         console.log('------------ ', currentStatus);
       } else if (
@@ -100,7 +100,7 @@ export const estimateHead = ({ results, myVideoRef, canvasRef }) => {
         Math.abs(leftEar.x - nose.x) >= Math.abs(rightEar.x - leftEar.x) &&
         isCentered
       ) {
-        currentStatus = '우';
+        currentStatus = 'right';
         isCentered = false;
         console.log('------------ ', currentStatus);
       } else if (
@@ -109,7 +109,7 @@ export const estimateHead = ({ results, myVideoRef, canvasRef }) => {
         // Math.abs(rightEar.x - nose.x) <= Math.abs(rightEar.x - leftEar.x) &&
         isCentered
       ) {
-        currentStatus = '좌';
+        currentStatus = 'left';
         isCentered = false;
         console.log('------------ ', currentStatus);
       } else if (
@@ -127,23 +127,27 @@ export const estimateHead = ({ results, myVideoRef, canvasRef }) => {
       }
 
       // 3. 같은 방향으로 돌렸다면 점수를 준다.
-      if (currentStatus === selectedDirection[0]) {
-        // 현재 상태가 다음 방향과 일치하는지 확인
-        selectedDirection.shift(); // 다음 방향으로 이동
-
+      if (
+        // currentStatus === selectedDirection[0]
+        currentStatus === direction
+      ) {
+        // 현재 top태가 다음 방향과 일치bottom는지 확인
+        // selectedDirection.shift(); // 다음 방향으로 이동
         currentSuccessCount += 1;
+        isDerectionCorrect = true;
+        // 이것 false로 바꿔주기!!!!
         console.log('------------ CURRENT SCORE: ', currentSuccessCount);
       }
     }
 
-    // 4. 1~3을 3번 반복해서 점수가 일정 이상 쌓였다면 성공으로 판별한다.
+    // 4. 1~3을 3번 반복해서 점수가 일정 이top 쌓였다면 성공으로 판별한다.
     if (
       !myMissionStatus &&
       !isTimeOut &&
       !isEstimated &&
       currentSuccessCount >= numberDirections
     ) {
-      // 방향을 모두 수행했을 경우
+      // 방향을 모두 수행했을 경right
       myMissionStatus = true; // 성공
       console.log('------------ FINAL RESULT: 성공!!!!!!!');
       console.log('---------- Final Score:', currentSuccessCount);
@@ -156,7 +160,7 @@ export const estimateHead = ({ results, myVideoRef, canvasRef }) => {
       console.log('------------ FINAL RESULT: 실패.......');
       console.log('---------- Final Score:', currentSuccessCount);
 
-      // 한 번만 출력 결과를 출력하도록
+      // 한 번만 출력 결과를 출력bottom도록
       isEstimated = true;
     }
   };
@@ -185,5 +189,5 @@ export const estimateHead = ({ results, myVideoRef, canvasRef }) => {
 
   canvasCtx.restore();
 
-  return myMissionStatus;
+  return isDerectionCorrect;
 };

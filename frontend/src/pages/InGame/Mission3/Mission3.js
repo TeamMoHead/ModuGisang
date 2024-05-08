@@ -17,18 +17,21 @@ const arrowImages = {
 };
 
 const round1 = [
-  { id: 1, direction: 'top', active: false },
-  { id: 2, direction: 'bottom', active: false },
-  { id: 3, direction: 'left', active: false },
-  { id: 4, direction: 'right', active: false },
+  { id: 0, direction: 'top', active: false },
+  { id: 1, direction: 'bottom', active: false },
+  { id: 2, direction: 'left', active: false },
+  { id: 3, direction: 'right', active: false },
 ];
 
 const round2 = [
-  { id: 5, direction: 'bottom', active: false },
-  { id: 6, direction: 'right', active: false },
-  { id: 7, direction: 'left', active: false },
-  { id: 8, direction: 'right', active: false },
+  { id: 4, direction: 'bottom', active: false },
+  { id: 5, direction: 'right', active: false },
+  { id: 6, direction: 'left', active: false },
+  { id: 7, direction: 'right', active: false },
 ];
+
+let currentRoundIdx = 0;
+let currentArrowIdx = 0;
 
 const Mission3 = () => {
   const {
@@ -43,7 +46,11 @@ const Mission3 = () => {
   const msPoseRef = useRef(null);
 
   // 화살표 세팅
-  const [arrowRound, setArrowRound] = useState([round1, round2]);
+  const [arrowRound, setArrowRound] = useState({
+    0: round1,
+    1: round2,
+  });
+  // const [currentArrowId, setCurrentArrowIdx] = useState(0);
   const [currentRoundIdx, setCurrentRoundIdx] = useState(0);
   const [currentArrowIdx, setCurrentArrowIdx] = useState(0);
 
@@ -69,35 +76,44 @@ const Mission3 = () => {
 
     msPoseRef.current.onResults(results => {
       let direction = arrowRound[currentRoundIdx][currentArrowIdx].direction;
+
+      // console.log(
+      //   // '------------ current Idx: ',
+      //   currentRoundIdx,
+      //   currentArrowIdx,
+      // );
+      // console.log('------------ direction: ', direction);
       const result = estimateHead({
         results,
         myVideoRef,
         canvasRef,
         direction,
       });
-      handleDirection(result);
-      setMyMissionStatus(result);
-      if (isGameLoading) setIsGameLoading(false);
-    });
+      // console.log('------------ result: ', result);
+      // setMyMissionStatus(result);
 
-    const handleDirection = result => {
       // 해당 동작이 성공했다고 가정
       if (result) {
-        let roundIdx = currentRoundIdx;
-        let arrowIdx = currentArrowIdx;
-        arrowRound[roundIdx][arrowIdx].active = true;
+        setArrowRound(prevState => {
+          const newState = { ...prevState };
+          newState[currentRoundIdx][currentArrowIdx].active = true;
+          return newState;
+        });
 
         if (currentRoundIdx === 1 && currentArrowIdx === 3) {
           //게임 끝
           console.log('게임 끝');
+          setMyMissionStatus(true);
         } else if (currentRoundIdx === 0 && currentArrowIdx === 3) {
-          setCurrentRoundIdx(roundIdx++);
+          setCurrentRoundIdx(currentRoundIdx + 1);
           setCurrentArrowIdx(0);
         } else {
-          setCurrentArrowIdx(arrowIdx++);
+          setCurrentArrowIdx(currentArrowIdx + 1);
         }
       }
-    };
+
+      if (isGameLoading) setIsGameLoading(false);
+    });
 
     const handleCanPlay = () => {
       let frameCount = 0;
@@ -126,13 +142,14 @@ const Mission3 = () => {
     };
   }, []);
 
+  console.log('======Arrow Round:: ', arrowRound);
   return (
     <>
       <Canvas ref={canvasRef} />
       <ArrowBox>
         {arrowRound[currentRoundIdx].map(({ id, direction, active }) => (
           <Arrows
-            key={id}
+            key={`${id}_${active}`}
             src={arrowImages[direction]}
             active={active}
             alt={id}
