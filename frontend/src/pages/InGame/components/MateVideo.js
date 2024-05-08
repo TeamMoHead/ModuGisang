@@ -64,13 +64,14 @@ export default MateVideo;
 const Wrapper = styled.div`
   position: relative;
 
-  display: flex;
   width: 100%;
   height: 15vh;
   margin-bottom: 40px;
 
+  display: flex;
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
+
   box-shadow: ${({ theme }) => theme.boxShadow.basic};
   background-color: ${({ $mateOnLine, theme }) =>
     $mateOnLine ? 'transparent' : theme.colors.lighter.light};
@@ -78,6 +79,7 @@ const Wrapper = styled.div`
 `;
 
 const Video = styled.video`
+  position: absolute;
   width: 100%;
   height: 100%;
   object-fit: cover;
