@@ -10,7 +10,7 @@ let isTimeOut = false; // 타임 아웃 여부
 let isEstimated = false; // 측정 완료 여부
 let isCentered = false;
 
-let isDerectionCorrect = false;
+let isDirectionCorrect = false;
 
 let currentSuccessCount = 0; // 성공 횟수 카운트
 let isGameStart = false; // 게임 시작 여부
@@ -73,7 +73,7 @@ export const estimateHead = ({ results, myVideoRef, canvasRef, direction }) => {
     // 2. N초 동안 얼굴을 해당 방향으로 돌렸는지 확인한다.
     // 한 번 고개를 돌린 뒤에는 정면을 봐야 점수를 줌
     if (!isTimeOut) {
-      isDerectionCorrect = false;
+      isDirectionCorrect = false;
       // 머리가 일정 범위 내에서 움직이는지 확인
       // 머리가 topbottom로 돌아갔는지 확인
       if (
@@ -134,7 +134,7 @@ export const estimateHead = ({ results, myVideoRef, canvasRef, direction }) => {
         // 현재 top태가 다음 방향과 일치bottom는지 확인
         // selectedDirection.shift(); // 다음 방향으로 이동
         currentSuccessCount += 1;
-        isDerectionCorrect = true;
+        isDirectionCorrect = true;
         // 이것 false로 바꿔주기!!!!
         console.log('------------ CURRENT SCORE: ', currentSuccessCount);
       }
@@ -189,5 +189,5 @@ export const estimateHead = ({ results, myVideoRef, canvasRef, direction }) => {
 
   canvasCtx.restore();
 
-  return isDerectionCorrect;
+  return isDirectionCorrect;
 };
