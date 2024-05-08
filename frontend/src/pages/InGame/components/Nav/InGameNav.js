@@ -88,6 +88,7 @@ const Wrapper = styled.nav`
 `;
 
 const BtnArea = styled.div`
+  z-index: 150;
   position: fixed;
   width: 100vw;
   height: 50px;
@@ -99,7 +100,7 @@ const BtnArea = styled.div`
 
 const TextArea = styled.div`
   width: 100vw;
-  padding: 0 20px;
+  margin: 0 20px;
 
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
