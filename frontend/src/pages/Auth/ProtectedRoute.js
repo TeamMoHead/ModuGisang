@@ -4,6 +4,7 @@ import {
   AccountContext,
   UserContextProvider,
   ChallengeContextProvider,
+  MediaPipeContextProvider,
 } from '../../contexts';
 import useAuth from '../../hooks/useAuth';
 
@@ -42,7 +43,9 @@ const ProtectedRoute = () => {
   return (
     <UserContextProvider>
       <ChallengeContextProvider>
-        <Outlet />
+        <MediaPipeContextProvider>
+          <Outlet />
+        </MediaPipeContextProvider>
       </ChallengeContextProvider>
     </UserContextProvider>
   );

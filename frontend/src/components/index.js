@@ -8,6 +8,7 @@ import NavBar from './NavBar';
 import PageNotFound from './PageNotFound';
 import LoadingWithText from './LoadingWithText';
 import Dropdown from './Dropdown';
+import WarmUpModel from './WarmUpModel';
 
 export {
   Icon,
@@ -20,4 +21,5 @@ export {
   PageNotFound,
   LoadingWithText,
   Dropdown,
+  WarmUpModel,
 };
