@@ -6,6 +6,8 @@ import Guide from './Guide';
 
 import styled from 'styled-components';
 
+let resultOne = false;
+
 const Mission1 = () => {
   const {
     inGameMode,
@@ -41,8 +43,23 @@ const Mission1 = () => {
     });
 
     msPoseRef.current.onResults(results => {
-      setMyMissionStatus(estimatePose({ results, myVideoRef, canvasRef }));
-      if (isGameLoading) setIsGameLoading(false);
+      if (!resultOne) {
+        resultOne = estimatePose({
+          results,
+          myVideoRef,
+          canvasRef,
+          round: 1,
+        });
+      }
+      if (resultOne) {
+        const resultTwo = estimatePose({
+          results,
+          myVideoRef,
+          canvasRef,
+          round: 2,
+        });
+      }
+      console.log('resultOne:', resultOne);
     });
 
     const handleCanPlay = () => {

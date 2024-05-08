@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
-import { GameContext } from '../../../contexts';
 import styled from 'styled-components';
 
 const Guide = ({ poseCorrect }) => {
@@ -12,10 +10,6 @@ const Guide = ({ poseCorrect }) => {
   }, [poseCorrect]);
 
   useEffect(() => {
-    // setTimeout(() => {
-    //   setIsFlipped(prev => !prev);
-    // }, 0);
-
     const timer = setTimeout(() => {
       setIsFlipped(true);
       setColor('red');
