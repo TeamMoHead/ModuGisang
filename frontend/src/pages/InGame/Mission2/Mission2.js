@@ -1,24 +1,31 @@
 import React, { useEffect, useRef, useContext } from 'react';
-import { GameContext, OpenViduContext } from '../../../contexts';
-import { Holistic } from '@mediapipe/holistic';
+import {
+  MediaPipeContext,
+  GameContext,
+  OpenViduContext,
+} from '../../../contexts';
+
 // import * as face from '@mediapipe/face_mesh';
+import { GameLoading } from '../components';
+
 import { estimateFace } from '../MissionEstimators/FaceEstimator';
 import styled from 'styled-components';
 
 const Mission2 = () => {
-  const {
-    inGameMode,
-    myMissionStatus,
-    setMyMissionStatus,
-    isGameLoading,
-    setIsGameLoading,
-  } = useContext(GameContext);
+  const { holisticModel } = useContext(MediaPipeContext);
+  const { isGameLoading, inGameMode, myMissionStatus, setMyMissionStatus } =
+    useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
-  const holisticRef = useRef(null);
 
   useEffect(() => {
-    if (inGameMode !== 2 || !myVideoRef.current) return;
+    if (
+      inGameMode !== 2 ||
+      !myVideoRef.current ||
+      !holisticModel.current ||
+      isGameLoading
+    )
+      return;
 
     const videoElement = myVideoRef.current;
 
@@ -29,28 +36,13 @@ const Mission2 = () => {
     //   },
     // });
 
-    holisticRef.current = new Holistic({
-      locateFile: file => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
-      },
-    });
-
-    holisticRef.current.setOptions({
-      selfieMode: true,
-      numFaces: 1,
-      refineFaceLandmarks: false, // Attention Mesh Model 적용 여부
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5,
-    });
-
-    holisticRef.current.onResults(results => {
-      setMyMissionStatus(estimateFace({ results, myVideoRef, canvasRef }));
-      if (isGameLoading) setIsGameLoading(false);
+    holisticModel.current.onResults(results => {
+      estimateFace({ results, myVideoRef, canvasRef });
     });
 
     const handleCanPlay = () => {
-      if (holisticRef.current !== null) {
-        holisticRef.current.send({ image: videoElement }).then(() => {
+      if (holisticModel.current !== null) {
+        holisticModel.current.send({ image: videoElement }).then(() => {
           requestAnimationFrame(handleCanPlay);
         });
       }
@@ -64,11 +56,16 @@ const Mission2 = () => {
 
     return () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
-      holisticRef.current = null;
+      holisticModel.current = null;
     };
-  }, []);
+  }, [isGameLoading, holisticModel]);
 
-  return <Canvas ref={canvasRef} />;
+  return (
+    <>
+      <GameLoading />
+      {isGameLoading || <Canvas ref={canvasRef} />}
+    </>
+  );
 };
 
 export default Mission2;

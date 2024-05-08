@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   UserContext,
   ChallengeContext,
@@ -9,7 +9,7 @@ import {
 import useCheckTime from '../../hooks/useCheckTime';
 
 import InGameNav from './components/Nav/InGameNav';
-import { MyVideo, MateVideo, GameLoading } from './components';
+import { MyVideo, MateVideo } from './components';
 import {
   Waiting,
   Mission1,
@@ -47,7 +47,7 @@ const InGame = () => {
   const { userId: myId } = userData;
   const { challengeData } = useContext(ChallengeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
-  const { isGameLoading, inGameMode, myMissionStatus, setMyMissionStatus } =
+  const { inGameMode, myMissionStatus, setMyMissionStatus } =
     useContext(GameContext);
   const { myStream, myVideoRef } = useContext(OpenViduContext);
   const [redirected, setRedirected] = useState(false);
@@ -75,12 +75,13 @@ const InGame = () => {
     //     navigate('/main');
     //   }
     // }
+
     return () => {
       // localStorage.removeItem('inGameMode');
       if (myVideoRef.current) {
         if (myStream instanceof MediaStream) {
           myStream.getTracks().forEach(track => track.stop());
-          myVideoRef.current.srcObject = null; // 비디오 요소에서 스트림 연결을 해제합니다.
+          myVideoRef.current.srcObject = null;
         }
       }
     };
@@ -91,7 +92,6 @@ const InGame = () => {
     <>
       <InGameNav />
       <Wrapper>
-        {/* {inGameMode < 3 && isGameLoading && <GameLoading />} */}
         <MyVideo />
 
         <React.Fragment key={inGameMode}>

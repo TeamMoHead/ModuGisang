@@ -1,6 +1,10 @@
-import React, { useRef, useEffect, useContext, useState } from 'react';
-import { GameContext, OpenViduContext } from '../../../contexts';
-import { Pose } from '@mediapipe/pose';
+import React, { useRef, useState, useEffect, useContext } from 'react';
+import {
+  MediaPipeContext,
+  GameContext,
+  OpenViduContext,
+} from '../../../contexts';
+import { GameLoading } from '../components';
 import { estimateHead } from '../MissionEstimators/HeadEstimator';
 import arrow from '../../../assets/arrows/arrow.svg';
 
@@ -21,16 +25,11 @@ const round2 = [
 ];
 
 const Mission3 = () => {
-  const {
-    inGameMode,
-    myMissionStatus,
-    setMyMissionStatus,
-    isGameLoading,
-    setIsGameLoading,
-  } = useContext(GameContext);
+  const { poseModel } = useContext(MediaPipeContext);
+  const { isGameLoading, inGameMode, myMissionStatus, setMyMissionStatus } =
+    useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
-  const msPoseRef = useRef(null);
 
   // 화살표 세팅
   const [arrowRound, setArrowRound] = useState({
@@ -41,28 +40,19 @@ const Mission3 = () => {
   const [currentArrowIdx, setCurrentArrowIdx] = useState(0);
 
   useEffect(() => {
-    if (inGameMode !== 3 || !myVideoRef.current) return;
-
+    if (
+      inGameMode !== 3 ||
+      !myVideoRef.current ||
+      !poseModel.current ||
+      isGameLoading
+    ) {
+      return;
+    }
     const videoElement = myVideoRef.current;
 
-    msPoseRef.current = new Pose({
-      locateFile: file =>
-        `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
-    });
-
-    msPoseRef.current.setOptions({
-      modelComplexity: 1,
-      selfieMode: true,
-      smoothLandmarks: true,
-      enableSegmentation: true,
-      smoothSegmentation: true,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5,
-    });
-
     const handleCanPlay = () => {
-      if (msPoseRef.current !== null) {
-        msPoseRef.current.send({ image: videoElement }).then(() => {
+      if (poseModel.current !== null) {
+        poseModel.current.send({ image: videoElement }).then(() => {
           requestAnimationFrame(handleCanPlay);
         });
       }
@@ -76,16 +66,16 @@ const Mission3 = () => {
 
     return () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
-      msPoseRef.current = null;
+      poseModel.current = null;
     };
-  }, [inGameMode, myVideoRef]);
+  }, [isGameLoading, poseModel]);
 
   useEffect(() => {
-    if (!msPoseRef.current) return;
+    if (!poseModel.current || isGameLoading) return;
 
     const direction = arrowRound[currentRoundIdx][currentArrowIdx].direction;
 
-    msPoseRef.current.onResults(results => {
+    poseModel.current.onResults(results => {
       const result = estimateHead({
         results,
         myVideoRef,
@@ -111,25 +101,34 @@ const Mission3 = () => {
           setCurrentArrowIdx(currentArrowIdx + 1); // 다음 화살표로 이동
         }
       }
-
-      if (isGameLoading) setIsGameLoading(false);
     });
-  }, [currentRoundIdx, currentArrowIdx, arrowRound, myMissionStatus]);
+  }, [
+    isGameLoading,
+    currentRoundIdx,
+    currentArrowIdx,
+    arrowRound,
+    myMissionStatus,
+  ]);
 
   return (
     <>
-      <Canvas ref={canvasRef} />
-      <ArrowBox>
-        {arrowRound[currentRoundIdx].map(({ id, direction, active }) => (
-          <Arrows
-            key={`${id}_${active}`}
-            src={arrow}
-            direction={direction}
-            active={active}
-            alt={id}
-          />
-        ))}
-      </ArrowBox>
+      <GameLoading />
+      {isGameLoading || (
+        <>
+          <Canvas ref={canvasRef} />
+          <ArrowBox>
+            {arrowRound[currentRoundIdx].map(({ id, direction, active }) => (
+              <Arrows
+                key={`${id}_${active}`}
+                src={arrow}
+                direction={direction}
+                active={active}
+                alt={id}
+              />
+            ))}
+          </ArrowBox>
+        </>
+      )}
     </>
   );
 };
