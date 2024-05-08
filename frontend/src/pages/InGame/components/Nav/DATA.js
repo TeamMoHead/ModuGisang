@@ -2,7 +2,7 @@ export const INFO_BY_GAME_MODE = {
   0: { title: '시작까지', instruction: '남았어요!' },
   1: {
     title: '몸 깨우기',
-    instruction: '노란선 영역에 맞춰 5초간 스트레칭 해주세요.',
+    instruction: '하얀 선 영역에 맞춰 10초간 스트레칭 해주세요.',
   },
   2: {
     title: '안면 근육 풀기',
