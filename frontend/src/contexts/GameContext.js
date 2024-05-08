@@ -41,6 +41,8 @@ const GameContextProvider = ({ children }) => {
     4,
   );
 
+  const [myRoundStatus, setMyRoundStatus] = useState([]);
+
   let nextGameMode = 1;
 
   const updateMode = () => {

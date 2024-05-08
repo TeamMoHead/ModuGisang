@@ -6,6 +6,7 @@ import {
 } from '../../../contexts';
 import { GameLoading } from '../components';
 import { estimatePose } from '../MissionEstimators/PoseEstimator';
+import Guide from './Guide';
 
 import styled from 'styled-components';
 
@@ -28,7 +29,24 @@ const Mission1 = () => {
     const videoElement = myVideoRef.current;
 
     poseModel.current.onResults(results => {
-      estimatePose({ results, myVideoRef, canvasRef });
+      setMyMissionStatus(estimatePose({ results, myVideoRef, canvasRef }));
+
+      // if (!resultOne) {
+      //   resultOne = estimatePose({
+      //     results,
+      //     myVideoRef,
+      //     canvasRef,
+      //     round: 1,
+      //   });
+      // }
+      // if (resultOne) {
+      //   const resultTwo = estimatePose({
+      //     results,
+      //     myVideoRef,
+      //     canvasRef,
+      //     round: 2,
+      //   });
+      // }
     });
 
     const handleCanPlay = () => {
@@ -44,7 +62,6 @@ const Mission1 = () => {
     } else {
       videoElement.addEventListener('canplay', handleCanPlay);
     }
-
     return () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
     };
@@ -53,7 +70,12 @@ const Mission1 = () => {
   return (
     <>
       <GameLoading />
-      {isGameLoading || <Canvas ref={canvasRef} />}
+      {isGameLoading || (
+        <>
+          <Guide poseCorrect={myMissionStatus} />
+          <Canvas ref={canvasRef} />
+        </>
+      )}
     </>
   );
 };
@@ -68,4 +90,5 @@ const Canvas = styled.canvas`
   width: 100vw;
   height: 100vh;
   object-fit: cover;
+  z-index: 1;
 `;
