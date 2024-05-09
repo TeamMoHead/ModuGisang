@@ -58,6 +58,7 @@ const Mission1 = () => {
           ),
         );
       }
+      // console.log(stretchSide[0].active, stretchSide[1].active);
     });
 
     const handleCanPlay = () => {
@@ -74,13 +75,12 @@ const Mission1 = () => {
       videoElement.addEventListener('canplay', handleCanPlay);
     }
 
+    console.log(myMissionStatus);
+
     return () => videoElement.removeEventListener('canplay', handleCanPlay);
   }, [isGameLoading, poseModel, inGameMode, myVideoRef, currentRound]);
 
   useEffect(() => {
-    // if (stretchSide[currentRound].active) {
-    // console.log('성공');
-    // const nextRound = (currentRound + 1) % stretchSide.length;
     setTimeout(() => {
       if (currentRound !== 1) {
         setTimeout(() => {
@@ -88,9 +88,14 @@ const Mission1 = () => {
         }, 2000);
       }
     }, 7000);
-
-    // }
   }, []);
+
+  useEffect(() => {
+    if (stretchSide[0].active && stretchSide[1].active) {
+      console.log('성공');
+      setMyMissionStatus(true);
+    }
+  }, [stretchSide]);
 
   return (
     <>
