@@ -11,7 +11,7 @@ const MediaPipeContextProvider = ({ children }) => {
   const [isPoseInitialized, setIsPoseInitialized] = useState(false);
   const [isHolisticLoaded, setIsHolisticLoaded] = useState(false);
 
-  useEffect(() => {
+  const initializePoseModel = () => {
     poseModel.current = new Pose({
       locateFile: file => {
         return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
@@ -29,6 +29,10 @@ const MediaPipeContextProvider = ({ children }) => {
     });
 
     setIsPoseLoaded(true);
+  };
+
+  useEffect(() => {
+    initializePoseModel();
   }, []);
 
   useEffect(() => {
@@ -55,10 +59,12 @@ const MediaPipeContextProvider = ({ children }) => {
     <MediaPipeContext.Provider
       value={{
         isPoseLoaded,
+        setIsPoseLoaded,
         setIsPoseInitialized,
         isHolisticLoaded,
         poseModel,
         holisticModel,
+        initializePoseModel,
       }}
     >
       {children}

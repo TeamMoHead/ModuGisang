@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { TEST_CONFIG } from '../config';
+import { CONFIGS } from '../config';
 
 const API = axios.create({
-  baseURL: TEST_CONFIG.BASE_URL,
+  baseURL: CONFIGS.BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -11,10 +11,8 @@ const API = axios.create({
 const logInUser = async ({ email, password }) => {
   const url = '/auth/login';
   const payload = {
-    email: TEST_CONFIG.TEST_EMAIL,
-    password: TEST_CONFIG.TEST_PASSWORD,
-    // email,
-    // password,
+    email,
+    password,
   };
   return await API.post(url, payload);
 };
