@@ -8,18 +8,21 @@ const Guide = ({ poseCorrect }) => {
     poseCorrect.active ? '#15F5BA' : '#F0F3FF',
   );
 
-  console.log('poseCorrect:', poseCorrect);
+  // console.log('poseCorrect:', poseCorrect);
 
   useEffect(() => {
-    console.log('====================color changed===========');
-    console.log('poseCorrect.active:', poseCorrect.active);
-    setColor(poseCorrect.active ? '#15F5BA' : '#F0F3FF');
+    // console.log('====================color changed===========');
+    // console.log('poseCorrect.active:', poseCorrect.active);
+    if (!poseCorrect.active) {
+      setColor('#F0F3FF');
+    } else {
+      setColor('#15F5BA');
+    }
   }, [poseCorrect.active]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      console.log('====================flipped===========');
-      // setColor('#F0F3FF');
+      // console.log('====================flipped===========');
       setIsFlipped(true);
     }, 6500);
 
@@ -60,7 +63,7 @@ const StyledSVG = styled.svg`
   width: 100%;
   height: 100%;
   opacity: 0.5;
-  /* transition: 0.5s ease-in-out; */
+  transition: 0.5s ease-in-out;
 
   path {
     transition: fill 0.5s ease;

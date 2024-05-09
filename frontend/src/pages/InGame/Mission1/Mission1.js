@@ -42,7 +42,7 @@ const Mission1 = () => {
     const videoElement = myVideoRef.current;
 
     poseModel.current.onResults(results => {
-      const direction = stretchSide[currentRound].direction; // currentRound 사용
+      const direction = stretchSide[currentRound].direction;
       const result = estimatePose({
         results,
         myVideoRef,
@@ -50,11 +50,11 @@ const Mission1 = () => {
         direction,
       });
 
+      // console.log(result, currentRound, stretchSide[currentRound].direction);
       if (result) {
         setStretchSide(prevState =>
-          prevState.map(
-            (item, index) =>
-              index === currentRound ? { ...item, active: true } : item, // currentRound 사용
+          prevState.map((item, index) =>
+            index === currentRound ? { ...item, active: true } : item,
           ),
         );
       }
@@ -75,15 +75,22 @@ const Mission1 = () => {
     }
 
     return () => videoElement.removeEventListener('canplay', handleCanPlay);
-  }, [isGameLoading, poseModel, inGameMode, myVideoRef, currentRound]); // currentRound 의존성 추가
+  }, [isGameLoading, poseModel, inGameMode, myVideoRef, currentRound]);
 
   useEffect(() => {
-    if (stretchSide[currentRound].active) {
-      console.log('성공');
-      const nextRound = (currentRound + 1) % stretchSide.length;
-      setTimeout(setCurrentRound(nextRound), 1000);
-    }
-  }, [stretchSide[currentRound].active]);
+    // if (stretchSide[currentRound].active) {
+    // console.log('성공');
+    // const nextRound = (currentRound + 1) % stretchSide.length;
+    setTimeout(() => {
+      if (currentRound !== 1) {
+        setTimeout(() => {
+          setCurrentRound(1);
+        }, 2000);
+      }
+    }, 7000);
+
+    // }
+  }, []);
 
   return (
     <>
