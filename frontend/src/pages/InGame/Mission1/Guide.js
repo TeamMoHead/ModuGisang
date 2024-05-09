@@ -2,22 +2,29 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const Guide = ({ poseCorrect }) => {
-  // const [isFlipped, setIsFlipped] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
 
-  const [color, setColor] = useState(poseCorrect ? '#15F5BA' : '#F0F3FF');
+  const [color, setColor] = useState(
+    poseCorrect.active ? '#15F5BA' : '#F0F3FF',
+  );
+
+  console.log('poseCorrect:', poseCorrect);
 
   useEffect(() => {
-    setColor(poseCorrect ? '#15F5BA' : '#F0F3FF');
-  }, [poseCorrect]);
+    console.log('====================color changed===========');
+    console.log('poseCorrect.active:', poseCorrect.active);
+    setColor(poseCorrect.active ? '#15F5BA' : '#F0F3FF');
+  }, [poseCorrect.active]);
 
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setIsFlipped(true);
-  //     setColor('red');
-  //   }, 8000);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log('====================flipped===========');
+      // setColor('#F0F3FF');
+      setIsFlipped(true);
+    }, 6500);
 
-  //   return () => clearTimeout(timer);
-  // }, []);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <GuideWrapper>
@@ -25,7 +32,7 @@ const Guide = ({ poseCorrect }) => {
         preserveAspectRatio="xMaxYMax meet"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="230 0 100 480"
-        // $isFlipped={isFlipped}
+        $isFlipped={isFlipped}
       >
         <g transform="rotate(10)">
           <path
@@ -53,10 +60,10 @@ const StyledSVG = styled.svg`
   width: 100%;
   height: 100%;
   opacity: 0.5;
-  transition: 0.5s ease-in-out;
+  /* transition: 0.5s ease-in-out; */
 
   path {
-    transition: fill 0.7s ease-in-out;
+    transition: fill 0.5s ease;
   }
   transform: ${({ $isFlipped }) => ($isFlipped ? 'scaleX(-1)' : 'none')};
 

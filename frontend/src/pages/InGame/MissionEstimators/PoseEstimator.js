@@ -3,15 +3,19 @@ import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 
 import { POSES } from './POSE_DATA';
 
-let currentScore = 0; // 현재 점수
-let maxScore = 50; // 목표 점수
-let myMissionStatus = false; // 측정 결과
-let isEstimated = false; // 측정 완료 여부
+let currentScoreLeft = 0; // 현재 점수
+let currentScoreRight = 0; // 현재 점수
+let maxScore = 150; // 목표 점수
 let selectedPose; // 선택된 자세
-const keypoints = {}; // 측정에 사용할 각 포인트의 위치 저장
-const timeoutDuration = 6000; // 제한 시간
+let isGameStart = false; // 게임 시작 여부
+let isTimeOut = false; // 타임 아웃 여부
 
-export const estimatePose = ({ results, myVideoRef, canvasRef }) => {
+let isPoseCorrect = false; // 자세 측정 결과
+const keypoints = {}; // 측정에 사용할 각 포인트의 위치 저장
+const timeoutDuration = 14500; // 제한 시간
+const resultDuration = 8000; // 결과 표시 시간
+
+export const estimatePose = ({ results, myVideoRef, canvasRef, direction }) => {
   if (
     !myVideoRef.current ||
     !canvasRef.current ||
@@ -29,45 +33,64 @@ export const estimatePose = ({ results, myVideoRef, canvasRef }) => {
   const stretchingGame = poseLandmarks => {
     if (!poseLandmarks) return;
 
-    if (!selectedPose) {
-      // if (round === 1) {
-      //   console.log('Round:', round);
-      selectedPose = POSES[0];
-      //   console.log('Selected pose:', selectedPose.name);
-      // } else if (round === 2) {
-      //   console.log('Round:', round);
-      //   selectedPose = POSES[1];
-      //   console.log('Selected pose:', selectedPose.name);
-      // }
+    const handleTimeout = () => {
+      isTimeOut = true;
+      console.log('---------- 제한 시간 종료!');
+    };
+
+    if (!isGameStart) {
+      isGameStart = true;
+      setTimeout(handleTimeout, timeoutDuration);
+      console.log('---------- 제한 시간 시작!');
     }
 
-    if (!myMissionStatus) {
-      selectedPose.keypoints.forEach(keypoint => {
-        keypoints[keypoint] = poseLandmarks[keypoint];
-      });
-      if (selectedPose && selectedPose.condition(keypoints)) {
-        currentScore = Math.min(maxScore, currentScore + selectedPose.score);
-      }
+    if (!isTimeOut) {
+      isPoseCorrect = false;
+      if (direction === 'left') {
+        selectedPose = POSES[0];
+        selectedPose.keypoints.forEach(keypoint => {
+          keypoints[keypoint] = poseLandmarks[keypoint];
+        });
 
-      console.log('currentScore:', currentScore);
-    }
-
-    if (!isEstimated) {
-      setTimeout(() => {
-        if (currentScore >= maxScore) {
-          console.log(
-            `------------POSE RESULT: ${selectedPose.name} 자세를 취했습니다.`,
-          );
-          myMissionStatus = true;
-        } else {
-          console.log('------------POSE RESULT: 자세 취하기 실패');
-          myMissionStatus = false;
+        if (selectedPose && selectedPose.condition(keypoints)) {
+          currentScoreLeft = currentScoreLeft + selectedPose.score;
         }
 
-        console.log('---------- Final Score:', currentScore);
-      }, timeoutDuration);
+        console.log('currentScoreLeft:', currentScoreLeft);
 
-      isEstimated = true;
+        if (currentScoreLeft >= maxScore) {
+          // console.log(
+          //   `------------POSE RESULT: ${selectedPose.name} 자세를 취했습니다.`,
+          // );
+          isPoseCorrect = true;
+        } else {
+          // console.log('------------POSE RESULT: 자세 취하기 실패');
+          isPoseCorrect = false;
+        }
+      }
+      if (direction === 'right') {
+        selectedPose = POSES[1];
+
+        selectedPose.keypoints.forEach(keypoint => {
+          keypoints[keypoint] = poseLandmarks[keypoint];
+        });
+
+        if (selectedPose && selectedPose.condition(keypoints)) {
+          currentScoreRight = currentScoreRight + selectedPose.score;
+
+          console.log('currentScoreRight:', currentScoreRight);
+
+          if (currentScoreRight >= maxScore) {
+            // console.log(
+            //   `------------POSE RESULT: ${selectedPose.name} 자세를 취했습니다.`,
+            // );
+            isPoseCorrect = true;
+          } else {
+            // console.log('------------POSE RESULT: 자세 취하기 실패');
+            isPoseCorrect = false;
+          }
+        }
+      }
     }
   };
 
@@ -92,7 +115,6 @@ export const estimatePose = ({ results, myVideoRef, canvasRef }) => {
   // });
 
   stretchingGame(results.poseLandmarks);
-
   canvasCtx.restore();
-  return myMissionStatus;
+  return isPoseCorrect;
 };

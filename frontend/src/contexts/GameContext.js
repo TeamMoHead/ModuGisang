@@ -17,7 +17,7 @@ const GAME_MODE = {
 
 // mission 당 소요 시간
 const GAME_MODE_DURATION = {
-  1: 11000,
+  1: 15000,
   2: 15000,
   3: 17000,
   4: 15000,
@@ -38,7 +38,7 @@ const GameContextProvider = ({ children }) => {
   const [isGameLoading, setIsGameLoading] = useState(false);
   const [inGameMode, setInGameMode] = useState(
     // parseInt(localStorage.getItem('inGameMode')) || 0,
-    0,
+    1,
     // 5,
   );
 
@@ -77,7 +77,7 @@ const GameContextProvider = ({ children }) => {
     if (challengeData && !isTooEarly && !isTooLate) {
       // ⭐️⭐️⭐️⭐️⭐️⭐️ 개발 편의 용 주석 ⭐️⭐️⭐️⭐️⭐️//
       // 나중에 다시 풀어야 함
-      scheduleFirstMission();
+      // scheduleFirstMission();
       // ===== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
     }
   }, [challengeData]);
