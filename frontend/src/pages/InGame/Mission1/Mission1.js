@@ -39,6 +39,7 @@ const Mission1 = () => {
     ) {
       return;
     }
+
     const videoElement = myVideoRef.current;
 
     poseModel.current.onResults(results => {
@@ -49,8 +50,6 @@ const Mission1 = () => {
         canvasRef,
         direction,
       });
-
-      // console.log(result, currentRound, stretchSide[currentRound].direction);
       if (result) {
         setStretchSide(prevState =>
           prevState.map((item, index) =>
@@ -58,7 +57,6 @@ const Mission1 = () => {
           ),
         );
       }
-      // console.log(stretchSide[0].active, stretchSide[1].active);
     });
 
     const handleCanPlay = () => {
@@ -74,8 +72,6 @@ const Mission1 = () => {
     } else {
       videoElement.addEventListener('canplay', handleCanPlay);
     }
-
-    console.log(myMissionStatus);
 
     return () => videoElement.removeEventListener('canplay', handleCanPlay);
   }, [isGameLoading, poseModel, inGameMode, myVideoRef, currentRound]);

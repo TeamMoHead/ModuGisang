@@ -8,11 +8,8 @@ const Guide = ({ poseCorrect }) => {
     poseCorrect.active ? '#15F5BA' : '#F0F3FF',
   );
 
-  // console.log('poseCorrect:', poseCorrect);
-
   useEffect(() => {
     // console.log('====================color changed===========');
-    // console.log('poseCorrect.active:', poseCorrect.active);
     if (!poseCorrect.active) {
       setColor('#F0F3FF');
     } else {
