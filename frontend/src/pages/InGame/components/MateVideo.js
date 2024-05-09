@@ -47,9 +47,14 @@ const MateVideo = ({ mateId, mateName }) => {
 
   return (
     <Wrapper $mateOnLine={mateStatus.online}>
-      <StatusIcon $isCompleted={mateStatus.missionCompleted} />
+      {/* <StatusIcon $isCompleted={mateStatus.missionCompleted} /> */}
       {mateStatus.online ? (
-        <Video ref={mateVideoRef} autoPlay playsInline />
+        <Video
+          ref={mateVideoRef}
+          autoPlay
+          playsInline
+          $isCompleted={mateStatus.missionCompleted}
+        />
       ) : (
         <EmptyVideo>Zzz...</EmptyVideo>
       )}
@@ -76,6 +81,11 @@ const Wrapper = styled.div`
   background-color: ${({ $mateOnLine, theme }) =>
     $mateOnLine ? 'transparent' : theme.colors.lighter.light};
   border-radius: ${({ theme }) => theme.radius.basic};
+
+  border: ${({ $mateOnLine, theme }) =>
+    $mateOnLine
+      ? `2px solid ${theme.colors.lighter.light}`
+      : `2px solid ${theme.colors.text.gray}`};
 `;
 
 const Video = styled.video`
@@ -85,6 +95,10 @@ const Video = styled.video`
   object-fit: cover;
 
   border-radius: ${({ theme }) => theme.radius.basic};
+  border: ${({ $isCompleted, theme }) =>
+    $isCompleted
+      ? `2px solid ${theme.colors.primary.emerald}`
+      : `2px solid ${theme.colors.system.red}`};
 `;
 
 const StatusIcon = styled.div`

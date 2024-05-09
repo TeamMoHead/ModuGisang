@@ -183,6 +183,7 @@ const CanvasWrapper = styled.div`
 
   display: ${({ $myMissionStatus }) => ($myMissionStatus ? 'none' : 'block')};
   border: 3px solid ${({ theme }) => theme.colors.primary.light};
+  background-color: ${({ theme }) => theme.colors.lighter.dark};
 `;
 
 // 목적바

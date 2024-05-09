@@ -30,6 +30,7 @@ const Text = styled.p`
   ${({ theme }) => theme.flex.center}
   width: 90%;
   height: 50%;
+  padding: 15px;
 
   ${({ theme }) => theme.fonts.content}
   color:${({ theme }) => theme.colors.primary.dark};

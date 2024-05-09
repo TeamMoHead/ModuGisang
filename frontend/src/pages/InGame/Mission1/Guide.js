@@ -3,10 +3,11 @@ import styled from 'styled-components';
 
 const Guide = ({ poseCorrect }) => {
   // const [isFlipped, setIsFlipped] = useState(false);
-  const [color, setColor] = useState(poseCorrect ? 'green' : 'white');
+
+  const [color, setColor] = useState(poseCorrect ? '#15F5BA' : '#F0F3FF');
 
   useEffect(() => {
-    setColor(poseCorrect ? 'green' : 'white');
+    setColor(poseCorrect ? '#15F5BA' : '#F0F3FF');
   }, [poseCorrect]);
 
   // useEffect(() => {
