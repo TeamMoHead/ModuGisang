@@ -3,13 +3,15 @@ import { MediaPipeContext } from '../contexts/MediaPipeContext';
 import poseSampleImage from '../assets/imageForMediaPipe/poseSample.png';
 import faceSampleImage from '../assets/imageForMediaPipe/faceSample.png';
 
-const WarmUpModel = () => {
+const WarmUpModel = ({ isWarmUpDone, setIsWarmUpDone }) => {
   const {
     isPoseLoaded,
+    setIsPoseLoaded,
     setIsPoseInitialized,
     isHolisticLoaded,
     poseModel,
     holisticModel,
+    initializePoseModel,
   } = useContext(MediaPipeContext);
   const poseCanvasRef = useRef(null);
   const poseImageRef = useRef(null);
@@ -77,6 +79,7 @@ const WarmUpModel = () => {
           .send({ image: imageData })
           .then(results => {
             console.log('=========> HOLISTIC Inference results:', results);
+            setIsWarmUpDone(true);
           })
           .catch(error => {
             console.error(
@@ -89,6 +92,13 @@ const WarmUpModel = () => {
       holisticImageRef.current = image;
     };
   }, [holisticModel, holisticCanvasRef, isHolisticLoaded]);
+
+  useEffect(() => {
+    if (!isWarmUpDone) {
+      console.log('!isWarmUpDone 감지됨!');
+      // window.location.reload();
+    }
+  }, [isWarmUpDone]);
 
   return (
     <>

@@ -7,6 +7,7 @@ import {
   MediaPipeContextProvider,
 } from '../../contexts';
 import useAuth from '../../hooks/useAuth';
+import { LoadingWithText } from '../../components';
 
 const ProtectedRoute = () => {
   const { accessToken, userId } = useContext(AccountContext);
@@ -33,7 +34,7 @@ const ProtectedRoute = () => {
   }, [accessToken]);
 
   if (isAuthLoading) {
-    return <div>Loading...</div>;
+    return <LoadingWithText text="로그인 정보를 확인중이에요 :)" />;
   }
 
   if (!isAuthLoading && !isAuthorized) {

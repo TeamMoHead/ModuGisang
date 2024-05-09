@@ -3,10 +3,11 @@ import styled from 'styled-components';
 
 const Guide = ({ poseCorrect }) => {
   // const [isFlipped, setIsFlipped] = useState(false);
-  const [color, setColor] = useState(poseCorrect ? 'green' : 'white');
+
+  const [color, setColor] = useState(poseCorrect ? '#15F5BA' : '#F0F3FF');
 
   useEffect(() => {
-    setColor(poseCorrect ? 'green' : 'white');
+    setColor(poseCorrect ? '#15F5BA' : '#F0F3FF');
   }, [poseCorrect]);
 
   // useEffect(() => {
@@ -24,7 +25,7 @@ const Guide = ({ poseCorrect }) => {
         preserveAspectRatio="xMaxYMax meet"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="230 0 100 480"
-        // isFlipped={isFlipped}
+        // $isFlipped={isFlipped}
       >
         <g transform="rotate(10)">
           <path
@@ -41,15 +42,11 @@ const Guide = ({ poseCorrect }) => {
 export default Guide;
 
 const GuideWrapper = styled.div`
-  position: fixed;
+  position: absolute;
   top: 0;
   right: 0;
   width: 100vw;
   height: 100vh;
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
-  object-fit: cover;
 `;
 
 const StyledSVG = styled.svg`
@@ -57,8 +54,12 @@ const StyledSVG = styled.svg`
   height: 100%;
   opacity: 0.5;
   transition: 0.5s ease-in-out;
+
   path {
     transition: fill 0.7s ease-in-out;
   }
-  transform: ${({ isFlipped }) => (isFlipped ? 'scaleX(-1)' : 'none')};
+  transform: ${({ $isFlipped }) => ($isFlipped ? 'scaleX(-1)' : 'none')};
+
+  object-fit: cover;
+  z-index: 2;
 `;

@@ -1,12 +1,15 @@
 import React from 'react';
 import { useState } from 'react';
-import { InputBox, SimpleBtn } from '../../components';
+import { InputBox, LoadingWithText, SimpleBtn } from '../../components';
 
 import useAuth from '../../hooks/useAuth';
 
 import * as S from '../../styles/common';
 
+import { CONFIGS } from '../../config';
+
 const Signin = () => {
+  const { TEST_EMAIL, TEST_PASSWORD } = CONFIGS;
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [isLoginLoading, setIsLoginLoading] = useState(false);
@@ -21,7 +24,7 @@ const Signin = () => {
   };
 
   if (isLoginLoading) {
-    return <div>로그인 중...</div>;
+    return <LoadingWithText loadingMSG="로그인 중입니다 :)" />;
   }
 
   return (
@@ -53,6 +56,19 @@ const Signin = () => {
           }
           type="submit"
           btnName="로그인"
+        />
+        <SimpleBtn
+          onClickHandler={async e => {
+            e.preventDefault();
+            await handleSubmitLogIn({
+              e,
+              loginEmail: TEST_EMAIL,
+              loginPassword: TEST_PASSWORD,
+              setIsLoginLoading,
+            });
+          }}
+          type="submit"
+          btnName="개발용 로그인"
         />
       </>
     </S.PageWrapper>

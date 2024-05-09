@@ -2,7 +2,12 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext, ChallengeContext, AccountContext } from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
-import { NavBar, CardBtn, WarmUpModel } from '../../components';
+import {
+  NavBar,
+  CardBtn,
+  WarmUpModel,
+  LoadingWithText,
+} from '../../components';
 import {
   StreakContent,
   InvitationsContent,
@@ -26,6 +31,7 @@ const Main = () => {
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
 
   // ---------------현재 페이지에서 쓸 State---------------
+  const [isWarmUpDone, setIsWarmUpDone] = useState(false);
   const hasChallenge = Number(challengeId) !== -1;
   const [isUserDataLoading, setIsUserDataLoading] = useState(true);
   const [isChallengeInfoLoading, setIsChallengeInfoLoading] = useState(true);
@@ -85,43 +91,67 @@ const Main = () => {
     }
   }, [challengeData]);
 
-  if (!userId || !challengeData) return <div>Loading...</div>;
+  console.log('🍀🍀🍀 MAIN PAGE 🍀🍀🍀🍀\n');
+  console.log(
+    'userId: ',
+    userId,
+    ' challengeData: ',
+    challengeData,
+    'isWarmUpDone: ',
+    isWarmUpDone,
+  );
+
+  if (!userId || !challengeData)
+    return <LoadingWithText loadingMSG="페이지를 가져오고 있어요" />;
   return (
     <>
-      <NavBar />
-      <S.PageWrapper>
-        <Greetings>{greetings}</Greetings>
-        <span>기상시간 세팅 00:00 형태</span>
-        <input
-          type="text"
-          onChange={e => setWakeTime(e.target.value)}
-          style={{ backgroundColor: 'white' }}
-        />
-        <button
-          onClick={changeWakeTime}
-          style={{
-            backgroundColor: 'orange',
-            padding: '10px',
-            borderRadius: '5px',
-          }}
-        >
-          기상 시간 세팅하기{' '}
-        </button>
+      {!isWarmUpDone ? (
+        <LoadingWithText loadingMSG="페이지를 가져오고 있어요" />
+      ) : (
+        <>
+          <NavBar />
+          <S.PageWrapper>
+            <Greetings>{greetings}</Greetings>
+            <input
+              placeholder="00:00 형태로 입력"
+              type="text"
+              onChange={e => setWakeTime(e.target.value)}
+              style={{
+                backgroundColor: 'white',
+                padding: '10px',
+                borderRadius: '5px',
+              }}
+            />
+            <button
+              onClick={changeWakeTime}
+              style={{
+                backgroundColor: 'orange',
+                padding: '10px',
+                borderRadius: '5px',
+              }}
+            >
+              기상 시간 세팅하기
+            </button>
 
-        <CardsWrapper>
-          {CARD_TYPES[hasChallenge ? 'hasChallenge' : 'noChallenge'].map(
-            type => (
-              <CardBtn
-                key={type}
-                content={CARD_CONTENTS[type]}
-                onClickHandler={CARD_ON_CLICK_HANDLERS[type]}
-                btnStyle={CARD_STYLES[type]}
-              />
-            ),
-          )}
-        </CardsWrapper>
-      </S.PageWrapper>
-      <WarmUpModel />
+            <CardsWrapper>
+              {CARD_TYPES[hasChallenge ? 'hasChallenge' : 'noChallenge'].map(
+                type => (
+                  <CardBtn
+                    key={type}
+                    content={CARD_CONTENTS[type]}
+                    onClickHandler={CARD_ON_CLICK_HANDLERS[type]}
+                    btnStyle={CARD_STYLES[type]}
+                  />
+                ),
+              )}
+            </CardsWrapper>
+          </S.PageWrapper>
+        </>
+      )}
+      <WarmUpModel
+        isWarmUpDone={isWarmUpDone}
+        setIsWarmUpDone={setIsWarmUpDone}
+      />
     </>
   );
 };
