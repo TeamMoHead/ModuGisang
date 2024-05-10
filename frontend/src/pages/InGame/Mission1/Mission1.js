@@ -63,6 +63,7 @@ const Mission1 = () => {
         direction,
       });
 
+      // console.log('result:', result, 'direction:', direction, stretchSide);
       if (result !== undefined) {
         if (frameCount % 5 === 0) {
           requestAnimationFrame(() => updateProgress(result, direction));
