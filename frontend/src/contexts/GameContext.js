@@ -17,7 +17,7 @@ const GAME_MODE = {
 
 // mission 당 소요 시간
 const GAME_MODE_DURATION = {
-  1: 11000,
+  1: 20000,
   2: 15000,
   3: 17000,
   4: 15000,
