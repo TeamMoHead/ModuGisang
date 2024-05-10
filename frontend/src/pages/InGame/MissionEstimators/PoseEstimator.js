@@ -52,9 +52,9 @@ export const estimatePose = ({ results, myVideoRef, canvasRef, direction }) => {
         });
 
         if (selectedPose && selectedPose.condition(keypoints)) {
-          currentScoreLeft = currentScoreLeft + selectedPose.score;
+          currentScoreLeft += selectedPose.score;
+          currentScoreLeft = Math.min(currentScoreLeft, maxScore);
         }
-
         // console.log('currentScoreLeft:', currentScoreLeft);
 
         if (currentScoreLeft >= maxScore) {
@@ -75,7 +75,8 @@ export const estimatePose = ({ results, myVideoRef, canvasRef, direction }) => {
         });
 
         if (selectedPose && selectedPose.condition(keypoints)) {
-          currentScoreRight = currentScoreRight + selectedPose.score;
+          currentScoreRight += selectedPose.score;
+          currentScoreRight = Math.min(currentScoreRight, maxScore);
 
           // console.log('currentScoreRight:', currentScoreRight);
 
@@ -113,7 +114,14 @@ export const estimatePose = ({ results, myVideoRef, canvasRef, direction }) => {
   //   radius: 2,
   // });
 
+  const progressLeft = (currentScoreLeft / maxScore) * 100;
+  const progressRight = (currentScoreRight / maxScore) * 100;
+
   stretchingGame(results.poseLandmarks);
   canvasCtx.restore();
-  return { isPoseCorrect, currentScoreLeft, currentScoreRight };
+  return {
+    isPoseCorrect,
+    currentScoreLeft: progressLeft,
+    currentScoreRight: progressRight,
+  };
 };

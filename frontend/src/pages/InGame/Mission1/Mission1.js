@@ -42,8 +42,19 @@ const Mission1 = () => {
     }
 
     const videoElement = myVideoRef.current;
+    let animationFrameId;
+    let frameCount = 0;
+
+    const updateProgress = (result, direction) => {
+      const newProgress =
+        direction === 'left'
+          ? result.currentScoreLeft
+          : result.currentScoreRight;
+      setProgress(newProgress);
+    };
 
     poseModel.current.onResults(results => {
+      frameCount++;
       const direction = stretchSide[currentRound].direction;
       const result = estimatePose({
         results,
@@ -51,23 +62,25 @@ const Mission1 = () => {
         canvasRef,
         direction,
       });
-      console.log(result);
 
-      setProgress(result.currentScoreLeft);
-
-      if (result.isPoseCorrect) {
-        setStretchSide(prevState =>
-          prevState.map((item, index) =>
-            index === currentRound ? { ...item, active: true } : item,
-          ),
-        );
+      if (result !== undefined) {
+        if (frameCount % 5 === 0) {
+          requestAnimationFrame(() => updateProgress(result, direction));
+        }
+        if (result.isPoseCorrect) {
+          setStretchSide(prevState =>
+            prevState.map((item, index) =>
+              index === currentRound ? { ...item, active: true } : item,
+            ),
+          );
+        }
       }
     });
 
     const handleCanPlay = () => {
       if (poseModel.current) {
         poseModel.current.send({ image: videoElement }).then(() => {
-          requestAnimationFrame(handleCanPlay);
+          animationFrameId = requestAnimationFrame(handleCanPlay);
         });
       }
     };
@@ -78,7 +91,10 @@ const Mission1 = () => {
       videoElement.addEventListener('canplay', handleCanPlay);
     }
 
-    return () => videoElement.removeEventListener('canplay', handleCanPlay);
+    return () => {
+      videoElement.removeEventListener('canplay', handleCanPlay);
+      cancelAnimationFrame(animationFrameId);
+    };
   }, [isGameLoading, poseModel, inGameMode, myVideoRef, currentRound]);
 
   useEffect(() => {
@@ -99,10 +115,10 @@ const Mission1 = () => {
       <GameLoading />
       {isGameLoading || (
         <>
-          <ProgressWrapper>
-            <ProgressIndicator style={{ width: `${progress}%` }} />
-          </ProgressWrapper>
           <Canvas ref={canvasRef} />
+          <ProgressWrapper title="progressWrapper">
+            <ProgressIndicator progress={progress} />
+          </ProgressWrapper>
           <Guide poseCorrect={stretchSide[currentRound]} />
         </>
       )}
@@ -122,15 +138,26 @@ const Canvas = styled.canvas`
 `;
 
 const ProgressWrapper = styled.div`
+  position: absolute;
   width: 100%;
-  height: 20px;
-  background-color: #f0f3ff;
-  border-radius: 10px;
+  height: 50px;
+  top: 100px;
+
+  border: 3px solid ${({ theme }) => theme.colors.primary.light};
+  background-color: ${({ theme }) => theme.colors.lighter.dark};
+  /* border-radius: ${({ theme }) => theme.radius.light}; */
   overflow: hidden;
-  margin: 20px 0;
+  /* margin: 20px 0; */
 `;
 
 const ProgressIndicator = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+
+  width: ${({ progress }) => progress}%;
   height: 100%;
-  background-color: #15f5ba;
+  border: 1px solid ${({ theme }) => theme.colors.primary.light};
+  background-color: ${({ theme }) => theme.colors.primary.emerald};
+  transition: width 0.2s ease;
 `;
