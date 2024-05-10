@@ -37,9 +37,8 @@ const GameContextProvider = ({ children }) => {
 
   const [isGameLoading, setIsGameLoading] = useState(false);
   const [inGameMode, setInGameMode] = useState(
-    parseInt(localStorage.getItem('inGameMode')) || 0,
-    // 1,
-    // 5,
+    // parseInt(localStorage.getItem('inGameMode')) || 0,
+    0,
   );
 
   const [myRoundStatus, setMyRoundStatus] = useState([]);
