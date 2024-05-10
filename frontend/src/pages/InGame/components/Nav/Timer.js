@@ -18,11 +18,11 @@ const Timer = () => {
         : `0${(milliseconds / 10).toFixed(0)}`;
 
     if (completed) {
-      return <span>Time's up!</span>;
+      return null;
     } else {
       return (
         <>
-          <TimerText>{minutes}</TimerText>:<TimerText>{seconds}</TimerText>:{' '}
+          <TimerText>{minutes}</TimerText>:<TimerText>{seconds}</TimerText>:
           <TimerText>{formattedMS}</TimerText>
         </>
       );
@@ -37,7 +37,6 @@ const Timer = () => {
         intervalDelay={0}
         precision={2}
         zeroPadTime={2}
-        onComplete={() => console.log('complete')}
         renderer={CountDownUI}
       />
     </Wrapper>
@@ -47,12 +46,11 @@ const Timer = () => {
 export default Timer;
 
 const Wrapper = styled.div`
-  margin: 80px;
   ${({ theme }) => theme.flex.center}
-  font: 700 80px 'Jua';
+  font: 700 50px 'Jua';
 `;
 
 const TimerText = styled.div`
-  width: 100px;
+  width: 70px;
   text-align: center;
 `;

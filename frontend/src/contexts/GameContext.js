@@ -17,11 +17,11 @@ const GAME_MODE = {
 
 // mission 당 소요 시간
 const GAME_MODE_DURATION = {
-  1: 15000,
+  1: 11000,
   2: 15000,
-  3: 15000,
-  4: 10000,
-  5: 10000,
+  3: 17000,
+  4: 15000,
+  5: 8000,
 };
 
 const GameContextProvider = ({ children }) => {
@@ -35,12 +35,14 @@ const GameContextProvider = ({ children }) => {
     // [userId]: { missionCompleted: boolean } 형태"
   });
 
-  const [isGameLoading, setIsGameLoading] = useState(true);
+  const [isGameLoading, setIsGameLoading] = useState(false);
   const [inGameMode, setInGameMode] = useState(
     // parseInt(localStorage.getItem('inGameMode')) || 0,
     0,
-    // 1,
+    // 5,
   );
+
+  const [myRoundStatus, setMyRoundStatus] = useState([]);
 
   let nextGameMode = 1;
 
@@ -85,9 +87,9 @@ const GameContextProvider = ({ children }) => {
   }, [matesMissionStatus]);
 
   console.log(
-    '^^^^^^GAME CONTEXT^^^^^ GameMode// isGameLoading// myMissionStatus=> ',
+    '^^^^^^GAME CONTEXT^^^^^ game mode, remaining time, my mission status=> ',
     inGameMode,
-    isGameLoading,
+    remainingTime,
     myMissionStatus,
   );
   return (

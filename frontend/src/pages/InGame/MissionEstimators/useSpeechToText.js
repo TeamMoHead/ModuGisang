@@ -6,7 +6,7 @@ import SpeechRecognition, {
 
 const useSpeechToText = duration => {
   const [listening, setListening] = useState(false);
-  const { transcript, setTranscript } = useSpeechRecognition();
+  const { transcript, resetTranscript } = useSpeechRecognition();
 
   useEffect(() => {
     if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
@@ -24,11 +24,14 @@ const useSpeechToText = duration => {
   }, [duration]);
 
   const reset = () => {
-    setTranscript('');
+    console.log('RESET !!!!!!!');
+    resetTranscript();
   };
 
-  const stop = status => {
-    setListening(status);
+  const stop = () => {
+    setListening(false);
+    console.log('WEB SPEECH API STOP');
+    SpeechRecognition.stopListening();
   };
 
   return { transcript, listening, reset, stop };

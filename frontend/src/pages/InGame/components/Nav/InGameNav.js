@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GameContext, OpenViduContext } from '../../../../contexts';
 import { Icon } from '../../../../components';
@@ -32,6 +32,25 @@ const InGameNav = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (turnMicOnOff) {
+      if (inGameMode === 4 || inGameMode === 5) {
+        // ----------⭐️ 고려 사항 ⭐️-------------
+        // Mission4(전방에 함성 발사)에서 마이크 끄려고 했는데,
+        // openvidu와 연결되어 있어서, 끄면 안 됨.
+        // 상대방에게 들리지 않지만, 측정은 가능하게 하려면,
+        // Mission4에 쓰는 오디오 따로 따와야 함
+        // -----------------------------------
+        //
+        // if (micOn) turnMicOnOff(false);
+      }
+      if (inGameMode === 6) {
+        if (!micOn) turnMicOnOff(true);
+      }
+    }
+    return () => {};
+  }, [inGameMode, turnMicOnOff]);
 
   return (
     <Wrapper>
@@ -88,6 +107,7 @@ const Wrapper = styled.nav`
 `;
 
 const BtnArea = styled.div`
+  z-index: 150;
   position: fixed;
   width: 100vw;
   height: 50px;
@@ -99,7 +119,7 @@ const BtnArea = styled.div`
 
 const TextArea = styled.div`
   width: 100vw;
-  padding: 0 20px;
+  margin: 0 20px;
 
   ${({ theme }) => theme.flex.center}
   flex-direction: column;

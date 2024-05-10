@@ -147,7 +147,7 @@ const Canvas = styled.canvas`
 
 const ArrowBox = styled.div`
   position: fixed;
-  top: 150px;
+  top: 100px;
   width: 100%;
   height: 100px;
   ${({ theme }) => theme.flex.between}
