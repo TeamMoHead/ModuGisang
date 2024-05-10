@@ -21,7 +21,7 @@ const Guide = ({ poseCorrect }) => {
     const timer = setTimeout(() => {
       // console.log('====================flipped===========');
       setIsFlipped(true);
-    }, 6500);
+    }, 8500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -60,10 +60,9 @@ const StyledSVG = styled.svg`
   width: 100%;
   height: 100%;
   opacity: 0.5;
-  transition: 0.5s ease-in-out;
-
+  transition: 0.1s ease;
   path {
-    transition: fill 0.5s ease;
+    transition: fill 1s ease-in-out;
   }
   transform: ${({ $isFlipped }) => ($isFlipped ? 'scaleX(-1)' : 'none')};
 

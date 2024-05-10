@@ -78,12 +78,8 @@ const Mission1 = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      if (currentRound !== 1) {
-        setTimeout(() => {
-          setCurrentRound(1);
-        }, 2000);
-      }
-    }, 7000);
+      setCurrentRound(1);
+    }, 11000);
   }, []);
 
   useEffect(() => {
