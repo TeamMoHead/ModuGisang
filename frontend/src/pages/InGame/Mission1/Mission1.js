@@ -29,6 +29,7 @@ const Mission1 = () => {
 
   const [stretchSide, setStretchSide] = useState(round);
   const [currentRound, setCurrentRound] = useState(0);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     if (
@@ -50,7 +51,11 @@ const Mission1 = () => {
         canvasRef,
         direction,
       });
-      if (result) {
+      console.log(result);
+
+      setProgress(result.currentScoreLeft);
+
+      if (result.isPoseCorrect) {
         setStretchSide(prevState =>
           prevState.map((item, index) =>
             index === currentRound ? { ...item, active: true } : item,
@@ -94,6 +99,9 @@ const Mission1 = () => {
       <GameLoading />
       {isGameLoading || (
         <>
+          <ProgressWrapper>
+            <ProgressIndicator style={{ width: `${progress}%` }} />
+          </ProgressWrapper>
           <Canvas ref={canvasRef} />
           <Guide poseCorrect={stretchSide[currentRound]} />
         </>
@@ -111,4 +119,18 @@ const Canvas = styled.canvas`
   width: 100vw;
   height: 100vh;
   object-fit: cover;
+`;
+
+const ProgressWrapper = styled.div`
+  width: 100%;
+  height: 20px;
+  background-color: #f0f3ff;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 20px 0;
+`;
+
+const ProgressIndicator = styled.div`
+  height: 100%;
+  background-color: #15f5ba;
 `;

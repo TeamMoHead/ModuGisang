@@ -115,5 +115,5 @@ export const estimatePose = ({ results, myVideoRef, canvasRef, direction }) => {
 
   stretchingGame(results.poseLandmarks);
   canvasCtx.restore();
-  return isPoseCorrect;
+  return { isPoseCorrect, currentScoreLeft, currentScoreRight };
 };
