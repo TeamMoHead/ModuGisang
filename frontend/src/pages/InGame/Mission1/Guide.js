@@ -50,6 +50,7 @@ export default Guide;
 
 const GuideWrapper = styled.div`
   position: absolute;
+  overflow: hidden;
   top: 0;
   right: 0;
   width: 100vw;
@@ -61,6 +62,7 @@ const StyledSVG = styled.svg`
   height: 100%;
   opacity: 0.5;
   transition: 0.1s ease;
+
   path {
     transition: fill 1s ease-in-out;
   }
