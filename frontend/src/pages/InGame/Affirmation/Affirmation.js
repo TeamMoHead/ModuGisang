@@ -1,14 +1,18 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useRef, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { UserContext } from '../../../contexts';
 import useSpeechToText from '../MissionEstimators/useSpeechToText';
+import { fireworks } from './fireworks';
 
 const Affirmation = () => {
   const user = useContext(UserContext);
   const affirmationText = user.userData.affirmation || '';
   const [highlightedText, setHighlightedText] = useState('');
-  const { transcript, listening, reset, stop } = useSpeechToText(10);
+  const { transcript, listening, stop } = useSpeechToText(10);
   const [affirResult, setAffirResult] = useState(false);
+  const newTranscriptRef = useRef('');
+  const idx = useRef(0);
+
   console.log(transcript);
   console.log(listening);
 
@@ -20,36 +24,28 @@ const Affirmation = () => {
     }
     // 비교할 값이 있을 때만 동작
     if (transcript) {
-      const matchIndex = affirmationText.indexOf(transcript);
-      console.log('인덱스 값 : ', matchIndex);
-      if (matchIndex !== -1) {
-        if (affirmationText[matchIndex] === transcript[matchIndex]) {
-          const highlighted = (
-            <>
-              <Highlight>
-                {affirmationText.substring(0, matchIndex)}
-                <Highlighted>
-                  {affirmationText.substring(
-                    matchIndex,
-                    matchIndex + transcript.length,
-                  )}
-                </Highlighted>
-                {affirmationText.substring(matchIndex + transcript.length)}
-              </Highlight>
-            </>
-          );
-          setHighlightedText(highlighted);
+      for (let j = 0; j < transcript.length; j++) {
+        if (affirmationText[idx.current] === transcript[j]) {
+          idx.current += 1;
+          newTranscriptRef.current += transcript[j]; //새로운 배열에 값 추가
         }
-      } else {
-        // reset();
-        setHighlightedText(<Highlight>{affirmationText}</Highlight>);
       }
 
-      // 인식된 텍스트가 정확히 일치할 경우
-      if (transcript.trim() === affirmationText.trim() && !affirResult) {
+      const highlighted = (
+        <Highlight>
+          <Highlighted>{affirmationText.substring(0, idx.current)}</Highlighted>
+          <Unhighlighted>
+            {affirmationText.substring(idx.current)}
+          </Unhighlighted>
+        </Highlight>
+      );
+      setHighlightedText(highlighted);
+
+      if (newTranscriptRef.current.trim() === affirmationText.trim()) {
         console.log('통과');
         stop(); // 음성 인식 중지
         setAffirResult(true); //  통과 상태로 설정
+        fireworks();
       }
     } else {
       setHighlightedText(<Highlight>{affirmationText}</Highlight>);
@@ -61,7 +57,6 @@ const Affirmation = () => {
       <Wrapper>
         <Text>{highlightedText}</Text>
       </Wrapper>
-
       {affirResult ? <Success>성공!</Success> : null}
     </>
   );
@@ -102,18 +97,18 @@ const Highlight = styled.span`
 
 const Highlighted = styled.b`
   color: ${({ theme }) => theme.colors.primary.emerald};
-  font-weight: bold;
+`;
+
+const Unhighlighted = styled.b`
+  color: grey;
 `;
 
 const Success = styled.div`
-  position: fixed;
-  top: 300px;
-  left: 50px;
-  height: auto;
-  padding: 0 30px;
-  ${({ theme }) => theme.flex.center}
-  ${({ theme }) => theme.flex.center}
-  font: ${({ theme }) => theme.fonts.content};
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font: ${({ theme }) => theme.fonts.title};
   line-height: 1.2;
-  font-size: 30px;
+  font-size: 50px;
 `;
