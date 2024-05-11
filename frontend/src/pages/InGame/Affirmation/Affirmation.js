@@ -1,14 +1,63 @@
-import React, { useContext } from 'react';
+import React, { useRef, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { UserContext } from '../../../contexts';
+import useSpeechToText from '../MissionEstimators/useSpeechToText';
+import { fireworks } from './fireworks';
 
 const Affirmation = () => {
   const user = useContext(UserContext);
+  const affirmationText = user.userData.affirmation || '';
+  const [highlightedText, setHighlightedText] = useState('');
+  const { transcript, listening, stop } = useSpeechToText(10);
+  const [affirResult, setAffirResult] = useState(false);
+  const newTranscriptRef = useRef('');
+  const idx = useRef(0);
+
+  console.log(transcript);
+  console.log(listening);
+
+  // 인식된 텍스트와 원본 문구 비교 및 강조
+  useEffect(() => {
+    if (affirResult) {
+      console.log('끝');
+      return;
+    }
+    // 비교할 값이 있을 때만 동작
+    if (transcript) {
+      for (let j = 0; j < transcript.length; j++) {
+        if (affirmationText[idx.current] === transcript[j]) {
+          idx.current += 1;
+          newTranscriptRef.current += transcript[j]; //새로운 배열에 값 추가
+        }
+      }
+
+      const highlighted = (
+        <Highlight>
+          <Highlighted>{affirmationText.substring(0, idx.current)}</Highlighted>
+          <Unhighlighted>
+            {affirmationText.substring(idx.current)}
+          </Unhighlighted>
+        </Highlight>
+      );
+      setHighlightedText(highlighted);
+
+      if (newTranscriptRef.current.trim() === affirmationText.trim()) {
+        console.log('통과');
+        stop(); // 음성 인식 중지
+        setAffirResult(true); //  통과 상태로 설정
+        fireworks();
+      }
+    } else {
+      setHighlightedText(<Highlight>{affirmationText}</Highlight>);
+    }
+  }, [transcript, affirmationText, affirResult]);
+
   return (
     <>
       <Wrapper>
-        <Text>{user?.userData?.affirmation}</Text>
+        <Text>{highlightedText}</Text>
       </Wrapper>
+      {affirResult ? <Success>성공!</Success> : null}
     </>
   );
 };
@@ -40,4 +89,26 @@ const Text = styled.p`
   background-color: ${({ theme }) => theme.colors.lighter.light};
   border-radius: ${({ theme }) => theme.radius.basic};
   border: 3px solid ${({ theme }) => theme.colors.lighter.purple};
+`;
+
+const Highlight = styled.span`
+  color: grey;
+`;
+
+const Highlighted = styled.b`
+  color: ${({ theme }) => theme.colors.primary.emerald};
+`;
+
+const Unhighlighted = styled.b`
+  color: grey;
+`;
+
+const Success = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font: ${({ theme }) => theme.fonts.title};
+  line-height: 1.2;
+  font-size: 50px;
 `;
