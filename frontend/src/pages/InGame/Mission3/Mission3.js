@@ -49,7 +49,7 @@ const Mission3 = () => {
     const timer = setTimeout(() => {
       console.log('미션 3 끝');
       console.log('score : ', score.current);
-      setGameScore(score.current);
+      setGameScore(prev => prev + score.current);
     }, 17000);
     return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 클리어
   }, []);
@@ -89,12 +89,14 @@ const Mission3 = () => {
     if (!poseModel.current || isGameLoading) return;
 
     const direction = arrowRound[currentRoundIdx][currentArrowIdx].direction;
-    if (currentRoundIdx === 1) {
-      score.current = 12 + (currentArrowIdx + 1) * 3;
+    if (myMissionStatus) {
+      score.current = 25;
+    } else if (currentRoundIdx === 1) {
+      score.current = 12 + (currentArrowIdx + 1) * 3 - 3;
     } else if (currentRoundIdx === 0) {
-      score.current = (currentArrowIdx + 1) * 3;
+      score.current = (currentArrowIdx + 1) * 3 - 3;
     }
-
+    console.log('score : ', score.current);
     poseModel.current.onResults(results => {
       const result = estimateHead({
         results,
@@ -148,6 +150,7 @@ const Mission3 = () => {
               />
             ))}
           </ArrowBox>
+          {myMissionStatus ? <Success>성공!</Success> : null}
         </>
       )}
     </>
@@ -187,4 +190,14 @@ const Arrows = styled.img`
           ? 'rotate(180deg)'
           : 'rotate(0deg)'};
   filter: ${({ active }) => (active ? 'none' : 'grayscale(100%)')};
+`;
+
+const Success = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font: ${({ theme }) => theme.fonts.title};
+  line-height: 1.2;
+  font-size: 50px;
 `;
