@@ -19,7 +19,10 @@ import {
   Affirmation,
   Result,
 } from './';
+
+import BackgroundMusic from './BackgroundMusic';
 import styled from 'styled-components';
+import GameSoundEffects from './GameSoundEffects';
 
 const GAME_MODE = {
   0: 'waiting',
@@ -47,12 +50,14 @@ const InGame = () => {
   const { userId: myId } = userData;
   const { challengeData } = useContext(ChallengeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
-  const { inGameMode, myMissionStatus, setMyMissionStatus } =
+  const { inGameMode, myMissionStatus, setMyMissionStatus, isGameLoading } =
     useContext(GameContext);
   const { myStream, myVideoRef } = useContext(OpenViduContext);
   const [redirected, setRedirected] = useState(false);
 
   const [mateList, setMateList] = useState([]);
+
+  // const musicSrc = getMusicSrc(inGameMode);
 
   useEffect(() => {
     if (challengeData) {
@@ -76,6 +81,8 @@ const InGame = () => {
     //   }
     // }
 
+    console.log('inGameMode:', inGameMode);
+
     return () => {
       // localStorage.removeItem('inGameMode');
       if (myVideoRef.current) {
@@ -91,6 +98,9 @@ const InGame = () => {
   return (
     <>
       <InGameNav />
+      <BackgroundMusic gameMode={inGameMode} playing={true} />
+      <GameSoundEffects />
+
       <Wrapper>
         <MyVideo />
 
