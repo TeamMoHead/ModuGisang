@@ -23,18 +23,13 @@ const useSpeechToText = duration => {
     return () => clearTimeout(timer);
   }, [duration]);
 
-  const reset = () => {
-    console.log('RESET !!!!!!!');
-    resetTranscript();
-  };
-
   const stop = () => {
     setListening(false);
     console.log('WEB SPEECH API STOP');
     SpeechRecognition.stopListening();
   };
 
-  return { transcript, listening, reset, stop };
+  return { transcript, listening, stop };
 };
 
 export default useSpeechToText;
