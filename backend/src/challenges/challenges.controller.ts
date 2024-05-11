@@ -49,7 +49,7 @@ export class ChallengesController {
     }
     return 'create';
   }
-  @Get('searchmate')
+  @Get('search-mate')
   async searchMate(@Query('email') email: string) {
     const result = await this.challengeService.searchAvailableMate(email);
     return {
@@ -62,7 +62,7 @@ export class ChallengesController {
     const invitations = this.challengeService.getInvitations(guestId);
     return invitations; // 데이터 반환 값 수정 예정
   }
-  @Post('acceptInvitation')
+  @Post('accept-invitation')
   async acceptInvitation(@Body() acceptInvitationDto: AcceptInvitationDto) {
     const result =
       await this.challengeService.acceptInvitation(acceptInvitationDto);
