@@ -2,12 +2,18 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
+import RedisCacheService from 'src/redis-cache/redis-cache.service';
+import { UserService } from 'src/users/users.service';
 
 @Injectable()
 export class EmailService {
   private transporter;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private redisService: RedisCacheService,
+    private userService: UserService,
+  ) {
     this.transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 587,
@@ -44,5 +50,23 @@ export class EmailService {
     const randomInt =
       Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
     return randomInt.toString().padStart(length, '0'); // 6자리 문자열로 변환하여 앞에 0 채우기
+  }
+
+  async setRandom(email: string, random: string) {
+    await this.redisService.set(email, random, 180);
+    return random;
+  }
+
+  async checkAndSendEmail(
+    email: string,
+  ): Promise<{ success: boolean; message: string }> {
+    const userExists = await this.userService.findUser(email);
+    if (userExists) {
+      return { success: false, message: '이미 존재하는 이메일입니다.' };
+    } else {
+      const random = await this.sendMail(email);
+      await this.setRandom(email, random);
+      return { success: true, message: '인증번호 전송완료' };
+    }
   }
 }
