@@ -17,27 +17,29 @@ const Guide = ({ poseCorrect }) => {
   const latestPoseCorrect = useRef(poseCorrect); // useRef를 사용하여 최신 poseCorrect를 저장
 
   useEffect(() => {
-    console.log(poseCorrect, color);
-    // console.log('====================color changed===========');
+    // console.log(poseCorrect, color);
+
     if (!poseCorrect.active) {
       setColor('#F0F3FF');
     } else {
+      console.log('====================round succeeded===============');
       setColor('#15F5BA');
     }
-    latestPoseCorrect.current = poseCorrect; // 컴포넌트가 렌더링될 때마다 최신 poseCorrect로 업데이트
+    latestPoseCorrect.current = poseCorrect;
   }, [poseCorrect.active]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      console.log(latestPoseCorrect.current, color); // 항상 최신의 poseCorrect를 참조
+      // console.log(latestPoseCorrect.current, color);
       if (
         latestPoseCorrect.current.direction === 'left' &&
         !latestPoseCorrect.current.active
       ) {
+        console.log('====================round failed===============');
         setColor('#FF008F');
       }
       setTimeout(() => {
-        console.log('====================flipped===========');
+        // console.log('====================flipped===========');
         console.log('round 2 Start');
         setIsFlipped(true);
       }, time.afterCheckCorrect);

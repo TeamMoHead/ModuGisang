@@ -106,7 +106,7 @@ const Mission1 = () => {
 
   useEffect(() => {
     if (stretchSide[0].active && stretchSide[1].active) {
-      console.log('성공');
+      console.log('========미션 성공========');
       setMyMissionStatus(true);
     }
   }, [stretchSide]);
