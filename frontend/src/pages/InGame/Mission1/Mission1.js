@@ -13,17 +13,25 @@ const round = [
   {
     direction: 'left',
     active: false,
+    scoreAdded: false,
   },
   {
     direction: 'right',
     active: false,
+    scoreAdded: false,
   },
 ];
 
 const Mission1 = () => {
   const { poseModel } = useContext(MediaPipeContext);
-  const { isGameLoading, inGameMode, myMissionStatus, setMyMissionStatus } =
-    useContext(GameContext);
+  const {
+    isGameLoading,
+    inGameMode,
+    myMissionStatus,
+    setMyMissionStatus,
+    gameScore,
+    setGameScore,
+  } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
 
@@ -105,10 +113,27 @@ const Mission1 = () => {
   }, []);
 
   useEffect(() => {
-    if (stretchSide[0].active && stretchSide[1].active) {
-      console.log('========미션 성공========');
+    if (
+      stretchSide[0].active &&
+      stretchSide[1].active &&
+      myMissionStatus === false
+    ) {
+      console.log('========미션 1 성공========');
       setMyMissionStatus(true);
     }
+
+    stretchSide.forEach((side, index) => {
+      if (side.active && !side.scoreAdded) {
+        setGameScore(prevGameScore => prevGameScore + 12.5);
+        console.log(gameScore);
+        // 점수가 추가된 후, scoreAdded 상태 업데이트
+        setStretchSide(prevState =>
+          prevState.map((item, idx) =>
+            idx === index ? { ...item, scoreAdded: true } : item,
+          ),
+        );
+      }
+    });
   }, [stretchSide]);
 
   return (

@@ -95,6 +95,7 @@ const GameContextProvider = ({ children }) => {
     inGameMode,
     remainingTime,
     myMissionStatus,
+    gameScore,
   );
   return (
     <GameContext.Provider
