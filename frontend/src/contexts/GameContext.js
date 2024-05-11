@@ -17,7 +17,7 @@ const GAME_MODE = {
 
 // mission 당 소요 시간
 const GAME_MODE_DURATION = {
-  1: 11000,
+  1: 20000,
   2: 15000,
   3: 17000,
   4: 15000,
@@ -39,10 +39,14 @@ const GameContextProvider = ({ children }) => {
   const [inGameMode, setInGameMode] = useState(
     // parseInt(localStorage.getItem('inGameMode')) || 0,
     0,
-    // 5,
   );
 
-  const [myRoundStatus, setMyRoundStatus] = useState([]);
+  const [gameScore, setGameScore] = useState(0);
+  // Mission1, 2, 3, 4에서 축적되는 점수
+  // Affirmation Round에서 Backend로 전송하여, 모든 유저의 ranking 계산값 리턴 받기
+
+  const [rangkings, setRankings] = useState([]);
+  // [ { userId: string, userName: string, score: number } ] 형태 (sort한 상태로 받아오기)
 
   let nextGameMode = 1;
 
@@ -98,6 +102,10 @@ const GameContextProvider = ({ children }) => {
         inGameMode,
         isGameLoading,
         setIsGameLoading,
+        gameScore,
+        setGameScore,
+        rangkings,
+        setRankings,
         myMissionStatus,
         setMyMissionStatus,
         matesMissionStatus,

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useContext } from 'react';
+import React, { useRef, useEffect, useContext, useState } from 'react';
 import {
   MediaPipeContext,
   GameContext,
@@ -7,8 +7,18 @@ import {
 import { GameLoading } from '../components';
 import { estimatePose } from '../MissionEstimators/PoseEstimator';
 import Guide from './Guide';
-
 import styled from 'styled-components';
+
+const round = [
+  {
+    direction: 'left',
+    active: false,
+  },
+  {
+    direction: 'right',
+    active: false,
+  },
+];
 
 const Mission1 = () => {
   const { poseModel } = useContext(MediaPipeContext);
@@ -16,6 +26,9 @@ const Mission1 = () => {
     useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
+
+  const [stretchSide, setStretchSide] = useState(round);
+  const [currentRound, setCurrentRound] = useState(0);
 
   useEffect(() => {
     if (
@@ -26,31 +39,28 @@ const Mission1 = () => {
     ) {
       return;
     }
+
     const videoElement = myVideoRef.current;
 
     poseModel.current.onResults(results => {
-      setMyMissionStatus(estimatePose({ results, myVideoRef, canvasRef }));
-
-      // if (!resultOne) {
-      //   resultOne = estimatePose({
-      //     results,
-      //     myVideoRef,
-      //     canvasRef,
-      //     round: 1,
-      //   });
-      // }
-      // if (resultOne) {
-      //   const resultTwo = estimatePose({
-      //     results,
-      //     myVideoRef,
-      //     canvasRef,
-      //     round: 2,
-      //   });
-      // }
+      const direction = stretchSide[currentRound].direction;
+      const result = estimatePose({
+        results,
+        myVideoRef,
+        canvasRef,
+        direction,
+      });
+      if (result) {
+        setStretchSide(prevState =>
+          prevState.map((item, index) =>
+            index === currentRound ? { ...item, active: true } : item,
+          ),
+        );
+      }
     });
 
     const handleCanPlay = () => {
-      if (poseModel.current !== null) {
+      if (poseModel.current) {
         poseModel.current.send({ image: videoElement }).then(() => {
           requestAnimationFrame(handleCanPlay);
         });
@@ -62,18 +72,30 @@ const Mission1 = () => {
     } else {
       videoElement.addEventListener('canplay', handleCanPlay);
     }
-    return () => {
-      videoElement.removeEventListener('canplay', handleCanPlay);
-    };
-  }, [isGameLoading, poseModel]);
+
+    return () => videoElement.removeEventListener('canplay', handleCanPlay);
+  }, [isGameLoading, poseModel, inGameMode, myVideoRef, currentRound]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setCurrentRound(1);
+    }, 11000);
+  }, []);
+
+  useEffect(() => {
+    if (stretchSide[0].active && stretchSide[1].active) {
+      console.log('성공');
+      setMyMissionStatus(true);
+    }
+  }, [stretchSide]);
 
   return (
     <>
       <GameLoading />
       {isGameLoading || (
         <>
-          <Guide poseCorrect={myMissionStatus} />
           <Canvas ref={canvasRef} />
+          <Guide poseCorrect={stretchSide[currentRound]} />
         </>
       )}
     </>
@@ -83,10 +105,9 @@ const Mission1 = () => {
 export default Mission1;
 
 const Canvas = styled.canvas`
-  position: relative;
+  position: fixed;
   top: 0;
   left: 0;
-
   width: 100vw;
   height: 100vh;
   object-fit: cover;
