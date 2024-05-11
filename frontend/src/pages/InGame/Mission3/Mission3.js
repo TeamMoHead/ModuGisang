@@ -26,8 +26,13 @@ const round2 = [
 
 const Mission3 = () => {
   const { poseModel } = useContext(MediaPipeContext);
-  const { isGameLoading, inGameMode, myMissionStatus, setMyMissionStatus } =
-    useContext(GameContext);
+  const {
+    isGameLoading,
+    inGameMode,
+    myMissionStatus,
+    setMyMissionStatus,
+    setGameScore,
+  } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
 
@@ -38,6 +43,16 @@ const Mission3 = () => {
   });
   const [currentRoundIdx, setCurrentRoundIdx] = useState(0);
   const [currentArrowIdx, setCurrentArrowIdx] = useState(0);
+  const score = useRef(0);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log('미션 3 끝');
+      console.log('score : ', score.current);
+      setGameScore(score.current);
+    }, 17000);
+    return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 클리어
+  }, []);
 
   useEffect(() => {
     if (
@@ -74,6 +89,11 @@ const Mission3 = () => {
     if (!poseModel.current || isGameLoading) return;
 
     const direction = arrowRound[currentRoundIdx][currentArrowIdx].direction;
+    if (currentRoundIdx === 1) {
+      score.current = 12 + (currentArrowIdx + 1) * 3;
+    } else if (currentRoundIdx === 0) {
+      score.current = (currentArrowIdx + 1) * 3;
+    }
 
     poseModel.current.onResults(results => {
       const result = estimateHead({
@@ -92,6 +112,7 @@ const Mission3 = () => {
 
         if (currentRoundIdx === 1 && currentArrowIdx === 3) {
           setMyMissionStatus(true); // 성공
+          score.current = 25;
         } else if (currentRoundIdx === 0 && currentArrowIdx === 3) {
           setTimeout(() => {
             setCurrentRoundIdx(currentRoundIdx + 1); // 다음 라운드로 넘어감
