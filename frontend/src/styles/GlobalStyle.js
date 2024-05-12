@@ -1,4 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
+import backgroundImage from '../assets/backgroundImage.png';
 import theme from './theme';
 import reset from 'styled-reset';
 
@@ -12,8 +13,11 @@ ${reset}
 
   body{
     font-family: 'IBM Plex Sans KR', 'Noto Sans KR', 'Jua', sans-serif;
-    background-color: ${theme.colors.primary.dark};
-    color: ${theme.colors.system.white};
+    background-image: url(${backgroundImage});
+    background-size: cover;
+    background-position: center;    
+    
+    color: ${theme.colors.primary.white};
 
     &::-webkit-scrollbar {
     display: none;

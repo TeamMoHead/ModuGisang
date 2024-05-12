@@ -1,6 +1,7 @@
 import Icon from './Icon';
-import CardBtn from './CardBtn';
-import SimpleBtn from './SimpleBtn';
+import OutlineBox from './OutlineBox';
+import LongBtn from './LongBtn';
+import RoundBtn from './RoundBtn';
 import InputBox from './InputBox';
 import InputLine from './InputLine';
 import Modal from './Modal';
@@ -12,8 +13,9 @@ import WarmUpModel from './WarmUpModel';
 
 export {
   Icon,
-  CardBtn,
-  SimpleBtn,
+  OutlineBox,
+  LongBtn,
+  RoundBtn,
   InputBox,
   InputLine,
   Modal,

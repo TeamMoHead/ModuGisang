@@ -82,7 +82,7 @@ const Wrapper = styled.nav`
   width: 100vw;
   height: 50px;
 
-  background-color: ${({ theme }) => theme.colors.lighter.light};
+  background-color: ${({ theme }) => theme.colors.translucent.white};
 `;
 
 const BtnArea = styled.div`
@@ -97,7 +97,7 @@ const BtnArea = styled.div`
 `;
 
 const Title = styled.h2`
-  ${({ theme }) => theme.fonts.title}
+  ${({ theme }) => theme.fonts.JuaMedium}
 
   width: 100vw;
   height: 50px;

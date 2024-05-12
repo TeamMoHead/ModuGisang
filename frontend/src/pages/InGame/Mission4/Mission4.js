@@ -200,8 +200,8 @@ const CanvasWrapper = styled.div`
   top: 100px;
 
   display: ${({ $myMissionStatus }) => ($myMissionStatus ? 'none' : 'block')};
-  border: 3px solid ${({ theme }) => theme.colors.primary.light};
-  background-color: ${({ theme }) => theme.colors.lighter.dark};
+  border: 3px solid ${({ theme }) => theme.colors.primary.white};
+  background-color: ${({ theme }) => theme.colors.translucent.navy};
 `;
 
 // 목적바
@@ -231,7 +231,7 @@ const SoundIndicator = styled.div`
   height: 100%;
   width: ${({ $soundWidth }) => $soundWidth}%; // 데시벨에 따라 너비 조절
   background-color: ${({ theme }) => theme.colors.primary.emerald};
-  border: 1px solid ${({ theme }) => theme.colors.primary.light};
+  border: 1px solid ${({ theme }) => theme.colors.primary.white};
   transition: width 0.2s ease; // 너비 변화를 0.5초 동안 부드럽게 애니메이션
 `;
 

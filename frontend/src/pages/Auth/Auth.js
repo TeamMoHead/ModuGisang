@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AccountContext } from '../../contexts';
 import useFetch from '../../hooks/useFetch';
 import { authServices } from '../../apis/authServices';
-import { SimpleBtn } from '../../components';
+import { LongBtn } from '../../components';
 
 import * as S from '../../styles/common';
 
@@ -63,15 +63,15 @@ const Auth = () => {
   return (
     <S.PageWrapper>
       Auth
-      <SimpleBtn onClickHandler={goToSignIn} btnName="로그인 하기!" />
-      <SimpleBtn onClickHandler={goToSignUp} btnName="회원가입 하기!" />
-      <SimpleBtn
+      <LongBtn onClickHandler={goToSignIn} btnName="로그인 하기!" />
+      <LongBtn onClickHandler={goToSignUp} btnName="회원가입 하기!" />
+      <LongBtn
         onClickHandler={() => {
           handleLogOut(accessToken);
         }}
         btnName="로그아웃"
       />
-      <SimpleBtn
+      <LongBtn
         onClickHandler={deleteRefreshToken}
         btnName="리프레시토큰 삭제"
       />

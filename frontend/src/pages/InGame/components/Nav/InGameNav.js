@@ -103,7 +103,7 @@ const Wrapper = styled.nav`
   width: 100vw;
   height: 100px;
 
-  background-color: ${({ theme }) => theme.colors.lighter.light};
+  background-color: ${({ theme }) => theme.colors.translucent.white};
 `;
 
 const BtnArea = styled.div`
@@ -132,8 +132,8 @@ const InstructionArea = styled.div`
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
 
-  ${({ theme }) => theme.fonts.instruction}
-  color: ${({ theme }) => theme.colors.primary.dark};
+  ${({ theme }) => theme.fonts.IBMsmall}
+  color: ${({ theme }) => theme.colors.primary.navy};
   text-align: center;
 `;
 

@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { NavBar, SimpleBtn } from '../../components';
+import { NavBar, LongBtn } from '../../components';
 import { AccountContext, ChallengeContext } from '../../contexts';
 import { challengeServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
@@ -58,7 +58,7 @@ const JoinChallenge = () => {
                     new Date(invitation.sendDate).toLocaleDateString()}
                   <br />
                   <br />
-                  <SimpleBtn
+                  <LongBtn
                     key={invitation.challengeId}
                     btnName="초대 수락"
                     onClickHandler={() => {

@@ -33,22 +33,11 @@ const iconStyleSample = {
   size: 24,
   color: 'purple',
   hoverColor: 'white',
-  disable: false,
 };
 
-const Icon = ({ icon, iconStyle, onClickHandler }) => {
+const Icon = ({ icon, iconStyle }) => {
   return (
-    <IconWrapper
-      $iconStyle={iconStyle}
-      onClick={e => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (onClickHandler) {
-          onClickHandler(e);
-        }
-      }}
-    >
+    <IconWrapper $iconStyle={iconStyle}>
       <FontAwesomeIcon icon={iconList[icon]} />
     </IconWrapper>
   );
@@ -64,13 +53,11 @@ const IconWrapper = styled.div`
   color: ${({ $iconStyle, theme }) =>
     $iconStyle.color
       ? theme.colors.primary[$iconStyle.color]
-      : theme.colors.text.gray};
+      : theme.colors.neutral.gray};
   opacity: 1;
 
   font-size: ${({ $iconStyle }) =>
     $iconStyle.size ? `${$iconStyle.size}px` : '16px'};
-
-  cursor: ${({ $iconStyle }) => ($iconStyle.disable ? 'default' : 'pointer')};
 
   &:hover {
     color: ${({ theme, $iconStyle }) =>
@@ -78,10 +65,4 @@ const IconWrapper = styled.div`
         ? theme.colors.primary[$iconStyle.hoverColor]
         : theme.colors.primary.emerald};
   }
-
-  ${({ $iconStyle }) =>
-    $iconStyle.disable &&
-    css`
-      pointer-events: none;
-    `}
 `;
