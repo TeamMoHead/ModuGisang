@@ -3,7 +3,7 @@ import RedisCacheService from 'src/redis-cache/redis-cache.service';
 import { ScoreDto } from './dto/score.dto';
 import { AttendanceService } from 'src/attendance/attendance.service';
 import { UserService } from 'src/users/users.service';
-
+const EXPIRE_TIME = 900; // redis key 만료 시간
 @Injectable()
 export class InGameService {
   constructor(
@@ -11,13 +11,12 @@ export class InGameService {
     private attendanceService: AttendanceService,
     private userService: UserService,
   ) {}
-
   async recordEntryTime(userId: number): Promise<boolean> {
     const timestamp = Date.now().toString();
     const result = await this.redisService.set(
       `entryTime:${userId}`,
       timestamp,
-      300,
+      EXPIRE_TIME,
     );
     console.log('result:', result);
     return true;
@@ -53,7 +52,7 @@ export class InGameService {
           console.error('Failed to save to database:', e);
         });
       this.redisService
-        .expire(challengeId.toString(), 300)
+        .expire(challengeId.toString(), EXPIRE_TIME)
         .then(() => console.log('expire set Success'))
         .catch((e) => {
           console.error('Failed to set expire:', e);
