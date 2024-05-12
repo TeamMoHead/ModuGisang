@@ -8,8 +8,13 @@ import sunImage from '../../../assets/sun.png';
 import hillImage from '../../../assets/hill.png';
 
 const Mission4 = () => {
-  const { isGameLoading, myMissionStatus, setMyMissionStatus } =
-    useContext(GameContext);
+  const {
+    isGameLoading,
+    myMissionStatus,
+    gameScore,
+    setGameScore,
+    setMyMissionStatus,
+  } = useContext(GameContext);
   const { myStream } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
   const [stream, setStream] = useState(null);
@@ -19,7 +24,8 @@ const Mission4 = () => {
   const [elapsedTime, setElapsedTime] = useState(0); // 경과 시간 (초 단위)
   const startTimeRef = useRef(null); // 시작 시간 저장
   const [isGameOver, setIsGameOver] = useState(false);
-  const timeLimit = 10; // 통과 제한 시간 (초 단위)
+  const TIME_LIMIT = 13; // 통과 제한 시간 (초 단위)
+  const [remainingTime, setRemainingTime] = useState(0);
 
   useEffect(() => {
     if (!myStream) {
@@ -45,7 +51,7 @@ const Mission4 = () => {
       setElapsedTime(elapsedSeconds);
 
       // 시간이 제한 시간보다 많으면 실패 플래그 설정
-      if (elapsedSeconds > timeLimit) {
+      if (elapsedSeconds > TIME_LIMIT) {
         clearInterval(intervalId);
         setIsGameOver(true);
       }
@@ -57,13 +63,18 @@ const Mission4 = () => {
   useEffect(() => {
     if (myMissionStatus && !isGameOver) {
       effect(3);
+      setRemainingTime(TIME_LIMIT - elapsedTime);
     }
   }, [myMissionStatus]);
 
   useEffect(() => {
+    updateGameScore(remainingTime);
+  }, [remainingTime]);
+
+  useEffect(() => {
     if (!stream || isGameLoading || myMissionStatus) return;
 
-    if (elapsedTime > timeLimit && isGameOver) {
+    if (elapsedTime > TIME_LIMIT && isGameOver) {
       console.log('Challenge failed!');
       rainEffect(canvasRef, 3);
       return;
@@ -110,6 +121,17 @@ const Mission4 = () => {
       stream.getTracks().forEach(track => track.stop());
       setStream(null);
     }
+  }
+
+  function updateGameScore(remainingTime) {
+    let scoreToAdd = 0;
+    if (remainingTime >= 5) scoreToAdd = 25;
+    else if (remainingTime >= 4) scoreToAdd = 20;
+    else if (remainingTime >= 3) scoreToAdd = 15;
+    else if (remainingTime >= 2) scoreToAdd = 10;
+    else if (remainingTime >= 1) scoreToAdd = 5;
+
+    setGameScore(prevScore => prevScore + scoreToAdd);
   }
 
   // function setSunPosition() {

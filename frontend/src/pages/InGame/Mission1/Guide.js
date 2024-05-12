@@ -1,5 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
+
+const time = {
+  roundFinish: 8500,
+  afterCheckCorrect: 500,
+  afterFlip: 500,
+};
 
 const Guide = ({ poseCorrect }) => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -8,21 +14,54 @@ const Guide = ({ poseCorrect }) => {
     poseCorrect.active ? '#15F5BA' : '#F0F3FF',
   );
 
+  const latestPoseCorrect = useRef(poseCorrect); // useRef를 사용하여 최신 poseCorrect를 저장
+
   useEffect(() => {
-    // console.log('====================color changed===========');
+    // console.log(poseCorrect, color);
+
     if (!poseCorrect.active) {
       setColor('#F0F3FF');
     } else {
+      console.log('====================round succeeded===============');
       setColor('#15F5BA');
     }
+    latestPoseCorrect.current = poseCorrect;
   }, [poseCorrect.active]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // console.log('====================flipped===========');
-      setIsFlipped(true);
-    }, 8500);
+      // console.log(latestPoseCorrect.current, color);
+      if (
+        latestPoseCorrect.current.direction === 'left' &&
+        !latestPoseCorrect.current.active
+      ) {
+        console.log('====================round failed===============');
+        setColor('#FF008F');
+      }
+      setTimeout(() => {
+        // console.log('====================flipped===========');
+        console.log('round 2 Start');
+        setIsFlipped(true);
+      }, time.afterCheckCorrect);
+      setTimeout(() => {
+        setColor('#F0F3FF');
+      }, time.afterFlip);
+    }, time.roundFinish);
+    return () => clearTimeout(timer);
+  }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(
+      () => {
+        if (
+          latestPoseCorrect.current.direction === 'left' &&
+          !latestPoseCorrect.current.active
+        ) {
+          setColor('#FF008F');
+        }
+      },
+      time.roundFinish * 2 + time.afterCheckCorrect + time.afterFlip,
+    );
     return () => clearTimeout(timer);
   }, []);
 
@@ -64,7 +103,7 @@ const StyledSVG = styled.svg`
   transition: 0.1s ease;
 
   path {
-    transition: fill 1s ease-in-out;
+    transition: fill 1s ease;
   }
   transform: ${({ $isFlipped }) => ($isFlipped ? 'scaleX(-1)' : 'none')};
 
