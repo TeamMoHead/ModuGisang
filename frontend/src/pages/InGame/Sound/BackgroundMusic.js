@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 
-import waitingMusic from '../../assets/bgm/mainGuitar.mp3';
-import missionMusic from '../../assets/bgm/hawaii_cut.mp3';
-import resultMusic from '../../assets/bgm/final.mp3';
+import waitingMusic from '../../../assets/bgm/mainGuitar.mp3';
+import missionMusic from '../../../assets/bgm/hawaii_cut.mp3';
+import resultMusic from '../../../assets/bgm/result_music.mp3';
 
 const AUDIO_SOURCE_PATH = {
   waiting: waitingMusic,
@@ -66,13 +66,13 @@ const BackgroundMusic = ({ gameMode, playing }) => {
     ) {
     } else {
       if (audioRef.current.src !== newSrc) {
-        fadeAudio(audioRef.current, 'out', 2000);
+        fadeAudio(audioRef.current, 'out', 1000);
         setTimeout(() => {
           audioRef.current.src = newSrc;
           audioRef.current.load();
           audioRef.current.volume = defaultVolume;
-          fadeAudio(audioRef.current, 'in', 2000);
-        }, 2000);
+          // fadeAudio(audioRef.current, 'in', 2000);
+        }, 1000);
       }
       currentGameMode.current = gameMode;
     }
@@ -82,9 +82,11 @@ const BackgroundMusic = ({ gameMode, playing }) => {
         try {
           if (playing && audioRef.current.paused) {
             audioRef.current.volume = defaultVolume;
-            fadeAudio(audioRef.current, 'in', 2000);
-          } else if (!playing) {
-            fadeAudio(audioRef.current, 'out', 2000);
+            if (gameMode !== 6 && currentGameMode.current !== 6) {
+              fadeAudio(audioRef.current, 'in', 2000);
+            } else if (!playing) {
+              fadeAudio(audioRef.current, 'out', 2000);
+            }
           }
         } catch (err) {
           console.error('오디오 재생 실패:', err);

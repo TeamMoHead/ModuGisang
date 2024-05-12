@@ -1,7 +1,7 @@
 import React, { useContext, useRef, useEffect, useState } from 'react';
 import { OpenViduContext, GameContext } from '../../../contexts';
 import styled from 'styled-components';
-import { GameLoading } from '../components';
+import { MissionStarting } from '../components';
 import { rainEffect, effect } from './effect';
 import { calculateDecibels } from './decibelUtils';
 import sunImage from '../../../assets/sun.png';
@@ -9,7 +9,7 @@ import hillImage from '../../../assets/hill.png';
 
 const Mission4 = () => {
   const {
-    isGameLoading,
+    isMissionStarting,
     myMissionStatus,
     gameScore,
     setGameScore,
@@ -72,7 +72,7 @@ const Mission4 = () => {
   }, [remainingTime]);
 
   useEffect(() => {
-    if (!stream || isGameLoading || myMissionStatus) return;
+    if (!stream || isMissionStarting || myMissionStatus) return;
 
     if (elapsedTime > TIME_LIMIT && isGameOver) {
       console.log('Challenge failed!');
@@ -113,7 +113,7 @@ const Mission4 = () => {
       clearInterval(intervalId);
       audioContext.close();
     };
-  }, [stream, isGameLoading, shoutingDuration, isGameOver]);
+  }, [stream, isMissionStarting, shoutingDuration, isGameOver]);
 
   // 스트림 정지 및 자원 해제 함수
   function stopAudioStream() {
@@ -158,7 +158,7 @@ const Mission4 = () => {
 
   return (
     <>
-      <GameLoading />
+      <MissionStarting />
       <FullScreenCanvas>
         <SubCanvas ref={canvasRef} />
         <Hill />
@@ -166,7 +166,7 @@ const Mission4 = () => {
           <Sun id="sun" style={{ top: `${sunPositionY}px` }} />
         )}
       </FullScreenCanvas>
-      {isGameOver || isGameLoading || (
+      {isGameOver || isMissionStarting || (
         <CanvasWrapper $myMissionStatus={myMissionStatus}>
           <Canvas />
           <SoundIndicator

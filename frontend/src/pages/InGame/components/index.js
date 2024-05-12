@@ -1,5 +1,5 @@
 import MyVideo from './MyVideo';
 import MateVideo from './MateVideo';
-import GameLoading from './GameLoading';
+import MissionStarting from './MissionStarting';
 
-export { MyVideo, MateVideo, GameLoading };
+export { MyVideo, MateVideo, MissionStarting };

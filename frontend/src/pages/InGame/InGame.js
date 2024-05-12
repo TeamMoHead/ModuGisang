@@ -20,9 +20,9 @@ import {
   Result,
 } from './';
 
-import BackgroundMusic from './BackgroundMusic';
+import BackgroundMusic from './Sound/BackgroundMusic';
 import styled from 'styled-components';
-import GameSoundEffects from './GameSoundEffects';
+import GameSoundEffects from './Sound/GameSoundEffects';
 
 const GAME_MODE = {
   0: 'waiting',
@@ -50,7 +50,7 @@ const InGame = () => {
   const { userId: myId } = userData;
   const { challengeData } = useContext(ChallengeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
-  const { inGameMode, myMissionStatus, setMyMissionStatus, isGameLoading } =
+  const { inGameMode, myMissionStatus, setMyMissionStatus, isMissionStarting } =
     useContext(GameContext);
   const { myStream, myVideoRef } = useContext(OpenViduContext);
   const [redirected, setRedirected] = useState(false);
@@ -99,7 +99,6 @@ const InGame = () => {
     <>
       <InGameNav />
       <BackgroundMusic gameMode={inGameMode} playing={true} />
-      {/* <GameSoundEffects /> */}
 
       <Wrapper>
         <MyVideo />

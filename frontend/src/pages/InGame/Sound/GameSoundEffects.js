@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import { GameContext } from '../../contexts';
-import successSound from '../../assets/soundEffects/missionSuccess.mp3';
-import failSound from '../../assets/soundEffects/missionFailure.mp3';
+import { GameContext } from '../../../contexts';
+import successSound from '../../../assets/soundEffects/missionSuccess.mp3';
+import failSound from '../../../assets/soundEffects/missionFailure.mp3';
 
 const GameSoundEffects = () => {
   const successAudioRef = useRef(new Audio(successSound));
