@@ -4,7 +4,7 @@ import {
   GameContext,
   OpenViduContext,
 } from '../../../contexts';
-import { GameLoading } from '../components';
+import { MissionStarting } from '../components';
 import { estimateHead } from '../MissionEstimators/HeadEstimator';
 import arrow from '../../../assets/arrows/arrow.svg';
 
@@ -27,7 +27,7 @@ const round2 = [
 const Mission3 = () => {
   const { poseModel } = useContext(MediaPipeContext);
   const {
-    isGameLoading,
+    isMissionStarting,
     inGameMode,
     myMissionStatus,
     setMyMissionStatus,
@@ -59,7 +59,7 @@ const Mission3 = () => {
       inGameMode !== 3 ||
       !myVideoRef.current ||
       !poseModel.current ||
-      isGameLoading
+      isMissionStarting
     ) {
       return;
     }
@@ -83,10 +83,10 @@ const Mission3 = () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
       poseModel.current = null;
     };
-  }, [isGameLoading, poseModel]);
+  }, [isMissionStarting, poseModel]);
 
   useEffect(() => {
-    if (!poseModel.current || isGameLoading) return;
+    if (!poseModel.current || isMissionStarting) return;
 
     const direction = arrowRound[currentRoundIdx][currentArrowIdx].direction;
     if (myMissionStatus) {
@@ -126,7 +126,7 @@ const Mission3 = () => {
       }
     });
   }, [
-    isGameLoading,
+    isMissionStarting,
     currentRoundIdx,
     currentArrowIdx,
     arrowRound,
@@ -135,8 +135,8 @@ const Mission3 = () => {
 
   return (
     <>
-      <GameLoading />
-      {isGameLoading || (
+      <MissionStarting />
+      {isMissionStarting || (
         <>
           <Canvas ref={canvasRef} />
           <ArrowBox>

@@ -2,8 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { GameContext } from '../../../contexts';
 import styled from 'styled-components';
 
-const GameLoading = () => {
-  const { setIsGameLoading } = useContext(GameContext);
+const MissionStarting = () => {
+  const { setIsMissionStarting } = useContext(GameContext);
   const [timer, setTimer] = useState(3);
   const [isOver, setIsOver] = useState(false);
 
@@ -23,7 +23,7 @@ const GameLoading = () => {
   useEffect(() => {
     if (timer === 0) {
       setIsOver(true);
-      setIsGameLoading(false);
+      setIsMissionStarting(false);
     }
   }, [timer]);
 
@@ -34,7 +34,7 @@ const GameLoading = () => {
   );
 };
 
-export default GameLoading;
+export default MissionStarting;
 
 const Wrapper = styled.div`
   z-index: 400;
