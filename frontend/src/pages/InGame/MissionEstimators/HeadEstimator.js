@@ -3,15 +3,15 @@ import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 
 let currentStatus; // 현재 고개를 돌린 방향
 // const rotateDirections = ['top', 'bottom', 'left', 'right']; // 회전 방향 배열
-const numberDirections = 8; // 선택할 방향 수
+// const numberDirections = 8; // 선택할 방향 수
 const timeoutDuration = 15000; // 총 제한 시간
 let isTimeOut = false; // 타임 아웃 여부
-let isEstimated = false; // 측정 완료 여부
+// let isEstimated = false; // 측정 완료 여부
 let isCentered = false;
 
 let isDirectionCorrect = false; // 화살표 별 측정 결과
 
-let currentSuccessCount = 0; // 성공 횟수 카운트
+// let currentSuccessCount = 0; // 성공 횟수 카운트
 let isGameStart = false; // 게임 시작 여부
 
 export const estimateHead = ({ results, myVideoRef, canvasRef, direction }) => {

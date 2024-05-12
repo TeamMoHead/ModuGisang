@@ -1,15 +1,38 @@
 import React, { useContext, useRef, useEffect, useState } from 'react';
 import { OpenViduContext, GameContext } from '../../../contexts';
 import styled from 'styled-components';
-import { GameLoading } from '../components';
+import { MissionStarting } from '../components';
 import { rainEffect, effect } from './effect';
 import { calculateDecibels } from './decibelUtils';
 import sunImage from '../../../assets/sun.png';
 import hillImage from '../../../assets/hill.png';
+import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
+import thunderstorm from '../../../assets/soundEffects/thunderstorm.mp3';
+
+const thunderstormSoundEffect = () => {
+  const volume = 0.5;
+  const audio = new Audio(thunderstorm);
+  audio.volume = volume;
+
+  // 사운드 재생
+  audio.play();
+
+  // 2초 후에 페이드 아웃 시작
+  setTimeout(() => {
+    const fadeOutInterval = setInterval(() => {
+      if (audio.volume <= 0.05) {
+        clearInterval(fadeOutInterval);
+        audio.pause(); // 오디오 재생 중지
+      } else {
+        audio.volume -= volume / 10; // 0.05
+      }
+    }, 100);
+  }, 2000);
+};
 
 const Mission4 = () => {
   const {
-    isGameLoading,
+    isMissionStarting,
     myMissionStatus,
     gameScore,
     setGameScore,
@@ -72,11 +95,12 @@ const Mission4 = () => {
   }, [remainingTime]);
 
   useEffect(() => {
-    if (!stream || isGameLoading || myMissionStatus) return;
+    if (!stream || isMissionStarting || myMissionStatus) return;
 
     if (elapsedTime > TIME_LIMIT && isGameOver) {
       console.log('Challenge failed!');
       rainEffect(canvasRef, 3);
+      thunderstormSoundEffect();
       return;
     }
 
@@ -103,6 +127,7 @@ const Mission4 = () => {
       if (shoutingDuration > 5) {
         clearInterval(intervalId);
         setMyMissionStatus(true);
+        RoundSoundEffect();
         // firework();
         return;
       }
@@ -113,7 +138,7 @@ const Mission4 = () => {
       clearInterval(intervalId);
       audioContext.close();
     };
-  }, [stream, isGameLoading, shoutingDuration, isGameOver]);
+  }, [stream, isMissionStarting, shoutingDuration, isGameOver]);
 
   // 스트림 정지 및 자원 해제 함수
   function stopAudioStream() {
@@ -158,7 +183,7 @@ const Mission4 = () => {
 
   return (
     <>
-      <GameLoading />
+      <MissionStarting />
       <FullScreenCanvas>
         <SubCanvas ref={canvasRef} />
         <Hill />
@@ -166,7 +191,7 @@ const Mission4 = () => {
           <Sun id="sun" style={{ top: `${sunPositionY}px` }} />
         )}
       </FullScreenCanvas>
-      {isGameOver || isGameLoading || (
+      {isGameOver || isMissionStarting || (
         <CanvasWrapper $myMissionStatus={myMissionStatus}>
           <Canvas />
           <SoundIndicator
