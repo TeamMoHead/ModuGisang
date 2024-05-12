@@ -7,7 +7,7 @@ const LongBtn = ({ btnName, onClickHandler }) => {
       onClick={e => {
         e.preventDefault();
         e.stopPropagation();
-        onClickHandler();
+        onClickHandler(e);
       }}
     >
       {btnName}

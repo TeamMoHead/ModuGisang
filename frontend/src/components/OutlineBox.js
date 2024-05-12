@@ -29,7 +29,7 @@ const OutlineBox = ({ boxStyle, header, content, onClickHandler }) => {
         e.preventDefault();
         e.stopPropagation();
 
-        onClickHandler();
+        onClickHandler(e);
       }}
       $boxStyle={boxStyle}
       $isClickable={isClickable}
