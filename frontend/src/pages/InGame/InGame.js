@@ -99,7 +99,7 @@ const InGame = () => {
     <>
       <InGameNav />
       <BackgroundMusic gameMode={inGameMode} playing={true} />
-      <GameSoundEffects />
+      {/* <GameSoundEffects /> */}
 
       <Wrapper>
         <MyVideo />
