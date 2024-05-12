@@ -4,9 +4,10 @@ import {
   GameContext,
   OpenViduContext,
 } from '../../../contexts';
-import { GameLoading } from '../components';
+import { MissionStarting } from '../components';
 import { estimateHead } from '../MissionEstimators/HeadEstimator';
 import arrow from '../../../assets/arrows/arrow.svg';
+import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
 
 import styled from 'styled-components';
 
@@ -26,8 +27,13 @@ const round2 = [
 
 const Mission3 = () => {
   const { poseModel } = useContext(MediaPipeContext);
-  const { isGameLoading, inGameMode, myMissionStatus, setMyMissionStatus } =
-    useContext(GameContext);
+  const {
+    isMissionStarting,
+    inGameMode,
+    myMissionStatus,
+    setMyMissionStatus,
+    setGameScore,
+  } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
 
@@ -38,13 +44,23 @@ const Mission3 = () => {
   });
   const [currentRoundIdx, setCurrentRoundIdx] = useState(0);
   const [currentArrowIdx, setCurrentArrowIdx] = useState(0);
+  const score = useRef(0);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log('미션 3 끝');
+      console.log('score : ', score.current);
+      setGameScore(prev => prev + score.current);
+    }, 17000);
+    return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 클리어
+  }, []);
 
   useEffect(() => {
     if (
       inGameMode !== 3 ||
       !myVideoRef.current ||
       !poseModel.current ||
-      isGameLoading
+      isMissionStarting
     ) {
       return;
     }
@@ -68,13 +84,20 @@ const Mission3 = () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
       poseModel.current = null;
     };
-  }, [isGameLoading, poseModel]);
+  }, [isMissionStarting, poseModel]);
 
   useEffect(() => {
-    if (!poseModel.current || isGameLoading) return;
+    if (!poseModel.current || isMissionStarting) return;
 
     const direction = arrowRound[currentRoundIdx][currentArrowIdx].direction;
-
+    if (myMissionStatus) {
+      score.current = 25;
+    } else if (currentRoundIdx === 1) {
+      score.current = 12 + (currentArrowIdx + 1) * 3 - 3;
+    } else if (currentRoundIdx === 0) {
+      score.current = (currentArrowIdx + 1) * 3 - 3;
+    }
+    console.log('score : ', score.current);
     poseModel.current.onResults(results => {
       const result = estimateHead({
         results,
@@ -91,11 +114,13 @@ const Mission3 = () => {
         });
 
         if (currentRoundIdx === 1 && currentArrowIdx === 3) {
+          setCurrentArrowIdx(0); // 첫 번째 화살표로 초기화
           setMyMissionStatus(true); // 성공
+          score.current = 25;
         } else if (currentRoundIdx === 0 && currentArrowIdx === 3) {
+          setCurrentArrowIdx(0); // 첫 번째 화살표로 초기화
           setTimeout(() => {
             setCurrentRoundIdx(currentRoundIdx + 1); // 다음 라운드로 넘어감
-            setCurrentArrowIdx(0); // 첫 번째 화살표로 초기화
           }, 1000); // 1초 뒤에 실행되도록 설정
         } else {
           setCurrentArrowIdx(currentArrowIdx + 1); // 다음 화살표로 이동
@@ -103,17 +128,23 @@ const Mission3 = () => {
       }
     });
   }, [
-    isGameLoading,
+    isMissionStarting,
     currentRoundIdx,
     currentArrowIdx,
     arrowRound,
     myMissionStatus,
   ]);
 
+  useEffect(() => {
+    if (!isMissionStarting) {
+      RoundSoundEffect();
+    }
+  }, [currentArrowIdx]);
+
   return (
     <>
-      <GameLoading />
-      {isGameLoading || (
+      <MissionStarting />
+      {isMissionStarting || (
         <>
           <Canvas ref={canvasRef} />
           <ArrowBox>
@@ -127,6 +158,7 @@ const Mission3 = () => {
               />
             ))}
           </ArrowBox>
+          {myMissionStatus ? <Success>성공!</Success> : null}
         </>
       )}
     </>
@@ -151,7 +183,7 @@ const ArrowBox = styled.div`
   width: 100%;
   height: 100px;
   ${({ theme }) => theme.flex.between}
-  background-color: ${({ theme }) => theme.colors.lighter.dark};
+  background-color: 'transparent';
 `;
 
 const Arrows = styled.img`
@@ -166,4 +198,14 @@ const Arrows = styled.img`
           ? 'rotate(180deg)'
           : 'rotate(0deg)'};
   filter: ${({ active }) => (active ? 'none' : 'grayscale(100%)')};
+`;
+
+const Success = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font: ${({ theme }) => theme.fonts.title};
+  line-height: 1.2;
+  font-size: 50px;
 `;

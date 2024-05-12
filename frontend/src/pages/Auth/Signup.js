@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useState } from 'react';
-import { InputBox, SimpleBtn } from '../../components';
+import { InputBox, LongBtn } from '../../components';
 import useAuth from '../../hooks/useAuth';
 import * as S from '../../styles/common';
 
@@ -52,7 +52,7 @@ const Signup = () => {
           onChange={handleEmailChange}
           disabled={isEmailChecked}
         />
-        <SimpleBtn
+        <LongBtn
           onClickHandler={async e =>
             await handleCheckEmail({
               e,
@@ -72,7 +72,7 @@ const Signup = () => {
           onChange={handleVerifyCodeChange}
           disabled={isVerifyCodeChecked}
         />
-        <SimpleBtn
+        <LongBtn
           type="button"
           onClickHandler={async e =>
             await handleCheckVerifyCode({
@@ -99,7 +99,7 @@ const Signup = () => {
           value={password}
           onChange={handlePasswordChange}
         />
-        <SimpleBtn
+        <LongBtn
           type="submit"
           btnName="회원가입"
           onClickHandler={async e =>

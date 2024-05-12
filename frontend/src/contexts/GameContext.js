@@ -18,7 +18,7 @@ const GAME_MODE = {
 // mission 당 소요 시간
 const GAME_MODE_DURATION = {
   1: 21500,
-  2: 15000,
+  2: 17000,
   3: 17000,
   4: 17500,
   5: 8000,
@@ -35,10 +35,11 @@ const GameContextProvider = ({ children }) => {
     // [userId]: { missionCompleted: boolean } 형태"
   });
 
-  const [isGameLoading, setIsGameLoading] = useState(false);
+  const [isMissionStarting, setIsMissionStarting] = useState(false);
   const [inGameMode, setInGameMode] = useState(
     parseInt(localStorage.getItem('inGameMode')) || 0,
     // 1,
+    // 6,
   );
 
   const [gameScore, setGameScore] = useState(0);
@@ -55,7 +56,7 @@ const GameContextProvider = ({ children }) => {
     if (nextGameMode <= 7) {
       // localStorage.setItem('inGameMode', JSON.stringify(nextGameMode));
       setInGameMode(nextGameMode);
-      setIsGameLoading(true);
+      setIsMissionStarting(true);
       setMyMissionStatus(false); // 미션 수행상태 초기화
 
       if (GAME_MODE[nextGameMode] !== 'result') {
@@ -71,7 +72,7 @@ const GameContextProvider = ({ children }) => {
   const scheduleFirstMission = () => {
     setTimeout(() => {
       setInGameMode(1); // waiting 끝나면 첫 미션으로 전환
-      setIsGameLoading(true); // 게임 로딩 시작
+      setIsMissionStarting(true); // 게임 로딩 시작
       setMyMissionStatus(false); // 미션 수행상태 초기화
       setTimeout(updateMode, GAME_MODE_DURATION[1]); // 첫 미션 후 다음 모드로 전환 시작
     }, remainingTime);
@@ -101,8 +102,8 @@ const GameContextProvider = ({ children }) => {
     <GameContext.Provider
       value={{
         inGameMode,
-        isGameLoading,
-        setIsGameLoading,
+        isMissionStarting,
+        setIsMissionStarting,
         gameScore,
         setGameScore,
         rangkings,

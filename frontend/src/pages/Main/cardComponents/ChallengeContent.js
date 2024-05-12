@@ -50,5 +50,5 @@ const BigLetter = styled.span`
 `;
 
 const SmallLetter = styled.span`
-  ${({ theme }) => theme.fonts.content}
+  ${({ theme }) => theme.fonts.IBMsmall}
 `;

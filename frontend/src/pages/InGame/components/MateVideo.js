@@ -79,13 +79,13 @@ const Wrapper = styled.div`
 
   box-shadow: ${({ theme }) => theme.boxShadow.basic};
   background-color: ${({ $mateOnLine, theme }) =>
-    $mateOnLine ? 'transparent' : theme.colors.lighter.light};
-  border-radius: ${({ theme }) => theme.radius.basic};
+    $mateOnLine ? 'transparent' : theme.colors.translucent.white};
+  border-radius: ${({ theme }) => theme.radius.medium};
 
   border: ${({ $mateOnLine, theme }) =>
     $mateOnLine
-      ? `2px solid ${theme.colors.lighter.light}`
-      : `2px solid ${theme.colors.text.gray}`};
+      ? `2px solid ${theme.colors.translucent.white}`
+      : `2px solid ${theme.colors.neutral.gray}`};
 `;
 
 const Video = styled.video`
@@ -94,7 +94,7 @@ const Video = styled.video`
   height: 100%;
   object-fit: cover;
 
-  border-radius: ${({ theme }) => theme.radius.basic};
+  border-radius: ${({ theme }) => theme.radius.medium};
   border: ${({ $isCompleted, theme }) =>
     $isCompleted
       ? `2px solid ${theme.colors.primary.emerald}`
@@ -118,9 +118,9 @@ const UserName = styled.span`
   bottom: -50px;
 
   padding: 3px 10px;
-  border-radius: ${({ theme }) => theme.radius.light};
+  border-radius: ${({ theme }) => theme.radius.small};
   color: ${({ theme }) => theme.colors.system.black};
-  background-color: ${({ theme }) => theme.colors.lighter.light};
+  background-color: ${({ theme }) => theme.colors.translucent.white};
 
   text-shadow: ${({ theme }) => theme.boxShadow.text};
   text-align: center;
@@ -132,7 +132,7 @@ const EmptyVideo = styled.div`
   width: 100%;
   height: 100%;
   ${({ theme }) => theme.flex.center};
-  color: ${({ theme }) => theme.colors.text.gray};
+  color: ${({ theme }) => theme.colors.neutral.gray};
   font-size: 20px;
   margin: auto;
 `;

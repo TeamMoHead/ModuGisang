@@ -4,10 +4,11 @@ import {
   GameContext,
   OpenViduContext,
 } from '../../../contexts';
-import { GameLoading } from '../components';
+import { MissionStarting } from '../components';
 import { estimatePose } from '../MissionEstimators/PoseEstimator';
 import Guide from './Guide';
 import styled from 'styled-components';
+import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
 
 const round = [
   {
@@ -25,7 +26,7 @@ const round = [
 const Mission1 = () => {
   const { poseModel } = useContext(MediaPipeContext);
   const {
-    isGameLoading,
+    isMissionStarting,
     inGameMode,
     myMissionStatus,
     setMyMissionStatus,
@@ -44,7 +45,7 @@ const Mission1 = () => {
       inGameMode !== 1 ||
       !myVideoRef.current ||
       !poseModel.current ||
-      isGameLoading
+      isMissionStarting
     ) {
       return;
     }
@@ -104,7 +105,7 @@ const Mission1 = () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [isGameLoading, poseModel, inGameMode, myVideoRef, currentRound]);
+  }, [isMissionStarting, poseModel, inGameMode, myVideoRef, currentRound]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -132,14 +133,15 @@ const Mission1 = () => {
             idx === index ? { ...item, scoreAdded: true } : item,
           ),
         );
+        RoundSoundEffect();
       }
     });
   }, [stretchSide]);
 
   return (
     <>
-      <GameLoading />
-      {isGameLoading || (
+      <MissionStarting />
+      {isMissionStarting || (
         <>
           <Canvas ref={canvasRef} />
           <ProgressWrapper title="progressWrapper">
@@ -169,8 +171,8 @@ const ProgressWrapper = styled.div`
   height: 50px;
   top: 100px;
 
-  border: 3px solid ${({ theme }) => theme.colors.primary.light};
-  background-color: ${({ theme }) => theme.colors.lighter.dark};
+  border: 3px solid ${({ theme }) => theme.colors.primary.white};
+  background-color: ${({ theme }) => theme.colors.translucent.navy};
   /* border-radius: ${({ theme }) => theme.radius.light}; */
   overflow: hidden;
   /* margin: 20px 0; */

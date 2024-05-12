@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const SimpleBtn = ({ btnName, onClickHandler }) => {
+const LongBtn = ({ btnName, onClickHandler }) => {
   return <Wrapper onClick={onClickHandler}>{btnName}</Wrapper>;
 };
 
-export default SimpleBtn;
+export default LongBtn;
 
 const Wrapper = styled.button`
   width: 100px;
