@@ -91,10 +91,18 @@ const Mission2 = () => {
           } else {
             setPostitPositions(prevPositions => {
               const updatedPositions = [...prevPositions];
-              updatedPositions[index] = {
-                ...prevPositions[index],
-                shouldFall: true,
-              };
+
+              // 점수 갱신
+              if (!updatedPositions[index].shouldFall) {
+                setGameScore(
+                  prevScore => prevScore + updatedPositions[index].scorePoint,
+                );
+                // 포스트잇 떨어지도록 인자 변경
+                updatedPositions[index] = {
+                  ...prevPositions[index],
+                  shouldFall: true,
+                };
+              }
               return updatedPositions;
             });
           }
@@ -158,6 +166,7 @@ const Mission2 = () => {
       top: drawY,
       left: drawX,
       size: resizedSize,
+      scorePoint: index === 107 ? 9 : 8, // 이마는 9점, 볼은 8점
     };
   };
 
