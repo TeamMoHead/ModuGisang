@@ -37,7 +37,7 @@ const fonts = {
     letter-spacing: -2%;
   `,
   JuaSmall: css`
-    font: 24px 'Jua';
+    font: 23px 'Jua';
     line-height: 30px;
     letter-spacing: -2.5%;
   `,
@@ -47,8 +47,8 @@ const fonts = {
     letter-spacing: -2.5%;
   `,
   IBMmedium: css`
-    font: 28px 'IBM Plex Sans KR';
-    line-height: 24px;
+    font: 18px 'IBM Plex Sans KR';
+    line-height: 0px;
     letter-spacing: -2.5%;
   `,
   IBMsmall: css`
@@ -111,16 +111,11 @@ const gradient = {
       background: linear-gradient(180deg, #ebebeb, #15f5ba);
     `,
     translucentGray: css`
-      background: linear-gradient(
-        30deg,
-        rgba(0, 0, 0, 0.05),
-        rgba(255, 255, 255, 0.05)
-      );
+      background: linear-gradient(30deg, #0000000d, #ffffff0d);
     `,
   },
   border: css`
-    border: 1px solid transparent;
-    border-image: linear-gradient(135deg, #836fff, #15f5ba) 1;
+    stroke: linear-gradient(135deg, #836fff, #15f5ba);
   `,
 };
 

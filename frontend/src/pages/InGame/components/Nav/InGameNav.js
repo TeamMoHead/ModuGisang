@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GameContext, OpenViduContext } from '../../../../contexts';
-import { Icon } from '../../../../components';
+import { RoundBtn } from '../../../../components';
 import { GameRound, MissionTitle, MissionInst, Timer } from './';
 import { INFO_BY_GAME_MODE } from './DATA';
 import styled from 'styled-components';
@@ -62,15 +62,10 @@ const InGameNav = () => {
       >
         {(GAME_MODE[inGameMode] === 'waiting' ||
           GAME_MODE[inGameMode] === 'result') && (
-          <Icon
-            icon="back"
-            iconStyle={BackBtnStyle}
-            onClickHandler={goToMain}
-          />
+          <RoundBtn btnStyle={BACK_BTN_STYLE} onClickHandler={goToMain} />
         )}
-        <Icon
-          icon={micOn ? 'micOn' : 'micOff'}
-          iconStyle={micOn ? micOnStyle : micOffStyle}
+        <RoundBtn
+          btnStyle={micOn ? MIC_ON_BTN_STYLE : MIC_OFF_BTN_STYLE}
           onClickHandler={turnMicOnOff}
         />
       </BtnArea>
@@ -137,17 +132,35 @@ const InstructionArea = styled.div`
   text-align: center;
 `;
 
-const BackBtnStyle = {
-  size: 24,
-  hoverColor: 'purple',
+const BACK_BTN_STYLE = {
+  size: 50,
+  disabled: false,
+  icon: 'back',
+  iconStyle: {
+    size: 24,
+    color: 'white',
+    hoverColor: 'purple',
+  },
 };
 
-const micOnStyle = {
-  size: 24,
-  hoverColor: 'purple',
+const MIC_ON_BTN_STYLE = {
+  size: 50,
+  disabled: false,
+  icon: 'micOn',
+  iconStyle: {
+    size: 24,
+    color: 'white',
+    hoverColor: 'purple',
+  },
 };
 
-const micOffStyle = {
-  size: 21,
-  hoverColor: 'purple',
+const MIC_OFF_BTN_STYLE = {
+  size: 50,
+  disabled: false,
+  icon: 'micOff',
+  iconStyle: {
+    size: 24,
+    color: 'white',
+    hoverColor: 'purple',
+  },
 };

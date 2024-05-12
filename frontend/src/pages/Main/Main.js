@@ -15,7 +15,7 @@ import {
   ChallengeContent,
   EnterContent,
 } from './cardComponents';
-import { GREETINGS, CARD_TYPES, CARD_STYLES } from './DATA';
+import { CARD_TYPES, CARD_STYLES } from './DATA';
 
 import styled from 'styled-components';
 import * as S from '../../styles/common';
@@ -25,8 +25,7 @@ const Main = () => {
 
   // setUserData는 Test용으로 사용하는 함수
   const { accessToken, userId } = useContext(AccountContext);
-  const { userData, challengeId, getUserData } = useContext(UserContext);
-  const { userName } = userData;
+  const { challengeId, getUserData } = useContext(UserContext);
   const { challengeData, setChallengeData } = useContext(ChallengeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
 
@@ -35,8 +34,6 @@ const Main = () => {
   const hasChallenge = Number(challengeId) !== -1;
   const [isUserDataLoading, setIsUserDataLoading] = useState(true);
   const [isChallengeInfoLoading, setIsChallengeInfoLoading] = useState(true);
-
-  const greetings = GREETINGS[0] + userName + GREETINGS[1];
 
   const CARD_CONTENTS = {
     streak: <StreakContent />,
@@ -111,7 +108,6 @@ const Main = () => {
         <>
           <NavBar />
           <S.PageWrapper>
-            <Greetings>{greetings}</Greetings>
             <input
               placeholder="00:00 형태로 입력"
               type="text"
@@ -122,16 +118,16 @@ const Main = () => {
                 borderRadius: '5px',
               }}
             />
-            <button
+            <OutlineBox
               onClick={changeWakeTime}
-              style={{
-                backgroundColor: 'orange',
-                padding: '10px',
-                borderRadius: '5px',
-              }}
-            >
-              기상 시간 세팅하기
-            </button>
+              boxStyle={boxStyle}
+              header={header}
+              content={
+                <>
+                  <p>기상 시간 세팅하기</p>
+                </>
+              }
+            />
 
             <CardsWrapper>
               {CARD_TYPES[hasChallenge ? 'hasChallenge' : 'noChallenge'].map(
@@ -158,13 +154,24 @@ const Main = () => {
 
 export default Main;
 
-const Greetings = styled.h6`
-  ${({ theme }) => theme.fonts.JuaSmall}
-  padding: 20px 0;
-`;
-
 const CardsWrapper = styled.div`
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
   gap: 10px;
 `;
+
+const boxStyle = {
+  isBold: true,
+  lineColor: 'gradient',
+  bgColor: 'white',
+};
+
+const header = {
+  text: '기상 시간 세팅하기',
+  style: {
+    font: 'IBMmedium',
+    fontColor: 'white',
+    bgColor: 'purple',
+    hasBackground: true,
+  },
+};
