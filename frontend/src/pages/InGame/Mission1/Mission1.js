@@ -169,8 +169,8 @@ const ProgressWrapper = styled.div`
   height: 50px;
   top: 100px;
 
-  border: 3px solid ${({ theme }) => theme.colors.primary.light};
-  background-color: ${({ theme }) => theme.colors.lighter.dark};
+  border: 3px solid ${({ theme }) => theme.colors.primary.white};
+  background-color: ${({ theme }) => theme.colors.translucent.navy};
   /* border-radius: ${({ theme }) => theme.radius.light}; */
   overflow: hidden;
   /* margin: 20px 0; */
