@@ -17,7 +17,7 @@ export class InGameService {
     const result = await this.redisService.set(
       `entryTime:${userId}`,
       timestamp,
-      300,
+      900,
     );
     console.log('result:', result);
     return true;
@@ -53,7 +53,7 @@ export class InGameService {
           console.error('Failed to save to database:', e);
         });
       this.redisService
-        .expire(challengeId.toString(), 300)
+        .expire(challengeId.toString(), 900)
         .then(() => console.log('expire set Success'))
         .catch((e) => {
           console.error('Failed to set expire:', e);
