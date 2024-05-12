@@ -11,6 +11,7 @@ import { MissionStarting } from '../components';
 import { estimateFace } from '../MissionEstimators/FaceEstimator';
 import styled, { keyframes } from 'styled-components';
 import stickyNoteImage from '../../../assets/sticky_note.png';
+import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
 
 const Mission2 = () => {
   const [postitPositions, setPostitPositions] = useState([
@@ -102,6 +103,7 @@ const Mission2 = () => {
                   ...prevPositions[index],
                   shouldFall: true,
                 };
+                RoundSoundEffect();
               }
               return updatedPositions;
             });
