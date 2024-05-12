@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { NavBar, SimpleBtn } from '../../components';
+import { NavBar, LongBtn } from '../../components';
 import { AccountContext, UserContext } from '../../contexts';
 import { challengeServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
@@ -42,7 +42,7 @@ const MyStreak = () => {
         <div>은메달: {medals?.silver}</div>
         <div>동메달: {medals?.bronze}</div>
         <div>오늘의한마디: {affirmation}</div>
-        <SimpleBtn
+        <LongBtn
           onClickHandler={() => {
             handleClickOnDate({ accessToken, userId, date: '2024-05-09' });
           }}

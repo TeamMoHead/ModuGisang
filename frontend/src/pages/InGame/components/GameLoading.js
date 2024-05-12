@@ -50,7 +50,7 @@ const Wrapper = styled.div`
 const AnimatedNumber = styled.span`
   ${({ theme }) => theme.flex.center};
 
-  color: ${({ theme }) => theme.colors.light};
+  color: ${({ theme }) => theme.colors.white};
   -webkit-text-stroke: ${({ theme }) => theme.colors.primary.emerald} 4px;
 
   animation: fadeOut 1s linear;

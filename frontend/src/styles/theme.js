@@ -2,24 +2,17 @@ import { css } from 'styled-components';
 
 const colors = {
   primary: {
-    light: '#F0F3FF',
+    white: '#F0F3FF',
     purple: '#836FFF',
     emerald: '#15F5BA',
-    dark: '#202954',
+    navy: '#0D0A2D',
   },
-  lighter: {
-    light: 'rgb(240, 243, 255, 0.6)',
-    purple: 'rgb(131, 111, 255, 0.8)',
-    emerald: 'rgb(21, 245, 186, 0.8)',
-    dark: 'rgb(36, 41, 78, 0.8)',
+  translucent: {
+    white: 'rgb(240, 243, 255, 0.2)',
+    navy: 'rgb(13, 10, 45, 0.72)',
+    lightNavy: 'rgb(13, 10, 45, 0.2)',
   },
   neutral: {
-    light: '#f5f5f5',
-    main: '#e0e0e0',
-    dark: '#bdbdbd',
-  },
-  text: {
-    black: '#212121',
     gray: '#757575',
     lightGray: '#bdbdbd',
   },
@@ -33,29 +26,35 @@ const colors = {
 };
 
 const fonts = {
-  title: css`
-    font: 700 24px 'Jua';
-    color: ${({ theme }) => theme.colors.primary.dark};
+  JuaLarge: css`
+    font: 80px 'Jua';
+    line-height: 80px;
+    letter-spacing: -6%;
   `,
-  button: css`
-    font: 500 20px 'Jua';
+  JuaMedium: css`
+    font: 40px 'Jua';
+    line-height: 40px;
+    letter-spacing: -2%;
   `,
-  content: css`
-    font: 400 16px 'Noto Sans KR';
-    color: ${({ theme }) => theme.colors.primary.light};
+  JuaSmall: css`
+    font: 24px 'Jua';
+    line-height: 30px;
+    letter-spacing: -2.5%;
   `,
-  instruction: css`
-    font: 400 16px 'IBM Plex Sans KR';
-    color: ${({ theme }) => theme.colors.primary.light};
+  IBMlarge: css`
+    font: 24px 'IBM Plex Sans KR';
+    line-height: 34px;
+    letter-spacing: -2.5%;
   `,
-  loading: css`
-    font: 700 28px 'Jua';
-    color: ${({ theme }) => theme.colors.primary.light};
+  IBMmedium: css`
+    font: 28px 'IBM Plex Sans KR';
+    line-height: 24px;
+    letter-spacing: -2.5%;
   `,
-
-  info: css`
-    font: 300 15px 'Noto Sans KR';
-    color: ${({ theme }) => theme.colors.system.green};
+  IBMsmall: css`
+    font: 16px 'IBM Plex Sans KR';
+    line-height: 22px;
+    letter-spacing: -2.5%;
   `,
   warning: css`
     font: 300 15px 'Noto Sans KR';
@@ -68,9 +67,9 @@ const fonts = {
 };
 
 const radius = {
-  light: '15px',
-  basic: '20px',
-  round: '40px',
+  small: '20px',
+  medium: '30px',
+  large: '40px',
 };
 
 const flex = {
@@ -96,20 +95,32 @@ const flex = {
   `,
 };
 
-const boxShadow = {
-  basic: '0 2px 4px 0 rgba(0, 0, 0, 0.15)',
-  text: '0 2px 4px 0 rgba(255, 255, 255, 0.5)',
-};
+const boxShadow = css`
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+`;
 
 const gradient = {
-  navBar: css`
-    background: linear-gradient(
-      to bottom,
-      rgb(240, 243, 255, 0.6) 0%,
-      rgb(240, 243, 255, 0.6) 30%,
-      rgb(240, 243, 255, 0.6) 20%,
-      rgba(255, 255, 255, 0) 100%
-    );
+  background: {
+    largerPurple: css`
+      background: linear-gradient(0.9turn, #836fff, #15f5ba);
+    `,
+    largerEmerald: css`
+      background: linear-gradient(135deg, #836fff, #15f5ba);
+    `,
+    onlyEmerald: css`
+      background: linear-gradient(180deg, #ebebeb, #15f5ba);
+    `,
+    translucentGray: css`
+      background: linear-gradient(
+        30deg,
+        rgba(0, 0, 0, 0.05),
+        rgba(255, 255, 255, 0.05)
+      );
+    `,
+  },
+  border: css`
+    border: 1px solid transparent;
+    border-image: linear-gradient(135deg, #836fff, #15f5ba) 1;
   `,
 };
 

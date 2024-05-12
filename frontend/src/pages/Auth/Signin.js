@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { InputBox, LoadingWithText, SimpleBtn } from '../../components';
+import { InputBox, LoadingWithText, LongBtn } from '../../components';
 
 import useAuth from '../../hooks/useAuth';
 
@@ -45,7 +45,7 @@ const Signin = () => {
             onChange={handleLoginPasswordChange}
           />
         </form>
-        <SimpleBtn
+        <LongBtn
           onClickHandler={async e =>
             await handleSubmitLogIn({
               e,
@@ -57,7 +57,7 @@ const Signin = () => {
           type="submit"
           btnName="로그인"
         />
-        <SimpleBtn
+        <LongBtn
           onClickHandler={async e => {
             e.preventDefault();
             await handleSubmitLogIn({

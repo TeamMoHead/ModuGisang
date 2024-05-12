@@ -4,7 +4,7 @@ import { UserContext, ChallengeContext, AccountContext } from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
 import {
   NavBar,
-  CardBtn,
+  OutlineBox,
   WarmUpModel,
   LoadingWithText,
 } from '../../components';
@@ -136,7 +136,7 @@ const Main = () => {
             <CardsWrapper>
               {CARD_TYPES[hasChallenge ? 'hasChallenge' : 'noChallenge'].map(
                 type => (
-                  <CardBtn
+                  <OutlineBox
                     key={type}
                     content={CARD_CONTENTS[type]}
                     onClickHandler={CARD_ON_CLICK_HANDLERS[type]}
@@ -159,7 +159,7 @@ const Main = () => {
 export default Main;
 
 const Greetings = styled.h6`
-  ${({ theme }) => theme.fonts.content}
+  ${({ theme }) => theme.fonts.JuaSmall}
   padding: 20px 0;
 `;
 
