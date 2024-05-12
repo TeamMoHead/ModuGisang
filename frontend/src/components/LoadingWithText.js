@@ -40,7 +40,7 @@ const LoadingAnimator = styled.div`
 `;
 
 const Text = styled.span`
-  ${({ theme }) => theme.fonts.button}
-  color: ${({ theme }) => theme.colors.light};
+  ${({ theme }) => theme.fonts.JuaMedium}
+  color: ${({ theme }) => theme.colors.white};
   margin-left: 10px;
 `;

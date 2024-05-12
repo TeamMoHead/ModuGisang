@@ -81,14 +81,14 @@ const Text = styled.p`
   height: 50%;
   padding: 15px;
 
-  ${({ theme }) => theme.fonts.content}
-  color:${({ theme }) => theme.colors.primary.dark};
+  ${({ theme }) => theme.fonts.IBMlarge}
+  color:${({ theme }) => theme.colors.primary.navy};
   font-size: 2rem;
   text-align: center;
 
-  background-color: ${({ theme }) => theme.colors.lighter.light};
-  border-radius: ${({ theme }) => theme.radius.basic};
-  border: 3px solid ${({ theme }) => theme.colors.lighter.purple};
+  background-color: ${({ theme }) => theme.colors.translucent.white};
+  border-radius: ${({ theme }) => theme.radius.medium};
+  border: 3px solid ${({ theme }) => theme.colors.primary.purple};
 `;
 
 const Highlight = styled.span`
@@ -108,7 +108,7 @@ const Success = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font: ${({ theme }) => theme.fonts.title};
+  font: ${({ theme }) => theme.fonts.JuaMedium};
   line-height: 1.2;
   font-size: 50px;
 `;

@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { NavBar, InputBox, SimpleBtn, Dropdown } from '../../components';
+import { NavBar, InputBox, LongBtn, Dropdown } from '../../components';
 import { AccountContext, ChallengeContext } from '../../contexts';
 import { challengeServices } from '../../apis/challengeServices';
 import * as S from '../../styles/common';
@@ -99,7 +99,7 @@ const CreateChallenge = () => {
           value={emailInput}
           onChange={handleEmailChange}
         />
-        <SimpleBtn
+        <LongBtn
           btnName="친구 추가"
           onClickHandler={e => {
             checkEmail(e);
@@ -114,7 +114,7 @@ const CreateChallenge = () => {
             ))}
           </ul>
         </div>
-        <SimpleBtn
+        <LongBtn
           type="submit"
           btnName="챌린지 생성"
           onClickHandler={handleSubmit}

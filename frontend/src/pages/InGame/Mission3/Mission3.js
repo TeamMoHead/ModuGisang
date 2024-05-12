@@ -151,7 +151,7 @@ const ArrowBox = styled.div`
   width: 100%;
   height: 100px;
   ${({ theme }) => theme.flex.between}
-  background-color: ${({ theme }) => theme.colors.lighter.dark};
+  background-color: 'transparent';
 `;
 
 const Arrows = styled.img`

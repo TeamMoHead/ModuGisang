@@ -24,7 +24,7 @@ const Text = styled.div`
   position: absolute;
   top: -20px;
   left: -3px;
-  ${({ theme }) => theme.fonts.content}
+  ${({ theme }) => theme.fonts.IBMsmall}
   color: ${({ theme }) => theme.colors.primary.purple};
 `;
 
@@ -39,5 +39,5 @@ const Number = styled.div`
   border-radius: 50%;
   background-color: ${({ theme }) => theme.colors.primary.purple};
   font: 700 30px 'Jua';
-  color: ${({ theme }) => theme.colors.primary.light};
+  color: ${({ theme }) => theme.colors.primary.white};
 `;

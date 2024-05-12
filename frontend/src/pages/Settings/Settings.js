@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AccountContext } from '../../contexts';
 import { authServices, userServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
-import { NavBar, Icon, CardBtn, SimpleBtn, InputBox } from '../../components';
+import { NavBar, Icon, OutlineBox, LongBtn, InputBox } from '../../components';
 import * as S from '../../styles/common';
 import styled from 'styled-components';
 
@@ -66,13 +66,13 @@ const Settings = () => {
           value={affirmation}
           onChange={handleAffirmationChange}
         />
-        <SimpleBtn
+        <LongBtn
           btnName="오늘의 한마디 수정하기"
           onClickHandler={() => {
             handleChangeAffirmation({ accessToken, affirmation });
           }}
         />
-        <CardBtn
+        <OutlineBox
           content={
             <LogoutWrapper>
               <Text>LogOut</Text>
@@ -100,6 +100,6 @@ const LogoutWrapper = styled.div`
 
 const Text = styled.div`
   margin-right: 10px;
-  ${({ theme }) => theme.fonts.button};
+  ${({ theme }) => theme.fonts.JuaSmall};
   color: ${({ theme }) => theme.colors.system.white};
 `;
