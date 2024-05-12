@@ -53,7 +53,7 @@ const fonts = {
   `,
   IBMsmall: css`
     font: 16px 'IBM Plex Sans KR';
-    line-height: 22px;
+    line-height: 18px;
     letter-spacing: -2.5%;
   `,
   warning: css`

@@ -54,35 +54,32 @@ const InGameNav = () => {
 
   return (
     <Wrapper>
-      <BtnArea
-        $hasLeftBtn={
-          GAME_MODE[inGameMode] === 'waiting' ||
-          GAME_MODE[inGameMode] === 'result'
-        }
-      >
-        {(GAME_MODE[inGameMode] === 'waiting' ||
-          GAME_MODE[inGameMode] === 'result') && (
-          <RoundBtn btnStyle={BACK_BTN_STYLE} onClickHandler={goToMain} />
-        )}
-        <RoundBtn
-          btnStyle={micOn ? MIC_ON_BTN_STYLE : MIC_OFF_BTN_STYLE}
-          onClickHandler={turnMicOnOff}
-        />
-      </BtnArea>
+      {(GAME_MODE[inGameMode] === 'waiting' ||
+        GAME_MODE[inGameMode] === 'result') && (
+        <RoundBtn btnStyle={BACK_BTN_STYLE} onClickHandler={goToMain} />
+      )}
+
+      {GAME_MODE[inGameMode] !== 'waiting' &&
+        GAME_MODE[inGameMode] !== 'result' && <GameRound text={inGameMode} />}
+
       <TextArea>
         {GAME_MODE[inGameMode] !== 'waiting' && (
           <>
-            {GAME_MODE[inGameMode] !== 'result' && (
-              <GameRound text={inGameMode} />
-            )}
-            <InstructionArea>
-              <MissionTitle text={INFO_BY_GAME_MODE[inGameMode].title} />
-              <MissionInst text={INFO_BY_GAME_MODE[inGameMode].instruction} />
-            </InstructionArea>
+            <MissionTitle text={INFO_BY_GAME_MODE[inGameMode].title} />
+            <MissionInst text={INFO_BY_GAME_MODE[inGameMode].instruction} />
           </>
         )}
-        {GAME_MODE[inGameMode] === 'waiting' && <Timer />}
+        {GAME_MODE[inGameMode] === 'waiting' && (
+          <>
+            <Timer />
+            <MissionInst text={INFO_BY_GAME_MODE[inGameMode].instruction} />
+          </>
+        )}
       </TextArea>
+      <RoundBtn
+        btnStyle={micOn ? MIC_ON_BTN_STYLE : MIC_OFF_BTN_STYLE}
+        onClickHandler={turnMicOnOff}
+      />
     </Wrapper>
   );
 };
@@ -93,73 +90,54 @@ const Wrapper = styled.nav`
   z-index: 100;
   position: fixed;
   top: 0;
-  ${({ theme }) => theme.flex.between}
+
+  display: grid;
+  grid-template-columns: 40px auto 40px;
   align-items: center;
+
   width: 100vw;
   height: 100px;
+  padding: 0 24px;
 
-  background-color: ${({ theme }) => theme.colors.translucent.white};
-`;
-
-const BtnArea = styled.div`
-  z-index: 150;
-  position: fixed;
-  width: 100vw;
-  height: 50px;
-  padding: 0 20px;
-
-  ${({ theme, $hasLeftBtn }) =>
-    $hasLeftBtn ? theme.flex.between : theme.flex.right}
+  background-color: ${({ theme }) => theme.colors.translucent.navy};
 `;
 
 const TextArea = styled.div`
-  width: 100vw;
-  margin: 0 20px;
-
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
-`;
+  gap: 6px;
 
-const InstructionArea = styled.div`
-  position: absolute;
-  margin: 0 auto;
-  padding: 0 80px;
-  ${({ theme }) => theme.flex.center}
-  flex-direction: column;
-
-  ${({ theme }) => theme.fonts.IBMsmall}
-  color: ${({ theme }) => theme.colors.primary.navy};
-  text-align: center;
+  margin-bottom: -8px;
 `;
 
 const BACK_BTN_STYLE = {
-  size: 50,
+  size: 40,
   disabled: false,
   icon: 'back',
   iconStyle: {
-    size: 24,
+    size: 20,
     color: 'white',
     hoverColor: 'purple',
   },
 };
 
 const MIC_ON_BTN_STYLE = {
-  size: 50,
+  size: 40,
   disabled: false,
   icon: 'micOn',
   iconStyle: {
-    size: 24,
+    size: 20,
     color: 'white',
     hoverColor: 'purple',
   },
 };
 
 const MIC_OFF_BTN_STYLE = {
-  size: 50,
+  size: 40,
   disabled: false,
   icon: 'micOff',
   iconStyle: {
-    size: 24,
+    size: 20,
     color: 'white',
     hoverColor: 'purple',
   },
