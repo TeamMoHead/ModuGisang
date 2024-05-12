@@ -158,8 +158,6 @@ const Mission2 = () => {
       (winHeight / myVideoRef.current.videoHeight) *
       myVideoRef.current.videoWidth;
 
-    console.log('----- temp: ', temp);
-
     x *= temp;
     y *= winHeight;
 

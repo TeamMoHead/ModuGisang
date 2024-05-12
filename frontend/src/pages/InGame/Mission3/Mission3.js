@@ -48,8 +48,8 @@ const Mission3 = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      console.log('미션 3 끝');
-      console.log('score : ', score.current);
+      // console.log('미션 3 끝');
+      // console.log('score : ', score.current);
       setGameScore(prev => prev + score.current);
     }, 17000);
     return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 클리어
@@ -97,7 +97,7 @@ const Mission3 = () => {
     } else if (currentRoundIdx === 0) {
       score.current = (currentArrowIdx + 1) * 3 - 3;
     }
-    console.log('score : ', score.current);
+    // console.log('score : ', score.current);
     poseModel.current.onResults(results => {
       const result = estimateHead({
         results,
