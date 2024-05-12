@@ -7,6 +7,7 @@ import {
   OutlineBox,
   WarmUpModel,
   LoadingWithText,
+  LongBtn,
 } from '../../components';
 import {
   StreakContent,
@@ -88,7 +89,6 @@ const Main = () => {
     }
   }, [challengeData]);
 
-  console.log('🍀🍀🍀 MAIN PAGE 🍀🍀🍀🍀\n');
   console.log(
     'userId: ',
     userId,
@@ -113,21 +113,13 @@ const Main = () => {
               type="text"
               onChange={e => setWakeTime(e.target.value)}
               style={{
+                marginTop: '20px',
                 backgroundColor: 'white',
-                padding: '10px',
+                padding: '15px',
                 borderRadius: '5px',
               }}
             />
-            <OutlineBox
-              onClick={changeWakeTime}
-              boxStyle={boxStyle}
-              header={header}
-              content={
-                <>
-                  <p>기상 시간 세팅하기</p>
-                </>
-              }
-            />
+            <LongBtn onClickHandler={changeWakeTime} btnName="기상시간 세팅" />
 
             <CardsWrapper>
               {CARD_TYPES[hasChallenge ? 'hasChallenge' : 'noChallenge'].map(
@@ -136,7 +128,7 @@ const Main = () => {
                     key={type}
                     content={CARD_CONTENTS[type]}
                     onClickHandler={CARD_ON_CLICK_HANDLERS[type]}
-                    btnStyle={CARD_STYLES[type]}
+                    boxStyle={CARD_STYLES[type]}
                   />
                 ),
               )}
@@ -155,23 +147,8 @@ const Main = () => {
 export default Main;
 
 const CardsWrapper = styled.div`
+  width: 100%;
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
-  gap: 10px;
+  gap: 33px;
 `;
-
-const boxStyle = {
-  isBold: true,
-  lineColor: 'gradient',
-  bgColor: 'white',
-};
-
-const header = {
-  text: '기상 시간 세팅하기',
-  style: {
-    font: 'IBMmedium',
-    fontColor: 'white',
-    bgColor: 'purple',
-    hasBackground: true,
-  },
-};

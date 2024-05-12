@@ -7,7 +7,7 @@ const PageWrapper = styled.div`
 
   width: calc(100vw-'48px');
 
-  margin: 100px 24px 0px 24px;
+  margin: 100px 24px 50px 24px;
 `;
 
 export default PageWrapper;

@@ -100,23 +100,11 @@ const boxShadow = css`
 `;
 
 const gradient = {
-  background: {
-    largerPurple: css`
-      background: linear-gradient(0.9turn, #836fff, #15f5ba);
-    `,
-    largerEmerald: css`
-      background: linear-gradient(135deg, #836fff, #15f5ba);
-    `,
-    onlyEmerald: css`
-      background: linear-gradient(180deg, #ebebeb, #15f5ba);
-    `,
-    translucentGray: css`
-      background: linear-gradient(30deg, #0000000d, #ffffff0d);
-    `,
-  },
-  border: css`
-    stroke: linear-gradient(135deg, #836fff, #15f5ba);
-  `,
+  largerPurple: 'linear-gradient(160deg, #836fff, #15f5ba)',
+  largerEmerald: 'linear-gradient(135deg, #836fff, #15f5ba)',
+  onlyEmerald: 'linear-gradient(180deg, #ebebeb, #15f5ba)',
+  translucentGray:
+    'linear-gradient(30deg, rbga(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05))',
 };
 
 const theme = {

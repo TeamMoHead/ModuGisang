@@ -18,7 +18,7 @@ const NavBar = () => {
     main: (
       <>
         <p>오늘도 기적같은 하루!</p>
-        <p>안녕하세요 어쩌구{userName}님 :)</p>
+        <p>안녕하세요 {userName}님 :)</p>
       </>
     ),
     myStreak: '나의 기록',
@@ -96,7 +96,7 @@ const Title = styled.header`
 
   ${({ theme }) => theme.fonts.JuaSmall}
 
-  ${({ theme }) => theme.gradient.background.largerEmerald};
+  background: ${({ theme }) => theme.gradient.largerEmerald};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

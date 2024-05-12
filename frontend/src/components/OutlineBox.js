@@ -3,8 +3,9 @@ import styled, { css } from 'styled-components';
 
 const boxStyleSample = {
   isBold: false,
-  lineColor: 'white', // 'gradient'
-  bgColor: 'dark', // 하얀 반투명 => 'white' || 어두운 반투명 'dark' || 완전투명 'transparent'
+  lineColor: 'white', // 특정 컬러이름 || 그라데이션 => 'gradient'
+  // 각 박스의 background-color는 content 각 컴포넌트에서 설정
+  // border-radius도 각 content에서 설정 필요
 };
 
 const headerSample = {
@@ -20,12 +21,6 @@ const headerSample = {
 const OutlineBox = ({ boxStyle, header, content, onClickHandler }) => {
   const isClickable = !!onClickHandler;
 
-  const boxStyleConverted = {
-    isBold: boxStyle?.isBold,
-    lineColor: LINE_COLORS[boxStyle?.lineColor],
-    bgColor: BG_COLORS[boxStyle?.bgColor],
-  };
-
   return (
     <Wrapper
       onClick={e => {
@@ -36,10 +31,13 @@ const OutlineBox = ({ boxStyle, header, content, onClickHandler }) => {
 
         onClickHandler();
       }}
-      $boxStyle={boxStyleConverted}
+      $boxStyle={boxStyle}
       $isClickable={isClickable}
     >
-      {header && <Header $headerStyle={header?.style}>{header?.text}</Header>}
+      {header !== undefined && (
+        <Header $headerStyle={header?.style}>{header?.text}</Header>
+      )}
+
       {content}
     </Wrapper>
   );
@@ -48,61 +46,58 @@ const OutlineBox = ({ boxStyle, header, content, onClickHandler }) => {
 export default OutlineBox;
 
 const Wrapper = styled.div`
+  position: relative;
   width: 100%;
-  ${({ $boxStyle }) => $boxStyle?.lineColor && $boxStyle.lineColor};
-  border: solid transparent;
-  ${({ $boxStyle }) => ($boxStyle?.isBold ? '3px' : '1px')};
-
-  background: linear-gradient(135deg, #836fff, #15f5ba);
-  /* background-origin: border-box;
-  background-clip: content-box, border-box; */
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-
-  border-radius: ${({ theme }) => theme.radius.medium};
+  height: max-content;
 
   cursor: ${({ $isClickable }) => ($isClickable ? 'pointer' : 'default')};
+
+  ::before {
+    ${({ $boxStyle }) =>
+      $boxStyle?.lineColor === 'gradient' &&
+      css`
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: ${({ theme }) => theme.radius.medium};
+        border: ${({ $boxStyle }) => ($boxStyle?.isBold ? '3px' : '1px')} solid
+          transparent;
+        background: ${({ theme }) => theme.gradient.largerPurple} border-box;
+        mask:
+          linear-gradient(#fff 0 0) padding-box,
+          linear-gradient(#fff 0 0);
+        mask-composite: exclude;
+      `}
+  }
+
+  ${({ $boxStyle }) =>
+    $boxStyle?.lineColor === 'gradient' ||
+    css`
+      border-color: ${({ theme, $boxStyle }) =>
+        theme.colors.primary[$boxStyle?.lineColor]};
+      border-width: ${({ $boxStyle }) => ($boxStyle?.isBold ? '3px' : '1px')};
+      border-style: solid;
+      border-radius: ${({ theme }) => theme.radius.medium};
+    `};
 `;
 
 const Header = styled.div`
-  padding: 11px;
+  padding: 20px;
   align-self: center;
   justify-self: center;
   text-align: center;
 
-  border-radius: ${({ theme }) => theme.radius.small}
-    ${({ theme }) => theme.radius.small} 0 0;
+  border-radius: 25px 25px 0 0;
 
-  ${({ theme, $headerStyle }) => theme.fonts[$headerStyle.font]};
+  ${({ theme, $headerStyle }) => theme.fonts[$headerStyle?.font]};
 
   color: ${({ $headerStyle, theme }) =>
-    $headerStyle && theme.colors.primary[$headerStyle.fontColor]};
+    $headerStyle && theme.colors.primary[$headerStyle?.fontColor]};
 
   background-color: ${({ $headerStyle, theme }) =>
-    $headerStyle.hasBackground && theme.colors.primary[$headerStyle.bgColor]};
+    $headerStyle?.hasBackground && theme.colors.primary[$headerStyle?.bgColor]};
 
   border: ${({ theme, $headerStyle }) =>
-    $headerStyle.hasBackground ||
-    `3px solid ${theme.colors.primary[$headerStyle.bgColor]}`};
+    $headerStyle?.hasBackground ||
+    `3px solid ${theme.colors.primary[$headerStyle?.bgColor]}`};
 `;
-
-const LINE_COLORS = {
-  purple: 'purple',
-};
-
-const BG_COLORS = {
-  white: css`
-    background-color: ${({ theme }) => theme.colors.translucent.white};
-  `,
-
-  dark: css`
-    ${({ theme }) => theme.gradient.background.translucentGray}
-    ${({ theme }) => theme.gradient.border}
-  `,
-
-  transparent: css`
-    background-color: transparent;
-  `,
-};
