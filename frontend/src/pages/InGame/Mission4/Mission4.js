@@ -6,6 +6,7 @@ import { rainEffect, effect } from './effect';
 import { calculateDecibels } from './decibelUtils';
 import sunImage from '../../../assets/sun.png';
 import hillImage from '../../../assets/hill.png';
+import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
 
 const Mission4 = () => {
   const {
@@ -103,6 +104,7 @@ const Mission4 = () => {
       if (shoutingDuration > 5) {
         clearInterval(intervalId);
         setMyMissionStatus(true);
+        RoundSoundEffect();
         // firework();
         return;
       }

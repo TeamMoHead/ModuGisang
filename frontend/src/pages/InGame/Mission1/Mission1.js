@@ -8,6 +8,7 @@ import { MissionStarting } from '../components';
 import { estimatePose } from '../MissionEstimators/PoseEstimator';
 import Guide from './Guide';
 import styled from 'styled-components';
+import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
 
 const round = [
   {
@@ -132,6 +133,7 @@ const Mission1 = () => {
             idx === index ? { ...item, scoreAdded: true } : item,
           ),
         );
+        RoundSoundEffect();
       }
     });
   }, [stretchSide]);
