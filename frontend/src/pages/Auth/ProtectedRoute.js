@@ -8,6 +8,7 @@ import {
 } from '../../contexts';
 import useAuth from '../../hooks/useAuth';
 import { LoadingWithText } from '../../components';
+import * as S from '../../styles/common';
 
 const ProtectedRoute = () => {
   const { accessToken, userId } = useContext(AccountContext);
@@ -34,7 +35,11 @@ const ProtectedRoute = () => {
   }, [accessToken]);
 
   if (isAuthLoading) {
-    return <LoadingWithText text="로그인 정보를 확인중이에요 :)" />;
+    return (
+      <S.LoadingWrapper>
+        <LoadingWithText text="로그인 정보를 확인중이에요 :)" />
+      </S.LoadingWrapper>
+    );
   }
 
   if (!isAuthLoading && !isAuthorized) {

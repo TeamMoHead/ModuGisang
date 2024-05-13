@@ -4,11 +4,11 @@ import {
   GameContext,
   OpenViduContext,
 } from '../../../contexts';
-import { MissionStarting } from '../components';
+import { MissionStarting, MissionEnding } from '../components';
 import { estimatePose } from '../MissionEstimators/PoseEstimator';
 import Guide from './Guide';
 import styled from 'styled-components';
-import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
+import { MissionSoundEffects, RoundSoundEffect } from '../Sound';
 
 const round = [
   {
@@ -27,6 +27,7 @@ const Mission1 = () => {
   const { poseModel } = useContext(MediaPipeContext);
   const {
     isMissionStarting,
+    isMissionEnding,
     inGameMode,
     myMissionStatus,
     setMyMissionStatus,
@@ -141,6 +142,9 @@ const Mission1 = () => {
   return (
     <>
       <MissionStarting />
+      {isMissionEnding && <MissionEnding />}
+      {isMissionEnding && <MissionSoundEffects />}
+
       {isMissionStarting || (
         <>
           <Canvas ref={canvasRef} />
@@ -157,35 +161,36 @@ const Mission1 = () => {
 export default Mission1;
 
 const Canvas = styled.canvas`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: ${({ theme }) => theme.radius.medium};
 `;
 
 const ProgressWrapper = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 50px;
-  top: 100px;
+  z-index: 200;
 
-  border: 3px solid ${({ theme }) => theme.colors.primary.white};
+  position: absolute;
+  bottom: 25px;
+
+  width: 80%;
+  height: 30px;
+
+  border-radius: ${({ theme }) => theme.radius.small};
+  border: 2px solid ${({ theme }) => theme.colors.primary.white};
   background-color: ${({ theme }) => theme.colors.translucent.navy};
-  /* border-radius: ${({ theme }) => theme.radius.light}; */
-  overflow: hidden;
-  /* margin: 20px 0; */
 `;
 
 const ProgressIndicator = styled.div`
+  z-index: 300;
+
   position: absolute;
-  bottom: 0;
-  left: 0;
 
   width: ${({ progress }) => progress}%;
   height: 100%;
-  border: 1px solid ${({ theme }) => theme.colors.primary.light};
+
+  border-radius: ${({ theme }) => theme.radius.small};
+
   background-color: ${({ theme }) => theme.colors.primary.emerald};
   transition: width 0.2s ease;
 `;

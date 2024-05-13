@@ -4,10 +4,10 @@ import {
   GameContext,
   OpenViduContext,
 } from '../../../contexts';
-import { MissionStarting } from '../components';
+import { MissionStarting, MissionEnding } from '../components';
 import { estimateHead } from '../MissionEstimators/HeadEstimator';
 import arrow from '../../../assets/arrows/arrow.svg';
-import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
+import { RoundSoundEffect, MissionSoundEffects } from '../Sound';
 
 import styled from 'styled-components';
 
@@ -26,9 +26,11 @@ const round2 = [
 ];
 
 const Mission3 = () => {
-  const { poseModel } = useContext(MediaPipeContext);
+  const { poseModel, setIsPoseLoaded, setIsPoseInitialized } =
+    useContext(MediaPipeContext);
   const {
     isMissionStarting,
+    isMissionEnding,
     inGameMode,
     myMissionStatus,
     setMyMissionStatus,
@@ -44,13 +46,13 @@ const Mission3 = () => {
   });
   const [currentRoundIdx, setCurrentRoundIdx] = useState(0);
   const [currentArrowIdx, setCurrentArrowIdx] = useState(0);
+  const [isMissionFinished, setIsMissionFinished] = useState(false);
   const score = useRef(0);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // console.log('미션 3 끝');
-      // console.log('score : ', score.current);
       setGameScore(prev => prev + score.current);
+      setIsMissionFinished(true);
     }, 17000);
     return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 클리어
   }, []);
@@ -83,10 +85,15 @@ const Mission3 = () => {
     return () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
       poseModel.current = null;
+      setIsPoseLoaded(false);
+      setIsPoseInitialized(false);
     };
   }, [isMissionStarting, poseModel]);
 
   useEffect(() => {
+    if (isMissionFinished) {
+      return;
+    }
     if (!poseModel.current || isMissionStarting) return;
 
     const direction = arrowRound[currentRoundIdx][currentArrowIdx].direction;
@@ -144,6 +151,8 @@ const Mission3 = () => {
   return (
     <>
       <MissionStarting />
+      {isMissionEnding && <MissionEnding />}
+      {isMissionEnding && <MissionSoundEffects />}
       {isMissionStarting || (
         <>
           <Canvas ref={canvasRef} />
@@ -158,7 +167,6 @@ const Mission3 = () => {
               />
             ))}
           </ArrowBox>
-          {myMissionStatus ? <Success>성공!</Success> : null}
         </>
       )}
     </>
@@ -168,22 +176,25 @@ const Mission3 = () => {
 export default Mission3;
 
 const Canvas = styled.canvas`
-  position: fixed;
-  top: 0;
-  left: 0;
-
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: ${({ theme }) => theme.radius.medium};
 `;
 
 const ArrowBox = styled.div`
-  position: fixed;
-  top: 100px;
-  width: 100%;
-  height: 100px;
+  z-index: 200;
+
+  position: absolute;
+  bottom: 25px;
+
+  width: calc(100% - 6px);
+  height: 60px;
+  padding: 0 10px;
+
   ${({ theme }) => theme.flex.between}
-  background-color: 'transparent';
+
+  background-color: ${({ theme }) => theme.colors.translucent.lightNavy};
 `;
 
 const Arrows = styled.img`
@@ -197,15 +208,6 @@ const Arrows = styled.img`
         : direction === 'left'
           ? 'rotate(180deg)'
           : 'rotate(0deg)'};
-  filter: ${({ active }) => (active ? 'none' : 'grayscale(100%)')};
-`;
 
-const Success = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font: ${({ theme }) => theme.fonts.title};
-  line-height: 1.2;
-  font-size: 50px;
+  filter: ${({ active }) => (active ? 'none' : 'grayscale(100%)')};
 `;
