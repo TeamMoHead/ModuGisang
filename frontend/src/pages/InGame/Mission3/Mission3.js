@@ -7,7 +7,7 @@ import {
 import { MissionStarting, MissionEnding } from '../components';
 import { estimateHead } from '../MissionEstimators/HeadEstimator';
 import arrow from '../../../assets/arrows/arrow.svg';
-import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
+import { RoundSoundEffect, MissionSoundEffects } from '../Sound';
 
 import styled from 'styled-components';
 
@@ -146,6 +146,7 @@ const Mission3 = () => {
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
+      {isMissionEnding && <MissionSoundEffects />}
       {isMissionStarting || (
         <>
           <Canvas ref={canvasRef} />

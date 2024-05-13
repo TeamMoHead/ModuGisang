@@ -6,7 +6,7 @@ import { rainEffect, effect } from './effect';
 import { calculateDecibels } from './decibelUtils';
 import sunImage from '../../../assets/sun.png';
 import hillImage from '../../../assets/hill.png';
-import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
+import { RoundSoundEffect, MissionSoundEffects } from '../Sound';
 import thunderstorm from '../../../assets/soundEffects/thunderstorm.mp3';
 
 const thunderstormSoundEffect = () => {
@@ -186,6 +186,7 @@ const Mission4 = () => {
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
+      {isMissionEnding && <MissionSoundEffects />}
       <FullScreenCanvas>
         <SubCanvas ref={canvasRef} />
         <Hill />

@@ -22,7 +22,6 @@ import {
 
 import BackgroundMusic from './Sound/BackgroundMusic';
 import styled from 'styled-components';
-import GameSoundEffects from './Sound/GameSoundEffects';
 
 const GAME_MODE = {
   0: 'waiting',
@@ -98,7 +97,7 @@ const InGame = () => {
   return (
     <>
       <InGameNav />
-      {/* <BackgroundMusic gameMode={inGameMode} playing={true} /> */}
+      <BackgroundMusic gameMode={inGameMode} playing={true} />
 
       <Wrapper>
         <MyVideo />

@@ -8,7 +8,7 @@ import { MissionStarting, MissionEnding } from '../components';
 import { estimatePose } from '../MissionEstimators/PoseEstimator';
 import Guide from './Guide';
 import styled from 'styled-components';
-import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
+import { MissionSoundEffects, RoundSoundEffect } from '../Sound';
 
 const round = [
   {
@@ -28,13 +28,11 @@ const Mission1 = () => {
   const {
     isMissionStarting,
     isMissionEnding,
-    setIsMissionEnding,
     inGameMode,
     myMissionStatus,
     setMyMissionStatus,
     gameScore,
     setGameScore,
-    GAME_MODE_DURATION,
   } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
@@ -126,14 +124,6 @@ const Mission1 = () => {
       setMyMissionStatus(true);
     }
 
-    // if (stretchSide.every(side => side.active)) {
-    //   console.log('========미션 1 성공========');
-    //   setMyMissionStatus(true);
-    // } else {
-    //   console.log('========미션 1 실패========');
-    //   setMyMissionStatus(false);
-    // }
-
     stretchSide.forEach((side, index) => {
       if (side.active && !side.scoreAdded) {
         setGameScore(prevGameScore => prevGameScore + 12.5);
@@ -149,19 +139,11 @@ const Mission1 = () => {
     });
   }, [stretchSide]);
 
-  // useEffect(() => {
-  //   if (!isMissionStarting) {
-  //     console.log('미션 1 시작');
-  //     if (myMissionStatus) {
-  //       setIsMissionEnding(true);
-  //     }
-  //   }
-  // }, [isMissionStarting]);
-
   return (
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
+      {isMissionEnding && <MissionSoundEffects />}
 
       {isMissionStarting || (
         <>

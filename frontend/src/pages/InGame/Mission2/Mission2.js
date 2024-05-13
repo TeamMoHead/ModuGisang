@@ -11,7 +11,7 @@ import { MissionStarting, MissionEnding } from '../components';
 import { estimateFace } from '../MissionEstimators/FaceEstimator';
 import styled, { keyframes } from 'styled-components';
 import stickyNoteImage from '../../../assets/sticky_note.png';
-import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
+import { RoundSoundEffect, MissionSoundEffects } from '../Sound';
 
 const Mission2 = () => {
   const [postitPositions, setPostitPositions] = useState([
@@ -179,6 +179,7 @@ const Mission2 = () => {
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
+      {isMissionEnding && <MissionSoundEffects />}
       {isMissionStarting || <Canvas ref={canvasRef} />}
       {postitPositions.map((position, index) => (
         <PostitAnimation

@@ -3,7 +3,7 @@ import { GameContext } from '../../../contexts';
 import successSound from '../../../assets/soundEffects/missionSuccess.mp3';
 import failSound from '../../../assets/soundEffects/missionFailure.mp3';
 
-const GameSoundEffects = () => {
+const MissionSoundEffects = () => {
   const successAudioRef = useRef(new Audio(successSound));
   const failAudioRef = useRef(new Audio(failSound));
   const { myMissionStatus, inGameMode } = useContext(GameContext);
@@ -33,4 +33,4 @@ const GameSoundEffects = () => {
   return null;
 };
 
-export default GameSoundEffects;
+export default MissionSoundEffects;
