@@ -99,11 +99,17 @@ const Main = () => {
   );
 
   if (!userId || !challengeData)
-    return <LoadingWithText loadingMSG="페이지를 가져오고 있어요" />;
+    return (
+      <S.LoadingWrapper>
+        <LoadingWithText loadingMSG="페이지를 가져오고 있어요" />
+      </S.LoadingWrapper>
+    );
   return (
     <>
       {!isWarmUpDone ? (
-        <LoadingWithText loadingMSG="페이지를 가져오고 있어요" />
+        <S.LoadingWrapper>
+          <LoadingWithText loadingMSG="페이지를 가져오고 있어요" />
+        </S.LoadingWrapper>
       ) : (
         <>
           <NavBar />
