@@ -50,8 +50,6 @@ const Mission3 = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // console.log('미션 3 끝');
-      // console.log('score : ', score.current);
       setGameScore(prev => prev + score.current);
       setIsMissionFinished(true);
     }, 17000);
@@ -166,7 +164,6 @@ const Mission3 = () => {
               />
             ))}
           </ArrowBox>
-          {myMissionStatus ? <Success>성공!</Success> : null}
         </>
       )}
     </>
@@ -176,22 +173,25 @@ const Mission3 = () => {
 export default Mission3;
 
 const Canvas = styled.canvas`
-  position: fixed;
-  top: 0;
-  left: 0;
-
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: ${({ theme }) => theme.radius.medium};
 `;
 
 const ArrowBox = styled.div`
-  position: fixed;
-  top: 100px;
-  width: 100%;
-  height: 100px;
+  z-index: 200;
+
+  position: absolute;
+  bottom: 25px;
+
+  width: calc(100% - 6px);
+  height: 60px;
+  padding: 0 10px;
+
   ${({ theme }) => theme.flex.between}
-  background-color: 'transparent';
+
+  background-color: ${({ theme }) => theme.colors.translucent.lightNavy};
 `;
 
 const Arrows = styled.img`
@@ -205,15 +205,6 @@ const Arrows = styled.img`
         : direction === 'left'
           ? 'rotate(180deg)'
           : 'rotate(0deg)'};
-  filter: ${({ active }) => (active ? 'none' : 'grayscale(100%)')};
-`;
 
-const Success = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font: ${({ theme }) => theme.fonts.title};
-  line-height: 1.2;
-  font-size: 50px;
+  filter: ${({ active }) => (active ? 'none' : 'grayscale(100%)')};
 `;

@@ -41,7 +41,7 @@ const GameContextProvider = ({ children }) => {
   const [isMissionEnding, setIsMissionEnding] = useState(false);
   const [inGameMode, setInGameMode] = useState(
     // parseInt(localStorage.getItem('inGameMode')) || 0,
-    // 2,
+    // 5,
     0,
   );
 

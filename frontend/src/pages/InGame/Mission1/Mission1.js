@@ -169,10 +169,12 @@ const Canvas = styled.canvas`
 
 const ProgressWrapper = styled.div`
   z-index: 200;
+
   position: absolute;
+  bottom: 25px;
+
   width: 80%;
   height: 30px;
-  bottom: 25px;
 
   border-radius: ${({ theme }) => theme.radius.small};
   border: 2px solid ${({ theme }) => theme.colors.primary.white};

@@ -17,11 +17,14 @@ const Mission4 = () => {
     setMyMissionStatus,
   } = useContext(GameContext);
   const { myStream } = useContext(OpenViduContext);
-  const canvasRef = useRef(null);
+
   const [stream, setStream] = useState(null);
   const [decibels, setDecibels] = useState(0); // 데시벨 상태
   const [shoutingDuration, setShoutingDuration] = useState(0); // 함성이 지속된 시간
+
   const [sunPositionY, setSunPositionY] = useState(window.innerHeight); // 해의 Y 위치
+  const canvasRef = useRef(null); // 캔버스 참조
+
   const [elapsedTime, setElapsedTime] = useState(0); // 경과 시간 (초 단위)
   const startTimeRef = useRef(null); // 시작 시간 저장
   const [isGameOver, setIsGameOver] = useState(false);
@@ -96,15 +99,10 @@ const Mission4 = () => {
       if (decibels > 50) {
         setShoutingDuration(prevDuration => prevDuration + 0.2);
       }
-      // else {
-      //   //// 지속하지 않을 경우 초기화
-      //   // setShoutingDuration(0)
-      // }
       if (shoutingDuration > 5) {
         clearInterval(intervalId);
         setMyMissionStatus(true);
         RoundSoundEffect();
-        // firework();
         return;
       }
       setSunPosition();
@@ -134,15 +132,6 @@ const Mission4 = () => {
 
     setGameScore(prevScore => prevScore + scoreToAdd);
   }
-
-  // function setSunPosition() {
-  //   const maxSunPositionY = 50; // 해가 화면 상단에 위치하는 최소 값
-  //   const newSunPositionY = Math.max(
-  //     window.innerHeight - shoutingDuration * 120,
-  //     maxSunPositionY,
-  //   );
-  //   setSunPositionY(newSunPositionY);
-  // }
 
   function setSunPosition() {
     const screenHeight = window.innerHeight; // 화면 높이
@@ -184,26 +173,32 @@ const Mission4 = () => {
 export default Mission4;
 
 const FullScreenCanvas = styled.div`
+  z-index: 200;
+
   position: absolute;
-  top: 0;
-  left: 0;
+
   width: 100%;
   height: 100%;
-  z-index: 0;
+
+  ${({ theme }) => theme.flex.center}
+
   overflow: hidden;
-  display: flex;
-  justify-content: center;
 `;
 
 //전체바
 const CanvasWrapper = styled.div`
+  z-index: 300;
+
   position: absolute;
-  width: 100%;
-  height: 50px;
-  top: 100px;
+  top: 25px;
+
+  width: 80%;
+  height: 30px;
 
   display: ${({ $myMissionStatus }) => ($myMissionStatus ? 'none' : 'block')};
-  border: 3px solid ${({ theme }) => theme.colors.primary.white};
+
+  border-radius: ${({ theme }) => theme.radius.small};
+  border: 2px solid ${({ theme }) => theme.colors.primary.white};
   background-color: ${({ theme }) => theme.colors.translucent.navy};
 `;
 
@@ -212,9 +207,28 @@ const Canvas = styled.canvas`
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 55%;
+
+  width: 70%;
   height: 100%;
+
   border-right: 4px solid ${({ theme }) => theme.colors.system.red};
+`;
+
+//진행바
+const SoundIndicator = styled.div`
+  display: ${({ $soundWidth }) => ($soundWidth > 0 ? 'block' : 'none')};
+  position: absolute;
+  bottom: 0;
+  left: 0;
+
+  width: ${({ $soundWidth }) => $soundWidth}%;
+  height: 100%;
+
+  border-radius: ${({ theme }) => theme.radius.small};
+  border: 1px solid ${({ theme }) => theme.colors.primary.white};
+  background-color: ${({ theme }) => theme.colors.primary.emerald};
+
+  transition: width 0.2s ease; // 너비 변화를 0.5초 동안 부드럽게 애니메이션
 `;
 
 const SubCanvas = styled.canvas`
@@ -225,37 +239,32 @@ const SubCanvas = styled.canvas`
   height: 100%;
 `;
 
-//진행바
-const SoundIndicator = styled.div`
-  display: ${({ $soundWidth }) => ($soundWidth > 0 ? 'block' : 'none')};
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 100%;
-  width: ${({ $soundWidth }) => $soundWidth}%; // 데시벨에 따라 너비 조절
-  background-color: ${({ theme }) => theme.colors.primary.emerald};
-  border: 1px solid ${({ theme }) => theme.colors.primary.white};
-  transition: width 0.2s ease; // 너비 변화를 0.5초 동안 부드럽게 애니메이션
-`;
-
 const Sun = styled.div`
   position: absolute;
+
+  padding-top: 300px;
   width: 300px;
   height: 300px;
+
   background-image: url(${sunImage});
   background-size: cover;
   background-position: center;
+
   transition: top 0.5s ease;
-  z-index: 5; /* FullScreenCanvas보다 앞에 위치 */
 `;
+
 const Hill = styled.div`
+  z-index: 300;
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 100vw;
+
+  width: 100%;
   height: 200px;
+
+  border-radius: ${({ theme }) => theme.radius.medium};
+
   background-image: url(${hillImage});
   background-size: cover;
   background-position: center;
-  z-index: 10;
 `;
