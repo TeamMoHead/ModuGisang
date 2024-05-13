@@ -41,7 +41,8 @@ const Mission2 = () => {
     },
   ]); // 포스트잇의 정보
 
-  const { holisticModel } = useContext(MediaPipeContext);
+  const { holisticModel, setIsHolisticLoaded, setIsHolisticInitialized } =
+    useContext(MediaPipeContext);
   const {
     isMissionStarting,
     inGameMode,
@@ -130,6 +131,8 @@ const Mission2 = () => {
     return () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
       holisticModel.current = null;
+      setIsHolisticLoaded(false);
+      setIsHolisticInitialized(false);
     };
   }, [isMissionStarting, holisticModel]);
 
