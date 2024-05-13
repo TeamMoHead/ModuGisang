@@ -10,18 +10,21 @@ import useCheckTime from '../../hooks/useCheckTime';
 
 import InGameNav from './components/Nav/InGameNav';
 import { MyVideo, MateVideo } from './components';
-import {
-  Waiting,
-  Mission1,
-  Mission2,
-  Mission3,
-  Mission4,
-  Affirmation,
-  Result,
-} from './';
+
+// import {
+//   Waiting,
+//   Mission1,
+//   Mission2,
+//   Mission3,
+//   Mission4,
+//   Affirmation,
+//   Result,
+// } from './';
 
 import BackgroundMusic from './Sound/BackgroundMusic';
 import styled from 'styled-components';
+import * as S from '../../styles/common';
+
 import GameSoundEffects from './Sound/GameSoundEffects';
 
 const GAME_MODE = {
@@ -34,15 +37,15 @@ const GAME_MODE = {
   6: 'result',
 };
 
-const GAME_MODE_COMPONENTS = {
-  0: <Waiting />,
-  1: <Mission1 />,
-  2: <Mission2 />,
-  3: <Mission3 />,
-  4: <Mission4 />,
-  5: <Affirmation />,
-  6: <Result />,
-};
+// const GAME_MODE_COMPONENTS = {
+//   0: <Waiting />,
+//   1: <Mission1 />,
+//   2: <Mission2 />,
+//   3: <Mission3 />,
+//   4: <Mission4 />,
+//   5: <Affirmation />,
+//   6: <Result />,
+// };
 
 const InGame = () => {
   const navigate = useNavigate();
@@ -103,17 +106,12 @@ const InGame = () => {
       <Wrapper>
         <MyVideo />
 
-        <React.Fragment key={inGameMode}>
-          {GAME_MODE_COMPONENTS[inGameMode]}
-        </React.Fragment>
-
-        {mateList?.length > 0 && (
-          <MatesVideoWrapper $isSingle={mateList?.length === 1}>
-            {mateList?.map(({ userId, userName }) => (
+        <MatesVideoWrapper $isSingle={mateList?.length === 1}>
+          {mateList?.length > 0 &&
+            mateList?.map(({ userId, userName }) => (
               <MateVideo key={userId} mateId={userId} mateName={userName} />
             ))}
-          </MatesVideoWrapper>
-        )}
+        </MatesVideoWrapper>
       </Wrapper>
     </>
   );
@@ -121,14 +119,24 @@ const InGame = () => {
 
 export default InGame;
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  display: grid;
+  grid-template-rows: auto 150px;
+  gap: 10px;
+
+  width: 100vw;
+  height: 100vh;
+
+  padding: 104px 24px 0px 24px;
+  overflow: hidden;
+`;
 
 const MatesVideoWrapper = styled.div`
-  position: fixed;
-  bottom: 20px;
-  width: 100vw;
-  padding: 0px 32px;
+  width: 100%;
+  height: 150px;
+
   ${({ theme, $isSingle }) =>
     $isSingle ? theme.flex.right : theme.flex.between}
-  gap: 10px;
+
+  gap: 12px;
 `;

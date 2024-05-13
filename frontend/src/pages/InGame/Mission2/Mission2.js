@@ -195,12 +195,10 @@ const Mission2 = () => {
 export default Mission2;
 
 const Canvas = styled.canvas`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: ${({ theme }) => theme.radius.medium};
 `;
 
 const PostitFallAnimation = keyframes`
@@ -215,6 +213,7 @@ const PostitFallAnimation = keyframes`
 `;
 
 const PostitAnimation = styled.div`
+  z-index: 200;
   position: fixed;
   top: ${props => props.top}px;
   left: ${props => props.left}px;

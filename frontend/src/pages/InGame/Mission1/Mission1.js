@@ -157,35 +157,34 @@ const Mission1 = () => {
 export default Mission1;
 
 const Canvas = styled.canvas`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: ${({ theme }) => theme.radius.medium};
 `;
 
 const ProgressWrapper = styled.div`
+  z-index: 200;
   position: absolute;
-  width: 100%;
-  height: 50px;
-  top: 100px;
+  width: 80%;
+  height: 30px;
+  bottom: 25px;
 
-  border: 3px solid ${({ theme }) => theme.colors.primary.white};
+  border-radius: ${({ theme }) => theme.radius.small};
+  border: 2px solid ${({ theme }) => theme.colors.primary.white};
   background-color: ${({ theme }) => theme.colors.translucent.navy};
-  /* border-radius: ${({ theme }) => theme.radius.light}; */
-  overflow: hidden;
-  /* margin: 20px 0; */
 `;
 
 const ProgressIndicator = styled.div`
+  z-index: 300;
+
   position: absolute;
-  bottom: 0;
-  left: 0;
 
   width: ${({ progress }) => progress}%;
   height: 100%;
-  border: 1px solid ${({ theme }) => theme.colors.primary.light};
+
+  border-radius: ${({ theme }) => theme.radius.small};
+
   background-color: ${({ theme }) => theme.colors.primary.emerald};
   transition: width 0.2s ease;
 `;

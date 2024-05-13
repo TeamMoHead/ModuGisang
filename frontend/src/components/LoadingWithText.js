@@ -22,9 +22,8 @@ const LoadingWithText = ({ loadingMSG }) => {
 export default LoadingWithText;
 
 const Wrapper = styled.div`
-  width: 100vw;
-  height: 100vh;
-  ${({ theme }) => theme.flex.center}/* margin: auto; */
+  ${({ theme }) => theme.flex.center}
+  margin: auto;
 `;
 
 const LoadingAnimator = styled.div`
