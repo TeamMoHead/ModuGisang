@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 const time = {
   roundFinish: 8500,
@@ -66,7 +66,7 @@ const Guide = ({ poseCorrect }) => {
   }, []);
 
   return (
-    <GuideWrapper>
+    <GuideWrapper $isFlipped={isFlipped}>
       <StyledSVG
         preserveAspectRatio="xMaxYMax meet"
         xmlns="http://www.w3.org/2000/svg"
@@ -88,17 +88,29 @@ const Guide = ({ poseCorrect }) => {
 export default Guide;
 
 const GuideWrapper = styled.div`
+  z-index: 300;
   position: absolute;
-  overflow: hidden;
-  top: 0;
-  right: 0;
-  width: 100vw;
-  height: 100vh;
+
+  top: -18%;
+
+  ${({ $isFlipped }) =>
+    $isFlipped
+      ? css`
+          right: 0;
+        `
+      : css`
+          left: -17%;
+        `}
+
+  width: 100%;
+  height: 100%;
+
+  border: 10px solid transparent;
 `;
 
 const StyledSVG = styled.svg`
-  width: 100%;
-  height: 100%;
+  width: 120%;
+  height: 120%;
   opacity: 0.5;
   transition: 0.1s ease;
 
@@ -106,7 +118,5 @@ const StyledSVG = styled.svg`
     transition: fill 1s ease;
   }
   transform: ${({ $isFlipped }) => ($isFlipped ? 'scaleX(-1)' : 'none')};
-
-  object-fit: cover;
   z-index: 2;
 `;

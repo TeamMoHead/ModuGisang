@@ -24,7 +24,11 @@ const Signin = () => {
   };
 
   if (isLoginLoading) {
-    return <LoadingWithText loadingMSG="로그인 중입니다 :)" />;
+    return (
+      <S.LoadingWrapper>
+        <LoadingWithText loadingMSG="로그인 중입니다 :)" />
+      </S.LoadingWrapper>
+    );
   }
 
   return (

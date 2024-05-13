@@ -5,7 +5,7 @@ import styled from 'styled-components';
 const MateVideo = ({ mateId, mateName }) => {
   const mateVideoRef = useRef(null);
   const { mateStreams } = useContext(OpenViduContext);
-  const { matesMissionStatus } = useContext(GameContext);
+  const { inGameMode, matesMissionStatus } = useContext(GameContext);
   const [thisMate, setThisMate] = useState(undefined);
   const [mateStatus, setMateStatus] = useState({
     online: false,
@@ -46,13 +46,14 @@ const MateVideo = ({ mateId, mateName }) => {
   }, [matesMissionStatus]);
 
   return (
-    <Wrapper $mateOnLine={mateStatus.online}>
+    <Wrapper>
       {mateStatus.online ? (
         <Video
           ref={mateVideoRef}
           autoPlay
           playsInline
           $isCompleted={mateStatus.missionCompleted}
+          $isNotGame={inGameMode === 0 || inGameMode === 6}
         />
       ) : (
         <EmptyVideo>Zzz...</EmptyVideo>
@@ -69,58 +70,54 @@ const Wrapper = styled.div`
   position: relative;
 
   width: 100%;
-  height: 15vh;
-  margin-bottom: 40px;
+  height: 100%;
 
   display: flex;
   ${({ theme }) => theme.flex.center}
+  justify-content: flex-start;
   flex-direction: column;
 
   box-shadow: ${({ theme }) => theme.boxShadow.basic};
-  background-color: ${({ $mateOnLine, theme }) =>
-    $mateOnLine ? 'transparent' : theme.colors.translucent.white};
-  border-radius: ${({ theme }) => theme.radius.medium};
-
-  border: ${({ $mateOnLine, theme }) =>
-    $mateOnLine
-      ? `2px solid ${theme.colors.translucent.white}`
-      : `2px solid ${theme.colors.neutral.gray}`};
 `;
 
 const Video = styled.video`
   position: absolute;
   width: 100%;
-  height: 100%;
+  height: 66%;
   object-fit: cover;
 
-  border-radius: ${({ theme }) => theme.radius.medium};
-  border: ${({ $isCompleted, theme }) =>
-    $isCompleted
-      ? `2px solid ${theme.colors.primary.emerald}`
-      : `2px solid ${theme.colors.system.red}`};
+  border-radius: ${({ theme }) => theme.radius.small};
+  border: ${({ $isNotGame, $isCompleted, theme }) =>
+    $isNotGame
+      ? `3px solid ${theme.colors.primary.white}`
+      : $isCompleted
+        ? `3px solid ${theme.colors.primary.emerald}`
+        : `3px solid ${theme.colors.system.red}`};
 `;
 
 const UserName = styled.span`
-  position: absolute;
-  width: 98%;
-  bottom: -50px;
+  position: fixed;
+  bottom: 23px;
+  width: 140%;
 
-  padding: 3px 10px;
-  border-radius: ${({ theme }) => theme.radius.small};
-  color: ${({ theme }) => theme.colors.system.black};
-  background-color: ${({ theme }) => theme.colors.translucent.white};
-
-  text-shadow: ${({ theme }) => theme.boxShadow.text};
+  color: ${({ theme }) => theme.colors.primary.white};
+  ${({ theme }) => theme.fonts.IBMsmall};
+  font-size: 13px;
   text-align: center;
-  font-weight: 800;
-  margin-bottom: 8px;
 `;
 
 const EmptyVideo = styled.div`
+  position: absolute;
   width: 100%;
-  height: 100%;
+  height: 66%;
   ${({ theme }) => theme.flex.center};
+  margin: auto;
+
+  border-radius: ${({ theme }) => theme.radius.small};
+  border: 3px solid ${({ theme }) => theme.colors.neutral.gray};
+
+  background-color: ${({ theme }) => theme.colors.translucent.white};
+
   color: ${({ theme }) => theme.colors.neutral.gray};
   font-size: 20px;
-  margin: auto;
 `;

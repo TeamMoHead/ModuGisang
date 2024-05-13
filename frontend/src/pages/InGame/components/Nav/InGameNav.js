@@ -1,6 +1,10 @@
 import React, { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GameContext, OpenViduContext } from '../../../../contexts';
+import {
+  GameContext,
+  OpenViduContext,
+  MediaPipeContext,
+} from '../../../../contexts';
 import { RoundBtn } from '../../../../components';
 import { GameRound, MissionTitle, MissionInst, Timer } from './';
 import { INFO_BY_GAME_MODE } from './DATA';
@@ -21,8 +25,10 @@ const InGameNav = () => {
   const { inGameMode } = useContext(GameContext);
   const { micOn, turnMicOnOff, myVideoRef, myStream } =
     useContext(OpenViduContext);
+  const { setIsWarmUpDone } = useContext(MediaPipeContext);
 
   const goToMain = () => {
+    setIsWarmUpDone(false);
     navigate('/main');
     // localStorage.removeItem('inGameMode');
     if (myVideoRef.current) {
@@ -98,8 +104,6 @@ const Wrapper = styled.nav`
   width: 100vw;
   height: 100px;
   padding: 0 24px;
-
-  background-color: ${({ theme }) => theme.colors.translucent.navy};
 `;
 
 const TextArea = styled.div`
