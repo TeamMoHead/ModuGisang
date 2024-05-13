@@ -10,6 +10,8 @@ const MediaPipeContextProvider = ({ children }) => {
   const [isPoseLoaded, setIsPoseLoaded] = useState(false);
   const [isPoseInitialized, setIsPoseInitialized] = useState(false);
   const [isHolisticLoaded, setIsHolisticLoaded] = useState(false);
+  const [isHolisticInitialized, setIsHolisticInitialized] = useState(false);
+  const [isWarmUpDone, setIsWarmUpDone] = useState(false);
 
   const initializePoseModel = () => {
     poseModel.current = new Pose({
@@ -55,16 +57,28 @@ const MediaPipeContextProvider = ({ children }) => {
     setIsHolisticLoaded(true);
   }, [isPoseInitialized]);
 
+  useEffect(() => {
+    if (!isHolisticInitialized) return;
+
+    setIsWarmUpDone(true);
+  }, [isHolisticInitialized]);
+
   return (
     <MediaPipeContext.Provider
       value={{
         isPoseLoaded,
         setIsPoseLoaded,
+        isPoseInitialized,
         setIsPoseInitialized,
+        initializePoseModel,
         isHolisticLoaded,
+        setIsHolisticLoaded,
+        isHolisticInitialized,
+        setIsHolisticInitialized,
         poseModel,
         holisticModel,
-        initializePoseModel,
+        isWarmUpDone,
+        setIsWarmUpDone,
       }}
     >
       {children}
