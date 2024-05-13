@@ -20,6 +20,7 @@ import {
   CreateContent,
   ChallengeContent,
   EnterContent,
+  SliderContent,
 } from './cardComponents';
 import { CARD_TYPES, CARD_STYLES } from './DATA';
 
@@ -44,7 +45,7 @@ const Main = () => {
     streak: <StreakContent />,
     invitations: <InvitationsContent />,
     create: <CreateContent />,
-    challenge: <ChallengeContent />,
+    challenge: <SliderContent challenges={challengeData} />,
     enter: <EnterContent />,
   };
 
@@ -127,7 +128,6 @@ const Main = () => {
               }}
             />
             <LongBtn onClickHandler={changeWakeTime} btnName="기상시간 세팅" />
-
             <CardsWrapper>
               {CARD_TYPES[hasChallenge ? 'hasChallenge' : 'noChallenge'].map(
                 type => (
