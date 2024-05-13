@@ -8,7 +8,7 @@ const MissionStarting = () => {
   const [isOver, setIsOver] = useState(false);
 
   useEffect(() => {
-    console.log('💕💕💕IS GAME LOADING MOUNTED!💕💕');
+    console.log('💕💕💕IS MISSION STARTING MOUNTED!💕💕');
     const interval = setInterval(() => {
       if (timer > 0) {
         setTimer(prevTimer => prevTimer - 1);

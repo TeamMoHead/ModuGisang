@@ -36,9 +36,10 @@ const GameContextProvider = ({ children }) => {
   });
 
   const [isMissionStarting, setIsMissionStarting] = useState(false);
+  const [isMissionEnding, setIsMissionEnding] = useState(false);
   const [inGameMode, setInGameMode] = useState(
-    parseInt(localStorage.getItem('inGameMode')) || 0,
-    // 1,
+    // parseInt(localStorage.getItem('inGameMode')) || 0,
+    1,
     // 6,
   );
 
@@ -60,7 +61,14 @@ const GameContextProvider = ({ children }) => {
       setMyMissionStatus(false); // 미션 수행상태 초기화
 
       if (GAME_MODE[nextGameMode] !== 'result') {
-        setTimeout(updateMode, GAME_MODE_DURATION[nextGameMode]);
+        // setTimeout(updateMode, GAME_MODE_DURATION[nextGameMode]);
+        setTimeout(() => {
+          setIsMissionEnding(true);
+          setTimeout(() => {
+            setIsMissionEnding(false);
+            updateMode();
+          }, 2000);
+        }, GAME_MODE_DURATION[nextGameMode]);
       }
 
       if (GAME_MODE[nextGameMode] === 'result') {
@@ -74,7 +82,14 @@ const GameContextProvider = ({ children }) => {
       setInGameMode(1); // waiting 끝나면 첫 미션으로 전환
       setIsMissionStarting(true); // 게임 로딩 시작
       setMyMissionStatus(false); // 미션 수행상태 초기화
-      setTimeout(updateMode, GAME_MODE_DURATION[1]); // 첫 미션 후 다음 모드로 전환 시작
+      // setTimeout(updateMode, GAME_MODE_DURATION[1]); // 첫 미션 후 다음 모드로 전환 시작
+      setTimeout(() => {
+        setIsMissionEnding(true); // 첫 미션 종료 후 결과 표시
+        setTimeout(() => {
+          setIsMissionEnding(false);
+          updateMode(); // 다음 모드로 전환 시작
+        }, 2000); // 결과 표시 시간
+      }, GAME_MODE_DURATION[1]); // 첫 미션 지속 시간
     }, remainingTime);
   };
 
@@ -82,7 +97,7 @@ const GameContextProvider = ({ children }) => {
     if (challengeData && !isTooEarly && !isTooLate) {
       // ⭐️⭐️⭐️⭐️⭐️⭐️ 개발 편의 용 주석 ⭐️⭐️⭐️⭐️⭐️//
       // 나중에 다시 풀어야 함
-      scheduleFirstMission();
+      // scheduleFirstMission();
       // ===== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
     }
   }, [challengeData]);
@@ -104,6 +119,8 @@ const GameContextProvider = ({ children }) => {
         inGameMode,
         isMissionStarting,
         setIsMissionStarting,
+        isMissionEnding,
+        setIsMissionEnding,
         gameScore,
         setGameScore,
         rangkings,

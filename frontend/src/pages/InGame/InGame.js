@@ -81,7 +81,7 @@ const InGame = () => {
     //   }
     // }
 
-    console.log('inGameMode:', inGameMode);
+    // console.log('inGameMode:', inGameMode);
 
     return () => {
       // localStorage.removeItem('inGameMode');
@@ -98,7 +98,7 @@ const InGame = () => {
   return (
     <>
       <InGameNav />
-      <BackgroundMusic gameMode={inGameMode} playing={true} />
+      {/* <BackgroundMusic gameMode={inGameMode} playing={true} /> */}
 
       <Wrapper>
         <MyVideo />

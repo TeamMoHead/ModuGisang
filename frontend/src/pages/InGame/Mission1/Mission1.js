@@ -4,7 +4,7 @@ import {
   GameContext,
   OpenViduContext,
 } from '../../../contexts';
-import { MissionStarting } from '../components';
+import { MissionStarting, MissionEnding } from '../components';
 import { estimatePose } from '../MissionEstimators/PoseEstimator';
 import Guide from './Guide';
 import styled from 'styled-components';
@@ -26,11 +26,14 @@ const Mission1 = () => {
   const { poseModel } = useContext(MediaPipeContext);
   const {
     isMissionStarting,
+    isMissionEnding,
+    setIsMissionEnding,
     inGameMode,
     myMissionStatus,
     setMyMissionStatus,
     gameScore,
     setGameScore,
+    GAME_MODE_DURATION,
   } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
@@ -122,6 +125,14 @@ const Mission1 = () => {
       setMyMissionStatus(true);
     }
 
+    // if (stretchSide.every(side => side.active)) {
+    //   console.log('========미션 1 성공========');
+    //   setMyMissionStatus(true);
+    // } else {
+    //   console.log('========미션 1 실패========');
+    //   setMyMissionStatus(false);
+    // }
+
     stretchSide.forEach((side, index) => {
       if (side.active && !side.scoreAdded) {
         setGameScore(prevGameScore => prevGameScore + 12.5);
@@ -136,16 +147,34 @@ const Mission1 = () => {
     });
   }, [stretchSide]);
 
+  useEffect(() => {
+    if (!isMissionStarting) {
+      console.log('미션 1 시작');
+
+      const timer = setTimeout(() => {
+        console.log('미션 1 종료');
+        setIsMissionEnding(true); // 미션 종료 상태 활성화
+        setTimeout(() => {
+          // setIsMissionEnding(false); // 미션 종료 상태 비활성화
+        }, 2000); // 2초 후 종료 상태 비활성화
+      }, 20000); // 미션 1의 지속 시간 후 결과 표시
+
+      return () => clearTimeout(timer);
+    }
+  }, [isMissionStarting]);
+
   return (
     <>
       <MissionStarting />
+
       {isMissionStarting || (
         <>
           <Canvas ref={canvasRef} />
+          {isMissionEnding && <MissionEnding />}
           <ProgressWrapper title="progressWrapper">
             <ProgressIndicator progress={progress} />
           </ProgressWrapper>
-          <Guide poseCorrect={stretchSide[currentRound]} />
+          {/* <Guide poseCorrect={stretchSide[currentRound]} /> */}
         </>
       )}
     </>
