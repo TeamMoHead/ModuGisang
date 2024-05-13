@@ -2,33 +2,10 @@ import React, { useContext, useRef, useEffect, useState } from 'react';
 import { OpenViduContext, GameContext } from '../../../contexts';
 import styled from 'styled-components';
 import { MissionStarting, MissionEnding } from '../components';
-import { rainEffect, effect } from './effect';
 import { calculateDecibels } from './decibelUtils';
 import sunImage from '../../../assets/sun.png';
 import hillImage from '../../../assets/hill.png';
 import { RoundSoundEffect, MissionSoundEffects } from '../Sound';
-import thunderstorm from '../../../assets/soundEffects/thunderstorm.mp3';
-
-const thunderstormSoundEffect = () => {
-  const volume = 0.5;
-  const audio = new Audio(thunderstorm);
-  audio.volume = volume;
-
-  // 사운드 재생
-  audio.play();
-
-  // 2초 후에 페이드 아웃 시작
-  setTimeout(() => {
-    const fadeOutInterval = setInterval(() => {
-      if (audio.volume <= 0.05) {
-        clearInterval(fadeOutInterval);
-        audio.pause(); // 오디오 재생 중지
-      } else {
-        audio.volume -= volume / 10; // 0.05
-      }
-    }, 100);
-  }, 2000);
-};
 
 const Mission4 = () => {
   const {
@@ -100,8 +77,6 @@ const Mission4 = () => {
 
     if (elapsedTime > TIME_LIMIT && isGameOver) {
       console.log('Challenge failed!');
-      // rainEffect(canvasRef, 3);
-      // thunderstormSoundEffect();
       return;
     }
 
@@ -185,12 +160,7 @@ const Mission4 = () => {
   return (
     <>
       <MissionStarting />
-      {isMissionEnding && (
-        <MissionEnding
-          eventHandler={{ thunderstormSoundEffect, rainEffect }}
-          canvasRef={canvasRef}
-        />
-      )}
+      {isMissionEnding && <MissionEnding canvasRef={canvasRef} />}
       {isMissionEnding && <MissionSoundEffects />}
       <FullScreenCanvas>
         <SubCanvas ref={canvasRef} />
