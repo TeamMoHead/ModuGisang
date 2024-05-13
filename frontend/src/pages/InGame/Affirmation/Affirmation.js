@@ -1,13 +1,13 @@
 import React, { useRef, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { GameLoading } from '../components';
+import { MissionStarting } from '../components';
 import { OpenViduContext, GameContext, UserContext } from '../../../contexts';
 
 import useSpeechToText from '../MissionEstimators/useSpeechToText';
 import { fireworks } from './fireworks';
 
 const Affirmation = () => {
-  const { isGameLoading, inGameMode, myMissionStatus, setMyMissionStatus } =
+  const { isMissionStarting, inGameMode, myMissionStatus, setMyMissionStatus } =
     useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const user = useContext(UserContext);
@@ -23,7 +23,7 @@ const Affirmation = () => {
 
   // 인식된 텍스트와 원본 문구 비교 및 강조
   useEffect(() => {
-    if (inGameMode !== 5 || !myVideoRef.current || isGameLoading) {
+    if (inGameMode !== 5 || !myVideoRef.current || isMissionStarting) {
       return;
     }
 
@@ -60,12 +60,12 @@ const Affirmation = () => {
     } else {
       setHighlightedText(<Highlight>{affirmationText}</Highlight>);
     }
-  }, [transcript, affirmationText, affirResult, isGameLoading]);
+  }, [transcript, affirmationText, affirResult, isMissionStarting]);
 
   return (
     <>
-      <GameLoading />
-      {isGameLoading || (
+      <MissionStarting />
+      {isMissionStarting || (
         <>
           <Wrapper>
             <Text>{highlightedText}</Text>

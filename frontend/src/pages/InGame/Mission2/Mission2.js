@@ -6,11 +6,12 @@ import {
 } from '../../../contexts';
 
 // import * as face from '@mediapipe/face_mesh';
-import { GameLoading } from '../components';
+import { MissionStarting } from '../components';
 
 import { estimateFace } from '../MissionEstimators/FaceEstimator';
 import styled, { keyframes } from 'styled-components';
 import stickyNoteImage from '../../../assets/sticky_note.png';
+import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
 
 const Mission2 = () => {
   const [postitPositions, setPostitPositions] = useState([
@@ -42,7 +43,7 @@ const Mission2 = () => {
 
   const { holisticModel } = useContext(MediaPipeContext);
   const {
-    isGameLoading,
+    isMissionStarting,
     inGameMode,
     myMissionStatus,
     setMyMissionStatus,
@@ -57,7 +58,7 @@ const Mission2 = () => {
       inGameMode !== 2 ||
       !myVideoRef.current ||
       !holisticModel.current ||
-      isGameLoading
+      isMissionStarting
     )
       return;
 
@@ -75,7 +76,7 @@ const Mission2 = () => {
         setMyMissionStatus(true);
       }
       if (results.faceLandmarks && !myMissionStatus) {
-        missionStatus.forEach((status, index) => {
+        missionStatus?.forEach((status, index) => {
           if (!status) {
             const newPostitPosition = calculatePostitPosition(
               results.faceLandmarks,
@@ -102,6 +103,7 @@ const Mission2 = () => {
                   ...prevPositions[index],
                   shouldFall: true,
                 };
+                RoundSoundEffect();
               }
               return updatedPositions;
             });
@@ -128,7 +130,7 @@ const Mission2 = () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
       holisticModel.current = null;
     };
-  }, [isGameLoading, holisticModel]);
+  }, [isMissionStarting, holisticModel]);
 
   // 포스트잇의 위치와 크기를 계산하는 함수
   const calculatePostitPosition = (landmarks, index) => {
@@ -152,13 +154,15 @@ const Mission2 = () => {
     let { x, y } = point;
 
     // 랜드마크의 비율을 캔버스의 픽셀 값으로 변환
-    x *=
-      (myVideoRef.current.videoWidth * winWidth) /
+    const temp =
+      (winHeight / myVideoRef.current.videoHeight) *
       myVideoRef.current.videoWidth;
+
+    x *= temp;
     y *= winHeight;
 
     // 포스트잇의 중앙 좌표 계산 (포스트잇이 얼굴의 중앙에 위치하도록)
-    const drawX = x - resizedSize / 2;
+    const drawX = x - resizedSize / 2 - (temp - winWidth) / 2;
     const drawY = y - resizedSize / 2;
 
     // 포스트잇의 위치 및 크기 정보 반환
@@ -172,8 +176,8 @@ const Mission2 = () => {
 
   return (
     <>
-      <GameLoading />
-      {isGameLoading || <Canvas ref={canvasRef} />}
+      <MissionStarting />
+      {isMissionStarting || <Canvas ref={canvasRef} />}
       {postitPositions.map((position, index) => (
         <PostitAnimation
           key={index}

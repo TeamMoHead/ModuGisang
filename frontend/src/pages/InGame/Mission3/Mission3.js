@@ -4,9 +4,10 @@ import {
   GameContext,
   OpenViduContext,
 } from '../../../contexts';
-import { GameLoading } from '../components';
+import { MissionStarting } from '../components';
 import { estimateHead } from '../MissionEstimators/HeadEstimator';
 import arrow from '../../../assets/arrows/arrow.svg';
+import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
 
 import styled from 'styled-components';
 
@@ -27,7 +28,7 @@ const round2 = [
 const Mission3 = () => {
   const { poseModel } = useContext(MediaPipeContext);
   const {
-    isGameLoading,
+    isMissionStarting,
     inGameMode,
     myMissionStatus,
     setMyMissionStatus,
@@ -47,8 +48,8 @@ const Mission3 = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      console.log('미션 3 끝');
-      console.log('score : ', score.current);
+      // console.log('미션 3 끝');
+      // console.log('score : ', score.current);
       setGameScore(prev => prev + score.current);
     }, 17000);
     return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 클리어
@@ -59,7 +60,7 @@ const Mission3 = () => {
       inGameMode !== 3 ||
       !myVideoRef.current ||
       !poseModel.current ||
-      isGameLoading
+      isMissionStarting
     ) {
       return;
     }
@@ -83,10 +84,10 @@ const Mission3 = () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
       poseModel.current = null;
     };
-  }, [isGameLoading, poseModel]);
+  }, [isMissionStarting, poseModel]);
 
   useEffect(() => {
-    if (!poseModel.current || isGameLoading) return;
+    if (!poseModel.current || isMissionStarting) return;
 
     const direction = arrowRound[currentRoundIdx][currentArrowIdx].direction;
     if (myMissionStatus) {
@@ -96,7 +97,7 @@ const Mission3 = () => {
     } else if (currentRoundIdx === 0) {
       score.current = (currentArrowIdx + 1) * 3 - 3;
     }
-    console.log('score : ', score.current);
+    // console.log('score : ', score.current);
     poseModel.current.onResults(results => {
       const result = estimateHead({
         results,
@@ -113,12 +114,13 @@ const Mission3 = () => {
         });
 
         if (currentRoundIdx === 1 && currentArrowIdx === 3) {
+          setCurrentArrowIdx(0); // 첫 번째 화살표로 초기화
           setMyMissionStatus(true); // 성공
           score.current = 25;
         } else if (currentRoundIdx === 0 && currentArrowIdx === 3) {
+          setCurrentArrowIdx(0); // 첫 번째 화살표로 초기화
           setTimeout(() => {
             setCurrentRoundIdx(currentRoundIdx + 1); // 다음 라운드로 넘어감
-            setCurrentArrowIdx(0); // 첫 번째 화살표로 초기화
           }, 1000); // 1초 뒤에 실행되도록 설정
         } else {
           setCurrentArrowIdx(currentArrowIdx + 1); // 다음 화살표로 이동
@@ -126,17 +128,23 @@ const Mission3 = () => {
       }
     });
   }, [
-    isGameLoading,
+    isMissionStarting,
     currentRoundIdx,
     currentArrowIdx,
     arrowRound,
     myMissionStatus,
   ]);
 
+  useEffect(() => {
+    if (!isMissionStarting) {
+      RoundSoundEffect();
+    }
+  }, [currentArrowIdx]);
+
   return (
     <>
-      <GameLoading />
-      {isGameLoading || (
+      <MissionStarting />
+      {isMissionStarting || (
         <>
           <Canvas ref={canvasRef} />
           <ArrowBox>

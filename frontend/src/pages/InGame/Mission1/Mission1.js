@@ -4,10 +4,11 @@ import {
   GameContext,
   OpenViduContext,
 } from '../../../contexts';
-import { GameLoading } from '../components';
+import { MissionStarting } from '../components';
 import { estimatePose } from '../MissionEstimators/PoseEstimator';
 import Guide from './Guide';
 import styled from 'styled-components';
+import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
 
 const round = [
   {
@@ -25,7 +26,7 @@ const round = [
 const Mission1 = () => {
   const { poseModel } = useContext(MediaPipeContext);
   const {
-    isGameLoading,
+    isMissionStarting,
     inGameMode,
     myMissionStatus,
     setMyMissionStatus,
@@ -44,7 +45,7 @@ const Mission1 = () => {
       inGameMode !== 1 ||
       !myVideoRef.current ||
       !poseModel.current ||
-      isGameLoading
+      isMissionStarting
     ) {
       return;
     }
@@ -104,7 +105,7 @@ const Mission1 = () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [isGameLoading, poseModel, inGameMode, myVideoRef, currentRound]);
+  }, [isMissionStarting, poseModel, inGameMode, myVideoRef, currentRound]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -118,28 +119,29 @@ const Mission1 = () => {
       stretchSide[1].active &&
       myMissionStatus === false
     ) {
-      console.log('========미션 1 성공========');
+      // console.log('========미션 1 성공========');
       setMyMissionStatus(true);
     }
 
     stretchSide.forEach((side, index) => {
       if (side.active && !side.scoreAdded) {
         setGameScore(prevGameScore => prevGameScore + 12.5);
-        console.log(gameScore);
+        // console.log(gameScore);
         // 점수가 추가된 후, scoreAdded 상태 업데이트
         setStretchSide(prevState =>
           prevState.map((item, idx) =>
             idx === index ? { ...item, scoreAdded: true } : item,
           ),
         );
+        RoundSoundEffect();
       }
     });
   }, [stretchSide]);
 
   return (
     <>
-      <GameLoading />
-      {isGameLoading || (
+      <MissionStarting />
+      {isMissionStarting || (
         <>
           <Canvas ref={canvasRef} />
           <ProgressWrapper title="progressWrapper">
