@@ -119,14 +119,14 @@ const Mission1 = () => {
       stretchSide[1].active &&
       myMissionStatus === false
     ) {
-      console.log('========미션 1 성공========');
+      // console.log('========미션 1 성공========');
       setMyMissionStatus(true);
     }
 
     stretchSide.forEach((side, index) => {
       if (side.active && !side.scoreAdded) {
         setGameScore(prevGameScore => prevGameScore + 12.5);
-        console.log(gameScore);
+        // console.log(gameScore);
         // 점수가 추가된 후, scoreAdded 상태 업데이트
         setStretchSide(prevState =>
           prevState.map((item, idx) =>

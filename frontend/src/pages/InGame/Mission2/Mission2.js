@@ -76,7 +76,7 @@ const Mission2 = () => {
         setMyMissionStatus(true);
       }
       if (results.faceLandmarks && !myMissionStatus) {
-        missionStatus.forEach((status, index) => {
+        missionStatus?.forEach((status, index) => {
           if (!status) {
             const newPostitPosition = calculatePostitPosition(
               results.faceLandmarks,
@@ -157,8 +157,6 @@ const Mission2 = () => {
     const temp =
       (winHeight / myVideoRef.current.videoHeight) *
       myVideoRef.current.videoWidth;
-
-    console.log('----- temp: ', temp);
 
     x *= temp;
     y *= winHeight;
