@@ -149,34 +149,27 @@ const Mission1 = () => {
     });
   }, [stretchSide]);
 
-  useEffect(() => {
-    if (!isMissionStarting) {
-      console.log('미션 1 시작');
-
-      const timer = setTimeout(() => {
-        console.log('미션 1 종료');
-        setIsMissionEnding(true); // 미션 종료 상태 활성화
-        setTimeout(() => {
-          // setIsMissionEnding(false); // 미션 종료 상태 비활성화
-        }, 2000); // 2초 후 종료 상태 비활성화
-      }, 20000); // 미션 1의 지속 시간 후 결과 표시
-
-      return () => clearTimeout(timer);
-    }
-  }, [isMissionStarting]);
+  // useEffect(() => {
+  //   if (!isMissionStarting) {
+  //     console.log('미션 1 시작');
+  //     if (myMissionStatus) {
+  //       setIsMissionEnding(true);
+  //     }
+  //   }
+  // }, [isMissionStarting]);
 
   return (
     <>
       <MissionStarting />
+      {isMissionEnding && <MissionEnding />}
 
       {isMissionStarting || (
         <>
           <Canvas ref={canvasRef} />
-          {isMissionEnding && <MissionEnding />}
           <ProgressWrapper title="progressWrapper">
             <ProgressIndicator progress={progress} />
           </ProgressWrapper>
-          {/* <Guide poseCorrect={stretchSide[currentRound]} /> */}
+          <Guide poseCorrect={stretchSide[currentRound]} />
         </>
       )}
     </>

@@ -1,14 +1,19 @@
 import React, { useRef, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { MissionStarting } from '../components';
+import { MissionStarting, MissionEnding } from '../components';
 import { OpenViduContext, GameContext, UserContext } from '../../../contexts';
 
 import useSpeechToText from '../MissionEstimators/useSpeechToText';
 import { fireworks } from './fireworks';
 
 const Affirmation = () => {
-  const { isMissionStarting, inGameMode, myMissionStatus, setMyMissionStatus } =
-    useContext(GameContext);
+  const {
+    isMissionStarting,
+    isMissionEnding,
+    inGameMode,
+    myMissionStatus,
+    setMyMissionStatus,
+  } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const user = useContext(UserContext);
   const affirmationText = user.userData.affirmation || '';
@@ -65,6 +70,7 @@ const Affirmation = () => {
   return (
     <>
       <MissionStarting />
+      {isMissionEnding && <MissionEnding />}
       {isMissionStarting || (
         <>
           <Wrapper>

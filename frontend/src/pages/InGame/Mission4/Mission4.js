@@ -1,7 +1,7 @@
 import React, { useContext, useRef, useEffect, useState } from 'react';
 import { OpenViduContext, GameContext } from '../../../contexts';
 import styled from 'styled-components';
-import { MissionStarting } from '../components';
+import { MissionStarting, MissionEnding } from '../components';
 import { rainEffect, effect } from './effect';
 import { calculateDecibels } from './decibelUtils';
 import sunImage from '../../../assets/sun.png';
@@ -33,6 +33,7 @@ const thunderstormSoundEffect = () => {
 const Mission4 = () => {
   const {
     isMissionStarting,
+    isMissionEnding,
     myMissionStatus,
     gameScore,
     setGameScore,
@@ -184,6 +185,7 @@ const Mission4 = () => {
   return (
     <>
       <MissionStarting />
+      {isMissionEnding && <MissionEnding />}
       <FullScreenCanvas>
         <SubCanvas ref={canvasRef} />
         <Hill />

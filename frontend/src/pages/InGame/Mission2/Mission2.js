@@ -6,7 +6,7 @@ import {
 } from '../../../contexts';
 
 // import * as face from '@mediapipe/face_mesh';
-import { MissionStarting } from '../components';
+import { MissionStarting, MissionEnding } from '../components';
 
 import { estimateFace } from '../MissionEstimators/FaceEstimator';
 import styled, { keyframes } from 'styled-components';
@@ -49,6 +49,7 @@ const Mission2 = () => {
     setMyMissionStatus,
     gameScore,
     setGameScore,
+    isMissionEnding,
   } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
@@ -177,6 +178,7 @@ const Mission2 = () => {
   return (
     <>
       <MissionStarting />
+      {isMissionEnding && <MissionEnding />}
       {isMissionStarting || <Canvas ref={canvasRef} />}
       {postitPositions.map((position, index) => (
         <PostitAnimation
