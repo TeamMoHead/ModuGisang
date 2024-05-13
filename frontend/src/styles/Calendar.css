@@ -1,0 +1,114 @@
+.react-calendar {
+  width: 342px;
+  height: 407px;
+  max-width: 100%;
+  background: none;
+  border: none;
+  line-height: 1.125em;
+}
+
+/* 달력 년/월 표시 글씨 커스텀 */
+.react-calendar__navigation {
+  display: flex;
+  padding-top: 28px;
+  span {
+    color: var(--Light, #f0f3ff);
+    /* IBM Large */
+    font-family: 'IBM Plex Sans KR';
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 34px; /* 141.667% */
+    letter-spacing: -0.6px;
+  }
+}
+
+/* 일 월 화 수 목 금 토 글꼴 디자인 */
+.react-calendar__month-view__weekdays {
+  /* display: flex; */
+  text-align: center;
+  abbr {
+    /*월,화,수... 글자 부분*/
+    color: var(--Light, #f0f3ff);
+    font-family: 'IBM Plex Sans KR';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px; /* 137.5% */
+    letter-spacing: -0.4px;
+  }
+}
+
+/* day 타일 한개 한개 모양 디자인 */
+.react-calendar__tile {
+  text-align: center;
+  height: 50px;
+  color: white;
+  color: var(--Light, #f0f3ff);
+  text-align: center;
+  /* IBM Large */
+  font-family: 'IBM Plex Sans KR';
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 34px; /* 141.667% */
+  letter-spacing: -0.6px;
+}
+
+/* 현재 요일 디자인 */
+.react-calendar__tile--now {
+  background-color: #836fff;
+  backdrop-filter: blur(2px);
+  color: white;
+  width: 10px;
+  border-radius: 100%;
+}
+.react-calendar__tile--now:enabled:hover,
+.react-calendar__tile--now:enabled:focus {
+  color: white;
+  width: 10px;
+  border-radius: 100%;
+}
+
+/* day 타일 hover, focus 시 모양 커스텀 */
+.react-calendar__tile--now:enabled:hover,
+.react-calendar__tile--now:enabled:focus,
+.react-calendar__tile--active {
+  background-color: #836fff;
+  backdrop-filter: blur(2px);
+  color: #fafafa;
+  width: 10px;
+  border-radius: 100%;
+}
+
+/* 주말 디자인 변경 */
+.react-calendar__month-view__days__day--weekend {
+  color: white;
+}
+
+/* 이전 달, 다음 달 디자인 변경 */
+.react-calendar__month-view__days__day--neighboringMonth,
+.react-calendar__decade-view__years__year--neighboringDecade,
+.react-calendar__century-view__decades__decade--neighboringCentury {
+  color: #757575;
+}
+
+/* 시작 날짜, 끝 날짜 커스텀 */
+.react-calendar__tile--rangeStart,
+.react-calendar__tile--rangeEnd {
+  /* border-radius: ;
+    background-color:;
+    color: ; */
+}
+
+.react-calendar__tile:enabled:hover .react-calendar__tile:enabled:focus {
+  background-color: white;
+}
+
+.react-calendar__navigation button:enabled:hover {
+  background-color: white;
+}
+/* 연도 클릭 제한 */
+.react-calendar__navigation__label {
+  pointer-events: none;
+}
