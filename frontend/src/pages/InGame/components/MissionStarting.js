@@ -8,7 +8,7 @@ const MissionStarting = () => {
   const [isOver, setIsOver] = useState(false);
 
   useEffect(() => {
-    console.log('💕💕💕IS GAME LOADING MOUNTED!💕💕');
+    console.log('💕💕💕IS MISSION STARTING MOUNTED!💕💕');
     const interval = setInterval(() => {
       if (timer > 0) {
         setTimer(prevTimer => prevTimer - 1);
@@ -38,8 +38,12 @@ export default MissionStarting;
 
 const Wrapper = styled.div`
   z-index: 400;
+
+  position: fixed;
+
   width: 100vw;
   height: 100vh;
+
   ${({ theme }) => theme.flex.center};
 
   margin: auto;

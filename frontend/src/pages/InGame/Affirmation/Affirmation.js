@@ -1,25 +1,22 @@
 import React, { useRef, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { MissionStarting } from '../components';
+import { MissionStarting, MissionEnding } from '../components';
 import { OpenViduContext, GameContext, UserContext } from '../../../contexts';
 
 import useSpeechToText from '../MissionEstimators/useSpeechToText';
-import { fireworks } from './fireworks';
+import MissionSoundEffects from '../Sound/MissionSoundEffects';
 
 const Affirmation = () => {
-  const { isMissionStarting, inGameMode, myMissionStatus, setMyMissionStatus } =
+  const { isMissionStarting, isMissionEnding, inGameMode, setMyMissionStatus } =
     useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const user = useContext(UserContext);
   const affirmationText = user.userData.affirmation || '';
   const [highlightedText, setHighlightedText] = useState('');
-  const { transcript, listening, stop } = useSpeechToText(10);
+  const { transcript, stop } = useSpeechToText(8);
   const [affirResult, setAffirResult] = useState(false);
   const newTranscriptRef = useRef('');
   const idx = useRef(0);
-
-  console.log(transcript);
-  console.log(listening);
 
   // 인식된 텍스트와 원본 문구 비교 및 강조
   useEffect(() => {
@@ -55,7 +52,6 @@ const Affirmation = () => {
         stop(); // 음성 인식 중지
         setAffirResult(true); //  통과 상태로 설정
         setMyMissionStatus(true);
-        fireworks();
       }
     } else {
       setHighlightedText(<Highlight>{affirmationText}</Highlight>);
@@ -65,12 +61,13 @@ const Affirmation = () => {
   return (
     <>
       <MissionStarting />
+      {isMissionEnding && <MissionEnding />}
+      {isMissionEnding && <MissionSoundEffects />}
       {isMissionStarting || (
         <>
           <Wrapper>
-            <Text>{highlightedText}</Text>
+            <TextArea>{highlightedText}</TextArea>
           </Wrapper>
-          {affirResult ? <Success>성공!</Success> : null}
         </>
       )}
     </>
@@ -80,33 +77,33 @@ const Affirmation = () => {
 export default Affirmation;
 
 const Wrapper = styled.div`
+  z-index: 200;
+
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 10;
+
+  width: 100%;
+  height: 100%;
 `;
 
-const Text = styled.p`
+const TextArea = styled.div`
   position: absolute;
-  top: 33%;
-  left: 50%;
-  transform: translate(-50%, -33%);
+  bottom: 3px;
+  left: 3px;
 
   ${({ theme }) => theme.flex.center}
-  width: 90%;
-  height: 50%;
+  width: calc(100% - 6px);
+  height: 30%;
   padding: 15px;
 
-  ${({ theme }) => theme.fonts.IBMlarge}
-  color:${({ theme }) => theme.colors.primary.navy};
-  font-size: 2rem;
+  ${({ theme }) => theme.fonts.IBMLarge}
+  font-size: 20px;
+  font-weight: 700;
   text-align: center;
 
-  background-color: ${({ theme }) => theme.colors.translucent.white};
-  border-radius: ${({ theme }) => theme.radius.medium};
-  border: 3px solid ${({ theme }) => theme.colors.primary.purple};
+  background-color: ${({ theme }) => theme.colors.translucent.navy};
+
+  border-radius: 0 0 ${({ theme }) => theme.radius.medium}
+    ${({ theme }) => theme.radius.medium};
 `;
 
 const Highlight = styled.span`
@@ -119,14 +116,4 @@ const Highlighted = styled.b`
 
 const Unhighlighted = styled.b`
   color: grey;
-`;
-
-const Success = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font: ${({ theme }) => theme.fonts.JuaMedium};
-  line-height: 1.2;
-  font-size: 50px;
 `;

@@ -6,12 +6,12 @@ import {
 } from '../../../contexts';
 
 // import * as face from '@mediapipe/face_mesh';
-import { MissionStarting } from '../components';
+import { MissionStarting, MissionEnding } from '../components';
 
 import { estimateFace } from '../MissionEstimators/FaceEstimator';
 import styled, { keyframes } from 'styled-components';
 import stickyNoteImage from '../../../assets/sticky_note.png';
-import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
+import { RoundSoundEffect, MissionSoundEffects } from '../Sound';
 
 const Mission2 = () => {
   const [postitPositions, setPostitPositions] = useState([
@@ -41,7 +41,8 @@ const Mission2 = () => {
     },
   ]); // 포스트잇의 정보
 
-  const { holisticModel } = useContext(MediaPipeContext);
+  const { holisticModel, setIsHolisticLoaded, setIsHolisticInitialized } =
+    useContext(MediaPipeContext);
   const {
     isMissionStarting,
     inGameMode,
@@ -49,6 +50,7 @@ const Mission2 = () => {
     setMyMissionStatus,
     gameScore,
     setGameScore,
+    isMissionEnding,
   } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const canvasRef = useRef(null);
@@ -129,6 +131,8 @@ const Mission2 = () => {
     return () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
       holisticModel.current = null;
+      setIsHolisticLoaded(false);
+      setIsHolisticInitialized(false);
     };
   }, [isMissionStarting, holisticModel]);
 
@@ -177,6 +181,8 @@ const Mission2 = () => {
   return (
     <>
       <MissionStarting />
+      {isMissionEnding && <MissionEnding />}
+      {isMissionEnding && <MissionSoundEffects />}
       {isMissionStarting || <Canvas ref={canvasRef} />}
       {postitPositions.map((position, index) => (
         <PostitAnimation
@@ -195,12 +201,10 @@ const Mission2 = () => {
 export default Mission2;
 
 const Canvas = styled.canvas`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: ${({ theme }) => theme.radius.medium};
 `;
 
 const PostitFallAnimation = keyframes`
@@ -215,6 +219,7 @@ const PostitFallAnimation = keyframes`
 `;
 
 const PostitAnimation = styled.div`
+  z-index: 200;
   position: fixed;
   top: ${props => props.top}px;
   left: ${props => props.left}px;

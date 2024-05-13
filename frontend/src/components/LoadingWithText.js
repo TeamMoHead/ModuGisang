@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 const LoadingWithText = ({ loadingMSG }) => {
   const iconStyle = {
-    size: 50,
+    size: 30,
     color: 'light',
     disable: true,
   };
@@ -22,9 +22,7 @@ const LoadingWithText = ({ loadingMSG }) => {
 export default LoadingWithText;
 
 const Wrapper = styled.div`
-  width: 100vw;
-  height: 100vh;
-  ${({ theme }) => theme.flex.center}/* margin: auto; */
+  ${({ theme }) => theme.flex.center}
 `;
 
 const LoadingAnimator = styled.div`
@@ -40,7 +38,7 @@ const LoadingAnimator = styled.div`
 `;
 
 const Text = styled.span`
-  ${({ theme }) => theme.fonts.JuaMedium}
+  ${({ theme }) => theme.fonts.JuaSmall}
   color: ${({ theme }) => theme.colors.white};
   margin-left: 10px;
 `;

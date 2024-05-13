@@ -12,7 +12,7 @@ let isTimeOut = false; // 타임 아웃 여부
 
 let isPoseCorrect = false; // 자세 측정 결과
 const keypoints = {}; // 측정에 사용할 각 포인트의 위치 저장
-const timeoutDuration = 20000; // 제한 시간
+const timeoutDuration = 18000; // 제한 시간
 
 export const estimatePose = ({ results, myVideoRef, canvasRef, direction }) => {
   if (
@@ -34,13 +34,13 @@ export const estimatePose = ({ results, myVideoRef, canvasRef, direction }) => {
 
     const handleTimeout = () => {
       isTimeOut = true;
-      // console.log('---------- 제한 시간 종료!');
+      console.log('---------- 제한 시간 종료!');
     };
 
     if (!isGameStart) {
       isGameStart = true;
       setTimeout(handleTimeout, timeoutDuration);
-      // console.log('---------- 제한 시간 시작!');
+      console.log('---------- 제한 시간 시작!');
     }
 
     if (!isTimeOut) {

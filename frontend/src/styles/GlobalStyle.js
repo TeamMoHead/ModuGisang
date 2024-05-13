@@ -33,6 +33,7 @@ ${reset}
       border:none;
       outline: none;
     }
+    font-size: 16px;
   }
 `;
 

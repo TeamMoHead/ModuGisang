@@ -1,6 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserContext, ChallengeContext, AccountContext } from '../../contexts';
+import {
+  UserContext,
+  ChallengeContext,
+  AccountContext,
+  MediaPipeContext,
+} from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
 import {
   NavBar,
@@ -29,10 +34,10 @@ const Main = () => {
   const { accessToken, userId } = useContext(AccountContext);
   const { challengeId, getUserData } = useContext(UserContext);
   const { challengeData, setChallengeData } = useContext(ChallengeContext);
+  const { isWarmUpDone } = useContext(MediaPipeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
 
   // ---------------현재 페이지에서 쓸 State---------------
-  const [isWarmUpDone, setIsWarmUpDone] = useState(false);
   const hasChallenge = Number(challengeId) !== -1;
   const [isUserDataLoading, setIsUserDataLoading] = useState(true);
   const [isChallengeInfoLoading, setIsChallengeInfoLoading] = useState(true);
@@ -90,21 +95,24 @@ const Main = () => {
     }
   }, [challengeData]);
 
-  console.log(
-    'userId: ',
-    userId,
-    ' challengeData: ',
-    challengeData,
-    'isWarmUpDone: ',
-    isWarmUpDone,
-  );
-
   if (!userId || !challengeData)
-    return <LoadingWithText loadingMSG="페이지를 가져오고 있어요" />;
+    return (
+      <S.LoadingWrapper>
+        <LoadingWithText loadingMSG="챌린지 데이터를 가져오고 있어요" />
+      </S.LoadingWrapper>
+    );
   return (
     <>
       {!isWarmUpDone ? (
-        <LoadingWithText loadingMSG="페이지를 가져오고 있어요" />
+        <S.LoadingWrapper>
+          <LoadingWithText
+            loadingMSG={
+              isTooLate
+                ? '결과 데이터를 저장하고 있어요'
+                : '게임을 위해 필요한 AI 모델을 준비하고 있어요'
+            }
+          />
+        </S.LoadingWrapper>
       ) : (
         <>
           <NavBar />
@@ -136,10 +144,7 @@ const Main = () => {
           </S.PageWrapper>
         </>
       )}
-      <WarmUpModel
-        isWarmUpDone={isWarmUpDone}
-        setIsWarmUpDone={setIsWarmUpDone}
-      />
+      <WarmUpModel />
     </>
   );
 };
