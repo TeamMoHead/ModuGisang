@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 
 const time = {
-  roundFinish: 8500,
+  roundFinish: 10500,
   afterCheckCorrect: 500,
   afterFlip: 500,
 };
@@ -22,7 +22,7 @@ const Guide = ({ poseCorrect }) => {
     if (!poseCorrect.active) {
       setColor('#F0F3FF');
     } else {
-      console.log('====================round succeeded===============');
+      // console.log('====================round succeeded===============');
       setColor('#15F5BA');
     }
     latestPoseCorrect.current = poseCorrect;
@@ -35,12 +35,12 @@ const Guide = ({ poseCorrect }) => {
         latestPoseCorrect.current.direction === 'left' &&
         !latestPoseCorrect.current.active
       ) {
-        console.log('====================round failed===============');
+        // console.log('====================round failed===============');
         setColor('#FF008F');
       }
       setTimeout(() => {
         // console.log('====================flipped===========');
-        console.log('round 2 Start');
+        // console.log('round 2 Start');
         setIsFlipped(true);
       }, time.afterCheckCorrect);
       setTimeout(() => {

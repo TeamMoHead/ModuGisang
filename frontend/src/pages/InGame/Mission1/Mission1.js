@@ -5,7 +5,7 @@ import {
   OpenViduContext,
 } from '../../../contexts';
 import { MissionStarting } from '../components';
-import { estimatePose } from '../MissionEstimators/PoseEstimator';
+import { POSES } from './POSE_DATA';
 import Guide from './Guide';
 import styled from 'styled-components';
 import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
@@ -23,6 +23,19 @@ const round = [
   },
 ];
 
+let currentScoreLeft = 0; // 현재 점수
+let currentScoreRight = 0; // 현재 점수
+let maxScore = 320; // 목표 점수
+let selectedPose; // 선택된 자세
+let isGameStart = false; // 게임 시작 여부
+let isTimeOut = false; // 타임 아웃 여부
+let frameCount = 0; // 현재 프레임 카운트
+
+let isPoseCorrect = false; // 자세 측정 결과
+const keypoints = {}; // 측정에 사용할 각 포인트의 위치 저장
+const roundDuration = 11000; // 1 라운드 시간
+const timeoutDuration = 20000; // 제한 시간
+
 const Mission1 = () => {
   const { poseModel } = useContext(MediaPipeContext);
   const {
@@ -30,7 +43,6 @@ const Mission1 = () => {
     inGameMode,
     myMissionStatus,
     setMyMissionStatus,
-    gameScore,
     setGameScore,
   } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
@@ -39,6 +51,75 @@ const Mission1 = () => {
   const [stretchSide, setStretchSide] = useState(round);
   const [currentRound, setCurrentRound] = useState(0);
   const [progress, setProgress] = useState(0);
+
+  const updateProgress = direction => {
+    const newProgress =
+      direction === 'left'
+        ? (currentScoreLeft / maxScore) * 100
+        : (currentScoreRight / maxScore) * 100;
+    setProgress(newProgress);
+  };
+
+  const stretchingGame = poseLandmarks => {
+    if (!poseLandmarks) return;
+
+    const handleTimeout = () => {
+      isTimeOut = true;
+      // console.log('---------- 제한 시간 종료!');
+    };
+
+    if (!isGameStart) {
+      isGameStart = true;
+      setTimeout(handleTimeout, timeoutDuration);
+      // console.log('---------- 제한 시간 시작!');
+    }
+
+    if (!isTimeOut) {
+      isPoseCorrect = false;
+      const direction = stretchSide[currentRound].direction;
+
+      selectedPose = POSES[currentRound];
+      selectedPose.keypoints.forEach(keypoint => {
+        keypoints[keypoint] = poseLandmarks[keypoint];
+      });
+
+      if (selectedPose && selectedPose.condition(keypoints)) {
+        if (direction === 'left') {
+          currentScoreLeft += selectedPose.score;
+          currentScoreLeft = Math.min(currentScoreLeft, maxScore);
+
+          if (currentScoreLeft >= maxScore) {
+            isPoseCorrect = true;
+          } else {
+            isPoseCorrect = false;
+          }
+        } else if (direction === 'right') {
+          currentScoreRight += selectedPose.score;
+          currentScoreRight = Math.min(currentScoreRight, maxScore);
+
+          if (currentScoreRight >= maxScore) {
+            isPoseCorrect = true;
+          } else {
+            isPoseCorrect = false;
+          }
+        }
+      }
+
+      frameCount++;
+      if (isPoseCorrect !== undefined) {
+        if (frameCount % 5 === 0) {
+          requestAnimationFrame(() => updateProgress(direction));
+        }
+        if (isPoseCorrect) {
+          setStretchSide(prevState =>
+            prevState.map((item, index) =>
+              index === currentRound ? { ...item, active: true } : item,
+            ),
+          );
+        }
+      }
+    }
+  };
 
   useEffect(() => {
     if (
@@ -52,38 +133,10 @@ const Mission1 = () => {
 
     const videoElement = myVideoRef.current;
     let animationFrameId;
-    let frameCount = 0;
-
-    const updateProgress = (result, direction) => {
-      const newProgress =
-        direction === 'left'
-          ? result.currentScoreLeft
-          : result.currentScoreRight;
-      setProgress(newProgress);
-    };
 
     poseModel.current.onResults(results => {
-      frameCount++;
-      const direction = stretchSide[currentRound].direction;
-      const result = estimatePose({
-        results,
-        myVideoRef,
-        canvasRef,
-        direction,
-      });
-
-      // console.log('result:', result, 'direction:', direction, stretchSide);
-      if (result !== undefined) {
-        if (frameCount % 5 === 0) {
-          requestAnimationFrame(() => updateProgress(result, direction));
-        }
-        if (result.isPoseCorrect) {
-          setStretchSide(prevState =>
-            prevState.map((item, index) =>
-              index === currentRound ? { ...item, active: true } : item,
-            ),
-          );
-        }
+      if (results.poseLandmarks) {
+        stretchingGame(results.poseLandmarks);
       }
     });
 
@@ -110,7 +163,7 @@ const Mission1 = () => {
   useEffect(() => {
     setTimeout(() => {
       setCurrentRound(1);
-    }, 11000);
+    }, roundDuration);
   }, []);
 
   useEffect(() => {
