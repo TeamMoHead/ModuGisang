@@ -98,8 +98,6 @@ const Wrapper = styled.nav`
   width: 100vw;
   height: 100px;
   padding: 0 24px;
-
-  background-color: ${({ theme }) => theme.colors.translucent.navy};
 `;
 
 const TextArea = styled.div`

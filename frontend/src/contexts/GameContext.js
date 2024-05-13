@@ -40,11 +40,9 @@ const GameContextProvider = ({ children }) => {
   const [isMissionStarting, setIsMissionStarting] = useState(false);
   const [isMissionEnding, setIsMissionEnding] = useState(false);
   const [inGameMode, setInGameMode] = useState(
-    parseInt(localStorage.getItem('inGameMode')) || 0,
-    // 1,
-    // 4,
-    // 3,
-    // 6,
+    // parseInt(localStorage.getItem('inGameMode')) || 0,
+    // 2,
+    0,
   );
 
   const [gameScore, setGameScore] = useState(0);
@@ -115,6 +113,7 @@ const GameContextProvider = ({ children }) => {
     myMissionStatus,
     gameScore,
   );
+
   return (
     <GameContext.Provider
       value={{
