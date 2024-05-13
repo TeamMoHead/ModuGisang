@@ -4,11 +4,11 @@ import {
   GameContext,
   OpenViduContext,
 } from '../../../contexts';
-import { MissionStarting } from '../components';
+import { MissionStarting, MissionEnding } from '../components';
 import { estimatePose } from '../MissionEstimators/PoseEstimator';
 import Guide from './Guide';
 import styled from 'styled-components';
-import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
+import { MissionSoundEffects, RoundSoundEffect } from '../Sound';
 
 const round = [
   {
@@ -27,6 +27,7 @@ const Mission1 = () => {
   const { poseModel } = useContext(MediaPipeContext);
   const {
     isMissionStarting,
+    isMissionEnding,
     inGameMode,
     myMissionStatus,
     setMyMissionStatus,
@@ -141,6 +142,9 @@ const Mission1 = () => {
   return (
     <>
       <MissionStarting />
+      {isMissionEnding && <MissionEnding />}
+      {isMissionEnding && <MissionSoundEffects />}
+
       {isMissionStarting || (
         <>
           <Canvas ref={canvasRef} />

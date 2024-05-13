@@ -4,7 +4,7 @@ import styled from 'styled-components';
 const GameRound = ({ text }) => {
   return (
     <Wrapper>
-      <Text>Round</Text>
+      <Text>Mission</Text>
       <NumberCircle>
         <Number>{text}</Number>
       </NumberCircle>

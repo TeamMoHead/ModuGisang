@@ -20,9 +20,11 @@ const GAME_MODE_DURATION = {
   1: 21500,
   2: 17000,
   3: 17000,
-  4: 17500,
+  4: 14500,
   5: 8000,
 };
+
+const RESULT_TIME = 2000;
 
 const GameContextProvider = ({ children }) => {
   const { challengeData } = useContext(ChallengeContext);
@@ -36,6 +38,7 @@ const GameContextProvider = ({ children }) => {
   });
 
   const [isMissionStarting, setIsMissionStarting] = useState(false);
+  const [isMissionEnding, setIsMissionEnding] = useState(false);
   const [inGameMode, setInGameMode] = useState(
     // parseInt(localStorage.getItem('inGameMode')) || 0,
     // 5,
@@ -53,14 +56,20 @@ const GameContextProvider = ({ children }) => {
 
   const updateMode = () => {
     nextGameMode += 1;
-    if (nextGameMode <= 7) {
+    if (nextGameMode <= 6) {
       // localStorage.setItem('inGameMode', JSON.stringify(nextGameMode));
       setInGameMode(nextGameMode);
       setIsMissionStarting(true);
+      setIsMissionEnding(false);
       setMyMissionStatus(false); // 미션 수행상태 초기화
 
       if (GAME_MODE[nextGameMode] !== 'result') {
-        setTimeout(updateMode, GAME_MODE_DURATION[nextGameMode]);
+        setTimeout(() => {
+          setIsMissionEnding(true);
+          setTimeout(() => {
+            updateMode();
+          }, RESULT_TIME);
+        }, GAME_MODE_DURATION[nextGameMode]);
       }
 
       if (GAME_MODE[nextGameMode] === 'result') {
@@ -74,7 +83,13 @@ const GameContextProvider = ({ children }) => {
       setInGameMode(1); // waiting 끝나면 첫 미션으로 전환
       setIsMissionStarting(true); // 게임 로딩 시작
       setMyMissionStatus(false); // 미션 수행상태 초기화
-      setTimeout(updateMode, GAME_MODE_DURATION[1]); // 첫 미션 후 다음 모드로 전환 시작
+      setIsMissionEnding(false);
+      setTimeout(() => {
+        setIsMissionEnding(true); // 첫 미션 종료 후 결과 표시
+        setTimeout(() => {
+          updateMode();
+        }, RESULT_TIME);
+      }, GAME_MODE_DURATION[1]); // 첫 미션 지속 시간
     }, remainingTime);
   };
 
@@ -105,6 +120,8 @@ const GameContextProvider = ({ children }) => {
         inGameMode,
         isMissionStarting,
         setIsMissionStarting,
+        isMissionEnding,
+        setIsMissionEnding,
         gameScore,
         setGameScore,
         rangkings,

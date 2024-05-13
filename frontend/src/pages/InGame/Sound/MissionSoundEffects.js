@@ -3,7 +3,7 @@ import { GameContext } from '../../../contexts';
 import successSound from '../../../assets/soundEffects/missionSuccess.mp3';
 import failSound from '../../../assets/soundEffects/missionFailure.mp3';
 
-const GameSoundEffects = () => {
+const MissionSoundEffects = () => {
   const successAudioRef = useRef(new Audio(successSound));
   const failAudioRef = useRef(new Audio(failSound));
   const { myMissionStatus, inGameMode } = useContext(GameContext);
@@ -21,8 +21,8 @@ const GameSoundEffects = () => {
       successAudioRef.current.volume = 0.5;
       successAudioRef.current.play();
     } else if (
-      myMissionStatus === false &&
-      previousMissionStatus.current === true
+      myMissionStatus === false
+      // && previousMissionStatus.current === true
     ) {
       // 이전 상태가 true이고 현재 상태가 false로 변한 경우에만 실패음 재생
       failAudioRef.current.volume = 0.5;
@@ -33,4 +33,4 @@ const GameSoundEffects = () => {
   return null;
 };
 
-export default GameSoundEffects;
+export default MissionSoundEffects;

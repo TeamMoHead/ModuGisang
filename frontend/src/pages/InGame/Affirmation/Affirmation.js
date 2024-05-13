@@ -1,18 +1,24 @@
 import React, { useRef, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { MissionStarting } from '../components';
+import { MissionStarting, MissionEnding } from '../components';
 import { OpenViduContext, GameContext, UserContext } from '../../../contexts';
 
 import useSpeechToText from '../MissionEstimators/useSpeechToText';
+import MissionSoundEffects from '../Sound/MissionSoundEffects';
 
 const Affirmation = () => {
-  const { isMissionStarting, inGameMode, myMissionStatus, setMyMissionStatus } =
-    useContext(GameContext);
+  const {
+    isMissionStarting,
+    isMissionEnding,
+    inGameMode,
+    myMissionStatus,
+    setMyMissionStatus,
+  } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const user = useContext(UserContext);
   const affirmationText = user.userData.affirmation || '';
   const [highlightedText, setHighlightedText] = useState('');
-  const { transcript, listening, stop } = useSpeechToText(10);
+  const { transcript, listening, stop } = useSpeechToText(8);
   const [affirResult, setAffirResult] = useState(false);
   const newTranscriptRef = useRef('');
   const idx = useRef(0);
@@ -63,6 +69,8 @@ const Affirmation = () => {
   return (
     <>
       <MissionStarting />
+      {isMissionEnding && <MissionEnding />}
+      {isMissionEnding && <MissionSoundEffects />}
       {isMissionStarting || (
         <>
           <Wrapper>

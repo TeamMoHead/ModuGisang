@@ -25,8 +25,6 @@ import BackgroundMusic from './Sound/BackgroundMusic';
 import styled from 'styled-components';
 import * as S from '../../styles/common';
 
-import GameSoundEffects from './Sound/GameSoundEffects';
-
 const GAME_MODE = {
   0: 'waiting',
   1: 'mission1',
@@ -84,7 +82,7 @@ const InGame = () => {
     //   }
     // }
 
-    console.log('inGameMode:', inGameMode);
+    // console.log('inGameMode:', inGameMode);
 
     return () => {
       // localStorage.removeItem('inGameMode');

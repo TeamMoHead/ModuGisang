@@ -1,15 +1,16 @@
 import React, { useContext, useRef, useEffect, useState } from 'react';
 import { OpenViduContext, GameContext } from '../../../contexts';
 import styled from 'styled-components';
-import { MissionStarting } from '../components';
+import { MissionStarting, MissionEnding } from '../components';
 import { calculateDecibels } from './decibelUtils';
 import sunImage from '../../../assets/sun.png';
 import hillImage from '../../../assets/hill.png';
-import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
+import { RoundSoundEffect, MissionSoundEffects } from '../Sound';
 
 const Mission4 = () => {
   const {
     isMissionStarting,
+    isMissionEnding,
     myMissionStatus,
     gameScore,
     setGameScore,
@@ -20,7 +21,10 @@ const Mission4 = () => {
   const [stream, setStream] = useState(null);
   const [decibels, setDecibels] = useState(0); // 데시벨 상태
   const [shoutingDuration, setShoutingDuration] = useState(0); // 함성이 지속된 시간
+
   const [sunPositionY, setSunPositionY] = useState(window.innerHeight); // 해의 Y 위치
+  const canvasRef = useRef(null); // 캔버스 참조
+
   const [elapsedTime, setElapsedTime] = useState(0); // 경과 시간 (초 단위)
   const startTimeRef = useRef(null); // 시작 시간 저장
   const [isGameOver, setIsGameOver] = useState(false);
@@ -61,11 +65,23 @@ const Mission4 = () => {
   }, []);
 
   useEffect(() => {
+    if (myMissionStatus && !isGameOver) {
+      // effect(3);
+      setRemainingTime(TIME_LIMIT - elapsedTime);
+    }
+  }, [myMissionStatus]);
+
+  useEffect(() => {
     updateGameScore(remainingTime);
   }, [remainingTime]);
 
   useEffect(() => {
     if (!stream || isMissionStarting || myMissionStatus) return;
+
+    if (elapsedTime > TIME_LIMIT && isGameOver) {
+      console.log('Challenge failed!');
+      return;
+    }
 
     const audioContext = new AudioContext();
     const source = audioContext.createMediaStreamSource(stream);
@@ -133,21 +149,22 @@ const Mission4 = () => {
   return (
     <>
       <MissionStarting />
+      {isMissionEnding && <MissionEnding canvasRef={canvasRef} />}
+      {isMissionEnding && <MissionSoundEffects />}
+      <FullScreenCanvas>
+        <SubCanvas ref={canvasRef} />
+        <Hill />
+        {!myMissionStatus && isGameOver ? null : (
+          <Sun id="sun" style={{ top: `${sunPositionY}px` }} />
+        )}
+      </FullScreenCanvas>
       {isGameOver || isMissionStarting || (
-        <>
-          <FullScreenCanvas>
-            <Hill />
-            {!myMissionStatus && isGameOver ? null : (
-              <Sun id="sun" style={{ top: `${sunPositionY}px` }} />
-            )}
-          </FullScreenCanvas>
-          <CanvasWrapper $myMissionStatus={myMissionStatus}>
-            <Canvas />
-            <SoundIndicator
-              $soundWidth={shoutingDuration.toFixed(3) < 5 ? decibels : 0}
-            />
-          </CanvasWrapper>
-        </>
+        <CanvasWrapper $myMissionStatus={myMissionStatus}>
+          <Canvas />
+          <SoundIndicator
+            $soundWidth={shoutingDuration.toFixed(3) < 5 ? decibels : 0}
+          />
+        </CanvasWrapper>
       )}
     </>
   );
@@ -212,6 +229,14 @@ const SoundIndicator = styled.div`
   background-color: ${({ theme }) => theme.colors.primary.emerald};
 
   transition: width 0.2s ease; // 너비 변화를 0.5초 동안 부드럽게 애니메이션
+`;
+
+const SubCanvas = styled.canvas`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 `;
 
 const Sun = styled.div`
