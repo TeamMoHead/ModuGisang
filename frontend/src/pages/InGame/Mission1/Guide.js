@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 
 const time = {
-  roundFinish: 10500,
+  roundFinish: 7500,
   afterCheckCorrect: 500,
   afterFlip: 500,
 };

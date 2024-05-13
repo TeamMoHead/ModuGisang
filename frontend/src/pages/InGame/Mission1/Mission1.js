@@ -4,11 +4,11 @@ import {
   GameContext,
   OpenViduContext,
 } from '../../../contexts';
-import { MissionStarting } from '../components';
 import { POSES } from './POSE_DATA';
+import { MissionStarting, MissionEnding } from '../components';
 import Guide from './Guide';
 import styled from 'styled-components';
-import { RoundSoundEffect } from '../Sound/RoundSoundEffect';
+import { MissionSoundEffects, RoundSoundEffect } from '../Sound';
 
 const round = [
   {
@@ -34,12 +34,13 @@ let frameCount = 0; // 현재 프레임 카운트
 let isPoseCorrect = false; // 자세 측정 결과
 const keypoints = {}; // 측정에 사용할 각 포인트의 위치 저장
 const roundDuration = 11000; // 1 라운드 시간
-const timeoutDuration = 20000; // 제한 시간
+const timeoutDuration = 18000; // 제한 시간
 
 const Mission1 = () => {
   const { poseModel } = useContext(MediaPipeContext);
   const {
     isMissionStarting,
+    isMissionEnding,
     inGameMode,
     myMissionStatus,
     setMyMissionStatus,
@@ -194,6 +195,9 @@ const Mission1 = () => {
   return (
     <>
       <MissionStarting />
+      {isMissionEnding && <MissionEnding />}
+      {isMissionEnding && <MissionSoundEffects />}
+
       {isMissionStarting || (
         <>
           <Canvas ref={canvasRef} />
@@ -218,10 +222,12 @@ const Canvas = styled.canvas`
 
 const ProgressWrapper = styled.div`
   z-index: 200;
+
   position: absolute;
+  bottom: 25px;
+
   width: 80%;
   height: 30px;
-  bottom: 25px;
 
   border-radius: ${({ theme }) => theme.radius.small};
   border: 2px solid ${({ theme }) => theme.colors.primary.white};
