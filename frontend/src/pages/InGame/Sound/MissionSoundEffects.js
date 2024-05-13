@@ -21,8 +21,8 @@ const MissionSoundEffects = () => {
       successAudioRef.current.volume = 0.5;
       successAudioRef.current.play();
     } else if (
-      myMissionStatus === false &&
-      previousMissionStatus.current === true
+      myMissionStatus === false
+      // && previousMissionStatus.current === true
     ) {
       // 이전 상태가 true이고 현재 상태가 false로 변한 경우에만 실패음 재생
       failAudioRef.current.volume = 0.5;

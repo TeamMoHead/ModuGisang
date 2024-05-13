@@ -5,6 +5,7 @@ import { OpenViduContext, GameContext, UserContext } from '../../../contexts';
 
 import useSpeechToText from '../MissionEstimators/useSpeechToText';
 import { fireworks } from './fireworks';
+import MissionSoundEffects from '../Sound/MissionSoundEffects';
 
 const Affirmation = () => {
   const {
@@ -18,7 +19,7 @@ const Affirmation = () => {
   const user = useContext(UserContext);
   const affirmationText = user.userData.affirmation || '';
   const [highlightedText, setHighlightedText] = useState('');
-  const { transcript, listening, stop } = useSpeechToText(10);
+  const { transcript, listening, stop } = useSpeechToText(8);
   const [affirResult, setAffirResult] = useState(false);
   const newTranscriptRef = useRef('');
   const idx = useRef(0);
@@ -71,6 +72,7 @@ const Affirmation = () => {
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
+      {isMissionEnding && <MissionSoundEffects />}
       {isMissionStarting || (
         <>
           <Wrapper>

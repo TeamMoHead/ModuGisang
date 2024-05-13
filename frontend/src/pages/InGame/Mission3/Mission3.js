@@ -45,6 +45,7 @@ const Mission3 = () => {
   });
   const [currentRoundIdx, setCurrentRoundIdx] = useState(0);
   const [currentArrowIdx, setCurrentArrowIdx] = useState(0);
+  const [isMissionFinished, setIsMissionFinished] = useState(false);
   const score = useRef(0);
 
   useEffect(() => {
@@ -52,6 +53,7 @@ const Mission3 = () => {
       // console.log('미션 3 끝');
       // console.log('score : ', score.current);
       setGameScore(prev => prev + score.current);
+      setIsMissionFinished(true);
     }, 17000);
     return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 클리어
   }, []);
@@ -88,6 +90,9 @@ const Mission3 = () => {
   }, [isMissionStarting, poseModel]);
 
   useEffect(() => {
+    if (isMissionFinished) {
+      return;
+    }
     if (!poseModel.current || isMissionStarting) return;
 
     const direction = arrowRound[currentRoundIdx][currentArrowIdx].direction;

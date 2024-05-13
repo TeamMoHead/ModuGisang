@@ -2,11 +2,9 @@ import React, { useState, useEffect, useContext } from 'react';
 import { GameContext } from '../../../contexts';
 import styled, { keyframes } from 'styled-components';
 
-const MissionEnding = () => {
+const MissionEnding = ({ eventHandler, canvasRef }) => {
   const { isMissionEnding, setIsMissionEnding, myMissionStatus, inGameMode } =
     useContext(GameContext);
-  const [timer, setTimer] = useState(2);
-  const [isOver, setIsOver] = useState(false);
 
   useEffect(() => {
     if (!isMissionEnding) return;
@@ -15,29 +13,25 @@ const MissionEnding = () => {
     console.log('myMissionStatus:', myMissionStatus);
     console.log('isMissionEnding:', isMissionEnding);
 
-    const interval = setInterval(() => {
-      setTimer(prevTimer => {
-        if (prevTimer > 0) {
-          return prevTimer - 1;
-        } else {
-          clearInterval(interval);
-          setIsOver(true);
-          setIsMissionEnding(false);
-          return 0;
-        }
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
+    if (inGameMode === 4 && !myMissionStatus) {
+      eventHandler.rainEffect(canvasRef, 2);
+      eventHandler.thunderstormSoundEffect();
+    }
   }, [isMissionEnding, myMissionStatus, setIsMissionEnding]);
 
   if (!isMissionEnding) return null;
 
   return (
     <Wrapper title="ResultWrapper">
-      {!isOver && (
-        <Result key={inGameMode}>{myMissionStatus ? 'O' : 'X'}</Result>
-      )}
+      {
+        <Result
+          key={inGameMode}
+          myMissionStatus={myMissionStatus}
+          inGameMode={inGameMode}
+        >
+          {myMissionStatus ? 'O' : 'X'}
+        </Result>
+      }
     </Wrapper>
   );
 };
@@ -52,29 +46,28 @@ const Wrapper = styled.div`
   width: 100vw;
   height: 100vh;
   ${({ theme }) => theme.flex.center};
+
   margin: auto;
   font: 700 50px 'Jua';
 `;
 
-// const fadeInOut = keyframes`
-//   0% {
-//     opacity: 1;
-//     font-size: 100vw;
-//   }
-//   100% {
-//     opacity: 0;
-//     font-size: 0;
-//     display: none;
-//   }
-// `;
+const fadeInOut = keyframes`
+  0%, 50%, 100% { opacity: 0; }
+  25%, 75% { opacity: 1; }
+`;
 
 const Result = styled.span`
   width: 100%;
   height: 100%;
   ${({ theme }) => theme.flex.center};
+  background-color: ${({ theme, inGameMode }) =>
+    inGameMode === 4 ? 'transparent' : theme.colors.translucent.navy};
   color: ${({ theme }) => theme.colors.white};
-  -webkit-text-stroke: ${({ theme }) => theme.colors.primary.emerald} 4px;
+  -webkit-text-stroke: ${({ theme, myMissionStatus }) =>
+      myMissionStatus ? theme.colors.primary.emerald : theme.colors.system.red}
+    4px;
+  animation: ${fadeInOut} 2000ms ease-in-out;
 
   font: 700 400px 'Jua';
-  z-index: 5;
+  z-index: 15;
 `;

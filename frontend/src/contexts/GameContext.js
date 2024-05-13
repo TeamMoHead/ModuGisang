@@ -20,7 +20,7 @@ const GAME_MODE_DURATION = {
   1: 21500,
   2: 17000,
   3: 17000,
-  4: 17500,
+  4: 14500,
   5: 8000,
 };
 
@@ -42,6 +42,8 @@ const GameContextProvider = ({ children }) => {
   const [inGameMode, setInGameMode] = useState(
     parseInt(localStorage.getItem('inGameMode')) || 0,
     // 1,
+    // 4,
+    // 3,
     // 6,
   );
 
@@ -56,7 +58,7 @@ const GameContextProvider = ({ children }) => {
 
   const updateMode = () => {
     nextGameMode += 1;
-    if (nextGameMode <= 7) {
+    if (nextGameMode <= 6) {
       // localStorage.setItem('inGameMode', JSON.stringify(nextGameMode));
       setInGameMode(nextGameMode);
       setIsMissionStarting(true);

@@ -86,7 +86,7 @@ const Mission4 = () => {
 
   useEffect(() => {
     if (myMissionStatus && !isGameOver) {
-      effect(3);
+      // effect(3);
       setRemainingTime(TIME_LIMIT - elapsedTime);
     }
   }, [myMissionStatus]);
@@ -100,8 +100,8 @@ const Mission4 = () => {
 
     if (elapsedTime > TIME_LIMIT && isGameOver) {
       console.log('Challenge failed!');
-      rainEffect(canvasRef, 3);
-      thunderstormSoundEffect();
+      // rainEffect(canvasRef, 3);
+      // thunderstormSoundEffect();
       return;
     }
 
@@ -185,7 +185,12 @@ const Mission4 = () => {
   return (
     <>
       <MissionStarting />
-      {isMissionEnding && <MissionEnding />}
+      {isMissionEnding && (
+        <MissionEnding
+          eventHandler={{ thunderstormSoundEffect, rainEffect }}
+          canvasRef={canvasRef}
+        />
+      )}
       {isMissionEnding && <MissionSoundEffects />}
       <FullScreenCanvas>
         <SubCanvas ref={canvasRef} />
