@@ -38,8 +38,12 @@ export default MissionStarting;
 
 const Wrapper = styled.div`
   z-index: 400;
+
+  position: fixed;
+
   width: 100vw;
   height: 100vh;
+
   ${({ theme }) => theme.flex.center};
 
   margin: auto;

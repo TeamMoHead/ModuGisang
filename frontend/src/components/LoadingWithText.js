@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 const LoadingWithText = ({ loadingMSG }) => {
   const iconStyle = {
-    size: 50,
+    size: 30,
     color: 'light',
     disable: true,
   };
@@ -23,7 +23,6 @@ export default LoadingWithText;
 
 const Wrapper = styled.div`
   ${({ theme }) => theme.flex.center}
-  margin: auto;
 `;
 
 const LoadingAnimator = styled.div`
@@ -39,7 +38,7 @@ const LoadingAnimator = styled.div`
 `;
 
 const Text = styled.span`
-  ${({ theme }) => theme.fonts.JuaMedium}
+  ${({ theme }) => theme.fonts.JuaSmall}
   color: ${({ theme }) => theme.colors.white};
   margin-left: 10px;
 `;

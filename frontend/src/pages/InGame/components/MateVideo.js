@@ -83,7 +83,7 @@ const Wrapper = styled.div`
 const Video = styled.video`
   position: absolute;
   width: 100%;
-  height: 68%;
+  height: 66%;
   object-fit: cover;
 
   border-radius: ${({ theme }) => theme.radius.small};
@@ -97,7 +97,7 @@ const Video = styled.video`
 
 const UserName = styled.span`
   position: fixed;
-  bottom: 24px;
+  bottom: 23px;
   width: 140%;
 
   color: ${({ theme }) => theme.colors.primary.white};
@@ -109,8 +109,7 @@ const UserName = styled.span`
 const EmptyVideo = styled.div`
   position: absolute;
   width: 100%;
-  height: 68%;
-
+  height: 66%;
   ${({ theme }) => theme.flex.center};
   margin: auto;
 
