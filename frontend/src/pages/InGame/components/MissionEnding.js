@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { GameContext } from '../../../contexts';
 import { rainEffect } from '../Mission4/effect';
 
@@ -61,12 +61,13 @@ const MissionEnding = ({ canvasRef }) => {
 export default MissionEnding;
 
 const Wrapper = styled.div`
-  position: absolute;
-  overflow: hidden;
-  top: 0;
-  right: 0;
+  z-index: 400;
+
+  position: fixed;
+
   width: 100vw;
   height: 100vh;
+
   ${({ theme }) => theme.flex.center};
 
   margin: auto;
