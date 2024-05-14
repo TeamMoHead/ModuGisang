@@ -5,8 +5,8 @@ import { RoundBtn } from '../components';
 import styled, { css } from 'styled-components';
 
 const NavBar = () => {
-  const { userData } = useContext(UserContext);
-  const { userName } = userData;
+  const { myData } = useContext(UserContext);
+  const { userName } = myData;
   const { pathname } = useLocation();
   const params = useParams();
   const navigate = useNavigate();
