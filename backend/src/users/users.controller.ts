@@ -9,10 +9,11 @@ import {
   BadRequestException,
   Query,
   Get,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthenticateGuard } from 'src/auth/auth.guard';
 
 @Controller('/api/user')
 export class UserController {
@@ -30,6 +31,29 @@ export class UserController {
     return user;
   }
 
+  @UseGuards(AuthenticateGuard)
+  @Get('me')
+  async myData(@Req() req) {
+    console.log(req.user);
+    const reuslt = await this.userService.getInvis(req.user._id);
+    const invitations = reuslt.invitations;
+    return {
+      userId: invitations._id,
+      userName: invitations.userName,
+      streakDays: 0, // streak 구현 후 처리 예정
+      medals: {
+        gold: invitations.medals.gold,
+        silver: invitations.medals.silver,
+        bronze: invitations.medals.bronze,
+      },
+      invitationCounts: reuslt.count,
+      affirmation: invitations.affirmation,
+      challengeId: invitations.challengeId,
+      profile: invitations.profile,
+    };
+  }
+
+  @UseGuards(AuthenticateGuard)
   @Get('/:userId')
   async searchUser(@Param('userId') userId: number) {
     const reuslt = await this.userService.getInvis(userId);
