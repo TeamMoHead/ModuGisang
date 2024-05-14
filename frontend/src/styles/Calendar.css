@@ -68,13 +68,11 @@
   backdrop-filter: blur(2px);
   color: white;
   width: 10px;
-  border-radius: 100%;
 }
 .react-calendar__tile--now:enabled:hover,
 .react-calendar__tile--now:enabled:focus {
   color: white;
   width: 10px;
-  border-radius: 100%;
 }
 
 /* day 타일 hover, focus 시 모양 커스텀 */
@@ -85,7 +83,6 @@
   backdrop-filter: blur(2px);
   color: #fafafa;
   width: 10px;
-  border-radius: 100%;
 }
 
 /* 주말 디자인 변경 */
