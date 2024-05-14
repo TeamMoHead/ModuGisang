@@ -18,7 +18,7 @@ import { AuthGuard } from '@nestjs/passport';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('signup')
+  @Post('sign-up')
   async createUser(@Body() createUserDto: CreateUserDto) {
     console.log('come here');
     console.log(createUserDto);
@@ -50,7 +50,7 @@ export class UserController {
     };
   }
 
-  @Post('/:userId/updateAffirm')
+  @Post('/:userId/update-affirm')
   async updateAffirm(
     @Param('userId') userId: number,
     @Body('affirmation') affirmation: string,
