@@ -155,7 +155,6 @@ const Mission3 = () => {
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
-      {isMissionEnding && <MissionSoundEffects />}
       {isMissionStarting || (
         <>
           <Canvas ref={canvasRef} />

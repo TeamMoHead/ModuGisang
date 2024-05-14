@@ -57,7 +57,7 @@ const BackgroundMusic = () => {
   const audioRef = useRef(null);
 
   useEffect(() => {
-    const missionMode = [1, 2, 3, 4, 5];
+    const MISSION_MODE = [1, 2, 3, 4, 5];
     const newSrc = getMusicSrc(inGameMode);
 
     if (audioRef.current) {
@@ -67,7 +67,10 @@ const BackgroundMusic = () => {
     if (isMusicMuted) {
       audioRef.current.pause();
       return;
-    } else {
+    } else if (inGameMode === 0 || inGameMode === 6) {
+      audioRef.current.src = newSrc;
+      audioRef.current.play();
+    } else if (inGameMode === 1) {
       audioRef.current.src = newSrc;
       audioRef.current.play();
     }
