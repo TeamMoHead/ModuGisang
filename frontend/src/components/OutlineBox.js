@@ -82,12 +82,12 @@ const Wrapper = styled.div`
 `;
 
 const Header = styled.div`
-  padding: 20px;
+  padding: 12px;
   align-self: center;
   justify-self: center;
   text-align: center;
 
-  border-radius: 25px 25px 0 0;
+  border-radius: 30px 30px 0 0;
 
   ${({ theme, $headerStyle }) => theme.fonts[$headerStyle?.font]};
 

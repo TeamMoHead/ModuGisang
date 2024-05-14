@@ -181,6 +181,7 @@ const Mission2 = () => {
     };
   };
 
+  console.log('============ MISSION2 ==============', holisticModel);
   return (
     <>
       <MissionStarting />
