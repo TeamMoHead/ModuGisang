@@ -7,8 +7,14 @@ import useSpeechToText from '../MissionEstimators/useSpeechToText';
 import MissionSoundEffects from '../Sound/MissionSoundEffects';
 
 const Affirmation = () => {
-  const { isMissionStarting, isMissionEnding, inGameMode, setMyMissionStatus } =
-    useContext(GameContext);
+  const {
+    isGameScoreSent,
+    sendMyGameScore,
+    isMissionStarting,
+    isMissionEnding,
+    inGameMode,
+    setMyMissionStatus,
+  } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const user = useContext(UserContext);
   const affirmationText = user.myData.affirmation || '';
@@ -17,6 +23,13 @@ const Affirmation = () => {
   const [affirResult, setAffirResult] = useState(false);
   const newTranscriptRef = useRef('');
   const idx = useRef(0);
+
+  useEffect(() => {
+    if (inGameMode === 5) {
+      if (isGameScoreSent) return;
+      sendMyGameScore();
+    } else return;
+  }, [isGameScoreSent]);
 
   // 인식된 텍스트와 원본 문구 비교 및 강조
   useEffect(() => {

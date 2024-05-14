@@ -11,16 +11,6 @@ import useCheckTime from '../../hooks/useCheckTime';
 import InGameNav from './components/Nav/InGameNav';
 import { MyVideo, MateVideo } from './components';
 
-// import {
-//   Waiting,
-//   Mission1,
-//   Mission2,
-//   Mission3,
-//   Mission4,
-//   Affirmation,
-//   Result,
-// } from './';
-
 import { BackgroundMusic, MusicController } from './Sound';
 import styled from 'styled-components';
 import * as S from '../../styles/common';
@@ -35,23 +25,13 @@ const GAME_MODE = {
   6: 'result',
 };
 
-// const GAME_MODE_COMPONENTS = {
-//   0: <Waiting />,
-//   1: <Mission1 />,
-//   2: <Mission2 />,
-//   3: <Mission3 />,
-//   4: <Mission4 />,
-//   5: <Affirmation />,
-//   6: <Result />,
-// };
-
 const InGame = () => {
   const navigate = useNavigate();
   const { myData } = useContext(UserContext);
   const { userId: myId } = myData;
   const { challengeData } = useContext(ChallengeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
-  const { inGameMode, myMissionStatus, setMyMissionStatus, isMissionStarting } =
+  const { inGameMode, isEnteredTimeSent, sendEnteredTime } =
     useContext(GameContext);
   const { myStream, myVideoRef } = useContext(OpenViduContext);
   const [redirected, setRedirected] = useState(false);
@@ -95,11 +75,21 @@ const InGame = () => {
     };
   }, [inGameMode, isTooEarly, isTooLate, redirected]);
 
+  useEffect(() => {
+    if (inGameMode === 0) {
+      if (isEnteredTimeSent) {
+        return;
+      } else {
+        sendEnteredTime();
+      }
+    }
+  }, [inGameMode, isEnteredTimeSent]);
+
   if (redirected) return null;
   return (
     <>
       <InGameNav />
-      <BackgroundMusic gameMode={inGameMode} playing={true} />
+      <BackgroundMusic />
       <MusicController />
 
       <Wrapper>
