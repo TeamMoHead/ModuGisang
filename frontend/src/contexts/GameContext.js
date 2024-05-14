@@ -57,22 +57,20 @@ const GameContextProvider = ({ children }) => {
 
   // =================== GAME STATUS ===================
   const [inGameMode, setInGameMode] = useState(
-    parseInt(localStorage.getItem('inGameMode')) || 0,
-    // 5,
-    // 0,
+    // parseInt(localStorage.getItem('inGameMode')) || 0,
+    // 6,
+    0,
   );
   const [isEnteredTimeSent, setIsEnteredTimeSent] = useState(false);
   const [isGameScoreSent, setIsGameScoreSent] = useState(false);
   const [gameScore, setGameScore] = useState(0); // Mission1, 2, 3, 4에서 축적되는 점수
-  const [gameResults, setGameResults] = useState(
-    null,
-    // [
+  const [isGameResultReceived, setIsGameResultReceived] = useState(false);
+  const [gameResults, setGameResults] = useState([
     // { userId: 'int',
     //  userName: 'string',
     //   score: 'number'
     //  },
-    //  ]
-  );
+  ]);
   //
   // ====================================================
 
@@ -119,6 +117,8 @@ const GameContextProvider = ({ children }) => {
     if (!isLoading && data) {
       console.log('Game Results => ', data);
       setGameResults(data);
+      setIsGameResultReceived(true);
+      return data;
     } else {
       console.error('Game Results Error => ', error);
     }
@@ -217,6 +217,7 @@ const GameContextProvider = ({ children }) => {
         sendMyGameScore,
         //
         gameResults,
+        isGameResultReceived,
         setGameResults,
         getGameResults,
       }}

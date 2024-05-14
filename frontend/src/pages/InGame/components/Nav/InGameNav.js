@@ -6,7 +6,7 @@ import {
   MediaPipeContext,
 } from '../../../../contexts';
 import { RoundBtn } from '../../../../components';
-import { GameRound, MissionTitle, MissionInst, Timer } from './';
+import { GameRound, Timer } from './';
 import { INFO_BY_GAME_MODE } from './DATA';
 import styled from 'styled-components';
 
@@ -71,8 +71,12 @@ const InGameNav = () => {
       <TextArea>
         {GAME_MODE[inGameMode] !== 'waiting' && (
           <>
-            <MissionTitle text={INFO_BY_GAME_MODE[inGameMode].title} />
-            <MissionInst text={INFO_BY_GAME_MODE[inGameMode].instruction} />
+            <MissionTitle $isResultMode={GAME_MODE[inGameMode] === 'result'}>
+              {INFO_BY_GAME_MODE[inGameMode].title}
+            </MissionTitle>
+            <MissionInst>
+              {INFO_BY_GAME_MODE[inGameMode].instruction}
+            </MissionInst>
           </>
         )}
         {GAME_MODE[inGameMode] === 'waiting' && (
@@ -112,6 +116,21 @@ const TextArea = styled.div`
   gap: 6px;
 
   margin-bottom: -8px;
+`;
+
+const MissionTitle = styled.div`
+  ${({ $isResultMode, theme }) =>
+    $isResultMode ? theme.fonts.JuaMedium : theme.fonts.JuaSmall}
+  color: ${({ theme }) => theme.colors.primary.emerald};
+  text-align: center;
+`;
+
+const MissionInst = styled.div`
+  ${({ theme }) => theme.fonts.IBMsmall}
+  font-size: 15px;
+
+  color: ${({ theme }) => theme.colors.primary.white};
+  text-align: center;
 `;
 
 const BACK_BTN_STYLE = {
