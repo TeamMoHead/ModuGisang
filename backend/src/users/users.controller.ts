@@ -35,7 +35,8 @@ export class UserController {
   @Get('me')
   async myData(@Req() req) {
     console.log(req.user);
-    const reuslt = await this.userService.getInvis(req.user._id);
+    console.log('typeof req.user._id', typeof req.user._id);
+    const reuslt = await this.userService.getInvis(Number(req.user._id));
     const invitations = reuslt.invitations;
     return {
       userId: invitations._id,
