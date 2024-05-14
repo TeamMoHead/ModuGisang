@@ -11,7 +11,7 @@ const Affirmation = () => {
     useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const user = useContext(UserContext);
-  const affirmationText = user.userData.affirmation || '';
+  const affirmationText = user.myData.affirmation || '';
   const [highlightedText, setHighlightedText] = useState('');
   const { transcript, stop } = useSpeechToText(8);
   const [affirResult, setAffirResult] = useState(false);
