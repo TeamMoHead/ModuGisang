@@ -29,16 +29,15 @@ import * as S from '../../styles/common';
 const Main = () => {
   const navigate = useNavigate();
 
-  // setUserData는 Test용으로 사용하는 함수
   const { accessToken, userId } = useContext(AccountContext);
-  const { challengeId, getUserData } = useContext(UserContext);
+  const { challengeId, getMyData } = useContext(UserContext);
   const { challengeData, setChallengeData } = useContext(ChallengeContext);
   const { isWarmUpDone } = useContext(MediaPipeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
 
   // ---------------현재 페이지에서 쓸 State---------------
   const hasChallenge = Number(challengeId) !== -1;
-  const [isUserDataLoading, setIsUserDataLoading] = useState(true);
+  const [isMyDataLoading, setIsMyDataLoading] = useState(true);
   const [isChallengeInfoLoading, setIsChallengeInfoLoading] = useState(true);
 
   const CARD_CONTENTS = {
@@ -90,7 +89,7 @@ const Main = () => {
 
   useEffect(() => {
     if (accessToken && userId) {
-      getUserData();
+      getMyData();
     }
   }, [challengeData]);
 

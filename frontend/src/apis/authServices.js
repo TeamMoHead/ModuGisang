@@ -45,7 +45,7 @@ const verifyAuthCode = async ({ verifyCode, email }) => {
 };
 
 const signUpUser = async ({ email, password, userName }) => {
-  const url = '/user/signUp';
+  const url = '/user/sign-up';
   const payload = {
     email: email,
     password: password,

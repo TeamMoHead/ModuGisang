@@ -13,6 +13,7 @@ import {
   faGear,
   faMicrophone,
   faMicrophoneSlash,
+  faMusic,
   faMagnifyingGlass,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
@@ -27,6 +28,7 @@ const iconList = {
   sadFace: faSadTear,
   loading: faSpinner,
   settings: faGear,
+  music: faMusic,
   micOn: faMicrophone,
   micOff: faMicrophoneSlash,
   search: faMagnifyingGlass,

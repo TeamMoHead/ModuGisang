@@ -21,7 +21,7 @@ import { MyVideo, MateVideo } from './components';
 //   Result,
 // } from './';
 
-import BackgroundMusic from './Sound/BackgroundMusic';
+import { BackgroundMusic, MusicController } from './Sound';
 import styled from 'styled-components';
 import * as S from '../../styles/common';
 
@@ -47,8 +47,8 @@ const GAME_MODE = {
 
 const InGame = () => {
   const navigate = useNavigate();
-  const { userData } = useContext(UserContext);
-  const { userId: myId } = userData;
+  const { myData } = useContext(UserContext);
+  const { userId: myId } = myData;
   const { challengeData } = useContext(ChallengeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
   const { inGameMode, myMissionStatus, setMyMissionStatus, isMissionStarting } =
@@ -100,6 +100,7 @@ const InGame = () => {
     <>
       <InGameNav />
       <BackgroundMusic gameMode={inGameMode} playing={true} />
+      <MusicController />
 
       <Wrapper>
         <MyVideo />

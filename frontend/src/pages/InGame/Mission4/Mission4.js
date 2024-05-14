@@ -11,6 +11,7 @@ const Mission4 = () => {
   const {
     isMissionStarting,
     isMissionEnding,
+    isMusicMuted,
     myMissionStatus,
     gameScore,
     setGameScore,
@@ -102,7 +103,10 @@ const Mission4 = () => {
       if (shoutingDuration > 5) {
         clearInterval(intervalId);
         setMyMissionStatus(true);
-        RoundSoundEffect();
+        if (!isMusicMuted) {
+          RoundSoundEffect();
+        }
+
         return;
       }
       setSunPosition();
