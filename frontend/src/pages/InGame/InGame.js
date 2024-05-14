@@ -5,6 +5,7 @@ import {
   ChallengeContext,
   GameContext,
   OpenViduContext,
+  MediaPipeContext,
 } from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
 
@@ -34,6 +35,15 @@ const InGame = () => {
   const { inGameMode, isEnteredTimeSent, sendEnteredTime } =
     useContext(GameContext);
   const { myStream, myVideoRef } = useContext(OpenViduContext);
+  const {
+    poseModel,
+    holisticModel,
+    setIsPoseLoaded,
+    setIsPoseInitialized,
+    setIsHolisticLoaded,
+    setIsHolisticInitialized,
+    setIsWarmUpDone,
+  } = useContext(MediaPipeContext);
   const [redirected, setRedirected] = useState(false);
 
   const [mateList, setMateList] = useState([]);
@@ -83,6 +93,15 @@ const InGame = () => {
         sendEnteredTime();
       }
     }
+    return () => {
+      poseModel.current = null;
+      holisticModel.current = null;
+      setIsPoseLoaded(false);
+      setIsPoseInitialized(false);
+      setIsHolisticLoaded(false);
+      setIsHolisticInitialized(false);
+      setIsWarmUpDone(false);
+    };
   }, [inGameMode, isEnteredTimeSent]);
 
   if (redirected) return null;
