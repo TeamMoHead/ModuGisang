@@ -9,7 +9,7 @@ const API = axios.create({
 });
 
 const getMyInfo = async ({ accessToken }) => {
-  const url = `/me`;
+  const url = `/user/me`;
   const config = {
     headers: { Authorization: `Bearer ${accessToken}` },
   };

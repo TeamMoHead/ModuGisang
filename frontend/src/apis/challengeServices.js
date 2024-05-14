@@ -89,11 +89,11 @@ const getCallendarInfoByDate = async ({ accessToken, userId, date }) => {
 
 const getConnectionToken = async ({ accessToken, userData }) => {
   const url = '/start-session';
-  const payload = userData;
+
   const config = {
     headers: { Authorization: `Bearer ${accessToken}` },
   };
-  return API.post(url, payload, config);
+  return API.post(url, { userData }, config);
 };
 
 export const challengeServices = {
