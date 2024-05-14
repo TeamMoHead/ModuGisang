@@ -1,10 +1,13 @@
 import styled from 'styled-components';
+import Icon from './Icon';
 
 const SearchBox = ({ value, onChange, onClickHandler }) => {
   return (
     <Wrapper>
       <InviteBox type="email" value={value} onChange={onChange} />
-      <Search onClick={onClickHandler}>찾기</Search>
+      <Search onClick={onClickHandler}>
+        <Icon icon={'search'} iconStyle={iconStyle} />
+      </Search>
     </Wrapper>
   );
 };
@@ -34,6 +37,12 @@ const InviteBox = styled.input.attrs({ type: 'email' })`
 const Search = styled.button`
   color: white;
   position: absolute;
-  top: 17px;
+  top: 6px;
   right: 5px;
 `;
+
+const iconStyle = {
+  size: 24,
+  color: 'purple',
+  hoverColor: 'white',
+};
