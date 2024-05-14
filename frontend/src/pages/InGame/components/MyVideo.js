@@ -84,9 +84,12 @@ export default MyVideo;
 const Wrapper = styled.div`
   position: relative;
   ${({ theme }) => theme.flex.center}
-
+  /* 
   width: calc(100vw - 48px);
-  height: calc(100vh - 260px);
+  height: calc(100vh - 260px); */
+
+  width: 100%;
+  height: 100%;
 `;
 
 const Video = styled.video`

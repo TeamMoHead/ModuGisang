@@ -54,6 +54,8 @@ const NavBar = () => {
     }
   }, [params]);
 
+  console.log('NavBar User Data: ', myData);
+
   return (
     <Wrapper $hasLeftBtn={hasLeftBtn} $hasRightBtn={hasRightBtn}>
       {hasLeftBtn && (
