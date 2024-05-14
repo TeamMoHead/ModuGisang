@@ -21,7 +21,7 @@ const UserContextProvider = ({ children }) => {
 
   const getMyData = async () => {
     const response = await fetchData(() =>
-      userServices.getMyInfo({ accessToken }),
+      userServices.getUserInfo({ accessToken, userId }),
     );
 
     const { isLoading, data, error } = response;
