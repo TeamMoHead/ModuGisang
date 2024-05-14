@@ -75,7 +75,6 @@ const Affirmation = () => {
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
-      {isMissionEnding && <MissionSoundEffects />}
       {isMissionStarting || (
         <>
           <Wrapper>

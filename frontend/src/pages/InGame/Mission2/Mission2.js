@@ -185,7 +185,6 @@ const Mission2 = () => {
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
-      {isMissionEnding && <MissionSoundEffects />}
       {isMissionStarting || <Canvas ref={canvasRef} />}
       {postitPositions.map((position, index) => (
         <PostitAnimation
