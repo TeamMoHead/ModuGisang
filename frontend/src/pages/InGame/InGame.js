@@ -21,7 +21,7 @@ import { MyVideo, MateVideo } from './components';
 //   Result,
 // } from './';
 
-import BackgroundMusic from './Sound/BackgroundMusic';
+import { BackgroundMusic, MusicController } from './Sound';
 import styled from 'styled-components';
 import * as S from '../../styles/common';
 
@@ -100,6 +100,7 @@ const InGame = () => {
     <>
       <InGameNav />
       <BackgroundMusic gameMode={inGameMode} playing={true} />
+      <MusicController />
 
       <Wrapper>
         <MyVideo />

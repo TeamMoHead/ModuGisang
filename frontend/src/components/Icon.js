@@ -13,6 +13,7 @@ import {
   faGear,
   faMicrophone,
   faMicrophoneSlash,
+  faMusic,
 } from '@fortawesome/free-solid-svg-icons';
 
 const iconList = {
@@ -25,6 +26,7 @@ const iconList = {
   sadFace: faSadTear,
   loading: faSpinner,
   settings: faGear,
+  music: faMusic,
   micOn: faMicrophone,
   micOff: faMicrophoneSlash,
 };

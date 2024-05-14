@@ -49,6 +49,7 @@ const Mission2 = () => {
     myMissionStatus,
     setMyMissionStatus,
     gameScore,
+    isMusicMuted,
     setGameScore,
     isMissionEnding,
   } = useContext(GameContext);
@@ -105,7 +106,9 @@ const Mission2 = () => {
                   ...prevPositions[index],
                   shouldFall: true,
                 };
-                RoundSoundEffect();
+                if (!isMusicMuted) {
+                  RoundSoundEffect();
+                }
               }
               return updatedPositions;
             });

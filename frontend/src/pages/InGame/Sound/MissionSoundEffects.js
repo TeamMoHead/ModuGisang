@@ -6,7 +6,7 @@ import failSound from '../../../assets/soundEffects/missionFailure.mp3';
 const MissionSoundEffects = () => {
   const successAudioRef = useRef(new Audio(successSound));
   const failAudioRef = useRef(new Audio(failSound));
-  const { myMissionStatus, inGameMode } = useContext(GameContext);
+  const { myMissionStatus, inGameMode, isMusicMuted } = useContext(GameContext);
   const previousMissionStatus = useRef(null); // 이전 미션 상태를 저장하기 위한 ref
 
   useEffect(() => {
@@ -15,6 +15,9 @@ const MissionSoundEffects = () => {
 
   useEffect(() => {
     if (inGameMode === 0) {
+      return;
+    }
+    if (isMusicMuted) {
       return;
     }
     if (myMissionStatus === true) {

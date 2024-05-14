@@ -52,6 +52,8 @@ const GameContextProvider = ({ children }) => {
   const [rangkings, setRankings] = useState([]);
   // [ { userId: string, userName: string, score: number } ] 형태 (sort한 상태로 받아오기)
 
+  const [isMusicMuted, setIsMusicMuted] = useState(true);
+
   let nextGameMode = 1;
 
   const updateMode = () => {
@@ -122,6 +124,8 @@ const GameContextProvider = ({ children }) => {
         setIsMissionStarting,
         isMissionEnding,
         setIsMissionEnding,
+        isMusicMuted,
+        setIsMusicMuted,
         gameScore,
         setGameScore,
         rangkings,
