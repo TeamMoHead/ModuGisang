@@ -8,7 +8,7 @@ const UserContext = createContext();
 const UserContextProvider = ({ children }) => {
   const { fetchData } = useFetch();
   const { accessToken, userId } = useContext(AccountContext);
-  const [userData, setUserData] = useState({
+  const [myData, setMyData] = useState({
     // userId: 1,
     // userName: '',
     // medals: {},
@@ -19,15 +19,15 @@ const UserContextProvider = ({ children }) => {
   });
   const [challengeId, setChallengeId] = useState(-1);
 
-  const getUserData = async () => {
+  const getMyData = async () => {
     const response = await fetchData(() =>
-      userServices.getUserInfo({ accessToken, userId }),
+      userServices.getMyInfo({ accessToken }),
     );
 
     const { isLoading, data, error } = response;
 
     if (!isLoading && data) {
-      setUserData(data);
+      setMyData(data);
       setChallengeId(data.challengeId);
     } else {
       console.error(error);
@@ -38,18 +38,18 @@ const UserContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (accessToken && userId) {
-      getUserData();
+      getMyData();
     }
   }, [userId]);
 
   return (
     <UserContext.Provider
       value={{
-        userData,
-        setUserData,
+        myData,
+        setMyData,
         challengeId,
         setChallengeId,
-        getUserData,
+        getMyData,
       }}
     >
       {children}

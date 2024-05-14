@@ -47,8 +47,8 @@ const GAME_MODE = {
 
 const InGame = () => {
   const navigate = useNavigate();
-  const { userData } = useContext(UserContext);
-  const { userId: myId } = userData;
+  const { myData } = useContext(UserContext);
+  const { userId: myId } = myData;
   const { challengeData } = useContext(ChallengeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
   const { inGameMode, myMissionStatus, setMyMissionStatus, isMissionStarting } =
