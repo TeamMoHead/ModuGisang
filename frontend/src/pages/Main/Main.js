@@ -7,6 +7,7 @@ import {
   MediaPipeContext,
 } from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
+import BottomFixContent from './cardComponents/BottomFixContent';
 import {
   NavBar,
   OutlineBox,
@@ -116,7 +117,7 @@ const Main = () => {
         <>
           <NavBar />
           <S.PageWrapper>
-            <input
+            {/* <input
               placeholder="00:00 형태로 입력"
               type="text"
               onChange={e => setWakeTime(e.target.value)}
@@ -127,7 +128,7 @@ const Main = () => {
                 borderRadius: '5px',
               }}
             />
-            <LongBtn onClickHandler={changeWakeTime} btnName="기상시간 세팅" />
+            <LongBtn onClickHandler={changeWakeTime} btnName="기상시간 세팅" /> */}
             <CardsWrapper>
               {CARD_TYPES[hasChallenge ? 'hasChallenge' : 'noChallenge'].map(
                 type => (
@@ -140,6 +141,10 @@ const Main = () => {
                 ),
               )}
             </CardsWrapper>
+            <BottomFixContent
+              challengeData={challengeData}
+              Handler={CARD_ON_CLICK_HANDLERS}
+            />
           </S.PageWrapper>
         </>
       )}

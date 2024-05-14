@@ -1,8 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Swiper, SwiperSlide } from 'swiper/react';
-
-// import './styles.css';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -13,26 +11,30 @@ import './slider.css';
 import { Pagination } from 'swiper/modules';
 
 const SliderContent = ({ challenges }) => {
-  console.log('@@@@@@@@@@@', challenges);
   if (!challenges || challenges.length === 0) {
     return <div>loading...</div>;
   }
   const remainingDays =
     calculateRemainingDays(challenges.startDate, challenges.duration) - 1;
-  const sliderBox = [
-    <Div1>
-      매일 아침
-      <p> {challenges.wakeTime?.split(':')?.slice(0, 2)?.join(':')}</p>에
-      일어나요
-    </Div1>,
 
-    <Div2>
-      {challenges.mates?.map(mate => (
-        <SmallLetter key={mate.userId}>{mate.userName}, </SmallLetter>
-      ))}
-      과(와) 함께 하고 있어요
-    </Div2>,
-    <Div3>완료까지 {remainingDays}일 남았어요</Div3>,
+  const matesNames = challenges.mates?.map(mate => mate.userName).join(', ');
+
+  const sliderBox = [
+    <SlideContent>
+      매일 아침{' '}
+      <HighlightText>
+        {challenges.wakeTime?.split(':')?.slice(0, 2)?.join(':')}
+      </HighlightText>
+      에 일어나요
+    </SlideContent>,
+    <SlideContent>
+      {' '}
+      <HighlightText>{matesNames}</HighlightText>
+      {' 과(와) 함께 하고 있어요'}
+    </SlideContent>,
+    <SlideContent>
+      완료까지 <HighlightText>{remainingDays}일</HighlightText> 남았어요
+    </SlideContent>,
   ];
 
   function calculateRemainingDays(startDate, duration) {
@@ -91,27 +93,23 @@ const Wrapper = styled.div`
 `;
 
 const ChallengeTitle = styled.span`
+  position: absolute;
   color: ${({ theme }) => theme.colors.primary.purple};
+  justify-content: center;
   ${({ theme }) => theme.fonts.JuaSmall};
   width: 173px;
   height: 46.8px;
 `;
 
-const SmallLetter = styled.span`
+const HighlightText = styled.span`
+  color: ${({ theme }) => theme.colors.primary.white};
+  font-weight: 600;
+
+  margin: 0 5px;
+`;
+const SlideContent = styled.div`
+  color: ${({ theme }) => theme.colors.neutral.lightGray};
+  text-align: center;
   ${({ theme }) => theme.fonts.IBMsmall}
-`;
-
-const Div1 = styled.div`
-  ${({ theme }) => theme.flex.center}
-  color: ${({ theme }) => theme.colors.primary.white};
-`;
-
-const Div2 = styled.div`
-  ${({ theme }) => theme.flex.center}
-  color: ${({ theme }) => theme.colors.primary.white};
-`;
-
-const Div3 = styled.div`
-  ${({ theme }) => theme.flex.center}
-  color: ${({ theme }) => theme.colors.primary.white};
+  margin: 62px 10px 0 15px;
 `;
