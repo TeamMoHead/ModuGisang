@@ -151,12 +151,10 @@ const Mission3 = () => {
     }
   }, [currentArrowIdx]);
 
-  console.log('=============== MISSION3 ==============', poseModel);
   return (
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
-      {isMissionEnding && <MissionSoundEffects />}
       {isMissionStarting || (
         <>
           <Canvas ref={canvasRef} />

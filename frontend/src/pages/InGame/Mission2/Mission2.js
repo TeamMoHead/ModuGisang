@@ -181,12 +181,10 @@ const Mission2 = () => {
     };
   };
 
-  console.log('============ MISSION2 ==============', holisticModel);
   return (
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
-      {isMissionEnding && <MissionSoundEffects />}
       {isMissionStarting || <Canvas ref={canvasRef} />}
       {postitPositions.map((position, index) => (
         <PostitAnimation

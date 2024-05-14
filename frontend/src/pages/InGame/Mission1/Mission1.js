@@ -142,12 +142,11 @@ const Mission1 = () => {
     });
   }, [stretchSide]);
 
-  console.log('=========MISSION1========= ', poseModel);
   return (
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
-      {isMissionEnding && <MissionSoundEffects />}
+      {/* {isMissionEnding && <MissionSoundEffects />} */}
 
       {isMissionStarting || (
         <>

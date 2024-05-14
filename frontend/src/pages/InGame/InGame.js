@@ -13,7 +13,8 @@ import InGameNav from './components/Nav/InGameNav';
 import { MyVideo, MateVideo } from './components';
 import { Result } from './';
 
-import { BackgroundMusic, MusicController } from './Sound';
+import { BackgroundMusic, MusicController, MissionSoundEffects } from './Sound';
+
 import styled, { css } from 'styled-components';
 import * as S from '../../styles/common';
 
@@ -122,7 +123,8 @@ const InGame = () => {
   return (
     <>
       <InGameNav />
-      <BackgroundMusic />
+      {/* <BackgroundMusic /> */}
+      {/* <MissionSoundEffects /> */}
       <MusicController />
 
       <Wrapper $hasMate={mateList?.length > 0}>
