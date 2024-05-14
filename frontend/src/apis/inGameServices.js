@@ -16,7 +16,7 @@ const sendEnteredTime = async ({ accessToken }) => {
   return API.get(url, config);
 };
 
-const sendGameScore = async ({ accessToken, userData }) => {
+const sendMyGameScore = async ({ accessToken, userData }) => {
   const { userId, userName, challengeId, gameScore: score } = userData;
   const url = `/in-game/score`;
   const payload = {
@@ -44,6 +44,6 @@ const getGameResults = async ({ accessToken }) => {
 
 export const inGameServices = {
   sendEnteredTime,
-  sendGameScore,
+  sendMyGameScore,
   getGameResults,
 };
