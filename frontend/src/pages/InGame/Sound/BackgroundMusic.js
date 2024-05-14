@@ -1,8 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 
 import waitingMusic from '../../../assets/bgm/waiting_room.mp3';
 import missionMusic from '../../../assets/bgm/hawaii_cut.mp3';
 import resultMusic from '../../../assets/bgm/result_music.mp3';
+
+import { GameContext } from '../../../contexts';
+import { RoundBtn } from '../../../components';
+
+import styled from 'styled-components';
 
 const AUDIO_SOURCE_PATH = {
   waiting: waitingMusic,
@@ -49,6 +54,7 @@ const fadeAudio = (audio, type, duration = 3000) => {
 };
 
 const BackgroundMusic = ({ gameMode, playing }) => {
+  const { isMusicMuted } = useContext(GameContext);
   const audioRef = useRef(null);
   const currentGameMode = useRef(gameMode);
 
@@ -97,7 +103,18 @@ const BackgroundMusic = ({ gameMode, playing }) => {
     playAudio();
   }, [gameMode, playing]);
 
-  return <audio ref={audioRef} loop autoPlay />;
+  return (
+    <>
+      <audio ref={audioRef} loop autoPlay muted={isMusicMuted} />
+    </>
+  );
 };
 
 export default BackgroundMusic;
+
+const BtnWrapper = styled.div`
+  position: fixed;
+  top: 125px;
+  right: 40px;
+  z-index: 100;
+`;

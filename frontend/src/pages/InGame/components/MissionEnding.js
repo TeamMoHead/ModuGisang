@@ -27,8 +27,13 @@ const thunderstormSoundEffect = () => {
 };
 
 const MissionEnding = ({ canvasRef }) => {
-  const { isMissionEnding, setIsMissionEnding, myMissionStatus, inGameMode } =
-    useContext(GameContext);
+  const {
+    isMissionEnding,
+    setIsMissionEnding,
+    myMissionStatus,
+    inGameMode,
+    isMusicMuted,
+  } = useContext(GameContext);
 
   useEffect(() => {
     if (!isMissionEnding) return;
@@ -37,7 +42,9 @@ const MissionEnding = ({ canvasRef }) => {
 
     if (inGameMode === 4 && !myMissionStatus) {
       rainEffect(canvasRef, 2);
-      thunderstormSoundEffect();
+      if (!isMusicMuted) {
+        thunderstormSoundEffect();
+      }
     }
   }, [isMissionEnding, myMissionStatus, setIsMissionEnding]);
 
