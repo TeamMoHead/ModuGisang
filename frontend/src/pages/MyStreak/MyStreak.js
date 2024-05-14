@@ -11,8 +11,8 @@ const MyStreak = () => {
   const navigate = useNavigate();
   const { fetchData } = useFetch();
   const { accessToken, userId } = useContext(AccountContext);
-  const { userData } = useContext(UserContext);
-  const { userName, streakDays, medals, affirmation } = userData;
+  const { myData } = useContext(UserContext);
+  const { userName, streakDays, medals, affirmation } = myData;
 
   const getCallendar = async ({ accessToken, userId, month }) => {
     const response = await fetchData(() =>
