@@ -26,7 +26,8 @@ const round2 = [
 ];
 
 const Mission3 = () => {
-  const { poseModel } = useContext(MediaPipeContext);
+  const { poseModel, setIsPoseLoaded, setIsPoseInitialized } =
+    useContext(MediaPipeContext);
   const {
     isMissionStarting,
     isMissionEnding,
@@ -85,6 +86,8 @@ const Mission3 = () => {
     return () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
       poseModel.current = null;
+      setIsPoseLoaded(false);
+      setIsPoseInitialized(false);
     };
   }, [isMissionStarting, poseModel]);
 
