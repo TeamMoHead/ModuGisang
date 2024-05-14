@@ -10,9 +10,9 @@ const MusicController = () => {
     isMusicMuted ? setIsMusicMuted(false) : setIsMusicMuted(true);
   };
 
-  const btnStyle = {
+  const MUSIC_ON_BTN_STYLE = {
     size: 48,
-    icon: 'unmute',
+    icon: 'music',
     iconStyle: {
       size: 24,
       color: 'purple',
@@ -20,11 +20,25 @@ const MusicController = () => {
     },
   };
 
+  const MUSIC_OFF_BTN_STYLE = {
+    size: 48,
+    disabled: false,
+    icon: 'music',
+    iconStyle: {
+      size: 24,
+      color: 'white',
+      hoverColor: 'purple',
+    },
+  };
+
   return (
     <>
       {inGameMode === 0 && (
         <BtnWrapper>
-          <RoundBtn btnStyle={btnStyle} onClickHandler={handleUnmute} />
+          <RoundBtn
+            btnStyle={isMusicMuted ? MUSIC_OFF_BTN_STYLE : MUSIC_ON_BTN_STYLE}
+            onClickHandler={handleUnmute}
+          />
         </BtnWrapper>
       )}
     </>
