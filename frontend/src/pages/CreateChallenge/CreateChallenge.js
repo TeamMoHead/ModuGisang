@@ -9,6 +9,7 @@ import {
   CustomRadio,
   CustomCalendar,
   SearchBox,
+  Icon,
 } from '../../components';
 import { AccountContext, ChallengeContext } from '../../contexts';
 import { challengeServices } from '../../apis/challengeServices';
@@ -86,6 +87,10 @@ const CreateChallenge = () => {
   };
 
   const checkEmail = async e => {
+    if (emailInput === '') {
+      alert('이메일을 입력해주세요.');
+      return;
+    }
     const response = await challengeServices.checkMateAvailability({
       accessToken,
       email: emailInput,
@@ -103,7 +108,7 @@ const CreateChallenge = () => {
   const deleteMate = e => {};
 
   const canSubmit = () => {
-    console.log(userId, duration, startDate, wakeTime);
+    // console.log(userId, duration, startDate, wakeTime);
     return userId && duration && startDate && wakeTime;
   };
 
@@ -207,7 +212,10 @@ const CreateChallenge = () => {
           <ul>
             {mates.map((mate, index) => (
               <InvitedMate key={index}>
-                <span>o</span> {mate} <button>x</button>
+                <span>o</span> {mate}{' '}
+                <button onClick={deleteMate}>
+                  <Icon icon={'close'} iconStyle={iconStyle} />
+                </button>
               </InvitedMate>
             ))}
           </ul>
@@ -269,3 +277,9 @@ const InvitedMate = styled.li`
     color: white;
   }
 `;
+
+const iconStyle = {
+  size: 24,
+  color: 'purple',
+  hoverColor: 'white',
+};

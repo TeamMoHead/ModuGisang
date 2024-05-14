@@ -16,6 +16,8 @@ import {
   faMusic,
   faStopwatch,
   faFaceSadTear,
+  faMagnifyingGlass,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 
 const iconList = {
@@ -33,6 +35,8 @@ const iconList = {
   micOff: faMicrophoneSlash,
   timer: faStopwatch,
   sad: faFaceSadTear,
+  search: faMagnifyingGlass,
+  close: faXmark,
 };
 
 const iconStyleSample = {
