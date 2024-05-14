@@ -42,6 +42,7 @@ const Mission1 = () => {
     isMissionStarting,
     isMissionEnding,
     inGameMode,
+    isMusicMuted,
     myMissionStatus,
     setMyMissionStatus,
     setGameScore,
@@ -185,7 +186,9 @@ const Mission1 = () => {
             idx === index ? { ...item, scoreAdded: true } : item,
           ),
         );
-        RoundSoundEffect();
+        if (!isMusicMuted) {
+          RoundSoundEffect();
+        }
       }
     });
   }, [stretchSide]);
