@@ -47,7 +47,6 @@ const Mission1 = () => {
     setGameScore,
   } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
-  const canvasRef = useRef(null);
 
   const [stretchSide, setStretchSide] = useState(round);
   const [currentRound, setCurrentRound] = useState(0);
@@ -66,7 +65,6 @@ const Mission1 = () => {
 
     const handleTimeout = () => {
       isTimeOut = true;
-      // console.log('---------- 제한 시간 종료!');
     };
 
     if (!isGameStart) {
@@ -200,7 +198,6 @@ const Mission1 = () => {
 
       {isMissionStarting || (
         <>
-          <Canvas ref={canvasRef} />
           <ProgressWrapper title="progressWrapper">
             <ProgressIndicator progress={progress} />
           </ProgressWrapper>
@@ -212,13 +209,6 @@ const Mission1 = () => {
 };
 
 export default Mission1;
-
-const Canvas = styled.canvas`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: ${({ theme }) => theme.radius.medium};
-`;
 
 const ProgressWrapper = styled.div`
   z-index: 200;
