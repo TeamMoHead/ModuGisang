@@ -20,6 +20,9 @@ let prevJawPosition = null;
 let isMovingScore = 0;
 let isMovingStatus = true; // 움직이는 중인지 여부
 let myPostitStatus = [false, false, false]; // 측정 결과
+const timeoutDuration = 15000; // 제한 시간
+let isTimeOut = false; // 타임 아웃 여부
+let isGameStart = false;
 
 const Mission2 = () => {
   const [postitPositions, setPostitPositions] = useState([
@@ -89,7 +92,7 @@ const Mission2 = () => {
       } else {
         isMovingScore += 1;
 
-        if (isMovingScore > 30) {
+        if (isMovingScore > 10) {
           isMovingStatus = false;
         }
       }
@@ -156,7 +159,7 @@ const Mission2 = () => {
     prevJawPosition = { x: jaw.x, y: jaw.y };
 
     if (
-      // missionStatus가 모두 true면
+      !isTimeOut &&
       myPostitStatus.every(status => status === true) &&
       myPostitStatus.every(shouldFall => shouldFall === true)
     ) {
@@ -177,7 +180,7 @@ const Mission2 = () => {
             };
             return updatedPositions;
           });
-        } else {
+        } else if (!isTimeOut) {
           setPostitPositions(prevPositions => {
             const updatedPositions = [...prevPositions];
 
@@ -210,6 +213,15 @@ const Mission2 = () => {
       isMissionStarting
     ) {
       return;
+    }
+
+    const handleTimeout = () => {
+      isTimeOut = true;
+    };
+
+    if (!isGameStart) {
+      isGameStart = true;
+      setTimeout(handleTimeout, timeoutDuration);
     }
 
     const videoElement = myVideoRef.current;
