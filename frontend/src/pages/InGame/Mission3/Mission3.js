@@ -31,6 +31,7 @@ const Mission3 = () => {
   const {
     isMissionStarting,
     isMissionEnding,
+    isMusicMuted,
     inGameMode,
     myMissionStatus,
     setMyMissionStatus,
@@ -144,7 +145,9 @@ const Mission3 = () => {
 
   useEffect(() => {
     if (!isMissionStarting) {
-      RoundSoundEffect();
+      if (!isMusicMuted) {
+        RoundSoundEffect();
+      }
     }
   }, [currentArrowIdx]);
 

@@ -15,7 +15,7 @@ import { OpenviduService } from './openvidu.service';
 export class OpenviduController {
   constructor(private readonly openviduService: OpenviduService) {}
 
-  @Post('startSession')
+  @Post('start-session')
   async startSession(@Body() body: any) {
     console.log('openvidu api start');
     if (!body.userData) {
