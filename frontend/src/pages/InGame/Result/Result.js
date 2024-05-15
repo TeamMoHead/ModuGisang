@@ -3,6 +3,7 @@ import {
   AccountContext,
   GameContext,
   OpenViduContext,
+  UserContext,
 } from '../../../contexts';
 import useFetch from '../../../hooks/useFetch';
 import { inGameServices, userServices } from '../../../apis';
@@ -29,6 +30,7 @@ const HEADER_TEXT = '오늘의 미라클 메이커';
 const Result = () => {
   const { fetchData } = useFetch();
   const { accessToken, userId: myId } = useContext(AccountContext);
+  const { challengeId } = useContext(UserContext);
 
   const { mateStreams, myVideoRef, myStream } = useContext(OpenViduContext);
   const { inGameMode, isGameResultReceived } = useContext(GameContext);
@@ -44,7 +46,7 @@ const Result = () => {
 
   const getGameResults = async () => {
     const response = await fetchData(() =>
-      inGameServices.getGameResults({ accessToken }),
+      inGameServices.getGameResults({ accessToken, challengeId }),
     );
     const { isLoading, data, error } = response;
     if (!isLoading && data) {

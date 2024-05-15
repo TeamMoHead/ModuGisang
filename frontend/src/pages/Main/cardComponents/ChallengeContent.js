@@ -110,7 +110,7 @@ const SlideContent = styled.div`
   color: ${({ theme }) => theme.colors.neutral.lightGray};
   text-align: center;
   ${({ theme }) => theme.fonts.IBMsmall}
-  font-size: 13px;
+  font-size: 14px;
 
   padding: ${({ $isSingleLine }) => ($isSingleLine ? '10px 10px' : '0 10px')};
 `;

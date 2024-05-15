@@ -23,7 +23,7 @@ const Settings = () => {
   const handleLogOut = async () => {
     setIsLogoutLoading(true);
     const response = await fetchData(() =>
-      authServices.logOutUser({ accessToken }),
+      authServices.logOutUser({ accessToken, userId }),
     );
     const { isLoading: isLogoutLoading, error: logoutError } = response;
     if (!isLogoutLoading) {
