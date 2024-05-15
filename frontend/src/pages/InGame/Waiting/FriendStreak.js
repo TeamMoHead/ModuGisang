@@ -5,33 +5,16 @@ import { StreakContent } from '../../Main/cardComponents';
 import { userServices } from '../../../apis';
 import useFetch from '../../../hooks/useFetch';
 
-const FriendStreak = ({ userId, onClick }) => {
-  const { fetchData } = useFetch();
-  const { accessToken } = useContext(AccountContext);
-  const [mateData, setMateData] = useState(null);
-  console.log('id is ', userId);
-
-  const getMateData = async userId => {
-    const response = await fetchData(() =>
-      userServices.getUserInfo({ accessToken, userId }),
-    );
-    console.log('response is ', response);
-    if (response) {
-      setMateData(response);
-    }
-  };
-
-  useEffect(() => {
-    getMateData(userId);
-  }, []);
-  console.log('mateDAta is ', mateData);
+const FriendStreak = mate => {
+  console.log(mate);
+  console.log(mate.mate);
 
   return (
     <Wrapper>
       <Box>
-        <UserName>{mateData.userName}</UserName>
+        <UserName>{mate.mate.userName}</UserName>
         <SeperateLine />
-        <StreakContent userData={mateData} />
+        <StreakContent userData={mate.mate} />
       </Box>
     </Wrapper>
   );
