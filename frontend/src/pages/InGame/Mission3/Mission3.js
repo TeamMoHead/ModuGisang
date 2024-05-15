@@ -7,7 +7,6 @@ import {
 import * as pose from '@mediapipe/pose';
 import { MissionStarting, MissionEnding } from '../components';
 import arrow from '../../../assets/arrows/arrow.svg';
-import { RoundSoundEffect, MissionSoundEffects } from '../Sound';
 
 import styled from 'styled-components';
 

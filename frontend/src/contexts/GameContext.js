@@ -61,7 +61,7 @@ const GameContextProvider = ({ children }) => {
   // =================== GAME STATUS ===================
   const [inGameMode, setInGameMode] = useState(
     // parseInt(localStorage.getItem('inGameMode')) || 0,
-    // 7,
+    // 5,
     0,
   );
   const [isEnteredTimeSent, setIsEnteredTimeSent] = useState(false);
