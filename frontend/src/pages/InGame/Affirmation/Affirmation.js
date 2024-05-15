@@ -25,7 +25,7 @@ const Affirmation = () => {
   const idx = useRef(0);
 
   useEffect(() => {
-    if (inGameMode === 5) {
+    if (inGameMode === 6) {
       if (isGameScoreSent) return;
       sendMyGameScore();
     } else return;
@@ -33,7 +33,7 @@ const Affirmation = () => {
 
   // 인식된 텍스트와 원본 문구 비교 및 강조
   useEffect(() => {
-    if (inGameMode !== 5 || !myVideoRef.current || isMissionStarting) {
+    if (inGameMode !== 6 || !myVideoRef.current || isMissionStarting) {
       return;
     }
 

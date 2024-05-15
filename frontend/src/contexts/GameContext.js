@@ -13,8 +13,9 @@ const GAME_MODE = {
   2: 'mission2',
   3: 'mission3',
   4: 'mission4',
-  5: 'affirmation',
-  6: 'result',
+  5: 'mission5',
+  6: 'affirmation',
+  7: 'result',
 };
 
 // mission 당 소요 시간
@@ -23,19 +24,15 @@ const GAME_MODE_DURATION = {
   2: 19000,
   3: 17000,
   4: 14500,
-  5: 8000,
-  // 1: 1000,
-  // 2: 1000,
-  // 3: 1000,
-  // 4: 1000,
-  // 5: 1000,
+  5: 13000,
+  6: 8000,
 };
 
 const RESULT_TIME = 2000;
 
 const GameContextProvider = ({ children }) => {
   const { fetchData } = useFetch();
-  const { accessToken } = useContext(AccountContext);
+  const { accessToken, userId } = useContext(AccountContext);
   const { myData } = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
   const { remainingTime, isTooLate, isTooEarly } = useCheckTime(
@@ -65,7 +62,7 @@ const GameContextProvider = ({ children }) => {
   const [inGameMode, setInGameMode] = useState(
     // parseInt(localStorage.getItem('inGameMode')) || 0,
     // 6,
-    0,
+    5,
   );
   const [isEnteredTimeSent, setIsEnteredTimeSent] = useState(false);
   const [isGameScoreSent, setIsGameScoreSent] = useState(false);
@@ -83,7 +80,7 @@ const GameContextProvider = ({ children }) => {
   // =================== GET & POSE GAME INFO ===================
   const sendEnteredTime = async () => {
     const response = await fetchData(() =>
-      inGameServices.sendEnteredTime({ accessToken }),
+      inGameServices.sendEnteredTime({ accessToken, userId }),
     );
 
     const { isLoading, data, error } = response;
@@ -135,7 +132,7 @@ const GameContextProvider = ({ children }) => {
   let nextGameMode = 1;
   const updateMode = () => {
     nextGameMode += 1;
-    if (nextGameMode <= 6) {
+    if (nextGameMode <= 7) {
       // localStorage.setItem('inGameMode', JSON.stringify(nextGameMode));
       setInGameMode(nextGameMode);
       setIsMissionStarting(true);

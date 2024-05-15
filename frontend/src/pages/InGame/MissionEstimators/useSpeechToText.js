@@ -29,7 +29,7 @@ const useSpeechToText = duration => {
     SpeechRecognition.stopListening();
   };
 
-  return { transcript, listening, stop };
+  return { transcript, listening, stop, resetTranscript };
 };
 
 export default useSpeechToText;
