@@ -13,6 +13,17 @@ import { TheRestVideo } from '../components';
 
 import styled, { css } from 'styled-components';
 
+const GAME_MODE = {
+  0: 'waiting',
+  1: 'mission1',
+  2: 'mission2',
+  3: 'mission3',
+  4: 'mission4',
+  5: 'mission5',
+  6: 'affirmation',
+  7: 'result',
+};
+
 const HEADER_TEXT = '오늘의 미라클 메이커';
 
 const Result = () => {
@@ -57,8 +68,9 @@ const Result = () => {
   }, [myStream, myVideoRef]);
 
   useEffect(() => {
-    if (inGameMode === 6 && !isGameResultReceived) {
-      getGameResults();
+    if (GAME_MODE[inGameMode] === 'result' && !isGameResultReceived) {
+      const results = getGameResults();
+      console.log('GET RESULTS 결과: ', results);
     } else return;
   }, [inGameMode, isGameResultReceived]);
 
