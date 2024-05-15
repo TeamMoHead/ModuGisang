@@ -36,10 +36,14 @@ export class InGameController {
     res.status(HttpStatus.CREATED).json({ success: result });
   }
 
-  @Get('result')
+  @Get('result/:challengeId')
   @UseGuards(AuthenticateGuard)
-  async getGameResults(@Req() req, @Res() res) {
-    const challengeId = req.user.challengeId;
+  async getGameResults(@Param() challengeId: number, @Req() req, @Res() res) {
+    console.log(
+      '@@@@AuthenticateGuard/req.user.challengeId@@@@',
+      req.user.challengeId,
+    );
+    // const challengeId = req.user.challengeId;
     const results = await this.inGameService.getGameResults(challengeId);
     return res.status(HttpStatus.OK).json(results);
   }
