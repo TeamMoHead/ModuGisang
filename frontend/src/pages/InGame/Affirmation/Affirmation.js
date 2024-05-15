@@ -75,7 +75,6 @@ const Affirmation = () => {
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
-      {isMissionEnding && <MissionSoundEffects />}
       {isMissionStarting || (
         <>
           <Wrapper>
@@ -115,8 +114,8 @@ const TextArea = styled.div`
 
   background-color: ${({ theme }) => theme.colors.translucent.navy};
 
-  border-radius: 0 0 ${({ theme }) => theme.radius.medium}
-    ${({ theme }) => theme.radius.medium};
+  border-radius: 0 0 ${({ theme }) => theme.radius.medium};
+  ${({ theme }) => theme.radius.medium};
 `;
 
 const Highlight = styled.span`

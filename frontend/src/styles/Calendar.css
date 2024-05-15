@@ -1,6 +1,4 @@
 .react-calendar {
-  width: 342px;
-  height: 407px;
   max-width: 100%;
   background: none;
   border: none;
@@ -48,11 +46,13 @@
 
 /* day 타일 한개 한개 모양 디자인 */
 .react-calendar__tile {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   text-align: center;
   height: 50px;
   color: white;
   color: var(--Light, #f0f3ff);
-  text-align: center;
   /* IBM Large */
   font-family: 'IBM Plex Sans KR';
   font-size: 24px;

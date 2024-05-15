@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { GameContext, OpenViduContext } from '../../../contexts';
+import { GameContext, OpenViduContext, UserContext } from '../../../contexts';
 import { LoadingWithText } from '../../../components';
 import {
   Waiting,
@@ -8,7 +8,6 @@ import {
   Mission3,
   Mission4,
   Affirmation,
-  Result,
 } from '../';
 import styled, { css } from 'styled-components';
 
@@ -19,7 +18,6 @@ const GAME_MODE = {
   3: 'mission3',
   4: 'mission4',
   5: 'affirmation',
-  6: 'result',
 };
 
 const GAME_MODE_COMPONENTS = {
@@ -29,7 +27,6 @@ const GAME_MODE_COMPONENTS = {
   3: <Mission3 />,
   4: <Mission4 />,
   5: <Affirmation />,
-  6: <Result />,
 };
 
 const MyVideo = () => {
@@ -60,10 +57,11 @@ const MyVideo = () => {
   }, [myVideoRef]);
 
   return (
-    <Wrapper $isResultMode={inGameMode === 6}>
+    <Wrapper>
       {isVideoLoading && (
         <LoadingWithText loadingMSG="카메라를 인식 중이에요" />
       )}
+
       <React.Fragment key={inGameMode}>
         {GAME_MODE_COMPONENTS[inGameMode]}
       </React.Fragment>
@@ -73,7 +71,6 @@ const MyVideo = () => {
         playsInline
         $isWaitingMode={inGameMode === 0}
         $myMissionStatus={myMissionStatus}
-        $isResultMode={inGameMode === 6}
       />
     </Wrapper>
   );
@@ -83,10 +80,10 @@ export default MyVideo;
 
 const Wrapper = styled.div`
   position: relative;
-  ${({ theme }) => theme.flex.center}
+  ${({ theme }) => theme.flex.center};
 
-  width: calc(100vw - 48px);
-  height: calc(100vh - 260px);
+  width: 100%;
+  height: 100%;
 `;
 
 const Video = styled.video`

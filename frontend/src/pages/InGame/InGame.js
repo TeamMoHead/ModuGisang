@@ -11,9 +11,11 @@ import useCheckTime from '../../hooks/useCheckTime';
 
 import InGameNav from './components/Nav/InGameNav';
 import { MyVideo, MateVideo } from './components';
+import { Result } from './';
 
-import { BackgroundMusic, MusicController } from './Sound';
-import styled from 'styled-components';
+import { BackgroundMusic, MusicController, MissionSoundEffects } from './Sound';
+
+import styled, { css } from 'styled-components';
 import * as S from '../../styles/common';
 
 const GAME_MODE = {
@@ -93,6 +95,19 @@ const InGame = () => {
         sendEnteredTime();
       }
     }
+    if (inGameMode === 6) {
+      poseModel.current = null;
+      holisticModel.current = null;
+      setIsPoseLoaded(false);
+      setIsPoseInitialized(false);
+      setIsHolisticLoaded(false);
+      setIsHolisticInitialized(false);
+      setIsWarmUpDone(false);
+    }
+  }, [inGameMode, isEnteredTimeSent]);
+
+  useEffect(() => {
+    // inGame unmount될 때 poseModel, holisticModel 초기화
     return () => {
       poseModel.current = null;
       holisticModel.current = null;
@@ -102,24 +117,30 @@ const InGame = () => {
       setIsHolisticInitialized(false);
       setIsWarmUpDone(false);
     };
-  }, [inGameMode, isEnteredTimeSent]);
+  }, []);
 
   if (redirected) return null;
   return (
     <>
       <InGameNav />
-      <BackgroundMusic />
+      {/* <BackgroundMusic /> */}
+      {/* <MissionSoundEffects /> */}
       <MusicController />
 
-      <Wrapper>
-        <MyVideo />
+      <Wrapper $hasMate={mateList?.length > 0}>
+        {GAME_MODE[inGameMode] !== 'result' && (
+          <>
+            <MyVideo />
 
-        <MatesVideoWrapper $isSingle={mateList?.length === 1}>
-          {mateList?.length > 0 &&
-            mateList?.map(({ userId, userName }) => (
-              <MateVideo key={userId} mateId={userId} mateName={userName} />
-            ))}
-        </MatesVideoWrapper>
+            <MatesVideoWrapper $isSingle={mateList?.length === 1}>
+              {mateList?.length > 0 &&
+                mateList?.map(({ userId, userName }) => (
+                  <MateVideo key={userId} mateId={userId} mateName={userName} />
+                ))}
+            </MatesVideoWrapper>
+          </>
+        )}
+        {GAME_MODE[inGameMode] === 'result' && <Result />}
       </Wrapper>
     </>
   );
@@ -128,15 +149,20 @@ const InGame = () => {
 export default InGame;
 
 const Wrapper = styled.div`
-  display: grid;
-  grid-template-rows: auto 150px;
-  gap: 10px;
-
   width: 100vw;
   height: 100vh;
 
-  padding: 104px 24px 0px 24px;
   overflow: hidden;
+  padding: 104px 24px 30px 24px;
+
+  ${({ $hasMate }) =>
+    $hasMate &&
+    css`
+      display: grid;
+      grid-template-rows: auto 150px;
+      gap: 10px;
+      padding: 104px 24px 0px 24px;
+    `};
 `;
 
 const MatesVideoWrapper = styled.div`

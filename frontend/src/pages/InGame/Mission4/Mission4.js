@@ -154,7 +154,6 @@ const Mission4 = () => {
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding canvasRef={canvasRef} />}
-      {isMissionEnding && <MissionSoundEffects />}
       <FullScreenCanvas>
         <SubCanvas ref={canvasRef} />
         <Hill />

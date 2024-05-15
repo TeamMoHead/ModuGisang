@@ -9,11 +9,13 @@ import {
   CustomRadio,
   CustomCalendar,
   SearchBox,
+  Icon,
 } from '../../components';
 import { AccountContext, ChallengeContext } from '../../contexts';
 import { challengeServices } from '../../apis/challengeServices';
 import * as S from '../../styles/common';
 import styled from 'styled-components';
+import { useEffect } from 'react';
 
 const CreateChallenge = () => {
   const navigate = useNavigate();
@@ -33,20 +35,54 @@ const CreateChallenge = () => {
     i.toString().padStart(2, '0'),
   );
   const periods = ['AM', 'PM'];
-  const [hour, setHour] = useState(0);
+  const [hour, setHour] = useState(1);
   const [minute, setMinute] = useState(0);
   const [period, setPeriod] = useState('AM');
 
   const settingHour = v => {
-    setHour(v);
+    let newHour = Number(v);
+    if (period === 'PM') {
+      newHour += 12;
+    }
+    setHour(newHour);
+    settingWakeTime(newHour, minute);
   };
+
   const settingMinute = v => {
-    setMinute(v);
+    const newMinute = Number(v);
+    setMinute(newMinute);
+    settingWakeTime(hour, newMinute);
   };
+
   const settingPeriod = v => {
     setPeriod(v);
+    let newHour = hour;
+    if (v === 'PM' && hour < 12) {
+      newHour += 12;
+    } else if (v === 'AM' && hour >= 12) {
+      newHour -= 12;
+    }
+    setHour(newHour);
+    settingWakeTime(newHour, minute);
   };
-  // console.log(hour, ' : ', minute, ' ', period);
+  const settingWakeTime = (h, m) => {
+    const formattedHour = String(h).padStart(2, '0');
+    const formattedMinute = String(m).padStart(2, '0');
+    const time = `${formattedHour}:${formattedMinute}:00`;
+    setWakeTime(time);
+  };
+
+  const convertToISODate = (date, time) => {
+    const [hours, minutes, seconds] = time.split(':').map(Number);
+    const newDate = new Date(date);
+    newDate.setHours(hours, minutes, seconds, 0);
+    const offset = newDate.getTimezoneOffset() * 60000;
+    const localISOTime = new Date(newDate.getTime() - offset)
+      .toISOString()
+      .slice(0, 19)
+      .replace('T', ' ');
+    return localISOTime;
+  };
 
   const durations = [
     { label: '7일  (동메달)', value: 7 },
@@ -56,6 +92,7 @@ const CreateChallenge = () => {
   const handleRadioChange = e => {
     setDuration(Number(e.target.value));
   };
+
   const handleDateChange = e => {
     const start = new Date(e);
     const end = new Date(start);
@@ -69,6 +106,7 @@ const CreateChallenge = () => {
     const start = new Date(range[0]);
     const end = new Date(start);
     end.setDate(start.getDate() + duration - 1); // 시작 날짜로부터 duration 일 후
+    // setRange([start, end]);
 
     // 각 날짜를 "년-월-일"의 형식으로 비교하기 위해 문자열로 변환
     const startDateStr = start.toISOString().slice(0, 10);
@@ -81,41 +119,64 @@ const CreateChallenge = () => {
   };
 
   const handleEmailChange = e => {
-    console.log(e.target.value);
     setEmailInput(e.target.value);
   };
 
   const checkEmail = async e => {
-    const response = await challengeServices.checkMateAvailability({
-      accessToken,
-      email: emailInput,
-    });
-    e.preventDefault();
-    if (!response.data.isEngaged) {
-      setMates([...mates, emailInput]);
-      setEmailInput('');
-    } else if (response.data.isEngaged) {
-      alert('메이트가 이미 다른 챌린지에 참여 중입니다.');
-      setEmailInput('');
+    if (emailInput === '') {
+      alert('이메일을 입력해주세요.');
+      return;
+    }
+    try {
+      const response = await challengeServices.checkMateAvailability({
+        accessToken,
+        email: emailInput,
+      });
+      e.preventDefault();
+      if (!response.data.isEngaged) {
+        const alreadyExists = mates.some(mate => mate === emailInput);
+        if (alreadyExists) {
+          alert('동일한 메이트를 추가했습니다.');
+          setEmailInput('');
+          return;
+        }
+        setMates([...mates, emailInput]);
+        setEmailInput('');
+      } else if (response.data.isEngaged) {
+        alert('메이트가 이미 다른 챌린지에 참여 중입니다.');
+        setEmailInput('');
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 500) {
+        alert('사용자를 찾을 수 없습니다. 이메일을 확인해 주세요.');
+        setEmailInput('');
+      }
     }
   };
 
-  const deleteMate = e => {};
+  const deleteMate = index => {
+    setMates(mates.filter((_, mateIndex) => mateIndex !== index));
+  };
 
   const canSubmit = () => {
-    console.log(userId, duration, startDate, wakeTime);
     return userId && duration && startDate && wakeTime;
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (canSubmit()) {
+    if (mates.length > 0) {
+      const isoWakeTime = convertToISODate(startDate, wakeTime);
+      const localStartDate = new Date(
+        startDate.getTime() - startDate.getTimezoneOffset() * 60000,
+      )
+        .toISOString()
+        .slice(0, 10);
       const response = await handleCreateChallenge({
         newChallengeData: {
           hostId: userId,
           duration: Number(duration),
-          startDate,
-          wakeTime,
+          startDate: localStartDate,
+          wakeTime: isoWakeTime,
           mates,
         },
       });
@@ -129,6 +190,10 @@ const CreateChallenge = () => {
     }
   };
 
+  // useEffect(() => {
+  //   handleDateChange();
+  // });
+
   return (
     <>
       <NavBar />
@@ -139,7 +204,7 @@ const CreateChallenge = () => {
             name="durations"
             content={durations}
             onChange={handleRadioChange}
-            selectedValue={duration} // 추가된 prop
+            selectedValue={duration}
           />
         </ChanllengeDuartion>
 
@@ -147,26 +212,27 @@ const CreateChallenge = () => {
         <CalendarBox
           // boxStyle={boxStyle}
           content={
-            // <Calendar
-            //   locale="ko"
-            //   calendarType={'hebrew'}
-            //   prev2Label={null}
-            //   next2Label={null}
-            //   prevLabel={<CalendarArrow> {'<'} </CalendarArrow>}
-            //   nextLabel={<CalendarArrow> {'>'} </CalendarArrow>}
-            //   formatDay={(locale, date) => dayjs(date).format('D')}
-            //   formatMonthYear={(locale, date) =>
-            //     dayjs(date).format('YYYY년 / M월')
-            //   } // 네비게이션에서 2023년 / 12월 이렇게 보이도록 설정
-            //   onChange={handleDateChange}
-            //   value={startDate}
-            //   tileClassName={tileClassName}
-            // />
-            <CustomCalendar
-              startDate={startDate}
-              handleDateChange={handleDateChange}
-              tileClassName={tileClassName}
-            />
+            <>
+              <CustomCalendar
+                startDate={startDate}
+                handleDateChange={handleDateChange}
+                tileClassName={tileClassName}
+              />
+              <StardEndDay>
+                <StartDay>
+                  시작 일자
+                  <Day>
+                    {range[0].getMonth() + ' 월 ' + range[0].getDate() + '일'}
+                  </Day>
+                </StartDay>
+                <EndDay>
+                  완료 일자
+                  <Day>
+                    {range[1].getMonth() + ' 월 ' + range[1].getDate() + '일'}
+                  </Day>
+                </EndDay>
+              </StardEndDay>
+            </>
           }
         />
 
@@ -207,7 +273,10 @@ const CreateChallenge = () => {
           <ul>
             {mates.map((mate, index) => (
               <InvitedMate key={index}>
-                <span>o</span> {mate} <button>x</button>
+                <MiniCircle /> {mate}
+                <button onClick={() => deleteMate(index)}>
+                  <Icon icon={'close'} iconStyle={iconStyle} />
+                </button>
               </InvitedMate>
             ))}
           </ul>
@@ -226,6 +295,7 @@ const CreateChallenge = () => {
 export default CreateChallenge;
 
 const CalendarBox = styled(OutlineBox)`
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -261,11 +331,57 @@ const InvitedBox = styled.div`
 
 const InvitedMate = styled.li`
   border: 1px solid ${({ theme }) => theme.colors.primary.purple};
-  padding: 10px;
-  border-radius: 20px;
+  padding-left: 10px;
+  border-radius: 30px;
   margin-bottom: 12px;
+  ${({ theme }) => theme.fonts.IBMsmall}
+  ${({ theme }) => theme.flex.center};
 
   button {
     color: white;
   }
 `;
+
+const MiniCircle = styled.div`
+  background-color: ${({ theme }) => theme.colors.primary.purple};
+  width: 15px;
+  height: 15px;
+  border-radius: 50px;
+  margin-right: 5px;
+`;
+
+const StardEndDay = styled.div`
+  border-top: 1px solid ${({ theme }) => theme.colors.primary.white};
+  ${({ theme }) => theme.flex.center} /* padding:10px; */
+  /* justify-content: space-around */
+  ${({ theme }) => theme.fonts.JuaSmall}
+  text-align: center;
+`;
+
+const StartDay = styled.div`
+  color: ${({ theme }) => theme.colors.primary.emerald};
+  border-right: 1px solid ${({ theme }) => theme.colors.primary.white};
+  ${({ theme }) => theme.flex.left}
+  padding:10px;
+  flex-direction: column;
+  text-align: center;
+`;
+
+const EndDay = styled.div`
+  color: ${({ theme }) => theme.colors.primary.purple};
+  ${({ theme }) => theme.flex.left}
+  padding:10px;
+  flex-direction: column;
+  text-align: center;
+`;
+
+const Day = styled.div`
+  color: ${({ theme }) => theme.colors.primary.white};
+  margin-top: 5px; // 텍스트와 날짜 사이의 간격 추가
+`;
+
+const iconStyle = {
+  size: 11,
+  color: 'purple',
+  hoverColor: 'white',
+};
