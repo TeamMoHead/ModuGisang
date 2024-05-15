@@ -27,7 +27,10 @@ const Mission5 = () => {
       return;
     }
 
-    if (transcript === timesTable[timeIndex].answer) {
+    const trimmedTranscript = transcript.trim();
+    console.log(trimmedTranscript);
+
+    if (trimmedTranscript === timesTable[timeIndex].answer) {
       setIsRoundPassed(true);
       setTimeout(() => setIsRoundPassed(false), 100);
       console.log('성공~!');
@@ -42,10 +45,20 @@ const Mission5 = () => {
         setTimeIndex(timeIndex => timeIndex + 1);
         setGameScore(score => (score += 4));
       }
-    } else if (transcript.length > 1) {
+    } else if (trimmedTranscript.length > 1) {
       resetTranscript();
     }
-  });
+  }, [
+    transcript,
+    inGameMode,
+    isMissionStarting,
+    myVideoRef,
+    timeIndex,
+    resetTranscript,
+    stop,
+    setGameScore,
+    setMyMissionStatus,
+  ]);
 
   return (
     <>
@@ -94,9 +107,9 @@ const Success = styled.div`
 `;
 
 const timesTable = {
-  0: { question: '3 X 9', answer: '27' },
-  1: { question: '7 X 6', answer: '42' },
-  2: { question: '6 X 4', answer: '24' },
-  3: { question: '4 X 9', answer: '36' },
+  0: { question: '3 * 3', answer: '9' },
+  1: { question: '3 * 6', answer: '18' },
+  2: { question: '5 X 4', answer: '20' },
+  3: { question: '4 X 4', answer: '16' },
   4: { question: '5 X 8', answer: '40' },
 };

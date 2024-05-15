@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext, useRef } from 'react';
 import { GameContext, OpenViduContext } from '../../../contexts';
 import styled from 'styled-components';
 
-const MateVideo = ({ mateId, mateName }) => {
+const MateVideo = ({ mateId, mateName, onClick }) => {
   const mateVideoRef = useRef(null);
   const { mateStreams } = useContext(OpenViduContext);
   const { inGameMode, matesMissionStatus } = useContext(GameContext);
@@ -46,7 +46,7 @@ const MateVideo = ({ mateId, mateName }) => {
   }, [matesMissionStatus]);
 
   return (
-    <Wrapper>
+    <Wrapper onClick={onClick}>
       {mateStatus.online ? (
         <Video
           ref={mateVideoRef}
