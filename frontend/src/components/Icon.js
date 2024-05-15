@@ -37,6 +37,10 @@ const iconList = {
   sad: faFaceSadTear,
   search: faMagnifyingGlass,
   close: faXmark,
+  timer: faStopwatch,
+  sad: faFaceSadTear,
+  search: faMagnifyingGlass,
+  close: faXmark,
 };
 
 const iconStyleSample = {

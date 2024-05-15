@@ -35,20 +35,54 @@ const CreateChallenge = () => {
     i.toString().padStart(2, '0'),
   );
   const periods = ['AM', 'PM'];
-  const [hour, setHour] = useState(0);
+  const [hour, setHour] = useState(1);
   const [minute, setMinute] = useState(0);
   const [period, setPeriod] = useState('AM');
 
   const settingHour = v => {
-    setHour(v);
+    let newHour = Number(v);
+    if (period === 'PM') {
+      newHour += 12;
+    }
+    setHour(newHour);
+    settingWakeTime(newHour, minute);
   };
+
   const settingMinute = v => {
-    setMinute(v);
+    const newMinute = Number(v);
+    setMinute(newMinute);
+    settingWakeTime(hour, newMinute);
   };
+
   const settingPeriod = v => {
     setPeriod(v);
+    let newHour = hour;
+    if (v === 'PM' && hour < 12) {
+      newHour += 12;
+    } else if (v === 'AM' && hour >= 12) {
+      newHour -= 12;
+    }
+    setHour(newHour);
+    settingWakeTime(newHour, minute);
   };
-  // console.log(hour, ' : ', minute, ' ', period);
+  const settingWakeTime = (h, m) => {
+    const formattedHour = String(h).padStart(2, '0');
+    const formattedMinute = String(m).padStart(2, '0');
+    const time = `${formattedHour}:${formattedMinute}:00`;
+    setWakeTime(time);
+  };
+
+  const convertToISODate = (date, time) => {
+    const [hours, minutes, seconds] = time.split(':').map(Number);
+    const newDate = new Date(date);
+    newDate.setHours(hours, minutes, seconds, 0);
+    const offset = newDate.getTimezoneOffset() * 60000;
+    const localISOTime = new Date(newDate.getTime() - offset)
+      .toISOString()
+      .slice(0, 19)
+      .replace('T', ' ');
+    return localISOTime;
+  };
 
   const durations = [
     { label: '7일  (동메달)', value: 7 },
@@ -85,7 +119,6 @@ const CreateChallenge = () => {
   };
 
   const handleEmailChange = e => {
-    console.log(e.target.value);
     setEmailInput(e.target.value);
   };
 
@@ -94,36 +127,56 @@ const CreateChallenge = () => {
       alert('이메일을 입력해주세요.');
       return;
     }
-    const response = await challengeServices.checkMateAvailability({
-      accessToken,
-      email: emailInput,
-    });
-    e.preventDefault();
-    if (!response.data.isEngaged) {
-      setMates([...mates, emailInput]);
-      setEmailInput('');
-    } else if (response.data.isEngaged) {
-      alert('메이트가 이미 다른 챌린지에 참여 중입니다.');
-      setEmailInput('');
+    try {
+      const response = await challengeServices.checkMateAvailability({
+        accessToken,
+        email: emailInput,
+      });
+      e.preventDefault();
+      if (!response.data.isEngaged) {
+        const alreadyExists = mates.some(mate => mate === emailInput);
+        if (alreadyExists) {
+          alert('동일한 메이트를 추가했습니다.');
+          setEmailInput('');
+          return;
+        }
+        setMates([...mates, emailInput]);
+        setEmailInput('');
+      } else if (response.data.isEngaged) {
+        alert('메이트가 이미 다른 챌린지에 참여 중입니다.');
+        setEmailInput('');
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 500) {
+        alert('사용자를 찾을 수 없습니다. 이메일을 확인해 주세요.');
+        setEmailInput('');
+      }
     }
   };
 
-  const deleteMate = e => {};
+  const deleteMate = index => {
+    setMates(mates.filter((_, mateIndex) => mateIndex !== index));
+  };
 
   const canSubmit = () => {
-    console.log(userId, duration, startDate, wakeTime, mates);
     return userId && duration && startDate && wakeTime;
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (canSubmit()) {
+    if (mates.length > 0) {
+      const isoWakeTime = convertToISODate(startDate, wakeTime);
+      const localStartDate = new Date(
+        startDate.getTime() - startDate.getTimezoneOffset() * 60000,
+      )
+        .toISOString()
+        .slice(0, 10);
       const response = await handleCreateChallenge({
         newChallengeData: {
           hostId: userId,
           duration: Number(duration),
-          startDate,
-          wakeTime,
+          startDate: localStartDate,
+          wakeTime: isoWakeTime,
           mates,
         },
       });
@@ -151,7 +204,7 @@ const CreateChallenge = () => {
             name="durations"
             content={durations}
             onChange={handleRadioChange}
-            selectedValue={duration} // 추가된 prop
+            selectedValue={duration}
           />
         </ChanllengeDuartion>
 
@@ -220,8 +273,8 @@ const CreateChallenge = () => {
           <ul>
             {mates.map((mate, index) => (
               <InvitedMate key={index}>
-                <span>o</span> {mate}{' '}
-                <button onClick={deleteMate}>
+                <MiniCircle /> {mate}
+                <button onClick={() => deleteMate(index)}>
                   <Icon icon={'close'} iconStyle={iconStyle} />
                 </button>
               </InvitedMate>
@@ -278,9 +331,11 @@ const InvitedBox = styled.div`
 
 const InvitedMate = styled.li`
   border: 1px solid ${({ theme }) => theme.colors.primary.purple};
-  padding: 10px;
-  border-radius: 20px;
+  padding-left: 10px;
+  border-radius: 30px;
   margin-bottom: 12px;
+  ${({ theme }) => theme.fonts.IBMsmall}
+  ${({ theme }) => theme.flex.center};
 
   button {
     color: white;
@@ -326,7 +381,7 @@ const Day = styled.div`
 `;
 
 const iconStyle = {
-  size: 24,
+  size: 11,
   color: 'purple',
   hoverColor: 'white',
 };
