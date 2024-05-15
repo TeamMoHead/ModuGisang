@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Challenges } from './challenges.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, IsNull, Repository, createQueryBuilder } from 'typeorm';
@@ -192,5 +192,21 @@ export class ChallengesService {
       userName: attendance.user.userName,
       score: attendance.score,
     }));
+  }
+
+  async setWakeTime(setChallengeWakeTimeDto): Promise<void> {
+    const challengeValue = await this.challengeRepository.findOne({
+      where: { _id: setChallengeWakeTimeDto.challengeId },
+    });
+    if (!challengeValue) {
+      throw new NotFoundException(
+        `Challenge with ID ${setChallengeWakeTimeDto.challengeId} not found`,
+      );
+    }
+    console.log(setChallengeWakeTimeDto);
+    challengeValue.wakeTime = new Date(
+      `1970-01-01T${setChallengeWakeTimeDto.wakeTime}`,
+    );
+    await this.challengeRepository.save(challengeValue);
   }
 }
