@@ -18,6 +18,8 @@ import { BackgroundMusic, MusicController, MissionSoundEffects } from './Sound';
 
 import styled, { css } from 'styled-components';
 import * as S from '../../styles/common';
+import { userServices } from '../../apis';
+import useFetch from '../../hooks/useFetch';
 
 const GAME_MODE = {
   0: 'waiting',
@@ -48,6 +50,9 @@ const InGame = () => {
     setIsWarmUpDone,
   } = useContext(MediaPipeContext);
   const [redirected, setRedirected] = useState(false);
+  const { accessToken } = useContext(AccountContext);
+  const { fetchData } = useFetch();
+  const [mateData, setMateData] = useState(null);
 
   const [mateList, setMateList] = useState([]);
   const [isMateSelected, setIsMateSelected] = useState(false);
@@ -127,6 +132,7 @@ const InGame = () => {
     console.log('메이트 비디오 터치');
     console.log(userId);
     console.log('======================');
+    getMateData(userId);
     setIsMateSelected(true);
     setMateId(userId);
   };
@@ -136,10 +142,17 @@ const InGame = () => {
     setIsMateSelected(false);
   };
 
+  const getMateData = async userId => {
+    const response = await fetchData(() =>
+      userServices.getUserInfo({ accessToken, userId }),
+    );
+    setMateData(response.data);
+  };
+
   if (redirected) return null;
   return (
     <>
-      {isMateSelected && <FriendStreak userId={mateId} />}
+      {isMateSelected && <FriendStreak mate={mateData} />}
       <InGameNav />
       {/* <BackgroundMusic /> */}
       {/* <MissionSoundEffects /> */}
