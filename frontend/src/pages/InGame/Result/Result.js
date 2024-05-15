@@ -194,31 +194,41 @@ const Result = () => {
             {gameResults?.length > 0 &&
               gameResults?.map(({ userName, score }, idx) => (
                 <RankingWrapper key={idx}>
-                  <LeftArea>
-                    <ScoreLine $scoreWidth={score * 1.2} />
-                    <RankingNum>{idx + 1}</RankingNum>
-                    <Score>{score}점</Score>
-                    {score > 61 && (
-                      <NameAndProfile>
+                  <ScoreLine
+                    $scoreWidth={score < 30 ? 29 : score * 1.05}
+                    $isTheTop={idx === 0}
+                  >
+                    <RangkingAndScore>
+                      <RankingNum>{idx + 1}</RankingNum>
+                      <Score>{score}점</Score>
+                    </RangkingAndScore>
+                    {score >= 61 && (
+                      <AllInLine>
+                        <UserName>{userName}</UserName>
                         <UserProfile
-                          $isProfileOnLeft={score < 61}
                           src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${userName}`}
                         />
-                        <UserName $isProfileOnLeft={score < 61}>
-                          {userName}
-                        </UserName>
-                      </NameAndProfile>
+                      </AllInLine>
                     )}
-                  </LeftArea>
-                  <RightArea>
-                    <UserProfile
-                      $isProfileOnLeft={score < 61}
-                      src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${userName}`}
-                    />
-                    <UserName $isProfileOnLeft={score < 61}>
-                      {userName}
-                    </UserName>
-                  </RightArea>
+                    {score < 61 && score >= 36 && (
+                      <ProfileInLine>
+                        <UserProfile
+                          $profileInline={true}
+                          src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${userName}`}
+                        />
+                        <UserName $profileInline={true}>{userName}</UserName>
+                      </ProfileInLine>
+                    )}
+                  </ScoreLine>
+                  {score < 35 && (
+                    <ProfileOutLine $profileInline={false}>
+                      <UserProfile
+                        $profileInline={false}
+                        src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${userName}`}
+                      />
+                      <UserName $profileInline={false}>{userName}</UserName>
+                    </ProfileOutLine>
+                  )}
                 </RankingWrapper>
               ))}
           </Rankings>
@@ -398,11 +408,8 @@ const Rankings = styled.div`
 const RankingWrapper = styled.div`
   position: relative;
   width: 100%;
-`;
-
-const LeftArea = styled.div`
-  position: relative;
-  width: 100%;
+  ${({ theme }) => theme.flex.between};
+  align-items: center;
 `;
 
 const ScoreLine = styled.div`
@@ -411,16 +418,26 @@ const ScoreLine = styled.div`
   left: 0;
   width: ${({ $scoreWidth }) => $scoreWidth}%;
 
-  padding: 20px 5px;
+  ${({ theme }) => theme.flex.between};
+  align-items: center;
+
   border-radius: 0 30px 30px 0;
   background: ${({ theme }) => theme.gradient.largerPurple};
+
+  ${({ $isTheTop }) =>
+    $isTheTop &&
+    css`
+      box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.system.yellow} inset;
+    `}
+`;
+
+const RangkingAndScore = styled.div`
+  ${({ theme }) => theme.flex.left};
+  margin-left: 10px;
+  gap: 10px;
 `;
 
 const RankingNum = styled.span`
-  position: absolute;
-  top: 7px;
-  left: 10px;
-
   ${({ theme }) => theme.flex.center};
 
   ${({ theme }) => theme.fonts.IBMmedium};
@@ -435,60 +452,84 @@ const RankingNum = styled.span`
 `;
 
 const Score = styled.span`
-  position: absolute;
-  top: 0;
-  left: 35px;
-
-  padding: 20px 5px;
-  margin-left: 5px;
+  padding: 20px 0px;
 
   ${({ theme }) => theme.fonts.IBMmedium};
-  font-weight: 900;
+  font-weight: bold;
 
   color: ${({ theme }) => theme.colors.primary.navy};
   font-weight: 500;
   margin-right: 5px;
 `;
 
-const NameAndProfile = styled.div`
-  position: relative;
-  width: 100%;
+const AllInLine = styled.div`
+  ${({ theme }) => theme.flex.right};
+  align-items: center;
 
-  border-radius: 50%;
+  margin-right: 8px;
+  height: 25px;
+
+  border-radius: ${({ theme }) => theme.radius.medium};
   background-color: ${({ theme }) => theme.colors.translucent.lightNavy};
 `;
 
-const RightArea = styled.div`
-  position: relative;
+const ProfileInLine = styled.div`
+  position: absolute;
+  left: 90px;
   width: 100%;
+
+  ${({ theme }) => theme.flex.right};
+  align-items: center;
+
+  height: 25px;
+
+  border-radius: ${({ theme }) => theme.radius.medium};
+`;
+
+const ProfileOutLine = styled.div`
+  ${({ theme }) => theme.flex.right};
+  align-items: center;
+
+  position: absolute;
+  top: 0;
+  left: 110px;
+
+  margin-right: 8px;
+
+  border-radius: ${({ theme }) => theme.radius.medium};
+  background-color: ${({ theme }) => theme.colors.translucent.lightNavy};
 `;
 
 const UserProfile = styled.img`
-  position: absolute;
-
-  top: 5px;
-  right: ${({ $isProfileOnLeft }) => ($isProfileOnLeft ? '5px' : 0)};
-
   width: 25px;
   height: 25px;
 
   border-radius: 50%;
   object-fit: cover;
   background-color: ${({ theme }) => theme.colors.primary.white};
+
+  ${({ $profileInline }) =>
+    $profileInline &&
+    css`
+      position: absolute;
+      left: 0;
+    `}
 `;
 
 const UserName = styled.span`
-  position: absolute;
-  top: 0;
-  right: ${({ $isProfileOnLeft }) => ($isProfileOnLeft ? '5px' : 0)};
-
-  width: 100%;
   padding: 10px 5px;
 
-  ${({ theme }) => theme.fonts.IBMsmall}
+  ${({ theme }) => theme.fonts.IBMsmall};
   margin-left: 5px;
 
   text-align: right;
+
+  ${({ $profileInline }) =>
+    $profileInline &&
+    css`
+      position: absolute;
+      left: 30px;
+    `}
 `;
 
 const TheRestUsersWrapper = styled.div`
@@ -496,7 +537,7 @@ const TheRestUsersWrapper = styled.div`
   height: 150px;
 
   ${({ theme, $isSingle }) =>
-    $isSingle ? theme.flex.right : theme.flex.between}
+    $isSingle ? theme.flex.right : theme.flex.between};
 
   gap: 12px;
 `;
