@@ -30,7 +30,7 @@ export class UserService {
     newUser.userName = username;
     newUser.email = email;
     newUser.password = password;
-    newUser.affirmation = '오늘 하루도 화이팅!';
+    newUser.affirmation = '오늘 하루도 화이팅';
     newUser.challengeId = -1;
     newUser.profile = `https://api.dicebear.com/8.x/open-peeps/svg?seed=${username}`;
     newUser.medals = {
@@ -135,13 +135,14 @@ export class UserService {
   async getInvis(userId: number) {
     const invitations = await this.userRepository.findOne({
       where: { _id: userId },
-      relations: ['invitations'],
+      relations: ['invitations', 'streak'],
     });
     const count = invitations?.invitations.filter(
       (invitation) => !invitation.isExpired,
     ).length; // 초대받은 챌린지의 수
     return {
       invitations: invitations,
+      currentStreak: invitations.streak.currentStreak,
       count: count,
     };
   }

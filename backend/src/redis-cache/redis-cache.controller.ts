@@ -11,7 +11,7 @@ export class RedisCacheController {
   }
 
   @Post()
-  async setHello(): Promise<void | 'OK'> {
+  async setHello(): Promise<void | string> {
     return await this.redisService.set('hello', 'world');
   }
 }
