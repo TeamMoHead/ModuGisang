@@ -127,11 +127,10 @@ const InGame = () => {
       {/* <MissionSoundEffects /> */}
       <MusicController />
 
-      <Wrapper $hasMate={mateList?.length > 0}>
-        {GAME_MODE[inGameMode] !== 'result' && (
+      {GAME_MODE[inGameMode] !== 'result' && (
+        <Wrapper $hasMate={mateList?.length > 0}>
           <>
             <MyVideo />
-
             <MatesVideoWrapper $isSingle={mateList?.length === 1}>
               {mateList?.length > 0 &&
                 mateList?.map(({ userId, userName }) => (
@@ -139,9 +138,9 @@ const InGame = () => {
                 ))}
             </MatesVideoWrapper>
           </>
-        )}
-        {GAME_MODE[inGameMode] === 'result' && <Result />}
-      </Wrapper>
+        </Wrapper>
+      )}
+      {GAME_MODE[inGameMode] === 'result' && <Result />}
     </>
   );
 };
