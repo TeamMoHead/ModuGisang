@@ -140,9 +140,10 @@ export class UserService {
     const count = invitations?.invitations.filter(
       (invitation) => !invitation.isExpired,
     ).length; // 초대받은 챌린지의 수
+    const currentStreak = invitations?.streak?.currentStreak ?? 0;
     return {
       invitations: invitations,
-      currentStreak: invitations.streak.currentStreak,
+      currentStreak: currentStreak,
       count: count,
     };
   }
