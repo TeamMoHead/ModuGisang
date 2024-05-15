@@ -8,6 +8,7 @@ import {
   AccountContext,
 } from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
+import FriendStreak from '../InGame/Waiting/FriendStreak';
 
 import InGameNav from './components/Nav/InGameNav';
 import { MyVideo, MateVideo } from './components';
@@ -49,6 +50,8 @@ const InGame = () => {
   const [redirected, setRedirected] = useState(false);
 
   const [mateList, setMateList] = useState([]);
+  const [isMateSelected, setIsMateSelected] = useState(false);
+  const [mateId, setMateId] = useState(0);
 
   // const musicSrc = getMusicSrc(inGameMode);
 
@@ -119,9 +122,26 @@ const InGame = () => {
     };
   }, []);
 
+  const handleMateSelect = userId => {
+    console.log('======================');
+    console.log('메이트 비디오 터치');
+    console.log(userId);
+    console.log('======================');
+    setIsMateSelected(true);
+    setMateId(userId);
+  };
+
+  const handleMateModal = () => {
+    console.log('handleMateModal');
+    setIsMateSelected(false);
+  };
+
   if (redirected) return null;
   return (
     <>
+      {isMateSelected && (
+        <FriendStreak userId={mateId} onClick={handleMateModal} />
+      )}
       <InGameNav />
       {/* <BackgroundMusic /> */}
       {/* <MissionSoundEffects /> */}
@@ -134,7 +154,12 @@ const InGame = () => {
             <MatesVideoWrapper $isSingle={mateList?.length === 1}>
               {mateList?.length > 0 &&
                 mateList?.map(({ userId, userName }) => (
-                  <MateVideo key={userId} mateId={userId} mateName={userName} />
+                  <MateVideo
+                    key={userId}
+                    mateId={userId}
+                    mateName={userName}
+                    onClick={() => handleMateSelect(userId)}
+                  />
                 ))}
             </MatesVideoWrapper>
           </>

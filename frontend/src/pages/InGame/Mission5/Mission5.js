@@ -19,12 +19,38 @@ const Mission5 = () => {
   const [successText, setSuccessText] = useState('');
   const [timeIndex, setTimeIndex] = useState(0);
 
+  // useEffect(() => {
+  //   if (inGameMode !== 5 || !myVideoRef.current || isMissionStarting) {
+  //     return;
+  //   }
+
+  //   if (transcript === timesTable[timeIndex].answer) {
+  //     console.log('성공~!');
+  //     resetTranscript();
+  //     const result = <Success>성공~!</Success>;
+  //     setSuccessText(result);
+  //     if (timeIndex === 4) {
+  //       stop();
+  //       setGameScore(score => (score += 4));
+  //       setMyMissionStatus(true);
+  //     } else {
+  //       setTimeIndex(timeIndex => timeIndex + 1);
+  //       setGameScore(score => (score += 4));
+  //     }
+  //   } else if (transcript.length > 1) {
+  //     resetTranscript();
+  //   }
+  // });
+
   useEffect(() => {
     if (inGameMode !== 5 || !myVideoRef.current || isMissionStarting) {
       return;
     }
 
-    if (transcript === timesTable[timeIndex].answer) {
+    const trimmedTranscript = transcript.trim();
+    console.log(trimmedTranscript);
+
+    if (trimmedTranscript === timesTable[timeIndex].answer) {
       console.log('성공~!');
       resetTranscript();
       const result = <Success>성공~!</Success>;
@@ -37,10 +63,20 @@ const Mission5 = () => {
         setTimeIndex(timeIndex => timeIndex + 1);
         setGameScore(score => (score += 4));
       }
-    } else if (transcript.length > 1) {
+    } else if (trimmedTranscript.length > 1) {
       resetTranscript();
     }
-  });
+  }, [
+    transcript,
+    inGameMode,
+    isMissionStarting,
+    myVideoRef,
+    timeIndex,
+    resetTranscript,
+    stop,
+    setGameScore,
+    setMyMissionStatus,
+  ]);
 
   return (
     <>
