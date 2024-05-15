@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef } from 'react';
 
 import waitingMusic from '../../../assets/bgm/waiting_room.mp3';
-import missionMusic from '../../../assets/bgm/hawaii_cut.mp3';
+import missionMusic from '../../../assets/bgm/ingame_music.mp3';
 import resultMusic from '../../../assets/bgm/result_music.mp3';
 
 import { GameContext } from '../../../contexts';

@@ -73,11 +73,11 @@ const Mission2 = () => {
 
   const [paperImg, setPaperImg] = useState([
     {
-      imageUrl: yellow1,
+      imageUrl: pink1,
       shouldFall: false,
     },
     {
-      imageUrl: pink1,
+      imageUrl: yellow1,
       shouldFall: false,
     },
     {
@@ -140,31 +140,34 @@ const Mission2 = () => {
 
               if (topScore === 2) {
                 setPaperImg(prevPaperImg => [
+                  ...prevPaperImg.slice(0, 1),
                   {
                     imageUrl: yellow2,
                     shouldFall: false,
                   },
-                  ...prevPaperImg.slice(1), // 나머지 요소는 유지
+                  ...prevPaperImg.slice(2), // 나머지 요소는 유지
                 ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
               } else if (topScore === 3) {
                 setPaperImg(prevPaperImg => [
+                  ...prevPaperImg.slice(0, 1),
                   {
                     imageUrl: yellow3,
                     shouldFall: false,
                   },
-                  ...prevPaperImg.slice(1),
+                  ...prevPaperImg.slice(2),
                 ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
               } else if (topScore >= targetNumber / 2) {
                 setPaperImg(prevPaperImg => [
+                  ...prevPaperImg.slice(0, 1),
                   {
                     imageUrl: yellow4,
                     shouldFall: true,
                   },
-                  ...prevPaperImg.slice(1),
+                  ...prevPaperImg.slice(2),
                 ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
@@ -186,34 +189,31 @@ const Mission2 = () => {
 
               if (leftScore === 3) {
                 setPaperImg(prevPaperImg => [
-                  ...prevPaperImg.slice(0, 1),
                   {
                     imageUrl: pink2,
                     shouldFall: false,
                   },
-                  ...prevPaperImg.slice(2), // 나머지 요소는 유지
+                  ...prevPaperImg.slice(1),
                 ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
               } else if (leftScore === 5) {
                 setPaperImg(prevPaperImg => [
-                  ...prevPaperImg.slice(0, 1),
                   {
                     imageUrl: pink3,
                     shouldFall: false,
                   },
-                  ...prevPaperImg.slice(2),
+                  ...prevPaperImg.slice(1),
                 ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
               } else if (leftScore >= targetNumber) {
                 setPaperImg(prevPaperImg => [
-                  ...prevPaperImg.slice(0, 1),
                   {
                     imageUrl: pink4,
                     shouldFall: true,
                   },
-                  ...prevPaperImg.slice(2),
+                  ...prevPaperImg.slice(1),
                 ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
