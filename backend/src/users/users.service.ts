@@ -30,7 +30,7 @@ export class UserService {
     newUser.userName = username;
     newUser.email = email;
     newUser.password = password;
-    newUser.affirmation = '오늘 하루도 화이팅!';
+    newUser.affirmation = '오늘 하루도 화이팅';
     newUser.challengeId = -1;
     newUser.profile = `https://api.dicebear.com/8.x/open-peeps/svg?seed=${username}`;
     newUser.medals = {
