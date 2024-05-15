@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  UserContext,
   ChallengeContext,
   GameContext,
   OpenViduContext,
   MediaPipeContext,
+  AccountContext,
 } from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
 
@@ -31,8 +31,7 @@ const GAME_MODE = {
 
 const InGame = () => {
   const navigate = useNavigate();
-  const { myData } = useContext(UserContext);
-  const { userId: myId } = myData;
+  const { userId: myId } = useContext(AccountContext);
   const { challengeData } = useContext(ChallengeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
   const { inGameMode, isEnteredTimeSent, sendEnteredTime } =
@@ -89,14 +88,14 @@ const InGame = () => {
   }, [inGameMode, isTooEarly, isTooLate, redirected]);
 
   useEffect(() => {
-    if (inGameMode === 0) {
+    if (GAME_MODE[inGameMode] === 'waiting') {
       if (isEnteredTimeSent) {
         return;
       } else {
         sendEnteredTime();
       }
     }
-    if (inGameMode === 6) {
+    if (GAME_MODE[inGameMode] === 'result') {
       poseModel.current = null;
       holisticModel.current = null;
       setIsPoseLoaded(false);
@@ -128,11 +127,10 @@ const InGame = () => {
       {/* <MissionSoundEffects /> */}
       <MusicController />
 
-      <Wrapper $hasMate={mateList?.length > 0}>
-        {GAME_MODE[inGameMode] !== 'result' && (
+      {GAME_MODE[inGameMode] !== 'result' && (
+        <Wrapper $hasMate={mateList?.length > 0}>
           <>
             <MyVideo />
-
             <MatesVideoWrapper $isSingle={mateList?.length === 1}>
               {mateList?.length > 0 &&
                 mateList?.map(({ userId, userName }) => (
@@ -140,9 +138,9 @@ const InGame = () => {
                 ))}
             </MatesVideoWrapper>
           </>
-        )}
-        {GAME_MODE[inGameMode] === 'result' && <Result />}
-      </Wrapper>
+        </Wrapper>
+      )}
+      {GAME_MODE[inGameMode] === 'result' && <Result />}
     </>
   );
 };

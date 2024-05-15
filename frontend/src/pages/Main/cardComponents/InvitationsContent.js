@@ -8,10 +8,12 @@ const InvitationsContent = () => {
   const { invitationCounts } = myData;
   return (
     <Wrapper>
-      <div>초대장 확인하기</div>
-      <RightArea>
-        <SmallLetter>초대 : {invitationCounts}개</SmallLetter>
-      </RightArea>
+      <InviteCount>{invitationCounts}</InviteCount>
+      <InvitationTitle>초대받은 챌린지</InvitationTitle>
+      <SmallLetter>
+        미라클 메이트
+        <WaitInviteSpan>{invitationCounts}팀</WaitInviteSpan>이 기다리고 있어요
+      </SmallLetter>
     </Wrapper>
   );
 };
@@ -19,19 +21,43 @@ const InvitationsContent = () => {
 export default InvitationsContent;
 
 const Wrapper = styled.div`
-  ${({ theme }) => theme.flex.between}
-`;
-
-const RightArea = styled.div`
-  ${({ theme }) => theme.flex.left}
+  width: 100%;
+  height: 140px;
+  ${({ theme }) => theme.flex.center}
   flex-direction: column;
 `;
 
-const BigLetter = styled.span`
-  font: 700 24px 'Jua';
-  color: ${({ theme }) => theme.colors.primary.emerald};
+const InvitationTitle = styled.span`
+  /* flex: ${({ theme }) => theme.flex.center}; // 추가 */
+  color: ${({ theme }) => theme.colors.primary.purple};
+  justify-content: center;
+  ${({ theme }) => theme.fonts.JuaSmall};
+  height: 46.8px;
+  margin-top: 30px;
 `;
 
 const SmallLetter = styled.span`
-  ${({ theme }) => theme.fonts.IBMsmall}
+  ${({ theme }) => theme.fonts.IBMmedium};
+  height: 37px;
+`;
+
+const WaitInviteSpan = styled.span`
+  color: ${({ theme }) => theme.colors.primary.emerald};
+  ${({ theme }) => theme.fonts.IBMmedium};
+  margin-left: 5px;
+`;
+
+const InviteCount = styled.div`
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: ${({ theme }) => theme.colors.primary.emerald};
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
 `;

@@ -1,8 +1,8 @@
 export const GREETINGS = ['안녕하세요, ', '님!'];
 
 export const CARD_TYPES = {
-  hasChallenge: ['streak', 'challenge', 'enter'],
-  noChallenge: ['streak', 'invitations', 'create'],
+  hasChallenge: ['streak', 'challenge'],
+  noChallenge: ['streak', 'invitations'],
 };
 
 export const CARD_STYLES = {
@@ -15,6 +15,6 @@ export const CARD_STYLES = {
     lineColor: 'purple',
   },
   invitations: { isBold: true, lineColor: 'purple' },
-  create: { isBold: true, lineColor: 'gradient' },
-  enter: { isBold: true, lineColor: 'gradient' },
+  // create: { isBold: true, lineColor: 'gradient' },
+  // enter: { isBold: true, lineColor: 'gradient' },
 };

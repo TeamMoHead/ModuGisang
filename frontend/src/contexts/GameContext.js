@@ -21,7 +21,7 @@ const GAME_MODE = {
 // mission 당 소요 시간
 const GAME_MODE_DURATION = {
   1: 21500,
-  2: 17000,
+  2: 19000,
   3: 17000,
   4: 14500,
   5: 13000,
@@ -32,7 +32,7 @@ const RESULT_TIME = 2000;
 
 const GameContextProvider = ({ children }) => {
   const { fetchData } = useFetch();
-  const { accessToken } = useContext(AccountContext);
+  const { accessToken, userId } = useContext(AccountContext);
   const { myData } = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
   const { remainingTime, isTooLate, isTooEarly } = useCheckTime(
@@ -79,7 +79,7 @@ const GameContextProvider = ({ children }) => {
   // =================== GET & POSE GAME INFO ===================
   const sendEnteredTime = async () => {
     const response = await fetchData(() =>
-      inGameServices.sendEnteredTime({ accessToken }),
+      inGameServices.sendEnteredTime({ accessToken, userId }),
     );
 
     const { isLoading, data, error } = response;

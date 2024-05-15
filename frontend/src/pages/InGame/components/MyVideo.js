@@ -1,6 +1,15 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { GameContext, OpenViduContext, UserContext } from '../../../contexts';
+import {
+  AccountContext,
+  GameContext,
+  OpenViduContext,
+  UserContext,
+} from '../../../contexts';
+import useFetch from '../../../hooks/useFetch';
+import { inGameServices, userServices } from '../../../apis';
 import { LoadingWithText } from '../../../components';
+import { TheRestVideo } from './';
+
 import {
   Waiting,
   Mission1,
@@ -9,6 +18,7 @@ import {
   Mission4,
   Mission5,
   Affirmation,
+  Result,
 } from '../';
 import styled, { css } from 'styled-components';
 
@@ -20,6 +30,7 @@ const GAME_MODE = {
   4: 'mission4',
   5: 'mission5',
   6: 'affirmation',
+  7: 'result',
 };
 
 const GAME_MODE_COMPONENTS = {
@@ -30,11 +41,19 @@ const GAME_MODE_COMPONENTS = {
   4: <Mission4 />,
   5: <Mission5 />,
   6: <Affirmation />,
+  7: <Result />,
 };
 
+const RESULT_HEADER_TEXT = '오늘의 미라클 메이커';
+
 const MyVideo = () => {
-  const { myVideoRef, myStream } = useContext(OpenViduContext);
-  const { myMissionStatus, inGameMode } = useContext(GameContext);
+  const { fetchData } = useFetch();
+
+  const { accessToken, userId: myId } = useContext(AccountContext);
+
+  const { myVideoRef, myStream, mateStreams } = useContext(OpenViduContext);
+  const { myMissionStatus, inGameMode, isGameResultReceived } =
+    useContext(GameContext);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
 
   useEffect(() => {
@@ -65,15 +84,20 @@ const MyVideo = () => {
         <LoadingWithText loadingMSG="카메라를 인식 중이에요" />
       )}
 
-      <React.Fragment key={inGameMode}>
-        {GAME_MODE_COMPONENTS[inGameMode]}
-      </React.Fragment>
+      {[0, 1, 2, 3, 4, 5].includes(inGameMode) && (
+        <React.Fragment key={inGameMode}>
+          {GAME_MODE_COMPONENTS[inGameMode]}
+        </React.Fragment>
+      )}
+      {GAME_MODE[inGameMode] === 'result' && <Result />}
       <Video
         ref={myVideoRef}
         autoPlay
         playsInline
-        $isWaitingMode={inGameMode === 0}
+        $isWaitingMode={GAME_MODE[inGameMode] === 'wating'}
         $myMissionStatus={myMissionStatus}
+        $isResultMode={GAME_MODE[inGameMode] === 'result'}
+        $amTheTopUser={true}
       />
     </Wrapper>
   );
