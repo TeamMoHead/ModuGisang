@@ -40,6 +40,7 @@ const Mission3 = () => {
     inGameMode,
     myMissionStatus,
     setMyMissionStatus,
+    setIsRoundPassed,
     setGameScore,
   } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
@@ -187,7 +188,6 @@ const Mission3 = () => {
           newState[currentRoundIdx][currentArrowIdx].active = true;
           return newState;
         });
-
         if (currentRoundIdx === 1 && currentArrowIdx === 3) {
           setCurrentArrowIdx(0); // 첫 번째 화살표로 초기화
           setMyMissionStatus(true); // 성공
@@ -215,7 +215,8 @@ const Mission3 = () => {
   useEffect(() => {
     if (!isMissionStarting) {
       if (!isMusicMuted) {
-        RoundSoundEffect();
+        setIsRoundPassed(true);
+        setTimeout(() => setIsRoundPassed(false), 100);
       }
     }
   }, [currentArrowIdx]);

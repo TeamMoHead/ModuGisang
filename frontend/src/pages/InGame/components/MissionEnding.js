@@ -2,29 +2,28 @@ import React, { useEffect, useContext } from 'react';
 import { GameContext } from '../../../contexts';
 import { rainEffect } from '../Mission4/effect';
 
-import thunderstorm from '../../../assets/soundEffects/thunderstorm.mp3';
 import styled, { keyframes } from 'styled-components';
 
-const thunderstormSoundEffect = () => {
-  const volume = 0.5;
-  const audio = new Audio(thunderstorm);
-  audio.volume = volume;
+// const thunderstormSoundEffect = () => {
+//   const volume = 0.5;
+//   const audio = new Audio(thunderstorm);
+//   audio.volume = volume;
 
-  // 사운드 재생
-  audio.play();
+//   // 사운드 재생
+//   audio.play();
 
-  // 2초 후에 페이드 아웃 시작
-  setTimeout(() => {
-    const fadeOutInterval = setInterval(() => {
-      if (audio.volume <= 0.05) {
-        clearInterval(fadeOutInterval);
-        audio.pause(); // 오디오 재생 중지
-      } else {
-        audio.volume -= volume / 10; // 0.05
-      }
-    }, 100);
-  }, 2000);
-};
+//   // 2초 후에 페이드 아웃 시작
+//   setTimeout(() => {
+//     const fadeOutInterval = setInterval(() => {
+//       if (audio.volume <= 0.05) {
+//         clearInterval(fadeOutInterval);
+//         audio.pause(); // 오디오 재생 중지
+//       } else {
+//         audio.volume -= volume / 10; // 0.05
+//       }
+//     }, 100);
+//   }, 2000);
+// };
 
 const MissionEnding = ({ canvasRef }) => {
   const {
@@ -42,9 +41,6 @@ const MissionEnding = ({ canvasRef }) => {
 
     if (inGameMode === 4 && !myMissionStatus) {
       rainEffect(canvasRef, 2);
-      if (!isMusicMuted) {
-        thunderstormSoundEffect();
-      }
     }
   }, [isMissionEnding, myMissionStatus, setIsMissionEnding]);
 
