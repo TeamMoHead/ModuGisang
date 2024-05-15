@@ -39,11 +39,11 @@ const Mission5 = () => {
       setSuccessText(result);
       if (timeIndex === 4) {
         stop();
-        setGameScore(score => (score += 4));
+        setGameScore(score => (score += 5));
         setMyMissionStatus(true);
       } else {
         setTimeIndex(timeIndex => timeIndex + 1);
-        setGameScore(score => (score += 4));
+        setGameScore(score => (score += 5));
       }
     } else if (trimmedTranscript.length > 1) {
       resetTranscript();
@@ -107,9 +107,8 @@ const Success = styled.div`
 `;
 
 const timesTable = {
-  0: { question: '3 * 3', answer: '9' },
-  1: { question: '3 * 6', answer: '18' },
-  2: { question: '5 X 4', answer: '20' },
-  3: { question: '4 X 4', answer: '16' },
-  4: { question: '5 X 8', answer: '40' },
+  0: { question: '3 * 6', answer: '18' },
+  1: { question: '5 X 4', answer: '20' },
+  2: { question: '4 X 4', answer: '16' },
+  3: { question: '5 X 8', answer: '40' },
 };
