@@ -61,12 +61,11 @@ const Mission2 = () => {
     isMissionStarting,
     isMissionEnding,
     inGameMode,
-    isMusicMuted,
+    isRoundPassed,
     myMissionStatus,
     setMyMissionStatus,
     setGameScore,
     setIsRoundPassed,
-    isMissionEnding,
   } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
 
@@ -166,6 +165,7 @@ const Mission2 = () => {
       myPostitStatus.every(shouldFall => shouldFall === true)
     ) {
       setMyMissionStatus(true);
+      setIsRoundPassed(false);
     }
     if (faceLandmarks && !myMissionStatus) {
       myPostitStatus?.forEach((status, index) => {
@@ -196,8 +196,8 @@ const Mission2 = () => {
                 ...prevPositions[index],
                 shouldFall: true,
               };
-
               setIsRoundPassed(true);
+              setTimeout(() => setIsRoundPassed(false), 500);
             }
             return updatedPositions;
           });

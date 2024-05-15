@@ -42,7 +42,6 @@ const Mission1 = () => {
     isMissionStarting,
     isMissionEnding,
     inGameMode,
-    isMusicMuted,
     myMissionStatus,
     setMyMissionStatus,
     setIsRoundPassed,
