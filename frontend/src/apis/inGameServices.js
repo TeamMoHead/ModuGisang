@@ -8,8 +8,9 @@ const API = axios.create({
   },
 });
 
-const sendEnteredTime = async ({ accessToken }) => {
-  const url = `in-game/enter`;
+const sendEnteredTime = async ({ accessToken, userId }) => {
+  const url = `in-game/enter/${userId}`;
+  console.log('SEND ENTERED TIME:: URL:: ', url);
   const config = {
     headers: { Authorization: `Bearer ${accessToken}` },
   };
@@ -25,7 +26,7 @@ const sendMyGameScore = async ({ accessToken, userData }) => {
     challengeId,
     score,
   };
-
+  console.log('@@@@@@ GAME SCORE PAYLOAD:: ', payload);
   const config = {
     headers: {
       Authorization: `Bearer ${accessToken}`,

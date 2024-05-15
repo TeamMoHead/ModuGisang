@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  UserContext,
   ChallengeContext,
   GameContext,
   OpenViduContext,
   MediaPipeContext,
+  AccountContext,
 } from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
 
@@ -30,8 +30,7 @@ const GAME_MODE = {
 
 const InGame = () => {
   const navigate = useNavigate();
-  const { myData } = useContext(UserContext);
-  const { userId: myId } = myData;
+  const { userId: myId } = useContext(AccountContext);
   const { challengeData } = useContext(ChallengeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
   const { inGameMode, isEnteredTimeSent, sendEnteredTime } =

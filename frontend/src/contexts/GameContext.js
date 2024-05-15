@@ -35,7 +35,7 @@ const RESULT_TIME = 2000;
 
 const GameContextProvider = ({ children }) => {
   const { fetchData } = useFetch();
-  const { accessToken } = useContext(AccountContext);
+  const { accessToken, userId } = useContext(AccountContext);
   const { myData } = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
   const { remainingTime, isTooLate, isTooEarly } = useCheckTime(
@@ -82,7 +82,7 @@ const GameContextProvider = ({ children }) => {
   // =================== GET & POSE GAME INFO ===================
   const sendEnteredTime = async () => {
     const response = await fetchData(() =>
-      inGameServices.sendEnteredTime({ accessToken }),
+      inGameServices.sendEnteredTime({ accessToken, userId }),
     );
 
     const { isLoading, data, error } = response;

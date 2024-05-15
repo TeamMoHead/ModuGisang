@@ -1,23 +1,26 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import { AccountContext } from '../../../contexts';
 
 // Import Swiper styles
+import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import './slider.css';
-
-// import required modules
 import { Pagination } from 'swiper/modules';
 
 const ChallengeContent = ({ challenges }) => {
+  const { userId: myId } = useContext(AccountContext);
   if (!challenges || challenges?.length === 0) {
     return <div>loading...</div>;
   }
   const remainingDays =
     calculateRemainingDays(challenges?.startDate, challenges?.duration) - 1;
 
-  const matesNames = challenges?.mates?.map(mate => mate?.userName).join(', ');
+  const matesNames = challenges?.mates
+    ?.filter(mate => mate?.userId !== myId)
+    .map(mate => mate?.userName)
+    .join(', ');
 
   const sliderBox = [
     <SlideContent $isSingleLine={true}>
