@@ -11,8 +11,15 @@ import { inGameServices, userServices } from '../../../apis';
 import { LoadingWithText } from '../../../components';
 
 import { TheRestVideo } from '../components';
+import { gold, silver, bronze } from '../../../assets/medals';
 
 import styled, { css } from 'styled-components';
+
+const MEDAL_ICONS = {
+  gold: gold,
+  silver: silver,
+  bronze: bronze,
+};
 
 const GAME_MODE = {
   0: 'waiting',
@@ -170,7 +177,14 @@ const Result = () => {
                 </TheTopStreakDays>
                 일차
               </TheTopStreak>
-              {/* <TheTopMedals>{theTopUserData?.medals?.(keys).map({}=> (<Medal key={}/>))}</TheTopMedals> */}
+              <Medals>
+                {['gold', 'silver', 'bronze'].map((medal, idx) => (
+                  <MedalArea>
+                    <MedalCount>{theTopUserData?.medals[medal]}</MedalCount>
+                    <Medal key={idx} src={MEDAL_ICONS[medal]} />
+                  </MedalArea>
+                ))}
+              </Medals>{' '}
             </TheTopUserInfo>
           </TheTopUserArea>
           <Rankings>
@@ -310,6 +324,40 @@ const TheTopStreakDays = styled.span`
   font-size: 1.2em;
   font-weight: 900;
   color: ${({ theme }) => theme.colors.primary.emerald};
+`;
+
+const Medals = styled.div`
+  ${({ theme }) => theme.flex.between}
+
+  width: 100%;
+`;
+
+const MedalArea = styled.div`
+  position: relative;
+  ${({ theme }) => theme.flex.center}
+
+  width: 40px;
+  height: 40px;
+`;
+
+const MedalCount = styled.span`
+  z-index: 200;
+  position: absolute;
+  top: -3px;
+  left: -17px;
+  margin: auto;
+
+  ${({ theme }) => theme.fonts.JuaSmall};
+  color: ${({ theme }) => theme.colors.primary.white};
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
+`;
+
+const Medal = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: auto;
+  width: 30px;
 `;
 
 const Rankings = styled.div`

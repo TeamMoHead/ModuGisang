@@ -7,19 +7,24 @@ import {
   // level3,
   // level4,
 } from '../../../assets/streakLevels';
-import { bronze, silver, gold } from '../../../assets/medals';
+import { gold, silver, bronze } from '../../../assets/medals';
 import styled from 'styled-components';
 
-const StreakContent = ({ userData }) => {
+const MEDAL_ICONS = {
+  gold: gold,
+  silver: silver,
+  bronze: bronze,
+};
+
+const StreakContent = () => {
   const [level, setLevel] = useState('streak0');
   const { myData } = useContext(UserContext);
-  const { streakDays, medals } = userData ? userData : myData;
-  // calculate user streak level by user streakDays
+  const { streakDays, medals } = myData;
 
   const getStreakLevel = streakDays => {
-    if (streakDays === 0) {
+    if (streakDays < 7) {
       return 'streak0';
-    } else if (streakDays >= 1 && streakDays <= 30) {
+    } else if (streakDays >= 7 && streakDays <= 30) {
       return 'streak1';
     } else if (streakDays >= 31 && streakDays <= 60) {
       return 'streak2';
@@ -39,9 +44,12 @@ const StreakContent = ({ userData }) => {
     // streak4: level4,
   };
 
-  // useEffect(() => {
-  //   setLevel(getStreakLevel(streakDays));
-  // }, [myData]);
+  useEffect(() => {
+    if (!myData) return;
+    setLevel(getStreakLevel(streakDays));
+  }, [myData]);
+
+  console.log(medals);
 
   return (
     <Wrapper>
@@ -61,9 +69,12 @@ const StreakContent = ({ userData }) => {
           <MediumLetter>챌린지 달성 기록</MediumLetter>
         </ChallengeRecordTitle>
         <Medals>
-          <Medal src={gold} alt="gold" /> {medals.gold}
-          <Medal src={silver} alt="silver" /> {medals.silver}
-          <Medal src={bronze} alt="bronze" /> {medals.bronze}
+          {['gold', 'silver', 'bronze'].map((medal, idx) => (
+            <MedalArea>
+              <MedalCount>{medals[medal]}</MedalCount>
+              <Medal key={idx} src={MEDAL_ICONS[medal]} />
+            </MedalArea>
+          ))}
         </Medals>
       </BottomWrapper>
     </Wrapper>
@@ -134,13 +145,38 @@ const ChallengeRecordTitle = styled.div`
   width: 100%;
   height: 33px;
 `;
+
 const Medals = styled.div`
   ${({ theme }) => theme.flex.between}
-  margin-inline: 2px;
+
   width: 100%;
 `;
 
+const MedalArea = styled.div`
+  position: relative;
+  ${({ theme }) => theme.flex.center}
+
+  width: 40px;
+  height: 40px;
+`;
+
+const MedalCount = styled.span`
+  z-index: 200;
+  position: absolute;
+  top: -3px;
+  left: -17px;
+  margin: auto;
+
+  ${({ theme }) => theme.fonts.JuaSmall};
+  color: ${({ theme }) => theme.colors.primary.white};
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
+`;
+
 const Medal = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: auto;
   width: 30px;
 `;
 
