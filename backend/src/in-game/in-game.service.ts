@@ -18,16 +18,28 @@ export class InGameService {
       timestamp,
       EXPIRE_TIME,
     );
+    console.log('@@recordEntryTime/userId', userId);
     console.log('result:', result);
-    return true;
+    if (result === 'OK') {
+      return true;
+    }
+    return false;
   }
 
   async submitScore(scoreDto: ScoreDto): Promise<boolean> {
     const { userId, userName, score, challengeId } = scoreDto;
+    console.log(
+      '@@submitScore/userId,userName,score,challengeId',
+      userId,
+      userName,
+      score,
+      challengeId,
+    );
     try {
       const entryTime = await this.redisService.get(`entryTime:${userId}`);
+      console.log('@@@@entryTime:', entryTime);
       if (!entryTime) {
-        console.error('Entry time not found');
+        console.error(`Entry time:${userId} not found`);
         return false;
       }
       const currentTime = Date.now();

@@ -10,8 +10,9 @@ export class RedisCacheService {
     return await this.redis.get(key);
   }
 
-  async set(key: string, value: string, ttl?: number): Promise<void> {
-    await this.redis.set(key, value, 'EX', ttl ?? 100000);
+  async set(key: string, value: string, ttl?: number): Promise<string> {
+    const result = await this.redis.set(key, value, 'EX', ttl ?? 100000);
+    return result; // 'OK'가 반환됩니다.
   }
 
   async lastVisitedTimeGet(key: string): Promise<string> {
