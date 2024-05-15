@@ -31,7 +31,7 @@ const Main = () => {
 
   const { accessToken, userId } = useContext(AccountContext);
   const { challengeId, getMyData } = useContext(UserContext);
-  const { challengeData, setChallengeData } = useContext(ChallengeContext);
+  const { challengeData } = useContext(ChallengeContext);
   const { isWarmUpDone } = useContext(MediaPipeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
 

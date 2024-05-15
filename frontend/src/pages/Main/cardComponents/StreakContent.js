@@ -19,7 +19,7 @@ const MEDAL_ICONS = {
 const StreakContent = () => {
   const [level, setLevel] = useState('streak0');
   const { myData } = useContext(UserContext);
-  const { streakDays, medals } = myData;
+  const { streakDays, medals: medalCounts } = myData;
 
   const getStreakLevel = streakDays => {
     if (streakDays < 7) {
@@ -49,7 +49,7 @@ const StreakContent = () => {
     setLevel(getStreakLevel(streakDays));
   }, [myData]);
 
-  console.log(medals);
+  console.log(medalCounts['gold'].length);
 
   return (
     <Wrapper>
@@ -70,9 +70,14 @@ const StreakContent = () => {
         </ChallengeRecordTitle>
         <Medals>
           {['gold', 'silver', 'bronze'].map((medal, idx) => (
-            <MedalArea>
-              <MedalCount>{medals[medal]}</MedalCount>
-              <Medal key={idx} src={MEDAL_ICONS[medal]} />
+            <MedalArea key={idx}>
+              {medalCounts[medal] > 0 && (
+                <MedalCount>{medalCounts[medal]}</MedalCount>
+              )}
+              <Medal
+                src={MEDAL_ICONS[medal]}
+                $hasMedal={medalCounts[medal] > 0}
+              />
             </MedalArea>
           ))}
         </Medals>
@@ -97,6 +102,7 @@ const SeperateLine = styled.div`
   height: 1px;
   background: ${({ theme }) => theme.colors.neutral.lightGray};
 `;
+
 const BottomWrapper = styled.div`
   ${({ theme }) => theme.flex.between}
   width: 100%;
@@ -154,7 +160,6 @@ const Medals = styled.div`
 
 const MedalArea = styled.div`
   position: relative;
-  ${({ theme }) => theme.flex.center}
 
   width: 40px;
   height: 40px;
@@ -164,7 +169,7 @@ const MedalCount = styled.span`
   z-index: 200;
   position: absolute;
   top: -3px;
-  left: -17px;
+  left: -7px;
   margin: auto;
 
   ${({ theme }) => theme.fonts.JuaSmall};
@@ -174,10 +179,13 @@ const MedalCount = styled.span`
 
 const Medal = styled.img`
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0px;
+  left: ${({ $hasMedal }) => (!$hasMedal ? '0px' : '10px')};
+
   margin: auto;
   width: 30px;
+
+  opacity: ${({ $hasMedal }) => (!$hasMedal ? 0.4 : 1)};
 `;
 
 const Days = styled.div`
