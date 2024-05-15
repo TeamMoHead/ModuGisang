@@ -183,7 +183,6 @@ const Mission3 = () => {
       const isCorrect = NeckGame(results.poseLandmarks, direction);
 
       if (isCorrect) {
-        setIsRoundPassed(true);
         setArrowRound(prevState => {
           const newState = { ...prevState };
           newState[currentRoundIdx][currentArrowIdx].active = true;
@@ -203,7 +202,6 @@ const Mission3 = () => {
           score.current = currentRoundIdx * 12 + (currentArrowIdx + 1) * 3;
           setCurrentArrowIdx(currentArrowIdx + 1); // 다음 화살표로 이동
         }
-        setIsRoundPassed(false);
       }
     });
   }, [
@@ -218,6 +216,7 @@ const Mission3 = () => {
     if (!isMissionStarting) {
       if (!isMusicMuted) {
         setIsRoundPassed(true);
+        setTimeout(() => setIsRoundPassed(false), 100);
       }
     }
   }, [currentArrowIdx]);

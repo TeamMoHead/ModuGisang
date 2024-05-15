@@ -17,7 +17,7 @@ const AUDIO_SOURCE_PATH = {
 const getMusicSrc = gameMode => {
   if (gameMode === 0) {
     return AUDIO_SOURCE_PATH.waiting;
-  } else if (gameMode === 6) {
+  } else if (gameMode === 7) {
     return AUDIO_SOURCE_PATH.result;
   } else {
     return AUDIO_SOURCE_PATH.mission;
@@ -66,7 +66,7 @@ const BackgroundMusic = () => {
     if (isMusicMuted) {
       audioRef.current.pause();
       return;
-    } else if (inGameMode === 0 || inGameMode === 6) {
+    } else if (inGameMode === 0 || inGameMode === 7) {
       audioRef.current.src = newSrc;
       audioRef.current.play();
     } else if (inGameMode === 1) {
