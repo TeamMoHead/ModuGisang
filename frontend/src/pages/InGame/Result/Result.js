@@ -57,14 +57,7 @@ const Result = () => {
     );
     const { isLoading, data, error } = response;
     if (!isLoading && data) {
-      // setGameResults(data);
-      setGameResults([
-        { userName: '김미라클', userId: 0, score: 100 },
-        { userName: '이미라클', userId: 1, score: 90 },
-        { userName: '박미라클', userId: 2, score: 80 },
-        { userName: '최미라클', userId: 3, score: 70 },
-        { userName: '정미라클', userId: 4, score: 60 },
-      ]);
+      setGameResults(data);
     } else {
       console.error('##### ==== Game Results Error => ', error);
     }
@@ -202,15 +195,29 @@ const Result = () => {
               gameResults?.map(({ userName, score }, idx) => (
                 <RankingWrapper key={idx}>
                   <LeftArea>
-                    <ScoreLine $scoreWidth={score * 1.05} />
+                    <ScoreLine $scoreWidth={score * 1.2} />
                     <RankingNum>{idx + 1}</RankingNum>
                     <Score>{score}점</Score>
+                    {score > 61 && (
+                      <NameAndProfile>
+                        <UserProfile
+                          $isProfileOnLeft={score < 61}
+                          src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${userName}`}
+                        />
+                        <UserName $isProfileOnLeft={score < 61}>
+                          {userName}
+                        </UserName>
+                      </NameAndProfile>
+                    )}
                   </LeftArea>
                   <RightArea>
                     <UserProfile
+                      $isProfileOnLeft={score < 61}
                       src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${userName}`}
                     />
-                    <UserName>{userName}</UserName>
+                    <UserName $isProfileOnLeft={score < 61}>
+                      {userName}
+                    </UserName>
                   </RightArea>
                 </RankingWrapper>
               ))}
@@ -320,7 +327,7 @@ const TheTopUserInfo = styled.div`
   ${({ theme }) => theme.flex.left};
   align-items: flex-start;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
 `;
 
 const TheTopName = styled.span`
@@ -345,7 +352,7 @@ const Medals = styled.div`
   ${({ theme }) => theme.flex.between}
 
   width: 100%;
-  margin: 13px 0px 0px 15px;
+  margin: 10px 0px 0px 15px;
 `;
 
 const MedalArea = styled.div`
@@ -381,10 +388,10 @@ const Medal = styled.img`
 const Rankings = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 50px;
 
   width: 100%;
-  height: 100%;
+  height: 50%;
   padding: 0px 12px 12px 0px;
 `;
 
@@ -443,16 +450,24 @@ const Score = styled.span`
   margin-right: 5px;
 `;
 
+const NameAndProfile = styled.div`
+  position: relative;
+  width: 100%;
+
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.colors.translucent.lightNavy};
+`;
+
 const RightArea = styled.div`
   position: relative;
-  top: 0;
-  right: 0;
+  width: 100%;
 `;
 
 const UserProfile = styled.img`
   position: absolute;
-  top: 0;
-  right: 0;
+
+  top: 5px;
+  right: ${({ $isProfileOnLeft }) => ($isProfileOnLeft ? '5px' : 0)};
 
   width: 25px;
   height: 25px;
@@ -465,12 +480,15 @@ const UserProfile = styled.img`
 const UserName = styled.span`
   position: absolute;
   top: 0;
-  right: 35px;
+  right: ${({ $isProfileOnLeft }) => ($isProfileOnLeft ? '5px' : 0)};
 
   width: 100%;
+  padding: 10px 5px;
 
   ${({ theme }) => theme.fonts.IBMsmall}
   margin-left: 5px;
+
+  text-align: right;
 `;
 
 const TheRestUsersWrapper = styled.div`
