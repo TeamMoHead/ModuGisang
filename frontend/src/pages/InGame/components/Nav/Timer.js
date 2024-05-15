@@ -1,13 +1,12 @@
 import React, { useContext } from 'react';
-import { GameContext, ChallengeContext } from '../../../../contexts';
+import { ChallengeContext } from '../../../../contexts';
 import useCheckTime from '../../../../hooks/useCheckTime';
 import Countdown from 'react-countdown';
 import styled from 'styled-components';
 
 const Timer = () => {
   const { challengeData } = useContext(ChallengeContext);
-  const { inGameMode } = useContext(GameContext);
-  const { remainingTime, isTimePast } = useCheckTime(challengeData?.wakeTime);
+  const { remainingTime } = useCheckTime(challengeData?.wakeTime);
 
   const CountDownUI = props => {
     const { formatted, milliseconds, completed } = props;
@@ -29,7 +28,6 @@ const Timer = () => {
     }
   };
 
-  if (inGameMode !== 0 || isTimePast) return null;
   return (
     <Wrapper>
       <Countdown

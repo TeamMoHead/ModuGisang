@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useContext } from 'react';
 import styled from 'styled-components';
 import { RoundBtn } from '../../../components';
+import { BackgroundMusic, MissionSoundEffects } from '../Sound';
 
 import { GameContext } from '../../../contexts';
 
@@ -41,6 +42,8 @@ const MusicController = () => {
           />
         </BtnWrapper>
       )}
+      <BackgroundMusic />
+      <MissionSoundEffects />
     </>
   );
 };

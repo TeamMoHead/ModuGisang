@@ -59,7 +59,7 @@ const MateVideo = ({ mateId, mateName }) => {
         <EmptyVideo>Zzz...</EmptyVideo>
       )}
 
-      <UserName $isActive={!mateStatus.online}>{mateName}</UserName>
+      <UserName>{mateName}</UserName>
     </Wrapper>
   );
 };

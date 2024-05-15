@@ -1,6 +1,15 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { GameContext, OpenViduContext } from '../../../contexts';
+import {
+  AccountContext,
+  GameContext,
+  OpenViduContext,
+  UserContext,
+} from '../../../contexts';
+import useFetch from '../../../hooks/useFetch';
+import { inGameServices, userServices } from '../../../apis';
 import { LoadingWithText } from '../../../components';
+import { TheRestVideo } from './';
+
 import {
   Waiting,
   Mission1,
@@ -32,9 +41,16 @@ const GAME_MODE_COMPONENTS = {
   6: <Result />,
 };
 
+const RESULT_HEADER_TEXT = '오늘의 미라클 메이커';
+
 const MyVideo = () => {
-  const { myVideoRef, myStream } = useContext(OpenViduContext);
-  const { myMissionStatus, inGameMode } = useContext(GameContext);
+  const { fetchData } = useFetch();
+
+  const { accessToken, userId: myId } = useContext(AccountContext);
+
+  const { myVideoRef, myStream, mateStreams } = useContext(OpenViduContext);
+  const { myMissionStatus, inGameMode, isGameResultReceived } =
+    useContext(GameContext);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
 
   useEffect(() => {
@@ -60,20 +76,25 @@ const MyVideo = () => {
   }, [myVideoRef]);
 
   return (
-    <Wrapper $isResultMode={inGameMode === 6}>
+    <Wrapper>
       {isVideoLoading && (
         <LoadingWithText loadingMSG="카메라를 인식 중이에요" />
       )}
-      <React.Fragment key={inGameMode}>
-        {GAME_MODE_COMPONENTS[inGameMode]}
-      </React.Fragment>
+
+      {[0, 1, 2, 3, 4, 5].includes(inGameMode) && (
+        <React.Fragment key={inGameMode}>
+          {GAME_MODE_COMPONENTS[inGameMode]}
+        </React.Fragment>
+      )}
+      {GAME_MODE[inGameMode] === 'result' && <Result />}
       <Video
         ref={myVideoRef}
         autoPlay
         playsInline
-        $isWaitingMode={inGameMode === 0}
+        $isWaitingMode={GAME_MODE[inGameMode] === 'wating'}
         $myMissionStatus={myMissionStatus}
-        $isResultMode={inGameMode === 6}
+        $isResultMode={GAME_MODE[inGameMode] === 'result'}
+        $amTheTopUser={true}
       />
     </Wrapper>
   );
@@ -83,10 +104,10 @@ export default MyVideo;
 
 const Wrapper = styled.div`
   position: relative;
-  ${({ theme }) => theme.flex.center}
+  ${({ theme }) => theme.flex.center};
 
-  width: calc(100vw - 48px);
-  height: calc(100vh - 260px);
+  width: 100%;
+  height: 100%;
 `;
 
 const Video = styled.video`

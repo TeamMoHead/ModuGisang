@@ -1,7 +1,9 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 
-import { ChallengeContext } from './';
+import { AccountContext, ChallengeContext, UserContext } from './';
+import { inGameServices } from '../apis';
 import useCheckTime from '../hooks/useCheckTime';
+import useFetch from '../hooks/useFetch';
 
 const GameContext = createContext();
 
@@ -22,16 +24,31 @@ const GAME_MODE_DURATION = {
   3: 17000,
   4: 14500,
   5: 8000,
+  // 1: 1000,
+  // 2: 1000,
+  // 3: 1000,
+  // 4: 1000,
+  // 5: 1000,
 };
 
 const RESULT_TIME = 2000;
 
 const GameContextProvider = ({ children }) => {
+  const { fetchData } = useFetch();
+  const { accessToken } = useContext(AccountContext);
+  const { myData } = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
   const { remainingTime, isTooLate, isTooEarly } = useCheckTime(
     challengeData?.wakeTime,
   );
 
+  // =================== MUSIC STATUS =====================
+  const [isMusicMuted, setIsMusicMuted] = useState(true);
+  // =====================================================
+  //
+  //
+
+  // =================== MISSION STATUS =====================
   const [myMissionStatus, setMyMissionStatus] = useState(false);
   const [matesMissionStatus, setMatesMissionStatus] = useState({
     // [userId]: { missionCompleted: boolean } 형태"
@@ -39,23 +56,82 @@ const GameContextProvider = ({ children }) => {
 
   const [isMissionStarting, setIsMissionStarting] = useState(false);
   const [isMissionEnding, setIsMissionEnding] = useState(false);
+  // ==============================================================
+  //
+  //
+
+  // =================== GAME STATUS ===================
   const [inGameMode, setInGameMode] = useState(
     // parseInt(localStorage.getItem('inGameMode')) || 0,
-    // 5,
+    // 6,
     0,
   );
+  const [isEnteredTimeSent, setIsEnteredTimeSent] = useState(false);
+  const [isGameScoreSent, setIsGameScoreSent] = useState(false);
+  const [gameScore, setGameScore] = useState(0); // Mission1, 2, 3, 4에서 축적되는 점수
+  const [isGameResultReceived, setIsGameResultReceived] = useState(false);
+  const [gameResults, setGameResults] = useState([
+    // { userId: 'int',
+    //  userName: 'string',
+    //   score: 'number'
+    //  },
+  ]);
+  //
+  // ====================================================
 
-  const [gameScore, setGameScore] = useState(0);
-  // Mission1, 2, 3, 4에서 축적되는 점수
-  // Affirmation Round에서 Backend로 전송하여, 모든 유저의 ranking 계산값 리턴 받기
+  // =================== GET & POSE GAME INFO ===================
+  const sendEnteredTime = async () => {
+    const response = await fetchData(() =>
+      inGameServices.sendEnteredTime({ accessToken }),
+    );
 
-  const [rangkings, setRankings] = useState([]);
-  // [ { userId: string, userName: string, score: number } ] 형태 (sort한 상태로 받아오기)
+    const { isLoading, data, error } = response;
+    if (!isLoading && data) {
+      console.log('Entered Time Sent Successfully=> ', data);
+      setIsEnteredTimeSent(true);
+    } else {
+      console.error('Entered Time Sent Error => ', error);
+    }
+  };
 
-  const [isMusicMuted, setIsMusicMuted] = useState(true);
+  const sendMyGameScore = async () => {
+    const { userId, userName, challengeId } = myData;
+    const userData = {
+      userId,
+      userName,
+      challengeId,
+      gameScore,
+    };
+    const response = await fetchData(() =>
+      inGameServices.sendMyGameScore({ accessToken, userData }),
+    );
+    const { isLoading, data, error } = response;
+    if (!isLoading && data) {
+      console.log('My Game Score Sent Successfully => ', data);
+      setIsGameScoreSent(true);
+    } else {
+      console.error('My Game Score Sent Error => ', error);
+    }
+  };
 
+  const getGameResults = async () => {
+    const response = await fetchData(() =>
+      inGameServices.getGameResults({ accessToken }),
+    );
+    const { isLoading, data, error } = response;
+    if (!isLoading && data) {
+      console.log('Game Results => ', data);
+      setGameResults(data);
+      setIsGameResultReceived(true);
+      return data;
+    } else {
+      console.error('Game Results Error => ', error);
+    }
+  };
+  // ====================================================
+
+  // =================== GAME MODE UPDATE ===================
   let nextGameMode = 1;
-
   const updateMode = () => {
     nextGameMode += 1;
     if (nextGameMode <= 6) {
@@ -104,36 +180,51 @@ const GameContextProvider = ({ children }) => {
     }
   }, [challengeData]);
 
+  // ================= ⬆⬆⬆⬆ GAME MODE UPDATE ⬆⬆⬆⬆ =================
+
   useEffect(() => {
     console.log('@@@@@ MATE MISSION STATUS @@@@@ => ', matesMissionStatus);
   }, [matesMissionStatus]);
 
   console.log(
-    '^^^^^^GAME CONTEXT^^^^^ game mode, remaining time, my mission status=> ',
+    '🍀🍀🍀 GAME CONTEXT 🍀🍀🍀 game mode // my mission status // score // musicMuted => ',
     inGameMode,
-    remainingTime,
     myMissionStatus,
     gameScore,
+    isMusicMuted,
   );
 
   return (
     <GameContext.Provider
       value={{
         inGameMode,
+        //
+        isMusicMuted,
+        setIsMusicMuted,
+        //
         isMissionStarting,
         setIsMissionStarting,
         isMissionEnding,
         setIsMissionEnding,
-        isMusicMuted,
-        setIsMusicMuted,
-        gameScore,
-        setGameScore,
-        rangkings,
-        setRankings,
+        //
         myMissionStatus,
         setMyMissionStatus,
         matesMissionStatus,
         setMatesMissionStatus,
+        //
+        isEnteredTimeSent,
+        setIsEnteredTimeSent,
+        sendEnteredTime,
+        //
+        isGameScoreSent,
+        gameScore,
+        setGameScore,
+        sendMyGameScore,
+        //
+        gameResults,
+        isGameResultReceived,
+        setGameResults,
+        getGameResults,
       }}
     >
       {children}

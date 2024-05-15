@@ -194,7 +194,7 @@ const Mission1 = () => {
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
-      {isMissionEnding && <MissionSoundEffects />}
+      {/* {isMissionEnding && <MissionSoundEffects />} */}
 
       {isMissionStarting || (
         <>

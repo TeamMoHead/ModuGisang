@@ -286,7 +286,6 @@ const Mission2 = () => {
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
-      {isMissionEnding && <MissionSoundEffects />}
       {postitPositions.map((position, index) => (
         <PostitAnimation
           key={index}

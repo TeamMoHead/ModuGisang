@@ -4,36 +4,45 @@ import successSound from '../../../assets/soundEffects/missionSuccess.mp3';
 import failSound from '../../../assets/soundEffects/missionFailure.mp3';
 
 const MissionSoundEffects = () => {
-  const successAudioRef = useRef(new Audio(successSound));
-  const failAudioRef = useRef(new Audio(failSound));
-  const { myMissionStatus, inGameMode, isMusicMuted } = useContext(GameContext);
-  const previousMissionStatus = useRef(null); // 이전 미션 상태를 저장하기 위한 ref
+  const { myMissionStatus, isMusicMuted, isMissionEnding } =
+    useContext(GameContext);
+  const successAudioRef = useRef(null);
+  const failAudioRef = useRef(null);
 
   useEffect(() => {
-    previousMissionStatus.current = myMissionStatus; // 컴포넌트가 업데이트될 때마다 현재 상태를 이전 상태로 저장
-  });
+    successAudioRef.current.load();
+    failAudioRef.current.load();
+  }, []);
 
   useEffect(() => {
-    if (inGameMode === 0) {
-      return;
-    }
     if (isMusicMuted) {
       return;
     }
-    if (myMissionStatus === true) {
-      successAudioRef.current.volume = 0.5;
-      successAudioRef.current.play();
-    } else if (
-      myMissionStatus === false
-      // && previousMissionStatus.current === true
-    ) {
-      // 이전 상태가 true이고 현재 상태가 false로 변한 경우에만 실패음 재생
-      failAudioRef.current.volume = 0.5;
-      failAudioRef.current.play();
-    }
-  }, [myMissionStatus, inGameMode]);
 
-  return null;
+    const playSound = audioRef => {
+      audioRef.current.volume = 0.5;
+      audioRef.current.play().catch(error => {
+        console.error('Failed to play sound:', error);
+      });
+    };
+
+    if (isMissionEnding) {
+      if (myMissionStatus === true) {
+        console.log('====== Mission Success effect ======');
+        playSound(successAudioRef);
+      } else if (myMissionStatus === false) {
+        console.log('====== Mission Fail effect ======');
+        playSound(failAudioRef);
+      }
+    }
+  }, [myMissionStatus, isMissionEnding, isMusicMuted]);
+
+  return (
+    <>
+      <audio ref={successAudioRef} src={successSound} preload="auto" />
+      <audio ref={failAudioRef} src={failSound} preload="auto" />
+    </>
+  );
 };
 
 export default MissionSoundEffects;

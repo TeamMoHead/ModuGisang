@@ -224,7 +224,6 @@ const Mission3 = () => {
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
-      {isMissionEnding && <MissionSoundEffects />}
       {isMissionStarting || (
         <>
           <ArrowBox>

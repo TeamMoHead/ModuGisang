@@ -11,8 +11,9 @@ const CustomRadio = ({ name, content, onChange, selectedValue }) => {
             name={name}
             value={item.value}
             onChange={onChange}
+            id={idx}
           />
-          <label>{item.label}</label>
+          <label htmlFor={idx}>{item.label}</label>
         </Wrapper>
       ))}
     </>
@@ -23,6 +24,7 @@ export default CustomRadio;
 
 const Wrapper = styled.div`
   font: ${({ theme }) => theme.fonts.IBMsmall};
+  ${({ theme }) => theme.flex.center};
 `;
 
 const RadioBtn = styled.input.attrs({ type: 'radio' })`
@@ -36,7 +38,7 @@ const RadioBtn = styled.input.attrs({ type: 'radio' })`
   outline: none;
   cursor: pointer;
   transition: all 0.3s ease; // 부드러운 트랜지션 효과
-
+  margin: 7px;
   &:checked {
     background: ${({ theme }) => theme.gradient.largerEmerald};
     border: 2px solid black;

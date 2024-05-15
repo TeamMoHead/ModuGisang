@@ -5,7 +5,6 @@ import missionMusic from '../../../assets/bgm/hawaii_cut.mp3';
 import resultMusic from '../../../assets/bgm/result_music.mp3';
 
 import { GameContext } from '../../../contexts';
-import { RoundBtn } from '../../../components';
 
 import styled from 'styled-components';
 
@@ -25,10 +24,10 @@ const getMusicSrc = gameMode => {
   }
 };
 
-const defaultVolume = 0.2;
+const DEFAULT_VOLUME = 0.2;
 
 const fadeAudio = (audio, type, duration = 3000) => {
-  const maxVolume = defaultVolume;
+  const maxVolume = DEFAULT_VOLUME;
   const interval = 50;
   const step = maxVolume / (duration / interval);
   let currentVolume = type === 'in' ? 0 : audio.volume;
@@ -53,59 +52,34 @@ const fadeAudio = (audio, type, duration = 3000) => {
   }, interval);
 };
 
-const BackgroundMusic = ({ gameMode, playing }) => {
-  const { isMusicMuted } = useContext(GameContext);
+const BackgroundMusic = () => {
+  const { isMusicMuted, inGameMode } = useContext(GameContext);
   const audioRef = useRef(null);
-  const currentGameMode = useRef(gameMode);
 
   useEffect(() => {
-    const missionMode = [1, 2, 3, 4, 5];
-    const newSrc = getMusicSrc(gameMode);
+    const MISSION_MODE = [1, 2, 3, 4, 5];
+    const newSrc = getMusicSrc(inGameMode);
 
     if (audioRef.current) {
-      audioRef.current.volume = defaultVolume;
+      audioRef.current.volume = DEFAULT_VOLUME;
     }
 
-    if (
-      missionMode.includes(gameMode) &&
-      missionMode.includes(currentGameMode.current)
-    ) {
-    } else {
-      if (audioRef.current.src !== newSrc) {
-        fadeAudio(audioRef.current, 'out', 1000);
-        setTimeout(() => {
-          audioRef.current.src = newSrc;
-          audioRef.current.load();
-          audioRef.current.volume = defaultVolume;
-          // fadeAudio(audioRef.current, 'in', 2000);
-        }, 1000);
-      }
-      currentGameMode.current = gameMode;
+    if (isMusicMuted) {
+      audioRef.current.pause();
+      return;
+    } else if (inGameMode === 0 || inGameMode === 6) {
+      audioRef.current.src = newSrc;
+      audioRef.current.play();
+    } else if (inGameMode === 1) {
+      audioRef.current.src = newSrc;
+      audioRef.current.play();
     }
+  }, [inGameMode, isMusicMuted]);
 
-    const playAudio = async () => {
-      if (audioRef.current) {
-        try {
-          if (playing && audioRef.current.paused) {
-            audioRef.current.volume = defaultVolume;
-            if (gameMode !== 6 && currentGameMode.current !== 6) {
-              fadeAudio(audioRef.current, 'in', 2000);
-            } else if (!playing) {
-              fadeAudio(audioRef.current, 'out', 2000);
-            }
-          }
-        } catch (err) {
-          console.error('오디오 재생 실패:', err);
-        }
-      }
-    };
-
-    playAudio();
-  }, [gameMode, playing]);
-
+  console.log('=========isMusicMuted:: ', isMusicMuted, audioRef);
   return (
     <>
-      <audio ref={audioRef} loop autoPlay muted={isMusicMuted} />
+      <audio ref={audioRef} loop autoPlay playsInline />
     </>
   );
 };
