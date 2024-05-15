@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { GameContext, OpenViduContext } from '../../../contexts';
+import {
+  AccountContext,
+  GameContext,
+  OpenViduContext,
+} from '../../../contexts';
 import useFetch from '../../../hooks/useFetch';
-import { userServices } from '../../../apis';
+import { inGameServices, userServices } from '../../../apis';
 
 import { LoadingWithText } from '../../../components';
 
@@ -13,51 +17,80 @@ const HEADER_TEXT = '오늘의 미라클 메이커';
 
 const Result = () => {
   const { fetchData } = useFetch();
-  const { mateStreams } = useContext(OpenViduContext);
-  const { inGameMode, gameResults, isGameResultReceived, getGameResults } =
-    useContext(GameContext);
+  const { accessToken, userId: myId } = useContext(AccountContext);
+
+  const { mateStreams, myVideoRef, myStream } = useContext(OpenViduContext);
+  const { inGameMode, isGameResultReceived } = useContext(GameContext);
 
   const theTopVideoRef = useRef(null);
+
+  const [gameResults, setGameResults] = useState(null);
   const [theTopUserVideo, setTheTopUserVideo] = useState(null);
   const [theTopUserData, setTheTopUserData] = useState(null);
-  const [theRestUsers, setTheRestUsers] = useState(null);
+  const [theRestUsersStream, setTheRestUsersStream] = useState(null);
 
   const [isVideoLoading, setIsVideoLoading] = useState(true);
 
+  const getGameResults = async () => {
+    const response = await fetchData(() =>
+      inGameServices.getGameResults({ accessToken }),
+    );
+    const { isLoading, data, error } = response;
+    if (!isLoading && data) {
+      setGameResults(data);
+    } else {
+      console.error('Game Results Error => ', error);
+    }
+  };
+
+  const getTopUserData = async theTopUserId => {
+    const response = await fetchData(() =>
+      userServices.getUserInfo({ accessToken, userId: theTopUserId }),
+    );
+    setTheTopUserData(response.data);
+  };
+
+  useEffect(() => {
+    if (myVideoRef && myStream) {
+      myStream.addVideoElement(myVideoRef.current);
+    }
+  }, [myStream, myVideoRef]);
+
   useEffect(() => {
     if (inGameMode === 6 && !isGameResultReceived) {
-      const results = getGameResults();
-      console.log('GET RESULTS 결과: ', results);
+      getGameResults();
     } else return;
   }, [inGameMode, isGameResultReceived]);
 
   useEffect(() => {
-    if (gameResults.length > 0) {
+    if (gameResults?.length > 0) {
       const theTopUserId = gameResults[0].userId;
-      const theTopUserInfo = fetchData(() =>
-        userServices.getUserInfo(theTopUserId),
-      );
-      const theTopUserVideo = mateStreams.find(
+      getTopUserData(theTopUserId);
+
+      let theRestUsersStream = mateStreams.filter(
         mate =>
-          JSON.parse(mate.stream.connection.data).userId === `${theTopUserId}`,
+          JSON.parse(mate.stream.connection.data).userId !==
+            `${theTopUserId}` &&
+          JSON.parse(mate.stream.connection.data).userId !== myId,
       );
 
-      setTheTopUserData(theTopUserInfo);
-
-      setTheTopUserVideo(theTopUserVideo);
-
-      setTheRestUsers(
-        mateStreams.filter(
+      if (theTopUserId === myId) {
+        setTheTopUserVideo(myStream);
+        myStream.addVideoElement(theTopVideoRef.current);
+      } else {
+        const theTopUserVideo = mateStreams.find(
           mate =>
-            JSON.parse(mate.stream.connection.data).userId !==
-            `${theTopUserId}`,
-        ),
-      );
+            JSON.parse(mate.stream.connection.data).userId === theTopUserId,
+        );
+        theTopUserVideo.addVideoElement(theTopVideoRef.current);
+        setTheRestUsersStream([...theRestUsersStream, myStream]);
+      }
     }
   }, [gameResults]);
 
   useEffect(() => {
     if (theTopVideoRef && theTopUserVideo) {
+      console.log('=-=-=-==-=-==---=-TOP VIDEO=-=-=-=-=-=-=--=-=-');
       theTopUserVideo?.addVideoElement(theTopVideoRef.current);
     }
   }, [theTopUserVideo, theTopVideoRef]);
@@ -81,58 +114,95 @@ const Result = () => {
     };
   }, [theTopVideoRef]);
 
-  console.log('RESULT COMPONENT:: ', gameResults, mateStreams);
+  console.log('RESULT COMPONENT:: ', theTopUserData, gameResults, mateStreams);
 
-  if (!theTopUserData || !theRestUsers)
-    return <LoadingWithText loadingMSG="결과를 불러오는 중입니다" />;
   return (
-    <Wrapper>
-      <Header>
-        <HeaderText>{HEADER_TEXT}</HeaderText>
-      </Header>
-      <TheTopUserArea>
-        {isVideoLoading && (
-          <LoadingWithText loadingMSG="카메라를 인식 중이에요" />
+    <>
+      <Wrapper $hasRest={theRestUsersStream?.length > 0}>
+        <UpperArea>
+          {(!theTopUserData || !theRestUsersStream) && (
+            <LoadingWithText loadingMSG="결과를 불러오는 중입니다" />
+          )}
+          <Header>
+            <HeaderText>{HEADER_TEXT}</HeaderText>
+          </Header>
+          <TheTopUserArea>
+            {isVideoLoading && (
+              <LoadingWithText loadingMSG="카메라를 인식 중이에요" />
+            )}
+            <TheTopVideo
+              ref={theTopVideoRef}
+              autoPlay
+              playsInline
+              $canDisplay={theTopUserData}
+            />
+            <TheTopUserInfo>
+              <TheTopName>{theTopUserData?.userName}</TheTopName>
+              <TheTopStreak>
+                미라클 모닝
+                <TheTopStreakDays>
+                  {theTopUserData?.streakDays}
+                </TheTopStreakDays>
+                일차
+              </TheTopStreak>
+              {/* <TheTopMedals>{theTopUserData?.medals?.(keys).map({}=> (<Medal key={}/>))}</TheTopMedals> */}
+            </TheTopUserInfo>
+          </TheTopUserArea>
+          <Rankings>
+            {gameResults?.length > 0 &&
+              gameResults?.map(({ userId, userName, score }, idx) => (
+                <RankingWrapper key={userId}>
+                  <ScoreLine>
+                    <RankingNum>{idx + 1}</RankingNum>
+                    <Score>{score}</Score>
+                  </ScoreLine>
+                  <UserProfile
+                    src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${userName}`}
+                  />
+                  <UserName>{userName}</UserName>
+                </RankingWrapper>
+              ))}
+          </Rankings>
+        </UpperArea>
+        {theRestUsersStream?.length > 0 && (
+          <>
+            <TheRestUsersWrapper $isSingle={theRestUsersStream?.length === 1}>
+              {theRestUsersStream?.length > 0 &&
+                theRestUsersStream?.map((thisUserStream, idx) => (
+                  <TheRestVideo key={idx} thisUserStream={thisUserStream} />
+                ))}
+            </TheRestUsersWrapper>
+          </>
         )}
-        <TheTopVideo ref={theTopVideoRef} autoPlay playsInline />
-        <TheTopUserInfo>
-          <TheTopName>{theTopUserData?.userName}</TheTopName>
-          <TheTopStreak>{theTopUserData?.streakDays}</TheTopStreak>
-          {/* <TheTopMedals>{theTopUserData?.medals?.(keys).map({}=> (<Medal key={}/>))}</TheTopMedals> */}
-        </TheTopUserInfo>
-      </TheTopUserArea>
-      <Rankings>
-        {gameResults.map(({ userId, userName, score }, idx) => (
-          <RankingWrapper>
-            <ScoreLine>
-              <RankingNum>{idx + 1}</RankingNum>
-              <Score>{score}</Score>
-            </ScoreLine>
-            <UserProfile userId={userId} />
-            <UserName>{userName}</UserName>
-          </RankingWrapper>
-        ))}
-      </Rankings>
-      {theRestUsers?.length > 0 && (
-        <TheRestUsersWrapper $isSingle={theRestUsers?.length === 1}>
-          {theRestUsers?.length > 0 &&
-            theRestUsers?.map(({ userId, userName }) => (
-              <TheRestVideo key={userId} mateId={userId} mateName={userName} />
-            ))}
-        </TheRestUsersWrapper>
-      )}
-    </Wrapper>
+      </Wrapper>
+      <DummyMyVideo ref={myVideoRef} />
+    </>
   );
 };
 
 export default Result;
 
 const Wrapper = styled.div`
-  position: relative;
+  width: 100vw;
+  height: 100vh;
 
+  overflow: hidden;
+  padding: 104px 24px 30px 24px;
+
+  ${({ $hasRest }) =>
+    $hasRest &&
+    css`
+      display: grid;
+      grid-template-rows: auto 150px;
+      gap: 10px;
+      padding: 104px 24px 0px 24px;
+    `};
+`;
+
+const UpperArea = styled.div`
+  position: relative;
   ${({ theme }) => theme.flex.center};
   flex-direction: column;
-
   width: 100%;
   height: 100%;
 
@@ -173,15 +243,18 @@ const TheTopUserArea = styled.div`
   position: relative;
   ${({ theme }) => theme.flex.center};
 
+  gap: 20px;
+
   width: 100%;
-  height: 100%;
+  height: 50%;
+
+  padding: 24px;
 `;
 
 const TheTopVideo = styled.video`
-  position: absolute;
-  top: 0;
+  display: ${({ $canDisplay }) => ($canDisplay ? 'block' : 'none')};
 
-  width: 100%;
+  width: 50%;
   height: 100%;
 
   border-radius: ${({ theme }) => theme.radius.medium};
@@ -202,6 +275,14 @@ const TheTopName = styled.span`
 
 const TheTopStreak = styled.span`
   ${({ theme }) => theme.fonts.IBMsmall};
+`;
+
+const TheTopStreakDays = styled.span`
+  margin: 0 5px;
+  ${({ theme }) => theme.fonts.IBMMedium};
+  font-size: 1.2em;
+  font-weight: 900;
+  color: ${({ theme }) => theme.colors.primary.emerald};
 `;
 
 const Rankings = styled.div`
@@ -229,10 +310,11 @@ const Score = styled.span`
   font-weight: 500;
 `;
 
-const UserProfile = styled.div`
+const UserProfile = styled.img`
   width: 25px;
   height: 25px;
   border-radius: 50%;
+  object-fit: cover;
   background-color: ${({ theme }) => theme.colors.primary.white};
 `;
 
@@ -249,4 +331,10 @@ const TheRestUsersWrapper = styled.div`
     $isSingle ? theme.flex.right : theme.flex.between}
 
   gap: 12px;
+`;
+
+const DummyMyVideo = styled.video`
+  display: none;
+  width: 100%;
+  height: 100%;
 `;
