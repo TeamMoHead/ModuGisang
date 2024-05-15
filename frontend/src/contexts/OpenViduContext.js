@@ -143,7 +143,6 @@ const OpenViduContextProvider = ({ children }) => {
         frameRate: 30,
         mirror: true,
       });
-
       videoSession.publish(publisher);
       setMyStream(publisher);
     };

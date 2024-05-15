@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import EnterContent from './EnterContent';
 import CreateContent from './CreateContent';
 import { Icon } from '../../../components';
+// import { Timer } from '../../InGame/components/Nav';
 
 const BottomFixContent = ({ challengeData, Handler }) => {
   const challengeId = challengeData.challengeId;
@@ -10,14 +11,11 @@ const BottomFixContent = ({ challengeData, Handler }) => {
   const [timeLeft, setTimeLeft] = useState('00:00:00');
 
   useEffect(() => {
-    console.log('wakeTime', wakeTime);
     if (!wakeTime) return; // wakeTime이 없으면 실행하지 않음
-    console.log('wakeTime2', wakeTime);
+
     const [hours, minutes, seconds] = wakeTime.split(':').map(Number);
     const targetTime = new Date();
     targetTime.setHours(hours, minutes, seconds, 0);
-
-    console.log('targetTime', targetTime);
 
     const countdown = () => {
       const interval = setInterval(() => {
@@ -68,7 +66,13 @@ const BottomFixContent = ({ challengeData, Handler }) => {
               <TimeTitle>기상까지 남은 시간</TimeTitle>
             </TimeTitleWrapper>
             <SeperateLine />
-            <Timer>{timeLeft}</Timer>
+            <Timer>
+              <TimerText>{timeLeft.split(':')[0]}</TimerText>
+              <TimerText2>:</TimerText2>
+              <TimerText>{timeLeft.split(':')[1]}</TimerText>
+              <TimerText2>:</TimerText2>
+              <TimerText>{timeLeft.split(':')[2]}</TimerText>
+            </Timer>
           </TimeDisplay>
           <EnterContent onClickHandler={Handler.enter} />
         </>
@@ -78,38 +82,40 @@ const BottomFixContent = ({ challengeData, Handler }) => {
 };
 
 export default BottomFixContent;
+
 const Wrapper = styled.div`
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 240px;
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
+
   background: ${({ theme }) => theme.gradient.largerEmerald};
   border-radius: 30px 30px 0 0;
-  z-index: 1000;
+
+  padding: 20px 0;
+  z-index: 500;
 `;
+
 const TimeTitleWrapper = styled.div`
-  ${({ theme }) => theme.flex.between}
-  margin-top:10px
+  ${({ theme }) => theme.flex.between};
 `;
 
 const TimeDisplay = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 10px;
+  width: 100%;
 `;
 
 const TimeTitle = styled.div`
   ${({ theme }) => theme.fonts.IBMmedium};
   color: ${({ theme }) => theme.colors.primary.white};
 
-  margin: 0 10px;
   font-weight: 600;
   font-style: normal;
-  line-height: 22px; /* 122.222% */
+  line-height: 22px;
   letter-spacing: -0.45px;
 `;
 
@@ -125,9 +131,29 @@ const ChallengeTitle = styled.div`
 `;
 
 const Timer = styled.div`
-  ${({ theme }) => theme.fonts.JuaLarge};
+  ${({ theme }) => theme.flex.between}
+  justify-content: center;
+  width: 100%;
+  padding: 0px 20px;
+
   color: ${({ theme }) => theme.colors.primary.white};
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 텍스트 그림자 추가 */
+`;
+
+const TimerText = styled.span`
+  ${({ theme }) => theme.flex.center}
+  ${({ theme }) => theme.fonts.JuaLarge};
+  text-align: center;
+  font-size: 55px;
+  width: 80%;
+`;
+
+const TimerText2 = styled.span`
+  ${({ theme }) => theme.flex.center}
+  ${({ theme }) => theme.fonts.JuaLarge};
+  text-align: center;
+  font-size: 55px;
+  width: 8px;
 `;
 
 const SeperateLine = styled.hr`
@@ -140,6 +166,7 @@ const SeperateLine = styled.hr`
 const IconWrapper = styled.div`
   margin: 30px;
 `;
+
 const iconStyleSample = {
   size: 24,
   color: 'white',
