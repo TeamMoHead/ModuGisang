@@ -21,7 +21,6 @@ import {
   CreateContent,
   ChallengeContent,
   EnterContent,
-  SliderContent,
 } from './cardComponents';
 import { CARD_TYPES, CARD_STYLES } from './DATA';
 
@@ -46,7 +45,7 @@ const Main = () => {
     streak: <StreakContent />,
     invitations: <InvitationsContent />,
     create: <CreateContent />,
-    challenge: <SliderContent challenges={challengeData} />,
+    challenge: <ChallengeContent challenges={challengeData} />,
     enter: <EnterContent />,
   };
 

@@ -1,51 +1,113 @@
-import React, { useContext } from 'react';
-
-import { ChallengeContext } from '../../../contexts';
+import React from 'react';
 import styled from 'styled-components';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
-const ChallengeContent = () => {
-  const { challengeData } = useContext(ChallengeContext);
-  const { duration, wakeTime, mates } = challengeData;
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/pagination';
+import './slider.css';
+
+// import required modules
+import { Pagination } from 'swiper/modules';
+
+const ChallengeContent = ({ challenges }) => {
+  if (!challenges || challenges?.length === 0) {
+    return <div>loading...</div>;
+  }
+  const remainingDays =
+    calculateRemainingDays(challenges?.startDate, challenges?.duration) - 1;
+
+  const matesNames = challenges?.mates?.map(mate => mate?.userName).join(', ');
+
+  const sliderBox = [
+    <SlideContent $isSingleLine={true}>
+      매일 아침{' '}
+      <HighlightText>
+        {challenges.wakeTime?.split(':')?.slice(0, 2)?.join(':')}
+      </HighlightText>
+      에 일어나요
+    </SlideContent>,
+    <SlideContent $isSingleLine={challenges?.mates?.lenght < 2}>
+      {' '}
+      <HighlightText>{matesNames}</HighlightText>
+      {' 과(와) 함께 하고 있어요'}
+    </SlideContent>,
+    <SlideContent $isSingleLine={true}>
+      완료까지 <HighlightText>{remainingDays}일</HighlightText> 남았어요
+    </SlideContent>,
+  ];
+
+  function calculateRemainingDays(startDate, duration) {
+    // 시작일 객체 생성
+    var start = new Date(startDate);
+
+    // 종료일 객체 생성
+    var end = new Date(start);
+    end.setDate(end.getDate() + duration);
+
+    // 현재 날짜 객체 생성
+    var currentDate = new Date();
+
+    // 종료일과 현재 날짜 사이의 차이를 계산하여 일 수로 반환
+    var remainingDays = Math.ceil((end - currentDate) / (1000 * 60 * 60 * 24));
+
+    return remainingDays;
+  }
+
   return (
-    <Wrapper>
-      <LeftArea>
-        챌린지 완료까지
-        <BigLetter>D-{duration}</BigLetter>
-        <SmallLetter>남았습니다</SmallLetter>
-      </LeftArea>
-      <RightArea>
-        <p>기상시간: {wakeTime?.split(':')?.slice(0, 2)?.join(':')}</p>
-        {mates?.map(mate => (
-          <SmallLetter key={mate.userId}>{mate.userName}</SmallLetter>
+    <>
+      <Swiper
+        // autoplay={{ delay: 1000 }} //3초
+        // loop={true} //반복
+        spaceBetween={50}
+        onSwiper={swiper => console.log(swiper)}
+        pagination={{
+          dynamicBullets: true,
+          bulletClass: 'swiper-pagination-bullet', // bullet의 클래스명
+        }}
+        modules={[Pagination]}
+        className="mySwiper"
+      >
+        {sliderBox.map((challenge, index) => (
+          <SwiperSlide key={index}>
+            <Wrapper>
+              <ChallengeTitle>진행 중 챌린지</ChallengeTitle>
+              {challenge}
+            </Wrapper>
+          </SwiperSlide>
         ))}
-      </RightArea>
-    </Wrapper>
+      </Swiper>
+    </>
   );
 };
 
 export default ChallengeContent;
 
 const Wrapper = styled.div`
-  ${({ theme }) => theme.flex.between}
-  padding: 20px;
-`;
-
-const RightArea = styled.div`
-  ${({ theme }) => theme.flex.left}
+  width: 100%;
+  ${({ theme }) => theme.flex.center}
   flex-direction: column;
-  gap: 5px;
+  padding-bottom: 30px;
 `;
 
-const LeftArea = styled.div`
-  ${({ theme }) => theme.flex.right}
-  flex-direction: column;
+const ChallengeTitle = styled.span`
+  color: ${({ theme }) => theme.colors.primary.purple};
+  justify-content: center;
+  ${({ theme }) => theme.fonts.JuaSmall};
+  margin: 14px 0 10px 0;
 `;
 
-const BigLetter = styled.span`
-  font: 700 24px 'Jua';
-  color: ${({ theme }) => theme.colors.primary.emerald};
-`;
+const HighlightText = styled.span`
+  color: ${({ theme }) => theme.colors.primary.white};
+  font-weight: 600;
 
-const SmallLetter = styled.span`
+  margin: 0 5px;
+`;
+const SlideContent = styled.div`
+  color: ${({ theme }) => theme.colors.neutral.lightGray};
+  text-align: center;
   ${({ theme }) => theme.fonts.IBMsmall}
+  font-size: 13px;
+
+  padding: ${({ $isSingleLine }) => ($isSingleLine ? '10px 10px' : '0 10px')};
 `;
