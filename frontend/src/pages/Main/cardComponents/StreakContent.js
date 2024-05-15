@@ -78,8 +78,7 @@ const Wrapper = styled.div`
 const TopWrapper = styled.div`
   ${({ theme }) => theme.flex.between}
   width: 100%;
-  height: 150px;
-  padding: 24px;
+  padding: 24px 24px 15px 24px;
 `;
 
 const SeperateLine = styled.div`

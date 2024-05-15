@@ -86,19 +86,16 @@ export default SliderContent;
 
 const Wrapper = styled.div`
   width: 100%;
-  height: 140px;
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
-  padding-bottom: 40px;
+  padding-bottom: 30px;
 `;
 
 const ChallengeTitle = styled.span`
-  position: absolute;
   color: ${({ theme }) => theme.colors.primary.purple};
   justify-content: center;
   ${({ theme }) => theme.fonts.JuaSmall};
-  width: 173px;
-  height: 46.8px;
+  margin: 14px 0 10px 0;
 `;
 
 const HighlightText = styled.span`
@@ -111,5 +108,6 @@ const SlideContent = styled.div`
   color: ${({ theme }) => theme.colors.neutral.lightGray};
   text-align: center;
   ${({ theme }) => theme.fonts.IBMsmall}
-  margin: 62px 10px 0 15px;
+  font-size: 13px;
+  padding: 0 10px;
 `;
