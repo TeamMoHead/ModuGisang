@@ -52,7 +52,7 @@ export class InGameService {
           console.error('Failed to save to database:', e);
         });
       this.redisService
-        .expire(challengeId.toString(), EXPIRE_TIME)
+        .expire(`challengeId:${challengeId}`, EXPIRE_TIME)
         .then(() => console.log('expire set Success'))
         .catch((e) => {
           console.error('Failed to set expire:', e);
