@@ -57,7 +57,6 @@ const BackgroundMusic = () => {
   const audioRef = useRef(null);
 
   useEffect(() => {
-    const MISSION_MODE = [1, 2, 3, 4, 5];
     const newSrc = getMusicSrc(inGameMode);
 
     if (audioRef.current) {

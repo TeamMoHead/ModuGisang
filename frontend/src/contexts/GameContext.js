@@ -52,8 +52,9 @@ const GameContextProvider = ({ children }) => {
   const [isMissionStarting, setIsMissionStarting] = useState(false);
   const [isMissionEnding, setIsMissionEnding] = useState(false);
   // ==============================================================
-  //
-  //
+
+  // =================== ROUND STATUS ===================
+  const [isRoundPassed, setIsRoundPassed] = useState(false);
 
   // =================== GAME STATUS ===================
   const [inGameMode, setInGameMode] = useState(
@@ -135,6 +136,7 @@ const GameContextProvider = ({ children }) => {
       setIsMissionStarting(true);
       setIsMissionEnding(false);
       setMyMissionStatus(false); // 미션 수행상태 초기화
+      setIsRoundPassed(false); // 라운드 통과 상태 초기화
 
       if (GAME_MODE[nextGameMode] !== 'result') {
         setTimeout(() => {
@@ -188,6 +190,8 @@ const GameContextProvider = ({ children }) => {
     gameScore,
     isMusicMuted,
   );
+
+  console.log('isRoundPassed:: ', isRoundPassed);
 
   return (
     <GameContext.Provider

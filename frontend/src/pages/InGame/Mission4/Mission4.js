@@ -15,6 +15,7 @@ const Mission4 = () => {
     myMissionStatus,
     gameScore,
     setGameScore,
+    setIsRoundPassed,
     setMyMissionStatus,
   } = useContext(GameContext);
   const { myStream } = useContext(OpenViduContext);
@@ -103,9 +104,7 @@ const Mission4 = () => {
       if (shoutingDuration > 5) {
         clearInterval(intervalId);
         setMyMissionStatus(true);
-        if (!isMusicMuted) {
-          RoundSoundEffect();
-        }
+        setIsRoundPassed(true);
 
         return;
       }

@@ -1,17 +1,51 @@
-import roundSound from '../../../assets/soundEffects/roundSuccess.mp3';
-import React, { useContext } from 'react';
-
+import React, { useContext, useEffect, useRef } from 'react';
 import { GameContext } from '../../../contexts';
 
-// 효과음 재생 함수
+import roundSound from '../../../assets/soundEffects/roundSuccess.mp3';
+
 const RoundSoundEffect = () => {
-  const volume = 0.5;
-  const audio = new Audio(roundSound);
+  const { isMusicMuted, isRoundPassed, inGameMode } = useContext(GameContext);
 
-  audio.volume = volume;
+  const roundAudioRef = useRef(null);
 
-  // 사운드 재생
-  audio.play();
+  useEffect(() => {
+    if (roundAudioRef.current) roundAudioRef.current.load();
+  }, []);
+
+  useEffect(() => {
+    if (isMusicMuted) {
+      return;
+    }
+
+    const playSound = (audioRef, stopAfter = null) => {
+      if (audioRef.current) {
+        audioRef.current.volume = 0.5;
+        audioRef.current.play().catch(error => {
+          console.error('Failed to play sound:', error);
+        });
+
+        if (stopAfter !== null) {
+          setTimeout(() => {
+            if (audioRef.current) {
+              audioRef.current.pause();
+              audioRef.current.currentTime = 0; // Reset audio to start
+            }
+          }, stopAfter);
+        }
+      }
+    };
+
+    // if (isRoundPassed === false) {
+    console.log('====== Round Success effect ======');
+    playSound(roundAudioRef);
+    // }
+  }, [isRoundPassed, inGameMode]);
+
+  return (
+    <>
+      <audio ref={roundAudioRef} src={roundSound} preload="auto" />
+    </>
+  );
 };
 
 export default RoundSoundEffect;
