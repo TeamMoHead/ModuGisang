@@ -139,9 +139,7 @@ const InGame = () => {
   if (redirected) return null;
   return (
     <>
-      {isMateSelected && (
-        <FriendStreak userId={mateId} onClick={handleMateModal} />
-      )}
+      {isMateSelected && <FriendStreak userId={mateId} />}
       <InGameNav />
       {/* <BackgroundMusic /> */}
       {/* <MissionSoundEffects /> */}

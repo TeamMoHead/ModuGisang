@@ -2,31 +2,29 @@ import React, { useState, useContext, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import { AccountContext } from '../../../contexts';
 import { StreakContent } from '../../Main/cardComponents';
-import { useLocation } from 'react-router-dom';
 import { userServices } from '../../../apis';
 import useFetch from '../../../hooks/useFetch';
 
-const FriendStreak = (userId, onClick) => {
-  const location = useLocation();
-  const { userData } = location.state;
+const FriendStreak = ({ userId, onClick }) => {
   const { fetchData } = useFetch();
   const { accessToken } = useContext(AccountContext);
-  const [mateData, setMateData] = useState({});
+  const [mateData, setMateData] = useState(null);
+  console.log('id is ', userId);
 
   const getMateData = async userId => {
     const response = await fetchData(() =>
       userServices.getUserInfo({ accessToken, userId }),
     );
+    console.log('response is ', response);
     if (response) {
       setMateData(response);
     }
   };
 
-  console.log(mateData);
-
   useEffect(() => {
-    getMateData();
+    getMateData(userId);
   }, []);
+  console.log('mateDAta is ', mateData);
 
   return (
     <Wrapper>
@@ -44,6 +42,13 @@ const Wrapper = styled.div`
   ${({ theme }) => theme.flex.center}
   background-color: ${({ theme }) => theme.colors.translucent.navy};
   flex-direction: column;
+  z-index: 999;
+  width: 90%;
+  border-radius: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const Box = styled.div`

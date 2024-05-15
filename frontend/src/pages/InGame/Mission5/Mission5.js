@@ -22,33 +22,6 @@ const Mission5 = () => {
   const [successText, setSuccessText] = useState('');
   const [timeIndex, setTimeIndex] = useState(0);
 
-  // useEffect(() => {
-  //   if (inGameMode !== 5 || !myVideoRef.current || isMissionStarting) {
-  //     return;
-  //   }
-
-  //   if (transcript === timesTable[timeIndex].answer) {
-  //     console.log('성공~!');
-  //     resetTranscript();
-  //     const result = <Success>성공~!</Success>;
-  //     setSuccessText(result);
-  //     if (timeIndex === 4) {
-  //       stop();
-  //       setGameScore(score => (score += 4));
-  //       setMyMissionStatus(true);
-  //     } else {
-  //       setTimeIndex(timeIndex => timeIndex + 1);
-  //       setGameScore(score => (score += 4));
-  //     }
-  //   } else if (transcript.length > 1) {
-  //     resetTranscript();
-  //   }
-  // });
-
-  useEffect(() => {
-    console.log('STT initialized');
-  }, []);
-
   useEffect(() => {
     if (inGameMode !== 5 || !myVideoRef.current || isMissionStarting) {
       return;
@@ -134,9 +107,9 @@ const Success = styled.div`
 `;
 
 const timesTable = {
-  0: { question: '3 X 9', answer: '27' },
-  1: { question: '7 X 6', answer: '42' },
-  2: { question: '6 X 4', answer: '24' },
-  3: { question: '4 X 9', answer: '36' },
+  0: { question: '3 * 3', answer: '9' },
+  1: { question: '3 * 6', answer: '18' },
+  2: { question: '5 X 4', answer: '20' },
+  3: { question: '4 X 4', answer: '16' },
   4: { question: '5 X 8', answer: '40' },
 };
