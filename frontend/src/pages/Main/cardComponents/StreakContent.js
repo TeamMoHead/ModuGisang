@@ -10,10 +10,10 @@ import {
 import { bronze, silver, gold } from '../../../assets/medals';
 import styled from 'styled-components';
 
-const StreakContent = () => {
+const StreakContent = ({ userData }) => {
   const [level, setLevel] = useState('streak0');
   const { myData } = useContext(UserContext);
-  const { streakDays, medals } = myData;
+  const { streakDays, medals } = userData ? userData : myData;
   // calculate user streak level by user streakDays
 
   const getStreakLevel = streakDays => {
