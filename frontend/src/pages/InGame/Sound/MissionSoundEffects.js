@@ -25,7 +25,7 @@ const MissionSoundEffects = () => {
 
     const playSound = (audioRef, stopAfter = null) => {
       if (audioRef.current) {
-        audioRef.current.volume = 0.5;
+        audioRef.current.volume = 0.4;
         audioRef.current.play().catch(error => {
           console.error('Failed to play sound:', error);
         });

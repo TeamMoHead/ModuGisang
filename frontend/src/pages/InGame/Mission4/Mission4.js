@@ -5,7 +5,6 @@ import { MissionStarting, MissionEnding } from '../components';
 import { calculateDecibels } from './decibelUtils';
 import sunImage from '../../../assets/sun.png';
 import hillImage from '../../../assets/hill.png';
-import { RoundSoundEffect, MissionSoundEffects } from '../Sound';
 
 const Mission4 = () => {
   const {
@@ -35,7 +34,6 @@ const Mission4 = () => {
 
   useEffect(() => {
     if (!myStream) {
-      console.log('🥲🥲🥲🥲Stream is not ready or available.');
       return;
     }
     const actualStream = myStream.stream.getMediaStream();
