@@ -8,8 +8,6 @@ import MissionSoundEffects from '../Sound/MissionSoundEffects';
 
 const Mission5 = () => {
   const {
-    isGameScoreSent,
-    sendMyGameScore,
     isMissionStarting,
     isMissionEnding,
     inGameMode,
@@ -20,13 +18,6 @@ const Mission5 = () => {
   const { transcript, stop, resetTranscript } = useSpeechToText(20);
   const [successText, setSuccessText] = useState('');
   const [timeIndex, setTimeIndex] = useState(0);
-
-  useEffect(() => {
-    if (inGameMode === 5) {
-      if (isGameScoreSent) return;
-      sendMyGameScore();
-    } else return;
-  }, [isGameScoreSent]);
 
   useEffect(() => {
     if (inGameMode !== 5 || !myVideoRef.current || isMissionStarting) {
