@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { GameContext } from '../../../contexts';
-import successSound from '../../../assets/soundEffects/missionSuccess.mp3';
+import successSound from '../../../assets/soundEffects/missionSuccess.wav';
 import failSound from '../../../assets/soundEffects/missionFailure.mp3';
 import thunderSound from '../../../assets/soundEffects/thunderstorm.mp3';
 
@@ -25,7 +25,7 @@ const MissionSoundEffects = () => {
 
     const playSound = (audioRef, stopAfter = null) => {
       if (audioRef.current) {
-        audioRef.current.volume = 0.5;
+        audioRef.current.volume = 0.4;
         audioRef.current.play().catch(error => {
           console.error('Failed to play sound:', error);
         });
