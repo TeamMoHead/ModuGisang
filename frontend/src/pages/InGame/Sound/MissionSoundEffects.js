@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { GameContext } from '../../../contexts';
-import successSound from '../../../assets/soundEffects/missionSuccess.mp3';
+import successSound from '../../../assets/soundEffects/missionSuccess.wav';
 import failSound from '../../../assets/soundEffects/missionFailure.mp3';
 import thunderSound from '../../../assets/soundEffects/thunderstorm.mp3';
 
