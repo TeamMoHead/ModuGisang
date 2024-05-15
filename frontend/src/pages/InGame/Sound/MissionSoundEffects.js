@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import { GameContext } from '../../../contexts';
+import { GameContext, AccountContext } from '../../../contexts';
 import successSound from '../../../assets/soundEffects/missionSuccess.mp3';
 import failSound from '../../../assets/soundEffects/missionFailure.mp3';
 import thunderSound from '../../../assets/soundEffects/thunderstorm.mp3';
@@ -13,6 +13,8 @@ const MissionSoundEffects = () => {
     inGameMode,
     matesMissionStatus,
   } = useContext(GameContext);
+
+  const { userId } = useContext(AccountContext);
 
   const successAudioRef = useRef(null);
   const failAudioRef = useRef(null);
@@ -30,7 +32,7 @@ const MissionSoundEffects = () => {
         setTimeout(() => {
           if (audioRef.current) {
             audioRef.current.pause();
-            audioRef.current.currentTime = 0; // Reset audio to start
+            audioRef.current.currentTime = 0;
           }
         }, stopAfter);
       }
@@ -66,13 +68,13 @@ const MissionSoundEffects = () => {
 
   useEffect(() => {
     if (isMusicMuted) return;
-    Object.values(matesMissionStatus).forEach(status => {
-      if (status.missionCompleted) {
+    Object.entries(matesMissionStatus).forEach(([id, status]) => {
+      if (id !== userId.toString() && status.missionCompleted) {
         console.log('====== Mates Mission Success effect ======');
         playSound(matesAudioRef);
       }
     });
-  }, [matesMissionStatus, isMusicMuted]);
+  }, [matesMissionStatus, isMusicMuted, userId]);
 
   return (
     <>
