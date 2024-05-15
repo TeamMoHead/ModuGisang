@@ -3,6 +3,7 @@ import {
   AccountContext,
   GameContext,
   OpenViduContext,
+  UserContext,
 } from '../../../contexts';
 import useFetch from '../../../hooks/useFetch';
 import { inGameServices, userServices } from '../../../apis';
@@ -29,6 +30,7 @@ const HEADER_TEXT = '오늘의 미라클 메이커';
 const Result = () => {
   const { fetchData } = useFetch();
   const { accessToken, userId: myId } = useContext(AccountContext);
+  const { challengeId } = useContext(UserContext);
 
   const { mateStreams, myVideoRef, myStream } = useContext(OpenViduContext);
   const { inGameMode, isGameResultReceived } = useContext(GameContext);
@@ -44,7 +46,7 @@ const Result = () => {
 
   const getGameResults = async () => {
     const response = await fetchData(() =>
-      inGameServices.getGameResults({ accessToken }),
+      inGameServices.getGameResults({ accessToken, challengeId }),
     );
     const { isLoading, data, error } = response;
     if (!isLoading && data) {
@@ -81,9 +83,9 @@ const Result = () => {
 
       let theRestUsersStream = mateStreams.filter(
         mate =>
-          JSON.parse(mate.stream.connection.data).userId !==
-            `${theTopUserId}` &&
-          JSON.parse(mate.stream.connection.data).userId !== myId,
+          parseInt(JSON.parse(mate.stream.connection.data).userId) !==
+            theTopUserId &&
+          parseInt(JSON.parse(mate.stream.connection.data).userId) !== myId,
       );
 
       if (theTopUserId === myId) {
@@ -92,7 +94,8 @@ const Result = () => {
       } else {
         const theTopUserVideo = mateStreams.find(
           mate =>
-            JSON.parse(mate.stream.connection.data).userId === theTopUserId,
+            parseInt(JSON.parse(mate.stream.connection.data).userId) ===
+            theTopUserId,
         );
         theTopUserVideo.addVideoElement(theTopVideoRef.current);
         setTheRestUsersStream([...theRestUsersStream, myStream]);
@@ -126,7 +129,17 @@ const Result = () => {
     };
   }, [theTopVideoRef]);
 
-  console.log('RESULT COMPONENT:: ', theTopUserData, gameResults, mateStreams);
+  console.log(
+    '🗓️🗓️🗓️🗓️🗓️🗓️ RESULT COMPONENT:: \n',
+    'GAME RESULT: ',
+    gameResults,
+    'TOP USER DATA: ',
+    theTopUserData,
+    'ORIGINAL MATE STREAMS: ',
+    mateStreams,
+    'FRIENDS STREAMS: ',
+    theRestUsersStream,
+  );
 
   return (
     <>
@@ -162,8 +175,8 @@ const Result = () => {
           </TheTopUserArea>
           <Rankings>
             {gameResults?.length > 0 &&
-              gameResults?.map(({ userId, userName, score }, idx) => (
-                <RankingWrapper key={userId}>
+              gameResults?.map(({ userName, score }, idx) => (
+                <RankingWrapper key={idx}>
                   <ScoreLine>
                     <RankingNum>{idx + 1}</RankingNum>
                     <Score>{score}</Score>
@@ -238,6 +251,7 @@ const Header = styled.div`
 
   ${({ theme }) => theme.flex.center}
   width: 100%;
+  height: 48px;
 
   padding: 12px;
   border-radius: 30px 30px 0 0;
@@ -252,8 +266,7 @@ const HeaderText = styled.header`
 `;
 
 const TheTopUserArea = styled.div`
-  position: relative;
-  ${({ theme }) => theme.flex.center};
+  ${({ theme }) => theme.flex.left};
 
   gap: 20px;
 
@@ -266,7 +279,7 @@ const TheTopUserArea = styled.div`
 const TheTopVideo = styled.video`
   display: ${({ $canDisplay }) => ($canDisplay ? 'block' : 'none')};
 
-  width: 50%;
+  width: 40%;
   height: 100%;
 
   border-radius: ${({ theme }) => theme.radius.medium};
@@ -277,12 +290,14 @@ const TheTopVideo = styled.video`
 
 const TheTopUserInfo = styled.div`
   ${({ theme }) => theme.flex.left};
+  align-items: flex-start;
   flex-direction: column;
   gap: 5px;
 `;
 
 const TheTopName = styled.span`
   ${({ theme }) => theme.fonts.JuaSmall};
+  text-align: left;
 `;
 
 const TheTopStreak = styled.span`
@@ -318,7 +333,7 @@ const RankingNum = styled.span`
 
 const Score = styled.span`
   ${({ theme }) => theme.fonts.IBMsmall}
-  color: ${({ theme }) => theme.colors.primary.navy};
+  color: ${({ theme }) => theme.colors.primary.white};
   font-weight: 500;
 `;
 

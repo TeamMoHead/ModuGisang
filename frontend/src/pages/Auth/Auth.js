@@ -8,7 +8,7 @@ import { LongBtn } from '../../components';
 import * as S from '../../styles/common';
 
 const Auth = () => {
-  const { accessToken, setAccessToken } = useContext(AccountContext);
+  const { accessToken, setAccessToken, userId } = useContext(AccountContext);
   const { fetchData } = useFetch();
   const navigate = useNavigate();
   const deleteRefreshToken = async () => {
@@ -27,7 +27,7 @@ const Auth = () => {
     try {
       console.log('AT', accessToken);
       const response = await fetchData(() =>
-        authServices.logOutUser({ accessToken: accessToken }),
+        authServices.logOutUser({ accessToken, userId }),
       );
       const {
         isLoading: logoutLoading,

@@ -35,8 +35,8 @@ const sendMyGameScore = async ({ accessToken, userData }) => {
   return API.post(url, payload, config);
 };
 
-const getGameResults = async ({ accessToken }) => {
-  const url = `in-game/result`;
+const getGameResults = async ({ accessToken, challengeId }) => {
+  const url = `in-game/result/${challengeId}`;
   const config = {
     headers: { Authorization: `Bearer ${accessToken}` },
   };

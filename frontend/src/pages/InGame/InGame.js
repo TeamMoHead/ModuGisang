@@ -133,8 +133,8 @@ const InGame = () => {
             <MyVideo />
             <MatesVideoWrapper $isSingle={mateList?.length === 1}>
               {mateList?.length > 0 &&
-                mateList?.map(({ userId, userName }) => (
-                  <MateVideo key={userId} mateId={userId} mateName={userName} />
+                mateList?.map(({ userId, userName }, idx) => (
+                  <MateVideo key={idx} mateId={userId} mateName={userName} />
                 ))}
             </MatesVideoWrapper>
           </>
