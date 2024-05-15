@@ -16,6 +16,7 @@ import {
   Mission2,
   Mission3,
   Mission4,
+  Mission5,
   Affirmation,
   Result,
 } from '../';
@@ -27,8 +28,9 @@ const GAME_MODE = {
   2: 'mission2',
   3: 'mission3',
   4: 'mission4',
-  5: 'affirmation',
-  6: 'result',
+  5: 'mission5',
+  6: 'affirmation',
+  7: 'result',
 };
 
 const GAME_MODE_COMPONENTS = {
@@ -37,8 +39,9 @@ const GAME_MODE_COMPONENTS = {
   2: <Mission2 />,
   3: <Mission3 />,
   4: <Mission4 />,
-  5: <Affirmation />,
-  6: <Result />,
+  5: <Mission5 />,
+  6: <Affirmation />,
+  7: <Result />,
 };
 
 const RESULT_HEADER_TEXT = '오늘의 미라클 메이커';

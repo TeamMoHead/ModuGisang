@@ -24,8 +24,9 @@ const GAME_MODE = {
   2: 'mission2',
   3: 'mission3',
   4: 'mission4',
-  5: 'affirmation',
-  6: 'result',
+  5: 'mission5',
+  6: 'affirmation',
+  7: 'result',
 };
 
 const InGame = () => {
@@ -87,14 +88,14 @@ const InGame = () => {
   }, [inGameMode, isTooEarly, isTooLate, redirected]);
 
   useEffect(() => {
-    if (inGameMode === 0) {
+    if (GAME_MODE[inGameMode] === 'waiting') {
       if (isEnteredTimeSent) {
         return;
       } else {
         sendEnteredTime();
       }
     }
-    if (inGameMode === 6) {
+    if (GAME_MODE[inGameMode] === 'result') {
       poseModel.current = null;
       holisticModel.current = null;
       setIsPoseLoaded(false);
