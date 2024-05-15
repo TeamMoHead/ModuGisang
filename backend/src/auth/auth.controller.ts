@@ -118,11 +118,11 @@ export class AuthController {
 
   @Get('logout/:userId')
   @UseGuards(AuthenticateGuard)
-  async logout(@Param() userId: number, @Req() req) {
-    // const token = await this.userService.removeRefreshToken(req.user._id);
-    const token = await this.userService.removeRefreshToken(userId);
+  async logout(@Param('userId') userId: string, @Req() req) {
     console.log('@@@@AuthenticateGuard/req.user._id@@@@', req.user._id);
     console.log('@@@@AuthenticateGuard/Param/userId@@@@', userId);
+    // const token = await this.userService.removeRefreshToken(req.user._id);
+    const token = await this.userService.removeRefreshToken(Number(userId));
     console.log(token.affected);
     if (token.affected > 0) {
       return {
