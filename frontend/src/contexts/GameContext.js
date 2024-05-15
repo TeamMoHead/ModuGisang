@@ -33,7 +33,7 @@ const RESULT_TIME = 2000;
 const GameContextProvider = ({ children }) => {
   const { fetchData } = useFetch();
   const { accessToken, userId } = useContext(AccountContext);
-  const { myData } = useContext(UserContext);
+  const { myData, challengeId } = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
   const { remainingTime, isTooLate, isTooEarly } = useCheckTime(
     challengeData?.wakeTime,
@@ -61,7 +61,7 @@ const GameContextProvider = ({ children }) => {
   const [inGameMode, setInGameMode] = useState(
     // parseInt(localStorage.getItem('inGameMode')) || 0,
     // 6,
-    5,
+    0,
   );
   const [isEnteredTimeSent, setIsEnteredTimeSent] = useState(false);
   const [isGameScoreSent, setIsGameScoreSent] = useState(false);
@@ -113,7 +113,10 @@ const GameContextProvider = ({ children }) => {
 
   const getGameResults = async () => {
     const response = await fetchData(() =>
-      inGameServices.getGameResults({ accessToken }),
+      inGameServices.getGameResults({
+        accessToken,
+        challengeId,
+      }),
     );
     const { isLoading, data, error } = response;
     if (!isLoading && data) {
