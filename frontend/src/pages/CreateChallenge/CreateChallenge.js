@@ -15,6 +15,7 @@ import { AccountContext, ChallengeContext } from '../../contexts';
 import { challengeServices } from '../../apis/challengeServices';
 import * as S from '../../styles/common';
 import styled from 'styled-components';
+import { useEffect } from 'react';
 
 const CreateChallenge = () => {
   const navigate = useNavigate();
@@ -57,6 +58,7 @@ const CreateChallenge = () => {
   const handleRadioChange = e => {
     setDuration(Number(e.target.value));
   };
+
   const handleDateChange = e => {
     const start = new Date(e);
     const end = new Date(start);
@@ -70,6 +72,7 @@ const CreateChallenge = () => {
     const start = new Date(range[0]);
     const end = new Date(start);
     end.setDate(start.getDate() + duration - 1); // 시작 날짜로부터 duration 일 후
+    // setRange([start, end]);
 
     // 각 날짜를 "년-월-일"의 형식으로 비교하기 위해 문자열로 변환
     const startDateStr = start.toISOString().slice(0, 10);
@@ -108,7 +111,7 @@ const CreateChallenge = () => {
   const deleteMate = e => {};
 
   const canSubmit = () => {
-    // console.log(userId, duration, startDate, wakeTime);
+    console.log(userId, duration, startDate, wakeTime, mates);
     return userId && duration && startDate && wakeTime;
   };
 
@@ -134,6 +137,10 @@ const CreateChallenge = () => {
     }
   };
 
+  // useEffect(() => {
+  //   handleDateChange();
+  // });
+
   return (
     <>
       <NavBar />
@@ -152,26 +159,27 @@ const CreateChallenge = () => {
         <CalendarBox
           // boxStyle={boxStyle}
           content={
-            // <Calendar
-            //   locale="ko"
-            //   calendarType={'hebrew'}
-            //   prev2Label={null}
-            //   next2Label={null}
-            //   prevLabel={<CalendarArrow> {'<'} </CalendarArrow>}
-            //   nextLabel={<CalendarArrow> {'>'} </CalendarArrow>}
-            //   formatDay={(locale, date) => dayjs(date).format('D')}
-            //   formatMonthYear={(locale, date) =>
-            //     dayjs(date).format('YYYY년 / M월')
-            //   } // 네비게이션에서 2023년 / 12월 이렇게 보이도록 설정
-            //   onChange={handleDateChange}
-            //   value={startDate}
-            //   tileClassName={tileClassName}
-            // />
-            <CustomCalendar
-              startDate={startDate}
-              handleDateChange={handleDateChange}
-              tileClassName={tileClassName}
-            />
+            <>
+              <CustomCalendar
+                startDate={startDate}
+                handleDateChange={handleDateChange}
+                tileClassName={tileClassName}
+              />
+              <StardEndDay>
+                <StartDay>
+                  시작 일자
+                  <Day>
+                    {range[0].getMonth() + ' 월 ' + range[0].getDate() + '일'}
+                  </Day>
+                </StartDay>
+                <EndDay>
+                  완료 일자
+                  <Day>
+                    {range[1].getMonth() + ' 월 ' + range[1].getDate() + '일'}
+                  </Day>
+                </EndDay>
+              </StardEndDay>
+            </>
           }
         />
 
@@ -234,6 +242,7 @@ const CreateChallenge = () => {
 export default CreateChallenge;
 
 const CalendarBox = styled(OutlineBox)`
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -276,6 +285,44 @@ const InvitedMate = styled.li`
   button {
     color: white;
   }
+`;
+
+const MiniCircle = styled.div`
+  background-color: ${({ theme }) => theme.colors.primary.purple};
+  width: 15px;
+  height: 15px;
+  border-radius: 50px;
+  margin-right: 5px;
+`;
+
+const StardEndDay = styled.div`
+  border-top: 1px solid ${({ theme }) => theme.colors.primary.white};
+  ${({ theme }) => theme.flex.center} /* padding:10px; */
+  /* justify-content: space-around */
+  ${({ theme }) => theme.fonts.JuaSmall}
+  text-align: center;
+`;
+
+const StartDay = styled.div`
+  color: ${({ theme }) => theme.colors.primary.emerald};
+  border-right: 1px solid ${({ theme }) => theme.colors.primary.white};
+  ${({ theme }) => theme.flex.left}
+  padding:10px;
+  flex-direction: column;
+  text-align: center;
+`;
+
+const EndDay = styled.div`
+  color: ${({ theme }) => theme.colors.primary.purple};
+  ${({ theme }) => theme.flex.left}
+  padding:10px;
+  flex-direction: column;
+  text-align: center;
+`;
+
+const Day = styled.div`
+  color: ${({ theme }) => theme.colors.primary.white};
+  margin-top: 5px; // 텍스트와 날짜 사이의 간격 추가
 `;
 
 const iconStyle = {
