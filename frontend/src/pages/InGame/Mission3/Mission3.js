@@ -216,7 +216,7 @@ const Mission3 = () => {
     if (!isMissionStarting) {
       if (!isMusicMuted) {
         setIsRoundPassed(true);
-        setTimeout(() => setIsRoundPassed(false), 100);
+        setTimeout(() => setIsRoundPassed(false), 50);
       }
     }
   }, [currentArrowIdx]);

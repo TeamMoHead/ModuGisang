@@ -20,6 +20,8 @@ import {
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 
+import noMusic from '../assets/icons/musicOff.svg';
+
 const iconList = {
   home: faHome,
   back: faAnglesLeft,
@@ -30,7 +32,8 @@ const iconList = {
   sadFace: faSadTear,
   loading: faSpinner,
   settings: faGear,
-  music: faMusic,
+  musicOn: faMusic,
+  musicOff: noMusic,
   micOn: faMicrophone,
   micOff: faMicrophoneSlash,
   timer: faStopwatch,
@@ -52,7 +55,15 @@ const iconStyleSample = {
 const Icon = ({ icon, iconStyle }) => {
   return (
     <IconWrapper $iconStyle={iconStyle}>
-      <FontAwesomeIcon icon={iconList[icon]} />
+      {typeof iconList[icon] === 'string' ? (
+        <img
+          src={iconList[icon]}
+          alt={icon}
+          style={{ width: `${iconStyle.size}px` }}
+        />
+      ) : (
+        <FontAwesomeIcon icon={iconList[icon]} />
+      )}
     </IconWrapper>
   );
 };

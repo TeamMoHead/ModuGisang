@@ -17,10 +17,10 @@ const MusicController = () => {
 
   const MUSIC_ON_BTN_STYLE = {
     size: 48,
-    icon: 'music',
+    icon: 'musicOn',
     iconStyle: {
       size: 24,
-      color: 'purple',
+      color: 'white',
       hoverColor: 'white',
     },
   };
@@ -28,11 +28,11 @@ const MusicController = () => {
   const MUSIC_OFF_BTN_STYLE = {
     size: 48,
     disabled: false,
-    icon: 'music',
+    icon: 'musicOff',
     iconStyle: {
-      size: 24,
-      color: 'white',
-      hoverColor: 'purple',
+      size: 38,
+      color: 'grey',
+      hoverColor: 'grey',
     },
   };
 
