@@ -147,6 +147,8 @@ const Mission2 = () => {
                   },
                   ...prevPaperImg.slice(2), // 나머지 요소는 유지
                 ]);
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
               } else if (topScore === 3) {
                 setPaperImg(prevPaperImg => [
                   ...prevPaperImg.slice(0, 1),
@@ -156,6 +158,8 @@ const Mission2 = () => {
                   },
                   ...prevPaperImg.slice(2),
                 ]);
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
               } else if (topScore >= targetNumber / 2) {
                 setPaperImg(prevPaperImg => [
                   ...prevPaperImg.slice(0, 1),
@@ -165,6 +169,8 @@ const Mission2 = () => {
                   },
                   ...prevPaperImg.slice(2),
                 ]);
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
                 myPostitStatus[0] = true;
               }
             }
@@ -189,6 +195,8 @@ const Mission2 = () => {
                   },
                   ...prevPaperImg.slice(1),
                 ]);
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
               } else if (leftScore === 5) {
                 setPaperImg(prevPaperImg => [
                   {
@@ -197,6 +205,8 @@ const Mission2 = () => {
                   },
                   ...prevPaperImg.slice(1),
                 ]);
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
               } else if (leftScore >= targetNumber) {
                 setPaperImg(prevPaperImg => [
                   {
@@ -205,6 +215,8 @@ const Mission2 = () => {
                   },
                   ...prevPaperImg.slice(1),
                 ]);
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
                 myPostitStatus[1] = true;
               }
             }
@@ -229,6 +241,8 @@ const Mission2 = () => {
                     shouldFall: false,
                   },
                 ]);
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
               } else if (rightScore === 5) {
                 setPaperImg(prevPaperImg => [
                   ...prevPaperImg.slice(0, 2),
@@ -237,6 +251,8 @@ const Mission2 = () => {
                     shouldFall: false,
                   },
                 ]);
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
               } else if (rightScore >= targetNumber) {
                 setPaperImg(prevPaperImg => [
                   ...prevPaperImg.slice(0, 2),
@@ -246,6 +262,8 @@ const Mission2 = () => {
                   },
                 ]);
                 myPostitStatus[2] = true;
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
               }
             }
           }
@@ -294,8 +312,6 @@ const Mission2 = () => {
                 ...prevPositions[index],
                 shouldFall: true,
               };
-              setIsRoundPassed(true);
-              setTimeout(() => setIsRoundPassed(false), 500);
             }
             return updatedPositions;
           });
