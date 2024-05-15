@@ -50,7 +50,7 @@ const MissionSoundEffects = () => {
         playSound(failAudioRef);
         if (inGameMode === 4) {
           console.log('======== THUNDERSTORM SOUND EFFECT! ========');
-          playSound(thunderAudioRef, 2000);
+          playSound(thunderAudioRef, 3000);
         }
       }
     }

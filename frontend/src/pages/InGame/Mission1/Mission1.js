@@ -32,6 +32,7 @@ const Mission1 = () => {
     isMusicMuted,
     myMissionStatus,
     setMyMissionStatus,
+    setIsRoundPassed,
     gameScore,
     setGameScore,
   } = useContext(GameContext);
@@ -136,8 +137,10 @@ const Mission1 = () => {
           ),
         );
         if (!isMusicMuted) {
-          RoundSoundEffect();
+          setIsRoundPassed(true);
         }
+      } else {
+        setIsRoundPassed(false);
       }
     });
   }, [stretchSide]);
@@ -146,7 +149,6 @@ const Mission1 = () => {
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
-      {/* {isMissionEnding && <MissionSoundEffects />} */}
 
       {isMissionStarting || (
         <>

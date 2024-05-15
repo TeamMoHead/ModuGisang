@@ -35,10 +35,10 @@ const RoundSoundEffect = () => {
       }
     };
 
-    // if (isRoundPassed === false) {
-    console.log('====== Round Success effect ======');
-    playSound(roundAudioRef);
-    // }
+    if (isRoundPassed === true) {
+      console.log('====== Round Success effect ======');
+      playSound(roundAudioRef);
+    }
   }, [isRoundPassed, inGameMode]);
 
   return (

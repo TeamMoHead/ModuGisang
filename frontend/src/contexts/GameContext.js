@@ -211,6 +211,9 @@ const GameContextProvider = ({ children }) => {
         matesMissionStatus,
         setMatesMissionStatus,
         //
+        isRoundPassed,
+        setIsRoundPassed,
+        //
         isEnteredTimeSent,
         setIsEnteredTimeSent,
         sendEnteredTime,
