@@ -117,18 +117,6 @@ const Main = () => {
         <>
           <NavBar />
           <S.PageWrapper>
-            {/* <input
-              placeholder="00:00 형태로 입력"
-              type="text"
-              onChange={e => setWakeTime(e.target.value)}
-              style={{
-                marginTop: '20px',
-                backgroundColor: 'white',
-                padding: '15px',
-                borderRadius: '5px',
-              }}
-            />
-            <LongBtn onClickHandler={changeWakeTime} btnName="기상시간 세팅" /> */}
             <CardsWrapper>
               {CARD_TYPES[hasChallenge ? 'hasChallenge' : 'noChallenge'].map(
                 type => (
@@ -157,7 +145,8 @@ export default Main;
 
 const CardsWrapper = styled.div`
   width: 100%;
+  height: 100%;
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
-  gap: 33px;
+  gap: 20px;
 `;
