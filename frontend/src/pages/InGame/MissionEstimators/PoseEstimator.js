@@ -5,7 +5,7 @@ import { POSES } from './POSE_DATA';
 
 let currentScoreLeft = 0; // 현재 점수
 let currentScoreRight = 0; // 현재 점수
-let maxScore = 350; // 목표 점수
+let maxScore = 115; // 목표 점수
 let selectedPose; // 선택된 자세
 let isGameStart = false; // 게임 시작 여부
 let isTimeOut = false; // 타임 아웃 여부
@@ -114,8 +114,8 @@ export const estimatePose = ({ results, myVideoRef, canvasRef, direction }) => {
   //   radius: 2,
   // });
 
-  const progressLeft = (currentScoreLeft / maxScore) * 100;
-  const progressRight = (currentScoreRight / maxScore) * 100;
+  const progressLeft = currentScoreLeft;
+  const progressRight = currentScoreRight;
 
   stretchingGame(results.poseLandmarks);
   canvasCtx.restore();

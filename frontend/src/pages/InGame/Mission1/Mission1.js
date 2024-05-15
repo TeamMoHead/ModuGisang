@@ -60,8 +60,8 @@ const Mission1 = () => {
     const updateProgress = (result, direction) => {
       const newProgress =
         direction === 'left'
-          ? result.currentScoreLeft
-          : result.currentScoreRight;
+          ? (result.currentScoreLeft / 115) * 100
+          : (result.currentScoreRight / 115) * 100;
       setProgress(newProgress);
     };
 
@@ -77,7 +77,7 @@ const Mission1 = () => {
 
       // console.log('result:', result, 'direction:', direction, stretchSide);
       if (result !== undefined) {
-        if (frameCount % 5 === 0) {
+        if (frameCount % 2 === 0) {
           requestAnimationFrame(() => updateProgress(result, direction));
         }
         if (result.isPoseCorrect) {
@@ -113,6 +113,7 @@ const Mission1 = () => {
   useEffect(() => {
     setTimeout(() => {
       setCurrentRound(1);
+      setIsRoundPassed(false);
     }, 11000);
   }, []);
 
@@ -128,6 +129,7 @@ const Mission1 = () => {
 
     stretchSide.forEach((side, index) => {
       if (side.active && !side.scoreAdded) {
+        setIsRoundPassed(prevState => !prevState);
         setGameScore(prevGameScore => prevGameScore + 12.5);
         // console.log(gameScore);
         // 점수가 추가된 후, scoreAdded 상태 업데이트
@@ -136,11 +138,8 @@ const Mission1 = () => {
             idx === index ? { ...item, scoreAdded: true } : item,
           ),
         );
-        if (!isMusicMuted) {
-          setIsRoundPassed(true);
-        }
       } else {
-        setIsRoundPassed(false);
+        setIsRoundPassed(prevState => prevState);
       }
     });
   }, [stretchSide]);

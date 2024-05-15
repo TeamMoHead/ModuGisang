@@ -51,7 +51,7 @@ const Mission2 = () => {
     gameScore,
     isMusicMuted,
     setGameScore,
-    setisRoundPassed,
+    setIsRoundPassed,
     isMissionEnding,
   } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
@@ -107,7 +107,7 @@ const Mission2 = () => {
                   ...prevPositions[index],
                   shouldFall: true,
                 };
-                setisRoundPassed(true);
+                setIsRoundPassed(true);
               }
               return updatedPositions;
             });

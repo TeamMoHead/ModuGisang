@@ -35,7 +35,7 @@ const RoundSoundEffect = () => {
       }
     };
 
-    if (isRoundPassed === true) {
+    if (isRoundPassed === true && !isMusicMuted) {
       console.log('====== Round Success effect ======');
       playSound(roundAudioRef);
     }
