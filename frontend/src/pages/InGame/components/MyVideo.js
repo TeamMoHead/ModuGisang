@@ -7,6 +7,7 @@ import {
   Mission2,
   Mission3,
   Mission4,
+  Mission5,
   Affirmation,
 } from '../';
 import styled, { css } from 'styled-components';
@@ -17,7 +18,8 @@ const GAME_MODE = {
   2: 'mission2',
   3: 'mission3',
   4: 'mission4',
-  5: 'affirmation',
+  5: 'mission5',
+  6: 'affirmation',
 };
 
 const GAME_MODE_COMPONENTS = {
@@ -26,7 +28,8 @@ const GAME_MODE_COMPONENTS = {
   2: <Mission2 />,
   3: <Mission3 />,
   4: <Mission4 />,
-  5: <Affirmation />,
+  5: <Mission5 />,
+  6: <Affirmation />,
 };
 
 const MyVideo = () => {

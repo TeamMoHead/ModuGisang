@@ -25,7 +25,7 @@ const Result = () => {
   const [isVideoLoading, setIsVideoLoading] = useState(true);
 
   useEffect(() => {
-    if (inGameMode === 6 && !isGameResultReceived) {
+    if (inGameMode === 7 && !isGameResultReceived) {
       const results = getGameResults();
       console.log('GET RESULTS 결과: ', results);
     } else return;
