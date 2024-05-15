@@ -53,13 +53,10 @@ const MissionSoundEffects = () => {
 
     if (isMissionEnding) {
       if (myMissionStatus === true) {
-        console.log('====== Mission Success effect ======');
         playSound(successAudioRef);
       } else if (myMissionStatus === false) {
-        console.log('====== Mission Fail effect ======');
         playSound(failAudioRef);
         if (inGameMode === 4) {
-          console.log('======== THUNDERSTORM SOUND EFFECT! ========');
           playSound(thunderAudioRef, 3000);
         }
       }
@@ -70,7 +67,6 @@ const MissionSoundEffects = () => {
     if (isMusicMuted) return;
     Object.entries(matesMissionStatus).forEach(([id, status]) => {
       if (id !== userId.toString() && status.missionCompleted) {
-        console.log('====== Mates Mission Success effect ======');
         playSound(matesAudioRef);
       }
     });

@@ -85,7 +85,7 @@ const GameContextProvider = ({ children }) => {
 
     const { isLoading, data, error } = response;
     if (!isLoading && data) {
-      console.log('Entered Time Sent Successfully=> ', data);
+      console.log('========>Entered Time Sent Successfully=> ', data);
       setIsEnteredTimeSent(true);
     } else {
       console.error('Entered Time Sent Error => ', error);
@@ -105,7 +105,7 @@ const GameContextProvider = ({ children }) => {
     );
     const { isLoading, data, error } = response;
     if (!isLoading && data) {
-      console.log('My Game Score Sent Successfully => ', data);
+      console.log('===========> My Game Score Sent Successfully => ', data);
       setIsGameScoreSent(true);
     } else {
       console.error('My Game Score Sent Error => ', error);
@@ -121,7 +121,7 @@ const GameContextProvider = ({ children }) => {
     );
     const { isLoading, data, error } = response;
     if (!isLoading && data) {
-      console.log('Game Results => ', data);
+      console.log('============>Game Results => ', data);
       setGameResults(data);
       setIsGameResultReceived(true);
       return data;
@@ -183,20 +183,6 @@ const GameContextProvider = ({ children }) => {
   }, [challengeData]);
 
   // ================= ⬆⬆⬆⬆ GAME MODE UPDATE ⬆⬆⬆⬆ =================
-
-  useEffect(() => {
-    console.log('@@@@@ MATE MISSION STATUS @@@@@ => ', matesMissionStatus);
-  }, [matesMissionStatus]);
-
-  console.log(
-    '🍀🍀🍀 GAME CONTEXT 🍀🍀🍀 game mode // my mission status // score // musicMuted => ',
-    inGameMode,
-    myMissionStatus,
-    gameScore,
-    isMusicMuted,
-  );
-
-  console.log('isRoundPassed:: ', isRoundPassed);
 
   return (
     <GameContext.Provider

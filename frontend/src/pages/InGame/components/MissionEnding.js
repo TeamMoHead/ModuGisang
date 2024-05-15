@@ -37,8 +37,6 @@ const MissionEnding = ({ canvasRef }) => {
   useEffect(() => {
     if (!isMissionEnding) return;
 
-    console.log('💕💕💕IS MISSION ENDING MOUNTED!💕💕');
-
     if (inGameMode === 4 && !myMissionStatus) {
       rainEffect(canvasRef, 2);
     }

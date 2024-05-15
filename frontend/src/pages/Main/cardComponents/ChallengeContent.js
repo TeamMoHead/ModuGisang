@@ -73,7 +73,7 @@ const ChallengeContent = () => {
         // autoplay={{ delay: 1000 }} //3초
         // loop={true} //반복
         spaceBetween={50}
-        onSwiper={swiper => console.log(swiper)}
+        // onSwiper={swiper => console.log(swiper)}
         pagination={{
           dynamicBullets: true,
           bulletClass: 'swiper-pagination-bullet', // bullet의 클래스명

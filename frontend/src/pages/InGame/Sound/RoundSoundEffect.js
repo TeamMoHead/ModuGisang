@@ -41,10 +41,8 @@ const RoundSoundEffect = () => {
     };
 
     if (isRoundPassed === true && !isMusicMuted && inGameMode === 2) {
-      console.log('====== Round Success effect ======');
       playSound(paperAudioRef);
     } else if (isRoundPassed === true && !isMusicMuted) {
-      console.log('====== Round Success effect ======');
       playSound(roundAudioRef);
     }
   }, [isRoundPassed, inGameMode]);

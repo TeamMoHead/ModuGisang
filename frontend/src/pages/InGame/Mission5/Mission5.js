@@ -33,7 +33,6 @@ const Mission5 = () => {
     if (trimmedTranscript === timesTable[timeIndex].answer) {
       setIsRoundPassed(true);
       setTimeout(() => setIsRoundPassed(false), 100);
-      console.log('성공~!');
       resetTranscript();
       const result = <Success>성공~!</Success>;
       setSuccessText(result);
