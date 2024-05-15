@@ -33,7 +33,6 @@ export const POSES = [
         keypoints[pose.POSE_LANDMARKS.RIGHT_SHOULDER].y,
     score: 1,
   },
-  // ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ 시연을 위해 rightStretch 주석 처리 ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️
   {
     name: 'rightStretch', // 오른쪽으로 양팔을 뻗고 스트레칭
     keypoints: [
