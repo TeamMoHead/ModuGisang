@@ -37,4 +37,29 @@ const changeAffirmation = async ({ accessToken, affirmation, userId }) => {
   return API.post(url, payload, config);
 };
 
-export const userServices = { getMyInfo, getUserInfo, changeAffirmation };
+const changeWakeTime = async ({
+  accessToken,
+  wakeTime,
+  userId,
+  challengeId,
+}) => {
+  const url = `/challenge/changeWakeTime`;
+  const payload = {
+    wakeTime: wakeTime,
+    userId: userId,
+    challengeId: Number(challengeId),
+  };
+  const config = {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  };
+  return API.post(url, payload, config);
+};
+
+export const userServices = {
+  getMyInfo,
+  getUserInfo,
+  changeAffirmation,
+  changeWakeTime,
+};
