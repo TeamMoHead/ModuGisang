@@ -14,6 +14,7 @@ import TimePicker from './TimePicker';
 import CustomRadio from './CustomRadio';
 import CustomCalendar from './CustomCalendar';
 import SearchBox from './SearchBox';
+import InvitationCard from './InvitationCard';
 
 export {
   Icon,
@@ -32,4 +33,5 @@ export {
   CustomRadio,
   CustomCalendar,
   SearchBox,
+  InvitationCard,
 };

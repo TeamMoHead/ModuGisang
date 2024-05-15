@@ -11,8 +11,9 @@ const CustomRadio = ({ name, content, onChange, selectedValue }) => {
             name={name}
             value={item.value}
             onChange={onChange}
+            id={idx}
           />
-          <label>{item.label}</label>
+          <label htmlFor={idx}>{item.label}</label>
         </Wrapper>
       ))}
     </>

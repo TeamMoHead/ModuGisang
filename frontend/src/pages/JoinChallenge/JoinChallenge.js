@@ -1,19 +1,30 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { NavBar, LongBtn } from '../../components';
+import { NavBar, LongBtn, CustomRadio, InvitationCard } from '../../components';
 import { AccountContext, ChallengeContext } from '../../contexts';
 import { challengeServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
 
 import * as S from '../../styles/common';
+import styled from 'styled-components';
 
 const JoinChallenge = () => {
   const [invitations, setInvitations] = useState([]);
   const [isInvitationLoading, setIsInvitationLoading] = useState(true);
   const [isAcceptInviLoading, setIsAcceptInviLoading] = useState(false);
+  const [currentIdx, setCurrentIdx] = useState(0);
 
   const { accessToken, userId } = useContext(AccountContext);
   const { handleAcceptInvitation } = useContext(ChallengeContext);
   const { fetchData } = useFetch();
+
+  const handleRadioChange = e => {
+    setCurrentIdx(Number(e.target.value));
+  };
+
+  const cards = invitations.map((invitation, index) => ({
+    label: <InvitationCard invitation={invitation} key={index} />,
+    value: index,
+  }));
 
   const getInvitations = async () => {
     setIsInvitationLoading(true);
@@ -30,6 +41,23 @@ const JoinChallenge = () => {
     setIsInvitationLoading(false);
   };
 
+  const handleSubmit = async e => {
+    e.preventDefault();
+    if (invitations.length === 0) {
+      alert('승낙할 수 없습니다.');
+      return;
+    }
+
+    handleAcceptInvitation({
+      accessToken,
+      challengeId: invitations[currentIdx].challengeId,
+      userId,
+      setIsAcceptInviLoading,
+    });
+    alert(`${invitations[currentIdx].userName}의 챌린지에 참여했습니다.`);
+    getInvitations();
+  };
+
   useEffect(() => {
     getInvitations();
   }, []);
@@ -38,47 +66,17 @@ const JoinChallenge = () => {
     <>
       <NavBar />
       <S.PageWrapper>
-        <div>
-          초대 목록: <br />
-          {invitations.length > 0 ? (
-            <ul>
-              {invitations.map(invitation => (
-                <li key={invitation.challengeId}>
-                  {'초대자: ' + invitation.userName}
-                  <br />
-                  <br />
-                  {'챌린지 기간: ' + invitation.duration + '일'}
-                  <br />
-                  <br />
-                  {'시작일: ' +
-                    new Date(invitation.startDate).toLocaleDateString()}
-                  <br />
-                  <br />
-                  {'초대 받은 날짜: ' +
-                    new Date(invitation.sendDate).toLocaleDateString()}
-                  <br />
-                  <br />
-                  <LongBtn
-                    key={invitation.challengeId}
-                    btnName="초대 수락"
-                    onClickHandler={() => {
-                      handleAcceptInvitation({
-                        accessToken,
-                        challengeId: invitation.challengeId,
-                        userId,
-                        setIsAcceptInviLoading,
-                      });
-                      alert(`${invitation.userName}의 챌린지에 참여했습니다.`);
-                      getInvitations();
-                    }}
-                  />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>초대된 챌린지가 없습니다.</p>
-          )}
-        </div>
+        <CustomRadio
+          name="invitations"
+          content={cards}
+          onChange={handleRadioChange}
+          selectedValue={currentIdx}
+        />
+        <LongBtn
+          type="submit"
+          btnName="초대 승낙"
+          onClickHandler={handleSubmit}
+        />
       </S.PageWrapper>
     </>
   );
