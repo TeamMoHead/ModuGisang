@@ -35,8 +35,10 @@ export class UserController {
   @Get('me')
   async myData(@Req() req) {
     console.log(req.user);
-    const reuslt = await this.userService.getInvis(req.user._id);
-    const invitations = reuslt.invitations;
+    console.log('typeof req.user._id', typeof req.user._id);
+    const result = await this.userService.getInvis(req.user._id);
+    console.log(req.user._id);
+    const invitations = result.invitations;
     return {
       userId: invitations._id,
       userName: invitations.userName,
@@ -46,7 +48,7 @@ export class UserController {
         silver: invitations.medals.silver,
         bronze: invitations.medals.bronze,
       },
-      invitationCounts: reuslt.count,
+      invitationCounts: result.count,
       affirmation: invitations.affirmation,
       challengeId: invitations.challengeId,
       profile: invitations.profile,

@@ -3,6 +3,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   NotFoundException,
   NotImplementedException,
   Param,
@@ -91,5 +93,21 @@ export class ChallengesController {
       date,
     );
     return result;
+  }
+  @Post('/changeWakeTime')
+  async setChallengeWakeTime(@Body() setChallengeWakeTimeDto): Promise<void> {
+    console.log('기상시간 변경완료');
+    console.log(setChallengeWakeTimeDto);
+    try {
+      await this.challengeService.setWakeTime(setChallengeWakeTimeDto);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

@@ -13,6 +13,10 @@ const Settings = () => {
   const { accessToken, setAccessToken, setUserId, userId } =
     useContext(AccountContext);
 
+  const [wakeTime, setWakeTime] = useState('');
+  const [challengeId, setChallengeId] = useState('');
+  const { challengeData } = useContext(AccountContext);
+
   const { fetchData } = useFetch();
   const navigate = useNavigate();
 
@@ -55,6 +59,34 @@ const Settings = () => {
     }
   };
 
+  const handleWakeTimeChange = e => {
+    setWakeTime(e.target.value);
+  };
+
+  const handleChallengeIdChange = e => {
+    setChallengeId(e.target.value);
+  };
+
+  const handleChangeWakeTime = async () => {
+    const response = await fetchData(() =>
+      userServices.changeWakeTime({
+        accessToken,
+        wakeTime,
+        userId,
+        challengeId, // challengeId 추가
+      }),
+    );
+    const { isLoading: isChangeWakeTimeLoading, error: changeWakeTimeError } =
+      response;
+    if (!isChangeWakeTimeLoading) {
+      alert('기상 시간이 변경되었습니다.');
+      // updateWakeTime(wakeTime);
+      setWakeTime('');
+    } else if (changeWakeTimeError) {
+      alert(changeWakeTimeError);
+    }
+  };
+
   return (
     <>
       <NavBar />
@@ -72,6 +104,27 @@ const Settings = () => {
             handleChangeAffirmation({ accessToken, affirmation });
           }}
         />
+
+        {/* {userId === 34 && ( */}
+        <>
+          <InputBox
+            label="챌린지 ID"
+            type="text"
+            value={challengeId}
+            onChange={handleChallengeIdChange}
+          />
+          <InputBox
+            label="기상 시간"
+            type="text"
+            value={wakeTime}
+            onChange={handleWakeTimeChange}
+          />
+          <LongBtn
+            btnName="기상 시간 수정하기"
+            onClickHandler={handleChangeWakeTime}
+          />
+        </>
+        {/* )} */}
         <OutlineBox
           content={
             <LogoutWrapper>
