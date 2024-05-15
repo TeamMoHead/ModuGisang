@@ -153,9 +153,9 @@ const InGame = () => {
             <MyVideo />
             <MatesVideoWrapper $isSingle={mateList?.length === 1}>
               {mateList?.length > 0 &&
-                mateList?.map(({ userId, userName }) => (
+                mateList?.map(({ userId, userName }, idx) => (
                   <MateVideo
-                    key={userId}
+                    key={idx}
                     mateId={userId}
                     mateName={userName}
                     onClick={() => handleMateSelect(userId)}

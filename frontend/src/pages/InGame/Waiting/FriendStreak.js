@@ -1,9 +1,10 @@
-import React, { useState, useContext, useEffect, useFetch } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import { AccountContext } from '../../../contexts';
 import { StreakContent } from '../../Main/cardComponents';
 import { useLocation } from 'react-router-dom';
 import { userServices } from '../../../apis';
+import useFetch from '../../../hooks/useFetch';
 
 const FriendStreak = (userId, onClick) => {
   const location = useLocation();

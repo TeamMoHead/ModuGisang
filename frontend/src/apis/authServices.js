@@ -17,8 +17,8 @@ const logInUser = async ({ email, password }) => {
   return await API.post(url, payload);
 };
 
-const logOutUser = async ({ accessToken }) => {
-  const url = '/auth/logout';
+const logOutUser = async ({ accessToken, userId }) => {
+  const url = `/auth/logout/${userId}`;
   const config = {
     headers: {
       Authorization: `Bearer ${accessToken}`,

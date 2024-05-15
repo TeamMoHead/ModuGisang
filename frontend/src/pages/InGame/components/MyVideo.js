@@ -1,14 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
-import {
-  AccountContext,
-  GameContext,
-  OpenViduContext,
-  UserContext,
-} from '../../../contexts';
-import useFetch from '../../../hooks/useFetch';
-import { inGameServices, userServices } from '../../../apis';
+import { GameContext, OpenViduContext } from '../../../contexts';
+
 import { LoadingWithText } from '../../../components';
-import { TheRestVideo } from './';
 
 import {
   Waiting,
@@ -20,7 +13,7 @@ import {
   Affirmation,
   Result,
 } from '../';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 const GAME_MODE = {
   0: 'waiting',
@@ -44,16 +37,9 @@ const GAME_MODE_COMPONENTS = {
   7: <Result />,
 };
 
-const RESULT_HEADER_TEXT = '오늘의 미라클 메이커';
-
 const MyVideo = () => {
-  const { fetchData } = useFetch();
-
-  const { accessToken, userId: myId } = useContext(AccountContext);
-
-  const { myVideoRef, myStream, mateStreams } = useContext(OpenViduContext);
-  const { myMissionStatus, inGameMode, isGameResultReceived } =
-    useContext(GameContext);
+  const { myVideoRef, myStream } = useContext(OpenViduContext);
+  const { myMissionStatus, inGameMode } = useContext(GameContext);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
 
   useEffect(() => {
@@ -84,7 +70,7 @@ const MyVideo = () => {
         <LoadingWithText loadingMSG="카메라를 인식 중이에요" />
       )}
 
-      {[0, 1, 2, 3, 4, 5].includes(inGameMode) && (
+      {GAME_MODE[inGameMode] !== 'result' && (
         <React.Fragment key={inGameMode}>
           {GAME_MODE_COMPONENTS[inGameMode]}
         </React.Fragment>

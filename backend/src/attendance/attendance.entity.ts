@@ -1,9 +1,19 @@
 import { Challenges } from 'src/challenges/challenges.entity';
 import { Users } from 'src/users/entities/users.entity';
-import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Attendance {
+  @PrimaryGeneratedColumn()
+  _id: number;
+
   @ManyToOne(() => Users, (user) => user.attendances, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' }) // 추가
   user: Users;
@@ -18,10 +28,9 @@ export class Attendance {
   @PrimaryColumn({ name: 'challenge_id' })
   challengeId: number;
 
-  @PrimaryColumn()
-  @Column({ type: 'date' })
+  @PrimaryColumn({ type: 'date' })
   date: Date;
 
-  @Column()
+  @Column({ type: 'float', default: 0 })
   score: number;
 }

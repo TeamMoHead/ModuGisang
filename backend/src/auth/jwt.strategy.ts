@@ -1,16 +1,12 @@
-import { PassportStrategy } from '@nestjs/passport';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ExtractJwt, Strategy, VerifiedCallback } from 'passport-jwt';
+import { PassportStrategy } from '@nestjs/passport';
 import { Payload } from './payload.interface';
 import { AuthService } from './auth.service';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(
-    private authService: AuthService,
-    configService: ConfigService, // `private` 키워드를 제거하여 이 인자가 프로퍼티로 저장되지 않도록 함.
-  ) {
+  constructor(private authService: AuthService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // 토큰 분석
       ignoreExpiration: true,
@@ -20,7 +16,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
   async validate(payload: Payload, done: VerifiedCallback): Promise<any> {
     const user = await this.authService.tokenValidateUser(payload);
-
     if (!user) {
       console.log('user does not exist');
       return done(

@@ -33,7 +33,7 @@ const RESULT_TIME = 2000;
 const GameContextProvider = ({ children }) => {
   const { fetchData } = useFetch();
   const { accessToken, userId } = useContext(AccountContext);
-  const { myData } = useContext(UserContext);
+  const { myData, challengeId } = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
   const { remainingTime, isTooLate, isTooEarly } = useCheckTime(
     challengeData?.wakeTime,
@@ -54,8 +54,9 @@ const GameContextProvider = ({ children }) => {
   const [isMissionStarting, setIsMissionStarting] = useState(false);
   const [isMissionEnding, setIsMissionEnding] = useState(false);
   // ==============================================================
-  //
-  //
+
+  // =================== ROUND STATUS ===================
+  const [isRoundPassed, setIsRoundPassed] = useState(false);
 
   // =================== GAME STATUS ===================
   const [inGameMode, setInGameMode] = useState(
@@ -113,7 +114,10 @@ const GameContextProvider = ({ children }) => {
 
   const getGameResults = async () => {
     const response = await fetchData(() =>
-      inGameServices.getGameResults({ accessToken }),
+      inGameServices.getGameResults({
+        accessToken,
+        challengeId,
+      }),
     );
     const { isLoading, data, error } = response;
     if (!isLoading && data) {
@@ -137,6 +141,7 @@ const GameContextProvider = ({ children }) => {
       setIsMissionStarting(true);
       setIsMissionEnding(false);
       setMyMissionStatus(false); // 미션 수행상태 초기화
+      setIsRoundPassed(false); // 라운드 통과 상태 초기화
 
       if (GAME_MODE[nextGameMode] !== 'result') {
         setTimeout(() => {
@@ -191,6 +196,8 @@ const GameContextProvider = ({ children }) => {
     isMusicMuted,
   );
 
+  console.log('isRoundPassed:: ', isRoundPassed);
+
   return (
     <GameContext.Provider
       value={{
@@ -208,6 +215,9 @@ const GameContextProvider = ({ children }) => {
         setMyMissionStatus,
         matesMissionStatus,
         setMatesMissionStatus,
+        //
+        isRoundPassed,
+        setIsRoundPassed,
         //
         isEnteredTimeSent,
         setIsEnteredTimeSent,

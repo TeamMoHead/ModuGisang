@@ -11,6 +11,9 @@ const Mission5 = () => {
     isMissionStarting,
     isMissionEnding,
     inGameMode,
+    isRoundPassed,
+    setIsRoundPassed,
+
     setMyMissionStatus,
     setGameScore,
   } = useContext(GameContext);
@@ -43,6 +46,10 @@ const Mission5 = () => {
   // });
 
   useEffect(() => {
+    console.log('STT initialized');
+  }, []);
+
+  useEffect(() => {
     if (inGameMode !== 5 || !myVideoRef.current || isMissionStarting) {
       return;
     }
@@ -51,6 +58,8 @@ const Mission5 = () => {
     console.log(trimmedTranscript);
 
     if (trimmedTranscript === timesTable[timeIndex].answer) {
+      setIsRoundPassed(true);
+      setTimeout(() => setIsRoundPassed(false), 100);
       console.log('성공~!');
       resetTranscript();
       const result = <Success>성공~!</Success>;
