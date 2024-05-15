@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import EnterContent from './EnterContent';
-import TimerIcon from '../../../assets/TimerIcon';
-import SadIcon from '../../../assets/SadIcon';
 import CreateContent from './CreateContent';
+import { Icon } from '../../../components';
 
 const BottomFixContent = ({ challengeData, Handler }) => {
   const challengeId = challengeData.challengeId;
@@ -57,7 +56,7 @@ const BottomFixContent = ({ challengeData, Handler }) => {
           <ChallengeTitle>참여중인 챌린지가 없어요</ChallengeTitle>
           <SeperateLine />
           <IconWrapper>
-            <SadIcon />
+            <Icon icon={'sad'} iconStyle={iconStyleSample} />
           </IconWrapper>
           <CreateContent onClickHandler={Handler.create} />
         </>
@@ -65,7 +64,7 @@ const BottomFixContent = ({ challengeData, Handler }) => {
         <>
           <TimeDisplay>
             <TimeTitleWrapper>
-              <TimerIcon />
+              <Icon icon={'timer'} iconStyle={iconStyleSample} />
               <TimeTitle>기상까지 남은 시간</TimeTitle>
             </TimeTitleWrapper>
             <SeperateLine />
@@ -141,3 +140,8 @@ const SeperateLine = styled.hr`
 const IconWrapper = styled.div`
   margin: 30px;
 `;
+const iconStyleSample = {
+  size: 24,
+  color: 'white',
+  hoverColor: 'white',
+};
