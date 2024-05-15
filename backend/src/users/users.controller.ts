@@ -63,7 +63,7 @@ export class UserController {
     return {
       userId: invitations._id,
       userName: invitations.userName,
-      streakDays: 0, // streak 구현 후 처리 예정
+      streakDays: reuslt.currentStreak, // streak 구현 후 처리 예정
       medals: {
         gold: invitations.medals.gold,
         silver: invitations.medals.silver,
