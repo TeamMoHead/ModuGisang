@@ -5,6 +5,7 @@ import { OpenViduContext, GameContext, UserContext } from '../../../contexts';
 
 import useSpeechToText from '../MissionEstimators/useSpeechToText';
 import MissionSoundEffects from '../Sound/MissionSoundEffects';
+import { Icon } from '../../../components';
 
 const Mission5 = () => {
   const {
@@ -19,7 +20,7 @@ const Mission5 = () => {
   } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const { transcript, stop, resetTranscript } = useSpeechToText(20);
-  const [successText, setSuccessText] = useState('');
+  const [isCorrect, setIsCorrect] = useState(false);
   const [timeIndex, setTimeIndex] = useState(0);
 
   useEffect(() => {
@@ -28,15 +29,19 @@ const Mission5 = () => {
     }
 
     const trimmedTranscript = transcript.trim();
-    console.log(trimmedTranscript);
+    console.log('====MISSION5 ====> ', trimmedTranscript);
 
     if (trimmedTranscript === timesTable[timeIndex].answer) {
+      setIsCorrect(true);
       setIsRoundPassed(true);
-      setTimeout(() => setIsRoundPassed(false), 100);
-      console.log('성공~!');
+
+      setTimeout(() => {
+        setIsRoundPassed(false);
+        setIsCorrect(false);
+      }, 100);
+
       resetTranscript();
-      const result = <Success>성공~!</Success>;
-      setSuccessText(result);
+
       if (timeIndex === 2) {
         stop();
         setGameScore(score => (score += 8));
@@ -67,8 +72,20 @@ const Mission5 = () => {
       {isMissionStarting || (
         <>
           <Wrapper>
-            <Formula>{timesTable[timeIndex].question}</Formula>
-            {successText}
+            <FormulaWrapper>
+              <Formula>{timesTable[timeIndex].question} = ?</Formula>
+            </FormulaWrapper>
+            {isCorrect && (
+              <RoundPassStatus $isCorrect={isCorrect}>
+                <Icon icon="smile" iconStyle={CORRECT_ICON_STYLE} /> 정답!
+              </RoundPassStatus>
+            )}
+            {/* {!isCorrect && isRoundPassed && (
+              <RoundPassStatus $isCorrect={isCorrect}>
+                <Icon icon="frown" iconStyle={WRONG_ICON_STYLE} />
+                오답!
+              </RoundPassStatus>
+            )} */}
           </Wrapper>
         </>
       )}
@@ -87,27 +104,58 @@ const Wrapper = styled.div`
   height: 100%;
 `;
 
-const Formula = styled.div`
+const FormulaWrapper = styled.div`
   position: absolute;
-  top: 20%;
-  left: 50%;
-  font: ${({ theme }) => theme.fonts.title};
-  line-height: 1.2;
-  font-size: 50px;
+  left: 3px;
+  bottom: 3px;
+
+  width: calc(100% - 6px);
+  height: 80px;
+  padding: 0 10px;
+
+  ${({ theme }) => theme.flex.center};
+
+  border-radius: 0 0 ${({ theme }) => theme.radius.medium}
+    ${({ theme }) => theme.radius.medium};
+  background-color: ${({ theme }) => theme.colors.translucent.navy};
 `;
 
-const Success = styled.div`
+const Formula = styled.div`
+  ${({ theme }) => theme.fonts.JuaMedium};
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+`;
+
+const RoundPassStatus = styled.div`
+  z-index: 600;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font: ${({ theme }) => theme.fonts.title};
-  line-height: 1.2;
-  font-size: 50px;
+
+  width: 100vw;
+  height: 100vh;
+
+  ${({ theme }) => theme.flex.center};
+
+  font: 700 30px 'Jua';
+
+  color: ${({ theme }) => theme.colors.system.white};
+  -webkit-text-stroke: ${({ theme, $isCorrect }) =>
+      $isCorrect ? theme.colors.primary.emerald : theme.colors.system.red}
+    4px;
 `;
 
 const timesTable = {
   0: { question: '5 X 4', answer: '20' },
   1: { question: '4 X 4', answer: '16' },
-  2: { question: '5 X 8', answer: '40' },
+  2: { question: '8 X 5', answer: '40' },
+};
+
+const CORRECT_ICON_STYLE = {
+  size: 40,
+  color: 'emerald',
+  hoverColor: 'emerald',
+};
+
+const WRONG_ICON_STYLE = {
+  size: 40,
+  color: 'red',
+  hoverColor: 'red',
 };

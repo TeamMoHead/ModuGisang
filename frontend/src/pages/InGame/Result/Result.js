@@ -13,6 +13,7 @@ import { LoadingWithText } from '../../../components';
 import { TheRestVideo } from '../components';
 import { gold, silver, bronze } from '../../../assets/medals';
 
+import { confettiEffect, fireworks } from '../components/VisualEffects';
 import styled, { css } from 'styled-components';
 
 const MEDAL_ICONS = {
@@ -35,6 +36,7 @@ const GAME_MODE = {
 const HEADER_TEXT = '오늘의 미라클 메이커';
 
 const Result = () => {
+  const EffectCanvasRef = useRef(null);
   const { fetchData } = useFetch();
   const { accessToken, userId: myId } = useContext(AccountContext);
   const { challengeId } = useContext(UserContext);
@@ -137,6 +139,11 @@ const Result = () => {
     };
   }, [theTopVideoRef]);
 
+  useEffect(() => {
+    confettiEffect(3);
+    fireworks();
+  }, []);
+
   console.log(
     '🗓️🗓️🗓️🗓️🗓️🗓️ RESULT COMPONENT:: \n',
     'GAME RESULT: ',
@@ -152,6 +159,7 @@ const Result = () => {
   return (
     <>
       <Wrapper $hasRest={theRestUsersStream?.length > 0}>
+        {/* <EffectCanvas ref={EffectCanvasRef} /> */}
         <UpperArea>
           {(!theTopUserData || !theRestUsersStream) && (
             <LoadingWithText loadingMSG="결과를 불러오는 중입니다" />
@@ -328,7 +336,19 @@ const TheTopVideo = styled.video`
 
   border-radius: ${({ theme }) => theme.radius.medium};
   border: transparent;
-  box-shadow: 2px 3px 30px rgba(255, 209, 0, 0.5);
+
+  animation: shadow-animation 2s infinite alternate ease-in-out;
+  @keyframes shadow-animation {
+    0% {
+      box-shadow: 2px 3px 30px rgba(255, 209, 0, 0.5);
+    }
+    50% {
+      box-shadow: 4px 6px 60px rgba(255, 209, 0, 0.8);
+    }
+    100% {
+      box-shadow: 2px 3px 30px rgba(255, 209, 0, 0.5);
+    }
+  }
 
   object-fit: cover;
 `;

@@ -17,8 +17,8 @@ export const INFO_BY_GAME_MODE = {
     instruction: '전방에 힘찬 함성 5초간 발사!',
   },
   5: {
-    title: '구구단을 외자!',
-    instruction: '해당 식의 정답을 외쳐주세요',
+    title: '두뇌 깨우기',
+    instruction: '구구단을 외자! 정답을 말해주세요.',
   },
   6: {
     title: '오늘의 다짐!',

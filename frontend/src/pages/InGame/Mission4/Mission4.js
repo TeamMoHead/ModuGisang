@@ -79,7 +79,6 @@ const Mission4 = () => {
     if (!stream || isMissionStarting || myMissionStatus) return;
 
     if (elapsedTime > TIME_LIMIT && isGameOver) {
-      console.log('Challenge failed!');
       return;
     }
 

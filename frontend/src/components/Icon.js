@@ -18,6 +18,8 @@ import {
   faFaceSadTear,
   faMagnifyingGlass,
   faXmark,
+  faFaceFrown,
+  faFaceSmile,
 } from '@fortawesome/free-solid-svg-icons';
 
 import noMusic from '../assets/icons/musicOff.svg';
@@ -38,10 +40,8 @@ const iconList = {
   micOff: faMicrophoneSlash,
   timer: faStopwatch,
   sad: faFaceSadTear,
-  search: faMagnifyingGlass,
-  close: faXmark,
-  timer: faStopwatch,
-  sad: faFaceSadTear,
+  smile: faFaceSmile,
+  frown: faFaceFrown,
   search: faMagnifyingGlass,
   close: faXmark,
 };
@@ -76,9 +76,11 @@ const IconWrapper = styled.div`
   padding: 5px;
 
   color: ${({ $iconStyle, theme }) =>
-    $iconStyle.color
-      ? theme.colors.primary[$iconStyle.color]
-      : theme.colors.neutral.gray};
+    !$iconStyle.color
+      ? theme.colors.neutral.gray
+      : $iconStyle.color === 'red'
+        ? theme.colors.system.red
+        : theme.colors.primary[$iconStyle.color]};
   opacity: 1;
 
   font-size: ${({ $iconStyle }) =>

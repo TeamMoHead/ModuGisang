@@ -16,17 +16,17 @@ const MEDAL_ICONS = {
   bronze: bronze,
 };
 
-const StreakContent = () => {
+const StreakContent = ({ isWaitingRoom, userData }) => {
   const [level, setLevel] = useState('streak0');
   const { myData } = useContext(UserContext);
-  const { streakDays, medals: medalCounts } = myData;
+  const { streakDays, medals: medalCounts } = isWaitingRoom ? userData : myData;
 
   const getStreakLevel = streakDays => {
     if (streakDays < 7) {
       return 'streak0';
-    } else if (streakDays >= 7 && streakDays <= 30) {
+    } else if (streakDays >= 7 && streakDays <= 60) {
       return 'streak1';
-    } else if (streakDays >= 31 && streakDays <= 60) {
+    } else if (streakDays >= 61 && streakDays <= 350) {
       return 'streak2';
     }
     // } else if (streakDays >= 61 && streakDays <= 90) {
@@ -46,10 +46,9 @@ const StreakContent = () => {
 
   useEffect(() => {
     if (!myData) return;
+    if (isWaitingRoom && !userData) return;
     setLevel(getStreakLevel(streakDays));
-  }, [myData]);
-
-  console.log(medalCounts['gold'].length);
+  }, [myData, userData]);
 
   return (
     <Wrapper>
@@ -63,7 +62,7 @@ const StreakContent = () => {
           </Days>
         </RightArea>
       </TopWrapper>
-      <SeperateLine />
+      <SeperateLine $isWide={isWaitingRoom} />
       <BottomWrapper>
         <ChallengeRecordTitle>
           <MediumLetter>챌린지 달성 기록</MediumLetter>
@@ -98,7 +97,7 @@ const TopWrapper = styled.div`
 `;
 
 const SeperateLine = styled.div`
-  width: 90%;
+  width: ${({ $isWide }) => ($isWide ? '100%' : '90%')};
   height: 1px;
   background: ${({ theme }) => theme.colors.neutral.lightGray};
 `;

@@ -25,7 +25,6 @@ const Auth = () => {
 
   const handleLogOut = async accessToken => {
     try {
-      console.log('AT', accessToken);
       const response = await fetchData(() =>
         authServices.logOutUser({ accessToken, userId }),
       );
@@ -54,11 +53,6 @@ const Auth = () => {
   const goToSignUp = () => {
     navigate('/auth/signUp');
   };
-
-  useEffect(() => {
-    console.log('AT', accessToken);
-    console.log('RT', localStorage.getItem('refreshToken'));
-  }, [accessToken]);
 
   return (
     <S.PageWrapper>
