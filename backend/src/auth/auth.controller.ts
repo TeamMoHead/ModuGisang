@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
   HttpStatus,
   Param,
   Post,
@@ -46,29 +47,62 @@ export class AuthController {
   @Post('login')
   async login(@Body() user: UserDto) {
     // 로그인 시 예외처리 더 자세하게 구현 필요 ( DB에 값을 제대로 저장을 못했을 때, 서버 쪽 에러가 있을 때 등 )
-    const authUser = await this.userService.findUser(user.email);
-    const validatePassword = await argon2.verify(
-      authUser.password,
-      user.password,
-    );
-    if (!authUser || !validatePassword) {
-      throw new UnauthorizedException();
+
+    if (!user.email || !user.password) {
+      throw new HttpException(
+        'Missing email or password',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    const accessToken = await this.authService.validateUser(authUser);
-    const refreshToken = await this.authService.generateRefreshToken(
-      authUser._id,
-    );
-    await this.userService.setCurrentRefreshToken(refreshToken, authUser); //db에 저장
-    if (accessToken && refreshToken) {
-      console.log('로그인 성공');
-      return {
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        userId: authUser._id,
-      };
-    } else {
-      throw new UnauthorizedException('로그인 실패');
+
+    try {
+      //사용자 조회
+      const authUser = await this.userService.findUser(user.email);
+      if (!authUser) {
+        throw new UnauthorizedException('User does not exist');
+      }
+      // 비밀번호 검증
+      const validatePassword = await argon2.verify(
+        authUser.password,
+        user.password,
+      );
+      if (!validatePassword) {
+        throw new UnauthorizedException('Password is incorrect');
+      }
+      // 토큰 생성
+      const accessToken = await this.authService.validateUser(authUser);
+      const refreshToken = await this.authService.generateRefreshToken(
+        authUser._id,
+      );
+
+      // 토큰 저장
+      await this.userService.setCurrentRefreshToken(refreshToken, authUser); //db에 저장
+
+      if (accessToken && refreshToken) {
+        console.log('로그인 성공');
+        return {
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          userId: authUser._id,
+        };
+      } else {
+        throw new UnauthorizedException('로그인 실패');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      if (
+        error instanceof HttpException ||
+        error instanceof UnauthorizedException
+      ) {
+        throw error; // 이미 처리된 예외는 재던짐
+      } else {
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
+
     // res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: 900000, secure: true });
     // res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 900000, secure: true });
     // res.send({
