@@ -160,7 +160,8 @@ export class UserService {
       // const diffDays = Math.floor(
       //   (today.getTime() - streak.lastActiveDate.getTime()) / oneDayInMs,
       // );
-      if (diffDays == 1) {
+      if (diffDays <= 1) {
+        // 당일 또는 어제 한 경우 스트릭 증가 -> 당일에 두번하는 경우는 실제로 없으니 나중에 바꾸기
         streak.currentStreak = streak.currentStreak + 1;
       } else {
         streak.currentStreak = 1;
