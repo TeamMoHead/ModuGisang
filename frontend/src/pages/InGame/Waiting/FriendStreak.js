@@ -1,37 +1,33 @@
-import React, { useState, useContext, useEffect } from 'react';
-import styled, { css } from 'styled-components';
-import { AccountContext } from '../../../contexts';
+import React from 'react';
+import styled from 'styled-components';
 import { StreakContent } from '../../Main/cardComponents';
-import { userServices } from '../../../apis';
-import useFetch from '../../../hooks/useFetch';
+import { Icon } from '../../../components';
 
-const FriendStreak = ({ userId, onClick }) => {
-  const { fetchData } = useFetch();
-  const { accessToken } = useContext(AccountContext);
-  const [mateData, setMateData] = useState(null);
-  console.log('id is ', userId);
-
-  const getMateData = async userId => {
-    const response = await fetchData(() =>
-      userServices.getUserInfo({ accessToken, userId }),
-    );
-    console.log('response is ', response);
-    if (response) {
-      setMateData(response);
-    }
-  };
-
-  useEffect(() => {
-    getMateData(userId);
-  }, []);
-  console.log('mateDAta is ', mateData);
-
+const FriendStreak = ({ mateData, isMateDataLoading, setIsMateSelected }) => {
   return (
     <Wrapper>
+      <OverLayer
+        onClick={e => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsMateSelected(false);
+        }}
+      />
+
       <Box>
+        <CloseBtn
+          onClick={e => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsMateSelected(false);
+          }}
+        >
+          <Icon icon="close" iconStyle={CLOSE_ICON_STYLE} />
+        </CloseBtn>
+        {isMateDataLoading && <div> 가져오는 중... </div>}
         <UserName>{mateData.userName}</UserName>
         <SeperateLine />
-        <StreakContent userData={mateData} />
+        <StreakContent userData={mateData} isWaitingRoom={true} />
       </Box>
     </Wrapper>
   );
@@ -39,16 +35,31 @@ const FriendStreak = ({ userId, onClick }) => {
 export default FriendStreak;
 
 const Wrapper = styled.div`
-  ${({ theme }) => theme.flex.center}
+  z-index: 600;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+
+  padding: 24px;
+
+  ${({ theme }) => theme.flex.center};
+`;
+
+const OverLayer = styled.div`
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+
   background-color: ${({ theme }) => theme.colors.translucent.navy};
-  flex-direction: column;
-  z-index: 999;
-  width: 90%;
-  border-radius: 20px;
+  backdrop-filter: blur(10px);
+`;
+
+const CloseBtn = styled.div`
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 20px;
+  right: 20px;
+  width: 30px;
+  height: 30px;
 `;
 
 const Box = styled.div`
@@ -56,35 +67,23 @@ const Box = styled.div`
   width: 100%;
   height: max-content;
 
-  cursor: ${({ $isClickable }) => ($isClickable ? 'pointer' : 'default')};
+  padding: 18px;
+
+  background-color: ${({ theme }) => theme.colors.translucent.navy};
+  border-radius: ${({ theme }) => theme.radius.medium};
 
   ::before {
-    ${({ $boxStyle }) =>
-      $boxStyle?.lineColor === 'gradient' &&
-      css`
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: ${({ theme }) => theme.radius.medium};
-        border: ${({ $boxStyle }) => ($boxStyle?.isBold ? '3px' : '1px')} solid
-          transparent;
-        background: ${({ theme }) => theme.gradient.largerPurple} border-box;
-        mask:
-          linear-gradient(#fff 0 0) padding-box,
-          linear-gradient(#fff 0 0);
-        mask-composite: exclude;
-      `}
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: ${({ theme }) => theme.radius.medium};
+    border: 3px solid transparent;
+    background: ${({ theme }) => theme.gradient.largerPurple} border-box;
+    mask:
+      linear-gradient(#fff 0 0) padding-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
   }
-
-  ${({ $boxStyle }) =>
-    $boxStyle?.lineColor === 'gradient' ||
-    css`
-      border-color: ${({ theme, $boxStyle }) =>
-        theme.colors.primary[$boxStyle?.lineColor]};
-      border-width: ${({ $boxStyle }) => ($boxStyle?.isBold ? '3px' : '1px')};
-      border-style: solid;
-      border-radius: ${({ theme }) => theme.radius.medium};
-    `};
 `;
 
 const UserName = styled.div`
@@ -92,8 +91,15 @@ const UserName = styled.div`
   color: ${({ theme }) => theme.colors.primary.white};
   margin: 10px;
 `;
+
 const SeperateLine = styled.div`
-  width: 90%;
+  width: 100%;
   height: 1px;
   background: ${({ theme }) => theme.colors.neutral.lightGray};
 `;
+
+const CLOSE_ICON_STYLE = {
+  size: 24,
+  color: 'purple',
+  hoverColor: 'purple',
+};

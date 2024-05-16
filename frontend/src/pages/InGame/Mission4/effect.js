@@ -1,5 +1,3 @@
-import confetti from 'canvas-confetti';
-
 export const rainEffect = (canvasRef, second) => {
   const canvas = canvasRef.current;
   const context = canvas.getContext('2d');
@@ -60,32 +58,4 @@ export const rainEffect = (canvasRef, second) => {
     isRaining = false;
     context.clearRect(0, 0, canvas.width, canvas.height);
   }, second * 1000);
-};
-
-export const effect = second => {
-  var end = Date.now() + second * 1000;
-
-  // go Buckeyes!
-  var colors = ['#F0F3FF', '#15F5BA'];
-
-  (function frame() {
-    confetti({
-      particleCount: 2,
-      angle: 60,
-      spread: 55,
-      origin: { x: 0 },
-      colors: colors,
-    });
-    confetti({
-      particleCount: 2,
-      angle: 120,
-      spread: 55,
-      origin: { x: 1 },
-      colors: colors,
-    });
-
-    if (Date.now() < end) {
-      requestAnimationFrame(frame);
-    }
-  })();
 };

@@ -38,7 +38,6 @@ const Affirmation = () => {
     }
 
     if (affirResult) {
-      console.log('끝');
       return;
     }
     // 비교할 값이 있을 때만 동작
@@ -61,7 +60,6 @@ const Affirmation = () => {
       setHighlightedText(highlighted);
 
       if (newTranscriptRef.current.trim() === affirmationText.trim()) {
-        console.log('통과');
         stop(); // 음성 인식 중지
         setAffirResult(true); //  통과 상태로 설정
         setMyMissionStatus(true);

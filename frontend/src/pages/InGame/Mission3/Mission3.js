@@ -7,7 +7,6 @@ import {
 import * as pose from '@mediapipe/pose';
 import { MissionStarting, MissionEnding } from '../components';
 import arrow from '../../../assets/arrows/arrow.svg';
-import { RoundSoundEffect, MissionSoundEffects } from '../Sound';
 
 import styled from 'styled-components';
 
@@ -216,7 +215,7 @@ const Mission3 = () => {
     if (!isMissionStarting) {
       if (!isMusicMuted) {
         setIsRoundPassed(true);
-        setTimeout(() => setIsRoundPassed(false), 100);
+        setTimeout(() => setIsRoundPassed(false), 50);
       }
     }
   }, [currentArrowIdx]);

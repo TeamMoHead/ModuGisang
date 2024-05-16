@@ -6,8 +6,6 @@ import resultMusic from '../../../assets/bgm/result_music.mp3';
 
 import { GameContext } from '../../../contexts';
 
-import styled from 'styled-components';
-
 const AUDIO_SOURCE_PATH = {
   waiting: waitingMusic,
   mission: missionMusic,
@@ -75,7 +73,6 @@ const BackgroundMusic = () => {
     }
   }, [inGameMode, isMusicMuted]);
 
-  console.log('=========isMusicMuted:: ', isMusicMuted, audioRef);
   return (
     <>
       <audio ref={audioRef} loop autoPlay playsInline />
@@ -84,10 +81,3 @@ const BackgroundMusic = () => {
 };
 
 export default BackgroundMusic;
-
-const BtnWrapper = styled.div`
-  position: fixed;
-  top: 125px;
-  right: 40px;
-  z-index: 100;
-`;
