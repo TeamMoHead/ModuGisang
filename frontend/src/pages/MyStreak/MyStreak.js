@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { NavBar, LongBtn, OutlineBox } from '../../components';
+import { NavBar, LongBtn, OutlineBox, LoadingWithText } from '../../components';
 import { AccountContext, UserContext } from '../../contexts';
 import { challengeServices } from '../../apis';
 import { StreakContent } from '../Main/cardComponents';
@@ -9,6 +9,7 @@ import useFetch from '../../hooks/useFetch';
 import * as S from '../../styles/common';
 import styled, { css } from 'styled-components';
 import { CARD_STYLES } from '../Main/DATA';
+import Calendar from 'react-calendar';
 
 const MyStreak = () => {
   const navigate = useNavigate();
@@ -16,6 +17,8 @@ const MyStreak = () => {
   const { accessToken, userId } = useContext(AccountContext);
   const { myData } = useContext(UserContext);
   const { userName, streakDays, medals, affirmation } = myData;
+
+  const [isStreakLoading, setIsStreakLoading] = useState(false);
 
   const getCallendar = async ({ accessToken, userId, month }) => {
     const response = await fetchData(() =>
@@ -33,6 +36,17 @@ const MyStreak = () => {
     getCallendar({ accessToken, userId, month: 4 });
   }, []);
 
+  if (isStreakLoading) {
+    return (
+      <>
+        <NavBar />
+        <S.PageWrapper>
+          <LoadingWithText loadingMSG="로딩중..." />
+        </S.PageWrapper>
+      </>
+    );
+  }
+
   return (
     <>
       <NavBar />
@@ -46,6 +60,11 @@ const MyStreak = () => {
             />
           }
           boxStyle={CARD_STYLES.myStreak}
+        />
+        <ChallengeCardWrapper boxStyle={CARD_STYLES.myStreakChallenge} />
+        <CalendarCardWrapper
+          content={<Calendar />}
+          boxStyle={CARD_STYLES.myStreakCallendar}
         />
         <LongBtn
           onClickHandler={() => {
@@ -61,3 +80,5 @@ const MyStreak = () => {
 export default MyStreak;
 
 const StreakCardWrapper = styled(OutlineBox)``;
+const ChallengeCardWrapper = styled(OutlineBox)``;
+const CalendarCardWrapper = styled(OutlineBox)``;
