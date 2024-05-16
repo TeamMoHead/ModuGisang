@@ -58,18 +58,18 @@ export class UserController {
   @UseGuards(AuthenticateGuard)
   @Get('/:userId')
   async searchUser(@Param('userId') userId: number) {
-    const reuslt = await this.userService.getInvis(userId);
-    const invitations = reuslt.invitations;
+    const result = await this.userService.getInvis(userId);
+    const invitations = result.invitations;
     return {
       userId: invitations._id,
       userName: invitations.userName,
-      streakDays: reuslt.currentStreak, // streak 구현 후 처리 예정
+      streakDays: result.currentStreak, // streak 구현 후 처리 예정
       medals: {
         gold: invitations.medals.gold,
         silver: invitations.medals.silver,
         bronze: invitations.medals.bronze,
       },
-      invitationCounts: reuslt.count,
+      invitationCounts: result.count,
       affirmation: invitations.affirmation,
       challengeId: invitations.challengeId,
       profile: invitations.profile,
