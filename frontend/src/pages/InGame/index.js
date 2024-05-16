@@ -3,7 +3,17 @@ import Mission1 from './Mission1/Mission1';
 import Mission2 from './Mission2/Mission2';
 import Mission3 from './Mission3/Mission3';
 import Mission4 from './Mission4/Mission4';
+import Mission5 from './Mission5/Mission5';
 import Affirmation from './Affirmation/Affirmation';
 import Result from './Result/Result';
 
-export { Waiting, Mission1, Mission2, Mission3, Mission4, Affirmation, Result };
+export {
+  Waiting,
+  Mission1,
+  Mission2,
+  Mission3,
+  Mission4,
+  Mission5,
+  Affirmation,
+  Result,
+};

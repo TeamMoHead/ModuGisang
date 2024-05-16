@@ -17,12 +17,9 @@ const Guide = ({ poseCorrect }) => {
   const latestPoseCorrect = useRef(poseCorrect); // useRef를 사용하여 최신 poseCorrect를 저장
 
   useEffect(() => {
-    // console.log(poseCorrect, color);
-
     if (!poseCorrect.active) {
       setColor('#F0F3FF');
     } else {
-      // console.log('====================round succeeded===============');
       setColor('#15F5BA');
     }
     latestPoseCorrect.current = poseCorrect;
@@ -30,17 +27,13 @@ const Guide = ({ poseCorrect }) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // console.log(latestPoseCorrect.current, color);
       if (
         latestPoseCorrect.current.direction === 'left' &&
         !latestPoseCorrect.current.active
       ) {
-        // console.log('====================round failed===============');
         setColor('#FF008F');
       }
       setTimeout(() => {
-        // console.log('====================flipped===========');
-        // console.log('round 2 Start');
         setIsFlipped(true);
       }, time.afterCheckCorrect);
       setTimeout(() => {

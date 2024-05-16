@@ -18,14 +18,12 @@ const MyStreak = () => {
     const response = await fetchData(() =>
       challengeServices.getCallendarInfo({ accessToken, userId, month }),
     );
-    console.log(response);
   };
 
   const handleClickOnDate = async ({ accessToken, userId, date }) => {
     const response = await fetchData(() =>
       challengeServices.getCallendarInfoByDate({ accessToken, userId, date }),
     );
-    console.log(response);
   };
 
   useEffect(() => {

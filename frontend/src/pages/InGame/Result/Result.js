@@ -3,6 +3,7 @@ import {
   AccountContext,
   GameContext,
   OpenViduContext,
+  UserContext,
 } from '../../../contexts';
 import useFetch from '../../../hooks/useFetch';
 import { inGameServices, userServices } from '../../../apis';
@@ -10,14 +11,35 @@ import { inGameServices, userServices } from '../../../apis';
 import { LoadingWithText } from '../../../components';
 
 import { TheRestVideo } from '../components';
+import { gold, silver, bronze } from '../../../assets/medals';
 
+import { confettiEffect, fireworks } from '../components/VisualEffects';
 import styled, { css } from 'styled-components';
+
+const MEDAL_ICONS = {
+  gold: gold,
+  silver: silver,
+  bronze: bronze,
+};
+
+const GAME_MODE = {
+  0: 'waiting',
+  1: 'mission1',
+  2: 'mission2',
+  3: 'mission3',
+  4: 'mission4',
+  5: 'mission5',
+  6: 'affirmation',
+  7: 'result',
+};
 
 const HEADER_TEXT = '오늘의 미라클 메이커';
 
 const Result = () => {
+  const EffectCanvasRef = useRef(null);
   const { fetchData } = useFetch();
   const { accessToken, userId: myId } = useContext(AccountContext);
+  const { challengeId } = useContext(UserContext);
 
   const { mateStreams, myVideoRef, myStream } = useContext(OpenViduContext);
   const { inGameMode, isGameResultReceived } = useContext(GameContext);
@@ -33,13 +55,13 @@ const Result = () => {
 
   const getGameResults = async () => {
     const response = await fetchData(() =>
-      inGameServices.getGameResults({ accessToken }),
+      inGameServices.getGameResults({ accessToken, challengeId }),
     );
     const { isLoading, data, error } = response;
     if (!isLoading && data) {
       setGameResults(data);
     } else {
-      console.error('Game Results Error => ', error);
+      console.error('##### ==== Game Results Error => ', error);
     }
   };
 
@@ -57,8 +79,10 @@ const Result = () => {
   }, [myStream, myVideoRef]);
 
   useEffect(() => {
-    if (inGameMode === 6 && !isGameResultReceived) {
-      getGameResults();
+    if (GAME_MODE[inGameMode] === 'result' && !isGameResultReceived) {
+      const results = getGameResults();
+
+      console.log('###### ======> GET RESULTS 결과: ', results);
     } else return;
   }, [inGameMode, isGameResultReceived]);
 
@@ -69,9 +93,9 @@ const Result = () => {
 
       let theRestUsersStream = mateStreams.filter(
         mate =>
-          JSON.parse(mate.stream.connection.data).userId !==
-            `${theTopUserId}` &&
-          JSON.parse(mate.stream.connection.data).userId !== myId,
+          parseInt(JSON.parse(mate.stream.connection.data).userId) !==
+            theTopUserId &&
+          parseInt(JSON.parse(mate.stream.connection.data).userId) !== myId,
       );
 
       if (theTopUserId === myId) {
@@ -80,7 +104,8 @@ const Result = () => {
       } else {
         const theTopUserVideo = mateStreams.find(
           mate =>
-            JSON.parse(mate.stream.connection.data).userId === theTopUserId,
+            parseInt(JSON.parse(mate.stream.connection.data).userId) ===
+            theTopUserId,
         );
         theTopUserVideo.addVideoElement(theTopVideoRef.current);
         setTheRestUsersStream([...theRestUsersStream, myStream]);
@@ -114,11 +139,27 @@ const Result = () => {
     };
   }, [theTopVideoRef]);
 
-  console.log('RESULT COMPONENT:: ', theTopUserData, gameResults, mateStreams);
+  useEffect(() => {
+    confettiEffect(3);
+    fireworks();
+  }, []);
+
+  console.log(
+    '🗓️🗓️🗓️🗓️🗓️🗓️ RESULT COMPONENT:: \n',
+    'GAME RESULT: ',
+    gameResults,
+    'TOP USER DATA: ',
+    theTopUserData,
+    'ORIGINAL MATE STREAMS: ',
+    mateStreams,
+    'FRIENDS STREAMS: ',
+    theRestUsersStream,
+  );
 
   return (
     <>
       <Wrapper $hasRest={theRestUsersStream?.length > 0}>
+        {/* <EffectCanvas ref={EffectCanvasRef} /> */}
         <UpperArea>
           {(!theTopUserData || !theRestUsersStream) && (
             <LoadingWithText loadingMSG="결과를 불러오는 중입니다" />
@@ -145,21 +186,57 @@ const Result = () => {
                 </TheTopStreakDays>
                 일차
               </TheTopStreak>
-              {/* <TheTopMedals>{theTopUserData?.medals?.(keys).map({}=> (<Medal key={}/>))}</TheTopMedals> */}
+              <Medals>
+                {['gold', 'silver', 'bronze'].map((medal, idx) => (
+                  <MedalArea>
+                    {theTopUserData?.medals[medal] > 0 && (
+                      <MedalCount>{theTopUserData?.medals[medal]}</MedalCount>
+                    )}
+                    <Medal key={idx} src={MEDAL_ICONS[medal]} />
+                  </MedalArea>
+                ))}
+              </Medals>{' '}
             </TheTopUserInfo>
           </TheTopUserArea>
           <Rankings>
             {gameResults?.length > 0 &&
-              gameResults?.map(({ userId, userName, score }, idx) => (
-                <RankingWrapper key={userId}>
-                  <ScoreLine>
-                    <RankingNum>{idx + 1}</RankingNum>
-                    <Score>{score}</Score>
+              gameResults?.map(({ userName, score }, idx) => (
+                <RankingWrapper key={idx}>
+                  <ScoreLine
+                    $scoreWidth={score < 30 ? 29 : score * 1.05}
+                    $isTheTop={idx === 0}
+                  >
+                    <RangkingAndScore>
+                      <RankingNum>{idx + 1}</RankingNum>
+                      <Score>{score}점</Score>
+                    </RangkingAndScore>
+                    {score >= 61 && (
+                      <AllInLine>
+                        <UserName>{userName}</UserName>
+                        <UserProfile
+                          src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${userName}`}
+                        />
+                      </AllInLine>
+                    )}
+                    {score < 61 && score >= 36 && (
+                      <ProfileInLine>
+                        <UserProfile
+                          $profileInline={true}
+                          src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${userName}`}
+                        />
+                        <UserName $profileInline={true}>{userName}</UserName>
+                      </ProfileInLine>
+                    )}
                   </ScoreLine>
-                  <UserProfile
-                    src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${userName}`}
-                  />
-                  <UserName>{userName}</UserName>
+                  {score < 35 && (
+                    <ProfileOutLine $profileInline={false}>
+                      <UserProfile
+                        $profileInline={false}
+                        src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${userName}`}
+                      />
+                      <UserName $profileInline={false}>{userName}</UserName>
+                    </ProfileOutLine>
+                  )}
                 </RankingWrapper>
               ))}
           </Rankings>
@@ -226,6 +303,7 @@ const Header = styled.div`
 
   ${({ theme }) => theme.flex.center}
   width: 100%;
+  height: 48px;
 
   padding: 12px;
   border-radius: 30px 30px 0 0;
@@ -240,37 +318,51 @@ const HeaderText = styled.header`
 `;
 
 const TheTopUserArea = styled.div`
-  position: relative;
-  ${({ theme }) => theme.flex.center};
+  ${({ theme }) => theme.flex.left};
 
-  gap: 20px;
+  gap: 25px;
 
   width: 100%;
   height: 50%;
 
-  padding: 24px;
+  padding: 70px 24px 24px 24px;
 `;
 
 const TheTopVideo = styled.video`
   display: ${({ $canDisplay }) => ($canDisplay ? 'block' : 'none')};
 
-  width: 50%;
+  width: 40%;
   height: 100%;
 
   border-radius: ${({ theme }) => theme.radius.medium};
   border: transparent;
+
+  animation: shadow-animation 2s infinite alternate ease-in-out;
+  @keyframes shadow-animation {
+    0% {
+      box-shadow: 2px 3px 30px rgba(255, 209, 0, 0.5);
+    }
+    50% {
+      box-shadow: 4px 6px 60px rgba(255, 209, 0, 0.8);
+    }
+    100% {
+      box-shadow: 2px 3px 30px rgba(255, 209, 0, 0.5);
+    }
+  }
 
   object-fit: cover;
 `;
 
 const TheTopUserInfo = styled.div`
   ${({ theme }) => theme.flex.left};
+  align-items: flex-start;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
 `;
 
 const TheTopName = styled.span`
   ${({ theme }) => theme.fonts.JuaSmall};
+  text-align: left;
 `;
 
 const TheTopStreak = styled.span`
@@ -280,47 +372,184 @@ const TheTopStreak = styled.span`
 const TheTopStreakDays = styled.span`
   margin: 0 5px;
   ${({ theme }) => theme.fonts.IBMMedium};
-  font-size: 1.2em;
+  font-size: 24px;
   font-weight: 900;
+
   color: ${({ theme }) => theme.colors.primary.emerald};
 `;
 
-const Rankings = styled.div`
+const Medals = styled.div`
+  ${({ theme }) => theme.flex.between}
+
   width: 100%;
-  height: 100%;
-  padding: 12px;
+  margin: 10px 0px 0px 15px;
+`;
+
+const MedalArea = styled.div`
+  position: relative;
+  ${({ theme }) => theme.flex.center}
+
+  width: 30px;
+  height: 30px;
+`;
+
+const MedalCount = styled.span`
+  z-index: 200;
+  position: absolute;
+  top: -2px;
+  left: -14px;
+  margin: auto;
+
+  ${({ theme }) => theme.fonts.IBMMedium};
+  font-size: 18px;
+  color: ${({ theme }) => theme.colors.primary.white};
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
+`;
+
+const Medal = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: auto;
+
+  width: 20px;
+`;
+
+const Rankings = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+
+  width: 100%;
+  height: 50%;
+  padding: 0px 12px 12px 0px;
 `;
 
 const RankingWrapper = styled.div`
-  ${({ theme }) => theme.flex.center}
+  position: relative;
+  width: 100%;
+  ${({ theme }) => theme.flex.between};
+  align-items: center;
 `;
 
 const ScoreLine = styled.div`
-  ${({ theme }) => theme.flex.center}
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: ${({ $scoreWidth }) => $scoreWidth}%;
+
+  ${({ theme }) => theme.flex.between};
+  align-items: center;
+
+  border-radius: 0 30px 30px 0;
+  background: ${({ theme }) => theme.gradient.largerPurple};
+
+  ${({ $isTheTop }) =>
+    $isTheTop &&
+    css`
+      box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.system.yellow} inset;
+    `}
+`;
+
+const RangkingAndScore = styled.div`
+  ${({ theme }) => theme.flex.left};
+  margin-left: 10px;
+  gap: 10px;
 `;
 
 const RankingNum = styled.span`
-  ${({ theme }) => theme.fonts.JuaSmall}
-  margin-right: 12px;
+  ${({ theme }) => theme.flex.center};
+
+  ${({ theme }) => theme.fonts.IBMmedium};
+  font-weight: 900;
+
+  padding: 13px 13px;
+
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.colors.translucent.lightNavy};
 `;
 
 const Score = styled.span`
-  ${({ theme }) => theme.fonts.IBMsmall}
+  padding: 20px 0px;
+
+  ${({ theme }) => theme.fonts.IBMmedium};
+  font-weight: bold;
+
   color: ${({ theme }) => theme.colors.primary.navy};
   font-weight: 500;
+  margin-right: 5px;
+`;
+
+const AllInLine = styled.div`
+  ${({ theme }) => theme.flex.right};
+  align-items: center;
+
+  margin-right: 8px;
+  height: 25px;
+
+  border-radius: ${({ theme }) => theme.radius.medium};
+  background-color: ${({ theme }) => theme.colors.translucent.lightNavy};
+`;
+
+const ProfileInLine = styled.div`
+  position: absolute;
+  left: 90px;
+  width: 100%;
+
+  ${({ theme }) => theme.flex.right};
+  align-items: center;
+
+  height: 25px;
+
+  border-radius: ${({ theme }) => theme.radius.medium};
+`;
+
+const ProfileOutLine = styled.div`
+  ${({ theme }) => theme.flex.right};
+  align-items: center;
+
+  position: absolute;
+  top: 0;
+  left: 110px;
+
+  margin-right: 8px;
+
+  border-radius: ${({ theme }) => theme.radius.medium};
+  background-color: ${({ theme }) => theme.colors.translucent.lightNavy};
 `;
 
 const UserProfile = styled.img`
   width: 25px;
   height: 25px;
+
   border-radius: 50%;
   object-fit: cover;
   background-color: ${({ theme }) => theme.colors.primary.white};
+
+  ${({ $profileInline }) =>
+    $profileInline &&
+    css`
+      position: absolute;
+      left: 0;
+    `}
 `;
 
 const UserName = styled.span`
-  ${({ theme }) => theme.fonts.IBMsmall}
+  padding: 10px 5px;
+
+  ${({ theme }) => theme.fonts.IBMsmall};
   margin-left: 5px;
+
+  text-align: right;
+
+  ${({ $profileInline }) =>
+    $profileInline &&
+    css`
+      position: absolute;
+      left: 30px;
+    `}
 `;
 
 const TheRestUsersWrapper = styled.div`
@@ -328,7 +557,7 @@ const TheRestUsersWrapper = styled.div`
   height: 150px;
 
   ${({ theme, $isSingle }) =>
-    $isSingle ? theme.flex.right : theme.flex.between}
+    $isSingle ? theme.flex.right : theme.flex.between};
 
   gap: 12px;
 `;

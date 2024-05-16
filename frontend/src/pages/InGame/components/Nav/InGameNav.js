@@ -16,8 +16,9 @@ const GAME_MODE = {
   2: 'mission2',
   3: 'mission3',
   4: 'mission4',
-  5: 'affirmation',
-  6: 'result',
+  5: 'mission5',
+  6: 'affirmation',
+  7: 'result',
 };
 
 const InGameNav = () => {
@@ -39,24 +40,24 @@ const InGameNav = () => {
     }
   };
 
-  useEffect(() => {
-    if (turnMicOnOff) {
-      if (inGameMode === 4 || inGameMode === 5) {
-        // ----------⭐️ 고려 사항 ⭐️-------------
-        // Mission4(전방에 함성 발사)에서 마이크 끄려고 했는데,
-        // openvidu와 연결되어 있어서, 끄면 안 됨.
-        // 상대방에게 들리지 않지만, 측정은 가능하게 하려면,
-        // Mission4에 쓰는 오디오 따로 따와야 함
-        // -----------------------------------
-        //
-        // if (micOn) turnMicOnOff(false);
-      }
-      if (inGameMode === 6) {
-        if (!micOn) turnMicOnOff(true);
-      }
-    }
-    return () => {};
-  }, [inGameMode, turnMicOnOff]);
+  // useEffect(() => {
+  //   if (turnMicOnOff) {
+  //     if (inGameMode === 4 || inGameMode === 5) {
+  //       // ----------⭐️ 고려 사항 ⭐️-------------
+  //       // Mission4(전방에 함성 발사)에서 마이크 끄려고 했는데,
+  //       // openvidu와 연결되어 있어서, 끄면 안 됨.
+  //       // 상대방에게 들리지 않지만, 측정은 가능하게 하려면,
+  //       // Mission4에 쓰는 오디오 따로 따와야 함
+  //       // -----------------------------------
+  //       //
+  //       // if (micOn) turnMicOnOff(false);
+  //     }
+  //     if (inGameMode === 6) {
+  //       if (!micOn) turnMicOnOff(true);
+  //     }
+  //   }
+  //   return () => {};
+  // }, [inGameMode, turnMicOnOff]);
 
   return (
     <Wrapper>

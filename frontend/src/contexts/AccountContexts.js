@@ -10,7 +10,8 @@ const AccountContextProvider = ({ children }) => {
   const logOut = async () => {
     try {
       const response = await authServices.logOutUser({
-        accessToken: accessToken,
+        accessToken,
+        userId,
       });
       if (response.status === 200) {
         setAccessToken(null);

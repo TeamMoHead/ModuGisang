@@ -13,7 +13,6 @@ import {
   OutlineBox,
   WarmUpModel,
   LoadingWithText,
-  LongBtn,
 } from '../../components';
 import {
   StreakContent,
@@ -32,14 +31,11 @@ const Main = () => {
 
   const { accessToken, userId } = useContext(AccountContext);
   const { challengeId, getMyData } = useContext(UserContext);
-  const { challengeData, setChallengeData } = useContext(ChallengeContext);
+  const { challengeData } = useContext(ChallengeContext);
   const { isWarmUpDone } = useContext(MediaPipeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
 
-  // ---------------현재 페이지에서 쓸 State---------------
   const hasChallenge = Number(challengeId) !== -1;
-  const [isMyDataLoading, setIsMyDataLoading] = useState(true);
-  const [isChallengeInfoLoading, setIsChallengeInfoLoading] = useState(true);
 
   const CARD_CONTENTS = {
     streak: <StreakContent />,
@@ -79,14 +75,6 @@ const Main = () => {
       // }
     },
   };
-  // ⭐️⭐️⭐️⭐️ TEST 용 wake time 설정 ⭐️⭐️⭐️⭐️
-  // ========challenge data setting=======
-  const [wakeTime, setWakeTime] = useState('');
-  const changeWakeTime = () => {
-    setChallengeData(prev => ({ ...prev, wakeTime }));
-    alert('세팅 완료!');
-  };
-  // ============ 나중에 지우기!! =============
 
   useEffect(() => {
     if (accessToken && userId) {

@@ -1,12 +1,10 @@
 import React, { useContext, useEffect, useRef } from 'react';
 
 import waitingMusic from '../../../assets/bgm/waiting_room.mp3';
-import missionMusic from '../../../assets/bgm/hawaii_cut.mp3';
+import missionMusic from '../../../assets/bgm/ingame_music.mp3';
 import resultMusic from '../../../assets/bgm/result_music.mp3';
 
 import { GameContext } from '../../../contexts';
-
-import styled from 'styled-components';
 
 const AUDIO_SOURCE_PATH = {
   waiting: waitingMusic,
@@ -17,7 +15,7 @@ const AUDIO_SOURCE_PATH = {
 const getMusicSrc = gameMode => {
   if (gameMode === 0) {
     return AUDIO_SOURCE_PATH.waiting;
-  } else if (gameMode === 6) {
+  } else if (gameMode === 7) {
     return AUDIO_SOURCE_PATH.result;
   } else {
     return AUDIO_SOURCE_PATH.mission;
@@ -57,7 +55,6 @@ const BackgroundMusic = () => {
   const audioRef = useRef(null);
 
   useEffect(() => {
-    const MISSION_MODE = [1, 2, 3, 4, 5];
     const newSrc = getMusicSrc(inGameMode);
 
     if (audioRef.current) {
@@ -67,7 +64,7 @@ const BackgroundMusic = () => {
     if (isMusicMuted) {
       audioRef.current.pause();
       return;
-    } else if (inGameMode === 0 || inGameMode === 6) {
+    } else if (inGameMode === 0 || inGameMode === 7) {
       audioRef.current.src = newSrc;
       audioRef.current.play();
     } else if (inGameMode === 1) {
@@ -76,7 +73,6 @@ const BackgroundMusic = () => {
     }
   }, [inGameMode, isMusicMuted]);
 
-  console.log('=========isMusicMuted:: ', isMusicMuted, audioRef);
   return (
     <>
       <audio ref={audioRef} loop autoPlay playsInline />
@@ -85,10 +81,3 @@ const BackgroundMusic = () => {
 };
 
 export default BackgroundMusic;
-
-const BtnWrapper = styled.div`
-  position: fixed;
-  top: 125px;
-  right: 40px;
-  z-index: 100;
-`;
