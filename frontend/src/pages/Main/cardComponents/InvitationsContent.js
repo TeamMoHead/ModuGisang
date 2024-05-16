@@ -51,13 +51,13 @@ const InviteCount = styled.div`
   position: absolute;
   top: -10px;
   right: -10px;
-  background-color: ${({ theme }) => theme.colors.primary.emerald};
+  background-color: ${({ theme }) => theme.colors.system.red};
+  color: white;
   border-radius: 50%;
   width: 30px;
   height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
   font-weight: bold;
 `;

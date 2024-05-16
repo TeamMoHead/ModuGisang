@@ -30,7 +30,7 @@ const ChallengeContent = () => {
     mate => mate?.userId !== myId,
   );
 
-  const matesNames = matesWithoutMe.map(mate => mate?.userName).join(', ');
+  const matesNames = matesWithoutMe?.map(mate => mate?.userName).join(', ');
 
   const sliderBox = [
     <SlideContent $isSingleLine={true}>

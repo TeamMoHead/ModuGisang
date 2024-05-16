@@ -126,6 +126,7 @@ const Formula = styled.div`
 `;
 
 const RoundPassStatus = styled.div`
+  z-index: 600;
   position: absolute;
 
   width: 100vw;
