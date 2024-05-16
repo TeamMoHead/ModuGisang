@@ -198,7 +198,7 @@ export class UserService {
   }
 
   isContinuous(lastActiveDate: Date | null): boolean {
-    if (!lastActiveDate) {
+    if (!lastActiveDate || lastActiveDate === null) {
       return false;
     }
     const today = this.getCurrentTime();
