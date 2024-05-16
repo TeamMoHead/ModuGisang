@@ -1,14 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
-import {
-  AccountContext,
-  GameContext,
-  OpenViduContext,
-  UserContext,
-} from '../../../contexts';
-import useFetch from '../../../hooks/useFetch';
-import { inGameServices, userServices } from '../../../apis';
+import { GameContext, OpenViduContext } from '../../../contexts';
+
 import { LoadingWithText } from '../../../components';
-import { TheRestVideo } from './';
 
 import {
   Waiting,
@@ -16,10 +9,11 @@ import {
   Mission2,
   Mission3,
   Mission4,
+  Mission5,
   Affirmation,
   Result,
 } from '../';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 const GAME_MODE = {
   0: 'waiting',
@@ -27,8 +21,9 @@ const GAME_MODE = {
   2: 'mission2',
   3: 'mission3',
   4: 'mission4',
-  5: 'affirmation',
-  6: 'result',
+  5: 'mission5',
+  6: 'affirmation',
+  7: 'result',
 };
 
 const GAME_MODE_COMPONENTS = {
@@ -37,20 +32,14 @@ const GAME_MODE_COMPONENTS = {
   2: <Mission2 />,
   3: <Mission3 />,
   4: <Mission4 />,
-  5: <Affirmation />,
-  6: <Result />,
+  5: <Mission5 />,
+  6: <Affirmation />,
+  7: <Result />,
 };
 
-const RESULT_HEADER_TEXT = '오늘의 미라클 메이커';
-
 const MyVideo = () => {
-  const { fetchData } = useFetch();
-
-  const { accessToken, userId: myId } = useContext(AccountContext);
-
-  const { myVideoRef, myStream, mateStreams } = useContext(OpenViduContext);
-  const { myMissionStatus, inGameMode, isGameResultReceived } =
-    useContext(GameContext);
+  const { myVideoRef, myStream } = useContext(OpenViduContext);
+  const { myMissionStatus, inGameMode } = useContext(GameContext);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
 
   useEffect(() => {
@@ -81,7 +70,7 @@ const MyVideo = () => {
         <LoadingWithText loadingMSG="카메라를 인식 중이에요" />
       )}
 
-      {[0, 1, 2, 3, 4, 5].includes(inGameMode) && (
+      {GAME_MODE[inGameMode] !== 'result' && (
         <React.Fragment key={inGameMode}>
           {GAME_MODE_COMPONENTS[inGameMode]}
         </React.Fragment>

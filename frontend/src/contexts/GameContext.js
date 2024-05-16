@@ -13,8 +13,9 @@ const GAME_MODE = {
   2: 'mission2',
   3: 'mission3',
   4: 'mission4',
-  5: 'affirmation',
-  6: 'result',
+  5: 'mission5',
+  6: 'affirmation',
+  7: 'result',
 };
 
 // mission 당 소요 시간
@@ -23,12 +24,8 @@ const GAME_MODE_DURATION = {
   2: 19000,
   3: 17000,
   4: 14500,
-  5: 8000,
-  // 1: 1000,
-  // 2: 1000,
-  // 3: 1000,
-  // 4: 1000,
-  // 5: 1000,
+  5: 13000,
+  6: 8000,
 };
 
 const RESULT_TIME = 2000;
@@ -36,7 +33,7 @@ const RESULT_TIME = 2000;
 const GameContextProvider = ({ children }) => {
   const { fetchData } = useFetch();
   const { accessToken, userId } = useContext(AccountContext);
-  const { myData } = useContext(UserContext);
+  const { myData, challengeId } = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
   const { remainingTime, isTooLate, isTooEarly } = useCheckTime(
     challengeData?.wakeTime,
@@ -57,13 +54,14 @@ const GameContextProvider = ({ children }) => {
   const [isMissionStarting, setIsMissionStarting] = useState(false);
   const [isMissionEnding, setIsMissionEnding] = useState(false);
   // ==============================================================
-  //
-  //
+
+  // =================== ROUND STATUS ===================
+  const [isRoundPassed, setIsRoundPassed] = useState(false);
 
   // =================== GAME STATUS ===================
   const [inGameMode, setInGameMode] = useState(
     // parseInt(localStorage.getItem('inGameMode')) || 0,
-    // 6,
+    // 5,
     0,
   );
   const [isEnteredTimeSent, setIsEnteredTimeSent] = useState(false);
@@ -87,7 +85,7 @@ const GameContextProvider = ({ children }) => {
 
     const { isLoading, data, error } = response;
     if (!isLoading && data) {
-      console.log('Entered Time Sent Successfully=> ', data);
+      console.log('========>Entered Time Sent Successfully=> ', data);
       setIsEnteredTimeSent(true);
     } else {
       console.error('Entered Time Sent Error => ', error);
@@ -107,7 +105,7 @@ const GameContextProvider = ({ children }) => {
     );
     const { isLoading, data, error } = response;
     if (!isLoading && data) {
-      console.log('My Game Score Sent Successfully => ', data);
+      console.log('===========> My Game Score Sent Successfully => ', data);
       setIsGameScoreSent(true);
     } else {
       console.error('My Game Score Sent Error => ', error);
@@ -116,11 +114,14 @@ const GameContextProvider = ({ children }) => {
 
   const getGameResults = async () => {
     const response = await fetchData(() =>
-      inGameServices.getGameResults({ accessToken }),
+      inGameServices.getGameResults({
+        accessToken,
+        challengeId,
+      }),
     );
     const { isLoading, data, error } = response;
     if (!isLoading && data) {
-      console.log('Game Results => ', data);
+      console.log('============>Game Results => ', data);
       setGameResults(data);
       setIsGameResultReceived(true);
       return data;
@@ -134,12 +135,13 @@ const GameContextProvider = ({ children }) => {
   let nextGameMode = 1;
   const updateMode = () => {
     nextGameMode += 1;
-    if (nextGameMode <= 6) {
+    if (nextGameMode <= 7) {
       // localStorage.setItem('inGameMode', JSON.stringify(nextGameMode));
       setInGameMode(nextGameMode);
       setIsMissionStarting(true);
       setIsMissionEnding(false);
       setMyMissionStatus(false); // 미션 수행상태 초기화
+      setIsRoundPassed(false); // 라운드 통과 상태 초기화
 
       if (GAME_MODE[nextGameMode] !== 'result') {
         setTimeout(() => {
@@ -182,18 +184,6 @@ const GameContextProvider = ({ children }) => {
 
   // ================= ⬆⬆⬆⬆ GAME MODE UPDATE ⬆⬆⬆⬆ =================
 
-  useEffect(() => {
-    console.log('@@@@@ MATE MISSION STATUS @@@@@ => ', matesMissionStatus);
-  }, [matesMissionStatus]);
-
-  console.log(
-    '🍀🍀🍀 GAME CONTEXT 🍀🍀🍀 game mode // my mission status // score // musicMuted => ',
-    inGameMode,
-    myMissionStatus,
-    gameScore,
-    isMusicMuted,
-  );
-
   return (
     <GameContext.Provider
       value={{
@@ -211,6 +201,9 @@ const GameContextProvider = ({ children }) => {
         setMyMissionStatus,
         matesMissionStatus,
         setMatesMissionStatus,
+        //
+        isRoundPassed,
+        setIsRoundPassed,
         //
         isEnteredTimeSent,
         setIsEnteredTimeSent,

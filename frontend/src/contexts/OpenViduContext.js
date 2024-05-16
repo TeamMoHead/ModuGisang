@@ -71,7 +71,7 @@ const OpenViduContextProvider = ({ children }) => {
           type: 'missionStatus',
         })
         .then(() => {
-          console.log('this is test!!');
+          console.log('====> My Mission Status successfully Sent to Mates');
         })
         .catch(error => {
           console.error(error);
@@ -82,7 +82,6 @@ const OpenViduContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    console.log('OPEN VIDU USER DATA: ', challengeId, myData);
     if (!challengeId) return;
     getConnectionToken();
   }, [challengeId]);
@@ -124,8 +123,6 @@ const OpenViduContextProvider = ({ children }) => {
     });
 
     videoSession.on('signal:missionStatus', event => {
-      console.log('---Signal MISSION STATUS----> ', event.type);
-      console.log('OPEN VIDU MMMission SSStatus: ', event.data);
       const data = JSON.parse(event.data);
       setMatesMissionStatus(prev => ({
         ...prev,

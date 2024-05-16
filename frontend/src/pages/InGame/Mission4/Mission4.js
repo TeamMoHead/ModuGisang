@@ -5,7 +5,6 @@ import { MissionStarting, MissionEnding } from '../components';
 import { calculateDecibels } from './decibelUtils';
 import sunImage from '../../../assets/sun.png';
 import hillImage from '../../../assets/hill.png';
-import { RoundSoundEffect, MissionSoundEffects } from '../Sound';
 
 const Mission4 = () => {
   const {
@@ -15,6 +14,7 @@ const Mission4 = () => {
     myMissionStatus,
     gameScore,
     setGameScore,
+    setIsRoundPassed,
     setMyMissionStatus,
   } = useContext(GameContext);
   const { myStream } = useContext(OpenViduContext);
@@ -34,7 +34,6 @@ const Mission4 = () => {
 
   useEffect(() => {
     if (!myStream) {
-      console.log('🥲🥲🥲🥲Stream is not ready or available.');
       return;
     }
     const actualStream = myStream.stream.getMediaStream();
@@ -80,7 +79,6 @@ const Mission4 = () => {
     if (!stream || isMissionStarting || myMissionStatus) return;
 
     if (elapsedTime > TIME_LIMIT && isGameOver) {
-      console.log('Challenge failed!');
       return;
     }
 
@@ -103,9 +101,7 @@ const Mission4 = () => {
       if (shoutingDuration > 5) {
         clearInterval(intervalId);
         setMyMissionStatus(true);
-        if (!isMusicMuted) {
-          RoundSoundEffect();
-        }
+        setIsRoundPassed(true);
 
         return;
       }

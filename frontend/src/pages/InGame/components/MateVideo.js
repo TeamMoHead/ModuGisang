@@ -1,9 +1,18 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
-import { GameContext, OpenViduContext } from '../../../contexts';
+import {
+  AccountContext,
+  GameContext,
+  OpenViduContext,
+} from '../../../contexts';
+import { userServices } from '../../../apis';
+import useFetch from '../../../hooks/useFetch';
 import styled from 'styled-components';
+import { css } from '@emotion/react';
 
-const MateVideo = ({ mateId, mateName }) => {
+const MateVideo = ({ mateId, mateName, onClick }) => {
+  const { fetchData } = useFetch();
   const mateVideoRef = useRef(null);
+  const { accessToken } = useContext(AccountContext);
   const { mateStreams } = useContext(OpenViduContext);
   const { inGameMode, matesMissionStatus } = useContext(GameContext);
   const [thisMate, setThisMate] = useState(undefined);
@@ -11,6 +20,19 @@ const MateVideo = ({ mateId, mateName }) => {
     online: false,
     missionCompleted: false,
   });
+  const [mateData, setMateData] = useState(null);
+
+  const getMateData = async ({ mateId: userId }) => {
+    const response = await fetchData(() =>
+      userServices.getUserInfo({ accessToken, userId }),
+    );
+    setMateData(response.data);
+  };
+
+  useEffect(() => {
+    if (mateId !== -1 && mateId === undefined) return;
+    getMateData({ mateId });
+  }, [mateId]);
 
   useEffect(() => {
     if (mateStreams.length > 0) {
@@ -46,7 +68,7 @@ const MateVideo = ({ mateId, mateName }) => {
   }, [matesMissionStatus]);
 
   return (
-    <Wrapper>
+    <Wrapper onClick={onClick}>
       {mateStatus.online ? (
         <Video
           ref={mateVideoRef}
@@ -54,6 +76,7 @@ const MateVideo = ({ mateId, mateName }) => {
           playsInline
           $isCompleted={mateStatus.missionCompleted}
           $isNotGame={inGameMode === 0 || inGameMode === 6}
+          $isHighStreak={mateData?.streakDays > 100}
         />
       ) : (
         <EmptyVideo>Zzz...</EmptyVideo>
@@ -93,6 +116,23 @@ const Video = styled.video`
       : $isCompleted
         ? `3px solid ${theme.colors.primary.emerald}`
         : `3px solid ${theme.colors.system.red}`};
+
+  ${({ $isHighStreak }) =>
+    $isHighStreak &&
+    css`
+      animation: shadow-animation 2s infinite alternate ease-in-out;
+      @keyframes shadow-animation {
+        0% {
+          box-shadow: 2px 3px 5px rgba(21, 245, 185, 0.5);
+        }
+        50% {
+          box-shadow: 4px 6px 10px rgba(21, 245, 185, 0.8);
+        }
+        100% {
+          box-shadow: 2px 3px 5px rgba(21, 245, 185, 0.5);
+        }
+      }
+    `}
 `;
 
 const UserName = styled.span`

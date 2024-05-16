@@ -17,8 +17,12 @@ export const INFO_BY_GAME_MODE = {
     instruction: '전방에 힘찬 함성 5초간 발사!',
   },
   5: {
+    title: '두뇌 깨우기',
+    instruction: '구구단을 외자! 정답을 말해주세요.',
+  },
+  6: {
     title: '오늘의 다짐!',
     instruction: '또박또박 소리내어 읽어주세요',
   },
-  6: { title: '모두기상 완료!', instruction: '' },
+  7: { title: '모두기상 완료!', instruction: '' },
 };

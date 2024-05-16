@@ -34,7 +34,9 @@ const InvitationCard = ({ invitation }) => {
 
   return (
     <Wrapper>
-      <Profile src="https://api.dicebear.com/8.x/open-peeps/svg?seed=챌린지 마스터" />
+      <Profile
+        src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${invitation.userName}`}
+      />
       <TextBox>
         <CardText>
           <MiniCircle />

@@ -6,17 +6,33 @@ import {
 } from '../../../contexts';
 import { MissionStarting, MissionEnding } from '../components';
 import styled, { keyframes } from 'styled-components';
-import stickyNoteImage from '../../../assets/sticky_note.png';
+import {
+  green0,
+  green1,
+  green2,
+  green3,
+  green4,
+  pink0,
+  pink1,
+  pink2,
+  pink3,
+  pink4,
+  yellow0,
+  yellow1,
+  yellow2,
+  yellow3,
+  yellow4,
+} from '../../../assets/postit/index';
 import { RoundSoundEffect, MissionSoundEffects } from '../Sound';
 
 let topScore = 0;
 let leftScore = 0;
 let rightScore = 0;
-let targetNumber = 10;
+let targetNumber = 8;
 let prevTopEyebrow = null;
 let prevLeftCheek = null;
 let prevRightCheek = null;
-let prevJawPosition = null;
+let prevforehead = null;
 let isMovingScore = 0;
 let isMovingStatus = true; // 움직이는 중인지 여부
 let myPostitStatus = [false, false, false]; // 측정 결과
@@ -31,7 +47,7 @@ const Mission2 = () => {
       top: 0, // y 좌표
       left: 0, // x 좌표
       size: 0, // width, height
-      imageUrl: stickyNoteImage,
+      imageUrl: yellow0,
       shouldFall: false, // 포스트잇이 떨어졌는지 여부
       scorePoint: 9, // 더할 점수. 이마는 상대적으로 떼기 어려워서 추가 점수 있음
     },
@@ -40,7 +56,7 @@ const Mission2 = () => {
       top: 0,
       left: 0,
       size: 0,
-      imageUrl: stickyNoteImage,
+      imageUrl: pink0,
       shouldFall: false,
       scorePoint: 8,
     },
@@ -49,11 +65,26 @@ const Mission2 = () => {
       top: 0,
       left: 0,
       size: 0,
-      imageUrl: stickyNoteImage,
+      imageUrl: green0,
       shouldFall: false,
       scorePoint: 8,
     },
   ]); // 포스트잇의 정보
+
+  const [paperImg, setPaperImg] = useState([
+    {
+      imageUrl: pink1,
+      shouldFall: false,
+    },
+    {
+      imageUrl: yellow1,
+      shouldFall: false,
+    },
+    {
+      imageUrl: green1,
+      shouldFall: false,
+    },
+  ]); // 상태 UI
 
   const { holisticModel, setIsHolisticLoaded, setIsHolisticInitialized } =
     useContext(MediaPipeContext);
@@ -61,34 +92,31 @@ const Mission2 = () => {
     isMissionStarting,
     isMissionEnding,
     inGameMode,
-    isMusicMuted,
+    isRoundPassed,
     myMissionStatus,
     setMyMissionStatus,
     setGameScore,
+    setIsRoundPassed,
   } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
-
-  const image = new Image();
-  image.src = stickyNoteImage;
 
   const postitGame = faceLandmarks => {
     if (!faceLandmarks) return;
 
-    const jawIndex = 152;
-    const jaw = faceLandmarks[jawIndex];
-    if (prevJawPosition) {
-      const deltaJawX = Math.abs(jaw.x - prevJawPosition.x);
-      const deltaJawY = Math.abs(jaw.y - prevJawPosition.y);
+    const foreheadIndex = 10;
+    const forehead = faceLandmarks[foreheadIndex];
+    if (prevforehead) {
+      const deltaforeheadX = Math.abs(forehead.x - prevforehead.x);
+      const deltaforeheadY = Math.abs(forehead.y - prevforehead.y);
 
       // 윗 입술 높이와 비례해서 움직임 판정
       const heightLip =
-        Math.abs(faceLandmarks[0].y - faceLandmarks[12].y) * 1.5;
+        Math.abs(faceLandmarks[0].y - faceLandmarks[12].y) * 1.4;
 
-      // 입꼬리를 움직일 때 턱도 움직이게 되어 있어서 움직임 판단 기준을 상대적으로 높임
-      if (deltaJawX + deltaJawY > heightLip) {
+      if (deltaforeheadX + deltaforeheadY > heightLip) {
         isMovingStatus = true;
         isMovingScore = 0;
-        console.log('----- 움직이는 중');
+        // console.log('----- 움직이는 중');
       } else {
         isMovingScore += 1;
 
@@ -107,11 +135,42 @@ const Mission2 = () => {
           // 이전 볼의 좌표랑 비교해서 움직임을 확인
           if (prevTopEyebrow) {
             const deltaTopY = Math.abs(topEyebrow.y - prevTopEyebrow.y);
-            if (deltaTopY > heightLip * 0.7) {
+            if (deltaTopY > heightLip * 0.6) {
               topScore += 1;
-              console.log('----- topScore:', topScore);
 
-              if (topScore >= targetNumber) {
+              if (topScore === 2) {
+                setPaperImg(prevPaperImg => [
+                  ...prevPaperImg.slice(0, 1),
+                  {
+                    imageUrl: yellow2,
+                    shouldFall: false,
+                  },
+                  ...prevPaperImg.slice(2), // 나머지 요소는 유지
+                ]);
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
+              } else if (topScore === 3) {
+                setPaperImg(prevPaperImg => [
+                  ...prevPaperImg.slice(0, 1),
+                  {
+                    imageUrl: yellow3,
+                    shouldFall: false,
+                  },
+                  ...prevPaperImg.slice(2),
+                ]);
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
+              } else if (topScore >= targetNumber / 2) {
+                setPaperImg(prevPaperImg => [
+                  ...prevPaperImg.slice(0, 1),
+                  {
+                    imageUrl: yellow4,
+                    shouldFall: true,
+                  },
+                  ...prevPaperImg.slice(2),
+                ]);
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
                 myPostitStatus[0] = true;
               }
             }
@@ -126,9 +185,38 @@ const Mission2 = () => {
             const deltaLeftY = Math.abs(leftCheek.y - prevLeftCheek.y);
             if (deltaLeftY + deltaLeftX > heightLip) {
               leftScore += 1;
-              console.log('----- leftScore:', leftScore);
+              // console.log('----- leftScore:', leftScore);
 
-              if (leftScore >= targetNumber) {
+              if (leftScore === 3) {
+                setPaperImg(prevPaperImg => [
+                  {
+                    imageUrl: pink2,
+                    shouldFall: false,
+                  },
+                  ...prevPaperImg.slice(1),
+                ]);
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
+              } else if (leftScore === 5) {
+                setPaperImg(prevPaperImg => [
+                  {
+                    imageUrl: pink3,
+                    shouldFall: false,
+                  },
+                  ...prevPaperImg.slice(1),
+                ]);
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
+              } else if (leftScore >= targetNumber) {
+                setPaperImg(prevPaperImg => [
+                  {
+                    imageUrl: pink4,
+                    shouldFall: true,
+                  },
+                  ...prevPaperImg.slice(1),
+                ]);
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
                 myPostitStatus[1] = true;
               }
             }
@@ -143,10 +231,39 @@ const Mission2 = () => {
             const deltaRightY = Math.abs(rightCheek.y - prevRightCheek.y);
             if (deltaRightX + deltaRightY > heightLip) {
               rightScore += 1;
-              console.log('----- rightScore:', rightScore);
+              // console.log('----- rightScore:', rightScore);
 
-              if (rightScore >= targetNumber) {
+              if (rightScore === 3) {
+                setPaperImg(prevPaperImg => [
+                  ...prevPaperImg.slice(0, 2),
+                  {
+                    imageUrl: green2,
+                    shouldFall: false,
+                  },
+                ]);
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
+              } else if (rightScore === 5) {
+                setPaperImg(prevPaperImg => [
+                  ...prevPaperImg.slice(0, 2),
+                  {
+                    imageUrl: green3,
+                    shouldFall: false,
+                  },
+                ]);
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
+              } else if (rightScore >= targetNumber) {
+                setPaperImg(prevPaperImg => [
+                  ...prevPaperImg.slice(0, 2),
+                  {
+                    imageUrl: green4,
+                    shouldFall: true,
+                  },
+                ]);
                 myPostitStatus[2] = true;
+                setIsRoundPassed(true);
+                setTimeout(() => setIsRoundPassed(false), 100);
               }
             }
           }
@@ -156,7 +273,7 @@ const Mission2 = () => {
       prevLeftCheek = { x: leftCheek.x, y: leftCheek.y }; // 이전 좌측 볼의 좌표 갱신
       prevRightCheek = { x: rightCheek.x, y: rightCheek.y }; // 이전 우측 볼의 좌표 갱신
     }
-    prevJawPosition = { x: jaw.x, y: jaw.y };
+    prevforehead = { x: forehead.x, y: forehead.y };
 
     if (
       !isTimeOut &&
@@ -164,6 +281,7 @@ const Mission2 = () => {
       myPostitStatus.every(shouldFall => shouldFall === true)
     ) {
       setMyMissionStatus(true);
+      setIsRoundPassed(false);
     }
     if (faceLandmarks && !myMissionStatus) {
       myPostitStatus?.forEach((status, index) => {
@@ -180,12 +298,12 @@ const Mission2 = () => {
             };
             return updatedPositions;
           });
-        } else if (!isTimeOut) {
+        } else {
           setPostitPositions(prevPositions => {
             const updatedPositions = [...prevPositions];
 
             // 점수 갱신
-            if (!updatedPositions[index].shouldFall) {
+            if (!isTimeOut && !updatedPositions[index].shouldFall) {
               setGameScore(
                 prevScore => prevScore + updatedPositions[index].scorePoint,
               );
@@ -194,9 +312,6 @@ const Mission2 = () => {
                 ...prevPositions[index],
                 shouldFall: true,
               };
-              if (!isMusicMuted) {
-                RoundSoundEffect();
-              }
             }
             return updatedPositions;
           });
@@ -296,6 +411,15 @@ const Mission2 = () => {
           shouldFall={position?.shouldFall}
         />
       ))}
+      <PaperBox>
+        {paperImg.map((paper, index) => (
+          <Paper
+            key={index}
+            imageUrl={paper.imageUrl}
+            shouldFall={paper?.shouldFall}
+          />
+        ))}
+      </PaperBox>
     </>
   );
 };
@@ -320,6 +444,30 @@ const PostitAnimation = styled.div`
   left: ${props => props.left}px;
   width: ${props => props.size}px;
   height: ${props => props.size}px;
+  background-image: url(${props => props.imageUrl});
+  background-size: cover;
+  animation: ${props => (props.shouldFall ? PostitFallAnimation : 'none')} 1s
+    ease-out forwards;
+`;
+
+const PaperBox = styled.div`
+  z-index: 200;
+
+  position: absolute;
+  bottom: 25px;
+
+  width: calc(100% - 6px);
+  height: 70px;
+  padding: 0 30px;
+
+  ${({ theme }) => theme.flex.between}
+
+  background-color: ${({ theme }) => theme.colors.translucent.lightNavy};
+`;
+
+const Paper = styled.div`
+  width: 60px;
+  height: 60px;
   background-image: url(${props => props.imageUrl});
   background-size: cover;
   animation: ${props => (props.shouldFall ? PostitFallAnimation : 'none')} 1s

@@ -25,7 +25,7 @@ const round = [
 
 let currentScoreLeft = 0; // 현재 점수
 let currentScoreRight = 0; // 현재 점수
-let maxScore = 320; // 목표 점수
+let maxScore = 115; // 목표 점수
 let selectedPose; // 선택된 자세
 let isGameStart = false; // 게임 시작 여부
 let isTimeOut = false; // 타임 아웃 여부
@@ -42,9 +42,10 @@ const Mission1 = () => {
     isMissionStarting,
     isMissionEnding,
     inGameMode,
-    isMusicMuted,
     myMissionStatus,
     setMyMissionStatus,
+    setIsRoundPassed,
+    gameScore,
     setGameScore,
   } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
@@ -162,6 +163,7 @@ const Mission1 = () => {
   useEffect(() => {
     setTimeout(() => {
       setCurrentRound(1);
+      setIsRoundPassed(false);
     }, roundDuration);
   }, []);
 
@@ -176,6 +178,7 @@ const Mission1 = () => {
 
     stretchSide.forEach((side, index) => {
       if (side.active && !side.scoreAdded) {
+        setIsRoundPassed(prevState => !prevState);
         setGameScore(prevGameScore => prevGameScore + 12.5);
         // 점수가 추가된 후, scoreAdded 상태 업데이트
         setStretchSide(prevState =>
@@ -183,9 +186,8 @@ const Mission1 = () => {
             idx === index ? { ...item, scoreAdded: true } : item,
           ),
         );
-        if (!isMusicMuted) {
-          RoundSoundEffect();
-        }
+      } else {
+        setIsRoundPassed(prevState => prevState);
       }
     });
   }, [stretchSide]);
@@ -194,7 +196,6 @@ const Mission1 = () => {
     <>
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
-      {/* {isMissionEnding && <MissionSoundEffects />} */}
 
       {isMissionStarting || (
         <>

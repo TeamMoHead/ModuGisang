@@ -8,15 +8,17 @@ import {
   AccountContext,
 } from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
+import { userServices } from '../../apis';
+import useFetch from '../../hooks/useFetch';
 
 import InGameNav from './components/Nav/InGameNav';
 import { MyVideo, MateVideo } from './components';
 import { Result } from './';
+import FriendStreak from '../InGame/Waiting/FriendStreak';
 
-import { BackgroundMusic, MusicController, MissionSoundEffects } from './Sound';
+import { MusicController } from './Sound';
 
 import styled, { css } from 'styled-components';
-import * as S from '../../styles/common';
 
 const GAME_MODE = {
   0: 'waiting',
@@ -24,8 +26,9 @@ const GAME_MODE = {
   2: 'mission2',
   3: 'mission3',
   4: 'mission4',
-  5: 'affirmation',
-  6: 'result',
+  5: 'mission5',
+  6: 'affirmation',
+  7: 'result',
 };
 
 const InGame = () => {
@@ -46,10 +49,13 @@ const InGame = () => {
     setIsWarmUpDone,
   } = useContext(MediaPipeContext);
   const [redirected, setRedirected] = useState(false);
+  const { accessToken } = useContext(AccountContext);
+  const { fetchData } = useFetch();
 
   const [mateList, setMateList] = useState([]);
-
-  // const musicSrc = getMusicSrc(inGameMode);
+  const [isMateSelected, setIsMateSelected] = useState(false);
+  const [isMateDataLoading, setIsMateDataLoading] = useState(true);
+  const [mateData, setMateData] = useState(null);
 
   useEffect(() => {
     if (challengeData) {
@@ -87,14 +93,14 @@ const InGame = () => {
   }, [inGameMode, isTooEarly, isTooLate, redirected]);
 
   useEffect(() => {
-    if (inGameMode === 0) {
+    if (GAME_MODE[inGameMode] === 'waiting') {
       if (isEnteredTimeSent) {
         return;
       } else {
         sendEnteredTime();
       }
     }
-    if (inGameMode === 6) {
+    if (GAME_MODE[inGameMode] === 'result') {
       poseModel.current = null;
       holisticModel.current = null;
       setIsPoseLoaded(false);
@@ -118,12 +124,40 @@ const InGame = () => {
     };
   }, []);
 
+  const showSelectedMateData = mateId => {
+    if (mateId !== -1) {
+      setIsMateSelected(true);
+      setIsMateDataLoading(true);
+      getMateData(mateId);
+    } else {
+      console.error('Selected mateId is not valid');
+    }
+  };
+
+  const getMateData = async userId => {
+    const response = await fetchData(() =>
+      userServices.getUserInfo({ accessToken, userId }),
+    );
+    setMateData(response.data);
+  };
+
+  useEffect(() => {
+    if (!mateData) return;
+    setIsMateDataLoading(false);
+  }, [mateData]);
+
   if (redirected) return null;
   return (
     <>
+      {isMateSelected && !isMateDataLoading && (
+        <FriendStreak
+          mateData={mateData}
+          isMateDataLoading={isMateDataLoading}
+          setIsMateSelected={setIsMateSelected}
+        />
+      )}
       <InGameNav />
-      {/* <BackgroundMusic /> */}
-      {/* <MissionSoundEffects /> */}
+
       <MusicController />
 
       {GAME_MODE[inGameMode] !== 'result' && (
@@ -132,8 +166,13 @@ const InGame = () => {
             <MyVideo />
             <MatesVideoWrapper $isSingle={mateList?.length === 1}>
               {mateList?.length > 0 &&
-                mateList?.map(({ userId, userName }) => (
-                  <MateVideo key={userId} mateId={userId} mateName={userName} />
+                mateList?.map(({ userId, userName }, idx) => (
+                  <MateVideo
+                    key={idx}
+                    mateId={userId}
+                    mateName={userName}
+                    onClick={() => showSelectedMateData(userId)}
+                  />
                 ))}
             </MatesVideoWrapper>
           </>
