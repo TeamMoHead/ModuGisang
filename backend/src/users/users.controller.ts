@@ -60,10 +60,12 @@ export class UserController {
   async searchUser(@Param('userId') userId: number) {
     const result = await this.userService.getInvis(userId);
     const invitations = result.invitations;
+    const lastActiveDate = result.lastActiveDate;
+    const isCountinue = this.userService.isContinuous(lastActiveDate);
     return {
       userId: invitations._id,
       userName: invitations.userName,
-      streakDays: result.currentStreak, // streak 구현 후 처리 예정
+      streakDays: isCountinue ? result.currentStreak : 0,
       medals: {
         gold: invitations.medals.gold,
         silver: invitations.medals.silver,

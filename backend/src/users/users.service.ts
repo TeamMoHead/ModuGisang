@@ -144,6 +144,7 @@ export class UserService {
     return {
       invitations: invitations,
       currentStreak: currentStreak,
+      lastActiveDate: invitations?.streak?.lastActiveDate ?? null,
       count: count,
     };
   }
@@ -151,13 +152,14 @@ export class UserService {
   async setStreak(userId: number) {
     const today = this.getCurrentTime();
     const streak = await this.getStreak(userId);
-    const oneDayInMs = 1000 * 60 * 60 * 24;
 
     if (streak) {
+      const diffDays = this.getDayDifference(today, streak.lastActiveDate);
       // streak가 있을 때
-      const diffDays = Math.floor(
-        (today.getTime() - streak.lastActiveDate.getTime()) / oneDayInMs,
-      );
+      // const oneDayInMs = 1000 * 60 * 60 * 24;
+      // const diffDays = Math.floor(
+      //   (today.getTime() - streak.lastActiveDate.getTime()) / oneDayInMs,
+      // );
       if (diffDays == 1) {
         streak.currentStreak = streak.currentStreak + 1;
       } else {
@@ -193,5 +195,20 @@ export class UserService {
 
     // UTC 시간에 KST 오프셋을 적용
     return new Date(today.getTime() + (localOffset + koreaOffset) * 60000);
+  }
+
+  isContinuous(lastActiveDate: Date | null): boolean {
+    if (!lastActiveDate) {
+      return false;
+    }
+    const today = this.getCurrentTime();
+    const diffDays = this.getDayDifference(today, lastActiveDate);
+    return !(diffDays > 1);
+  }
+  getDayDifference(today: Date, lastActiveDate: Date): number {
+    const oneDayInMs = 1000 * 60 * 60 * 24;
+    return Math.floor(
+      (today.getTime() - lastActiveDate.getTime()) / oneDayInMs,
+    );
   }
 }
