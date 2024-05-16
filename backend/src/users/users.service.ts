@@ -149,7 +149,7 @@ export class UserService {
   }
 
   async setStreak(userId: number) {
-    const today = new Date();
+    const today = this.getCurrentTime();
     const streak = await this.getStreak(userId);
     const oneDayInMs = 1000 * 60 * 60 * 24;
 
@@ -185,5 +185,13 @@ export class UserService {
     } catch (e) {
       console.log('getStreak error', e);
     }
+  }
+  getCurrentTime() {
+    const today = new Date();
+    const koreaOffset = 9 * 60; // KST는 UTC+9
+    const localOffset = today.getTimezoneOffset(); // 현재 로컬 시간대의 오프셋 (분 단위)
+
+    // UTC 시간에 KST 오프셋을 적용
+    return new Date(today.getTime() + (localOffset + koreaOffset) * 60000);
   }
 }
