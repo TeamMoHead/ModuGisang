@@ -16,7 +16,7 @@ const MEDAL_ICONS = {
   bronze: bronze,
 };
 
-const StreakContent = ({ isWaitingRoom, userData }) => {
+const StreakContent = ({ isWaitingRoom, userData, showMedals = true }) => {
   const [level, setLevel] = useState('streak0');
   const { myData } = useContext(UserContext);
   const { streakDays, medals: medalCounts } = isWaitingRoom ? userData : myData;
@@ -62,25 +62,29 @@ const StreakContent = ({ isWaitingRoom, userData }) => {
           </Days>
         </RightArea>
       </TopWrapper>
-      <SeperateLine $isWide={isWaitingRoom} />
-      <BottomWrapper>
-        <ChallengeRecordTitle>
-          <MediumLetter>챌린지 달성 기록</MediumLetter>
-        </ChallengeRecordTitle>
-        <Medals>
-          {['gold', 'silver', 'bronze'].map((medal, idx) => (
-            <MedalArea key={idx}>
-              {medalCounts[medal] > 0 && (
-                <MedalCount>{medalCounts[medal]}</MedalCount>
-              )}
-              <Medal
-                src={MEDAL_ICONS[medal]}
-                $hasMedal={medalCounts[medal] > 0}
-              />
-            </MedalArea>
-          ))}
-        </Medals>
-      </BottomWrapper>
+      {showMedals && (
+        <>
+          <SeperateLine $isWide={isWaitingRoom} />
+          <BottomWrapper>
+            <ChallengeRecordTitle>
+              <MediumLetter>챌린지 달성 기록</MediumLetter>
+            </ChallengeRecordTitle>
+            <Medals>
+              {['gold', 'silver', 'bronze'].map((medal, idx) => (
+                <MedalArea key={idx}>
+                  {medalCounts[medal] > 0 && (
+                    <MedalCount>{medalCounts[medal]}</MedalCount>
+                  )}
+                  <Medal
+                    src={MEDAL_ICONS[medal]}
+                    $hasMedal={medalCounts[medal] > 0}
+                  />
+                </MedalArea>
+              ))}
+            </Medals>
+          </BottomWrapper>
+        </>
+      )}
     </Wrapper>
   );
 };
@@ -90,6 +94,7 @@ const Wrapper = styled.div`
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
 `;
+
 const TopWrapper = styled.div`
   ${({ theme }) => theme.flex.between}
   width: 100%;

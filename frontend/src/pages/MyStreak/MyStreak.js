@@ -1,11 +1,14 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { NavBar, LongBtn } from '../../components';
+import { NavBar, LongBtn, OutlineBox } from '../../components';
 import { AccountContext, UserContext } from '../../contexts';
 import { challengeServices } from '../../apis';
+import { StreakContent } from '../Main/cardComponents';
 import useFetch from '../../hooks/useFetch';
 
 import * as S from '../../styles/common';
+import styled, { css } from 'styled-components';
+import { CARD_STYLES } from '../Main/DATA';
 
 const MyStreak = () => {
   const navigate = useNavigate();
@@ -34,12 +37,16 @@ const MyStreak = () => {
     <>
       <NavBar />
       <S.PageWrapper>
-        <div>유저이름: {userName}</div>
-        <div>연속일수: {streakDays}</div>
-        <div>금메달: {medals?.gold}</div>
-        <div>은메달: {medals?.silver}</div>
-        <div>동메달: {medals?.bronze}</div>
-        <div>오늘의한마디: {affirmation}</div>
+        <StreakCardWrapper
+          content={
+            <StreakContent
+              userData={myData}
+              isWaitingRoom={false}
+              showMedals={false}
+            />
+          }
+          boxStyle={CARD_STYLES.myStreak}
+        />
         <LongBtn
           onClickHandler={() => {
             handleClickOnDate({ accessToken, userId, date: '2024-05-09' });
@@ -52,3 +59,5 @@ const MyStreak = () => {
 };
 
 export default MyStreak;
+
+const StreakCardWrapper = styled(OutlineBox)``;

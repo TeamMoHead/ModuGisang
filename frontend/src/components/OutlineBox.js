@@ -59,7 +59,8 @@ const Wrapper = styled.div`
         content: '';
         position: absolute;
         inset: 0;
-        border-radius: ${({ theme }) => theme.radius.medium};
+        border-radius: ${({ $boxStyle, theme }) =>
+          $boxStyle?.borderRadius || theme.radius.medium};
         border: ${({ $boxStyle }) => ($boxStyle?.isBold ? '3px' : '1px')} solid
           transparent;
         background: ${({ theme }) => theme.gradient.largerPurple} border-box;
@@ -77,7 +78,8 @@ const Wrapper = styled.div`
         theme.colors.primary[$boxStyle?.lineColor]};
       border-width: ${({ $boxStyle }) => ($boxStyle?.isBold ? '3px' : '1px')};
       border-style: solid;
-      border-radius: ${({ theme }) => theme.radius.medium};
+      border-radius: ${({ $boxStyle, theme }) =>
+        $boxStyle?.borderRadius || theme.radius.medium};
     `};
 `;
 
