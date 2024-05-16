@@ -230,7 +230,7 @@ const Mission2 = () => {
             const deltaRightY = Math.abs(rightCheek.y - prevRightCheek.y);
             if (deltaRightX + deltaRightY > heightLip) {
               rightScore += 1;
-              console.log('----- rightScore:', rightScore);
+              // console.log('----- rightScore:', rightScore);
 
               if (rightScore === 6) {
                 setPaperImg(prevPaperImg => [
