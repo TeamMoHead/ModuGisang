@@ -23,12 +23,11 @@ import {
   yellow3,
   yellow4,
 } from '../../../assets/postit/index';
-import { RoundSoundEffect, MissionSoundEffects } from '../Sound';
 
 let topScore = 0;
 let leftScore = 0;
 let rightScore = 0;
-let targetNumber = 8;
+let targetNumber = 16;
 let prevTopEyebrow = null;
 let prevLeftCheek = null;
 let prevRightCheek = null;
@@ -138,7 +137,7 @@ const Mission2 = () => {
             if (deltaTopY > heightLip * 0.6) {
               topScore += 1;
 
-              if (topScore === 2) {
+              if (topScore === 4) {
                 setPaperImg(prevPaperImg => [
                   ...prevPaperImg.slice(0, 1),
                   {
@@ -149,7 +148,7 @@ const Mission2 = () => {
                 ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
-              } else if (topScore === 3) {
+              } else if (topScore === 6) {
                 setPaperImg(prevPaperImg => [
                   ...prevPaperImg.slice(0, 1),
                   {
@@ -187,7 +186,7 @@ const Mission2 = () => {
               leftScore += 1;
               // console.log('----- leftScore:', leftScore);
 
-              if (leftScore === 3) {
+              if (leftScore === 6) {
                 setPaperImg(prevPaperImg => [
                   {
                     imageUrl: pink2,
@@ -197,7 +196,7 @@ const Mission2 = () => {
                 ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
-              } else if (leftScore === 5) {
+              } else if (leftScore === 10) {
                 setPaperImg(prevPaperImg => [
                   {
                     imageUrl: pink3,
@@ -233,7 +232,7 @@ const Mission2 = () => {
               rightScore += 1;
               // console.log('----- rightScore:', rightScore);
 
-              if (rightScore === 3) {
+              if (rightScore === 6) {
                 setPaperImg(prevPaperImg => [
                   ...prevPaperImg.slice(0, 2),
                   {
@@ -243,7 +242,7 @@ const Mission2 = () => {
                 ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
-              } else if (rightScore === 5) {
+              } else if (rightScore === 10) {
                 setPaperImg(prevPaperImg => [
                   ...prevPaperImg.slice(0, 2),
                   {
