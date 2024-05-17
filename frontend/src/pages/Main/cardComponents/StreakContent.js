@@ -24,9 +24,9 @@ const StreakContent = ({ isWaitingRoom, userData }) => {
   const getStreakLevel = streakDays => {
     if (streakDays < 7) {
       return 'streak0';
-    } else if (streakDays >= 7 && streakDays <= 60) {
+    } else if (streakDays >= 7 && streakDays < 100) {
       return 'streak1';
-    } else if (streakDays >= 61 && streakDays <= 350) {
+    } else if (streakDays >= 100 && streakDays < 365) {
       return 'streak2';
     }
     // } else if (streakDays >= 61 && streakDays <= 90) {

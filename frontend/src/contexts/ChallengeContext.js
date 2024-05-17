@@ -25,7 +25,7 @@ const ChallengeContextProvider = ({ children }) => {
     // ],
   });
 
-  const getChallenge = async () => {
+  const getChallengeData = async () => {
     const response = await fetchData(() =>
       challengeServices.getChallengeInfo({
         accessToken,
@@ -96,7 +96,7 @@ const ChallengeContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (challengeId !== -1) {
-      getChallenge();
+      getChallengeData();
     }
   }, [challengeId]);
 
@@ -105,6 +105,7 @@ const ChallengeContextProvider = ({ children }) => {
       value={{
         challengeData,
         setChallengeData,
+        getChallengeData,
         handleCreateChallenge,
         handleAcceptInvitation,
       }}

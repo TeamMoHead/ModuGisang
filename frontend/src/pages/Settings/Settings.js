@@ -1,6 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AccountContext } from '../../contexts';
+import { AccountContext, ChallengeContext, UserContext } from '../../contexts';
 import { authServices, userServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
 import { NavBar, Icon, OutlineBox, LongBtn, InputBox } from '../../components';
@@ -8,17 +8,18 @@ import * as S from '../../styles/common';
 import styled from 'styled-components';
 
 const Settings = () => {
-  const [isLogoutLoading, setIsLogoutLoading] = useState(false);
-  const [affirmation, setAffirmation] = useState('');
+  const { fetchData } = useFetch();
+  const navigate = useNavigate();
+
+  const { getUserData } = useContext(UserContext);
+  const { challengeData } = useContext(ChallengeContext);
   const { accessToken, setAccessToken, setUserId, userId } =
     useContext(AccountContext);
 
+  const [isLogoutLoading, setIsLogoutLoading] = useState(false);
+  const [affirmation, setAffirmation] = useState('');
   const [wakeTime, setWakeTime] = useState('');
   const [challengeId, setChallengeId] = useState('');
-  const { challengeData } = useContext(AccountContext);
-
-  const { fetchData } = useFetch();
-  const navigate = useNavigate();
 
   const handleLogOut = async () => {
     setIsLogoutLoading(true);
@@ -86,6 +87,12 @@ const Settings = () => {
       alert(changeWakeTimeError);
     }
   };
+
+  useEffect(() => {
+    if (accessToken && userId) {
+      getUserData();
+    }
+  }, [challengeData]);
 
   return (
     <>
