@@ -1,37 +1,86 @@
-import React, { useRef, useContext, useEffect, useState } from 'react';
-import styled from 'styled-components';
+import React, { useContext, useEffect, useState } from 'react';
 import { MissionStarting, MissionEnding } from '../components';
-import { OpenViduContext, GameContext, UserContext } from '../../../contexts';
+import {
+  MediaPipeContext,
+  GameContext,
+  OpenViduContext,
+} from '../../../contexts';
 
-import useSpeechToText from '../MissionEstimators/useSpeechToText';
-import MissionSoundEffects from '../Sound/MissionSoundEffects';
+import styled from 'styled-components';
 import { Icon } from '../../../components';
 
+const round = {
+  0: { question: '8 X 6', answer: '48', wrong: '42', score: 5 },
+  1: { question: '13 X 13', answer: '169', wrong: '196', score: 7 },
+  2: { question: '23 X 17', answer: '391', wrong: '401', score: 8 },
+};
+
 const Mission5 = () => {
+  const { poseModel } = useContext(MediaPipeContext);
   const {
     isMissionStarting,
     isMissionEnding,
     inGameMode,
-    isRoundPassed,
-    setIsRoundPassed,
-
+    myMissionStatus,
     setMyMissionStatus,
+    setIsRoundPassed,
     setGameScore,
   } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
   const { transcript, stop, resetTranscript } = useSpeechToText(20);
   const [isCorrect, setIsCorrect] = useState(false);
   const [timeIndex, setTimeIndex] = useState(0);
+  const [rasingHand, setRasingHand] = useState();
+  const [currentRound, setCurrentRound] = useState(0);
+
+  const multipleGame = poseLandmarks => {
+    if (!poseLandmarks) return;
+  };
 
   useEffect(() => {
-    if (inGameMode !== 5 || !myVideoRef.current || isMissionStarting) {
+    if (
+      inGameMode !== 5 ||
+      !myVideoRef.current ||
+      !poseModel.current ||
+      isMissionStarting
+    ) {
       return;
     }
 
+    const videoElement = myVideoRef.current;
+    let animationFrameId;
+
+    poseModel.current.onResults(results => {
+      if (results.poseLandmarks) {
+        multipleGame(results.poseLandmarks);
+      }
+    });
+
+    const handleCanPlay = () => {
+      if (poseModel.current) {
+        poseModel.current.send({ image: videoElement }).then(() => {
+          animationFrameId = requestAnimationFrame(handleCanPlay);
+        });
+      }
+    };
+
+    if (videoElement.readyState >= 3) {
+      handleCanPlay();
+    } else {
+      videoElement.addEventListener('canplay', handleCanPlay);
+    }
+
+    return () => {
+      videoElement.removeEventListener('canplay', handleCanPlay);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [isMissionStarting, poseModel, inGameMode, myVideoRef, currentRound]);
+
+  useEffect(() => {
     const trimmedTranscript = transcript.trim();
     console.log('====MISSION5 ====> ', trimmedTranscript);
 
-    if (trimmedTranscript === timesTable[timeIndex].answer) {
+    if (trimmedTranscript === round[timeIndex].answer) {
       setIsCorrect(true);
       setIsRoundPassed(true);
 
@@ -73,7 +122,7 @@ const Mission5 = () => {
         <>
           <Wrapper>
             <FormulaWrapper>
-              <Formula>{timesTable[timeIndex].question} = ?</Formula>
+              <Formula>{round[timeIndex].question} = ?</Formula>
             </FormulaWrapper>
             {isCorrect && (
               <RoundPassStatus $isCorrect={isCorrect}>
@@ -141,12 +190,6 @@ const RoundPassStatus = styled.div`
       $isCorrect ? theme.colors.primary.emerald : theme.colors.system.red}
     4px;
 `;
-
-const timesTable = {
-  0: { question: '5 X 4', answer: '20' },
-  1: { question: '4 X 4', answer: '16' },
-  2: { question: '8 X 5', answer: '40' },
-};
 
 const CORRECT_ICON_STYLE = {
   size: 40,

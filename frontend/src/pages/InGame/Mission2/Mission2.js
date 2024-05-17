@@ -23,7 +23,6 @@ import {
   yellow3,
   yellow4,
 } from '../../../assets/postit/index';
-import { RoundSoundEffect, MissionSoundEffects } from '../Sound';
 
 let topScore = 0;
 let leftScore = 0;
