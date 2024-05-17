@@ -71,7 +71,7 @@ const checkMateAvailability = async ({ accessToken, email }) => {
   return await API.get(url, config);
 };
 
-const getCallendarInfo = async ({ accessToken, userId, month }) => {
+const getCalendarInfo = async ({ accessToken, userId, month }) => {
   const url = `/challenge/calendar/${userId}/${month}`;
   const config = {
     headers: { Authorization: `Bearer ${accessToken}` },
@@ -79,7 +79,7 @@ const getCallendarInfo = async ({ accessToken, userId, month }) => {
   return await API.get(url, config);
 };
 
-const getCallendarInfoByDate = async ({ accessToken, userId, date }) => {
+const getCalendarInfoByDate = async ({ accessToken, userId, date }) => {
   const url = `/challenge/${userId}/results/${date}`;
   const config = {
     headers: { Authorization: `Bearer ${accessToken}` },
@@ -102,7 +102,7 @@ export const challengeServices = {
   checkMateAvailability,
   getInvitationInfo,
   acceptInvitation,
-  getCallendarInfo,
-  getCallendarInfoByDate,
+  getCalendarInfo,
+  getCalendarInfoByDate,
   getConnectionToken,
 };

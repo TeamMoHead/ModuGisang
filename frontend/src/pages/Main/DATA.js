@@ -25,7 +25,7 @@ export const CARD_STYLES = {
   invitations: { isBold: true, lineColor: 'purple' },
   myStreak: { ...MYSTREAK_STYLE },
   myStreakChallenge: { ...MYSTREAK_STYLE },
-  myStreakCallendar: { ...MYSTREAK_STYLE },
+  myStreakCalendar: { ...MYSTREAK_STYLE },
 
   // create: { isBold: true, lineColor: 'gradient' },
   // enter: { isBold: true, lineColor: 'gradient' },

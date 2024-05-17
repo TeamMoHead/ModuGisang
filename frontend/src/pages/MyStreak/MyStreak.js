@@ -9,7 +9,7 @@ import useFetch from '../../hooks/useFetch';
 
 import * as S from '../../styles/common';
 import styled, { css } from 'styled-components';
-import { CARD_STYLES, HEADER_STYLES } from './DATA';
+import { CARD_STYLES, FOOTER_STYLES, HEADER_STYLES } from './DATA';
 
 const MyStreak = () => {
   const navigate = useNavigate();
@@ -20,21 +20,21 @@ const MyStreak = () => {
 
   const [isStreakLoading, setIsStreakLoading] = useState(false);
 
-  const getCallendar = async ({ accessToken, userId, month }) => {
+  const getCalendar = async ({ accessToken, userId, month }) => {
     const response = await fetchData(() =>
-      challengeServices.getCallendarInfo({ accessToken, userId, month }),
+      challengeServices.getCalendarInfo({ accessToken, userId, month }),
     );
-    console.log('getCallendar', response);
+    console.log('getCalendar', response);
   };
 
   const handleClickOnDate = async ({ accessToken, userId, date }) => {
     const response = await fetchData(() =>
-      challengeServices.getCallendarInfoByDate({ accessToken, userId, date }),
+      challengeServices.getCalendarInfoByDate({ accessToken, userId, date }),
     );
   };
 
   useEffect(() => {
-    getCallendar({ accessToken, userId, month: 5 });
+    getCalendar({ accessToken, userId, month: 5 });
   }, []);
 
   if (isStreakLoading) {
@@ -69,8 +69,8 @@ const MyStreak = () => {
         />
         <CalendarCardWrapper
           content={<MyStreakCalendar />}
-          header={HEADER_STYLES.myStreakCallendar}
-          boxStyle={CARD_STYLES.myStreakCallendar}
+          header={HEADER_STYLES.myStreakCalendar}
+          boxStyle={CARD_STYLES.myStreakCalendar}
         />
       </S.PageWrapper>
     </>

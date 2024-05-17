@@ -1,4 +1,5 @@
 import theme from '../../styles/theme';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const MYSTREAK_STYLE = {
   isBold: false,
@@ -9,7 +10,7 @@ const MYSTREAK_STYLE = {
 export const CARD_STYLES = {
   myStreak: { ...MYSTREAK_STYLE },
   myStreakChallenge: { ...MYSTREAK_STYLE },
-  myStreakCallendar: { ...MYSTREAK_STYLE },
+  myStreakCalendar: { ...MYSTREAK_STYLE },
 };
 
 export const HEADER_STYLES = {
@@ -23,7 +24,7 @@ export const HEADER_STYLES = {
       borderRadius: '20px 20px 0 0',
     },
   },
-  myStreakCallendar: {
+  myStreakCalendar: {
     text: '일자별 기록',
     style: {
       font: 'IBMmediumlarge',
@@ -31,6 +32,16 @@ export const HEADER_STYLES = {
       bgColor: 'purple',
       hasBackground: false,
       borderRadius: '20px 20px 0 0',
+    },
+  },
+};
+
+export const FOOTER_STYLES = {
+  myStreakCalendar: {
+    style: {
+      font: 'IBMmediumlarge',
+      fontColor: 'purple',
+      bgColor: 'purple',
     },
   },
 };

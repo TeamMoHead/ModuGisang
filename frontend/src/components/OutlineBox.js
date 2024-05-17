@@ -124,7 +124,7 @@ const Footer = styled.div`
   text-align: center;
 
   border-radius: ${({ theme, $footerStyle }) =>
-    $footerStyle?.borderRadius || `30px 30px 0 0`};
+    $footerStyle?.borderRadius || `0 0 30px 30px`};
 
   ${({ theme, $footerStyle }) => theme.fonts[$footerStyle?.font]};
 
