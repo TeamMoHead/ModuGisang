@@ -137,9 +137,6 @@ export class UserService {
       where: { _id: userId },
       relations: ['invitations', 'streak'],
     });
-    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-    console.log('invi in get invis is ', invitations);
-    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
 
     const count = invitations?.invitations.filter(
       (invitation) => !invitation.isExpired,
