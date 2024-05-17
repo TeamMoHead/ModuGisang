@@ -40,7 +40,7 @@ export class AuthService {
   // refreshToken 생성
   async generateRefreshToken(_id: number): Promise<string> {
     const result = await this.jwtService.signAsync(
-      { id: _id },
+      { _id: _id }, // id 값 변경?
       {
         secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),
         expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXP'),
@@ -98,7 +98,7 @@ export class AuthService {
     }
     const payload = {
       sub: userFind._id,
-      id: userFind._id,
+      _id: userFind._id,
       username: userFind.userName,
     };
     return this.jwtService.signAsync(payload, {

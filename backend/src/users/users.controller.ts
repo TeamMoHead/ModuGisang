@@ -57,8 +57,14 @@ export class UserController {
 
   @UseGuards(AuthenticateGuard)
   @Get('/:userId')
-  async searchUser(@Param('userId') userId: number) {
+  async searchUser(@Req() req, @Param('userId') userId: number) {
     const result = await this.userService.getInvis(userId);
+
+    console.log('=====================');
+    console.log('req.user is ', req.user);
+    console.log('result is ', result);
+    console.log('=====================');
+
     const invitations = result.invitations;
     const lastActiveDate = result.lastActiveDate;
     const isCountinue = this.userService.isContinuous(lastActiveDate);

@@ -135,9 +135,15 @@ export class ChallengesService {
         date: Between(startDate, endDate),
       },
     });
-    return attendances.map(
-      (attendance) => attendance.date.toISOString().split('T')[0],
-    ); // 날짜만 반환
+    console.log(attendances);
+    return attendances.map((attendance) => {
+      // attendance.date가 Date 객체인지 확인하고, 그렇지 않다면 변환
+      const date = new Date(attendance.date);
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date format');
+      }
+      return date.toISOString().split('T')[0];
+    }); // 날짜만 반환
   }
 
   async getInvitations(guestId: number) {
