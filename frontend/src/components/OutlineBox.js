@@ -89,7 +89,8 @@ const Header = styled.div`
   justify-self: center;
   text-align: center;
 
-  border-radius: 30px 30px 0 0;
+  border-radius: ${({ theme, $headerStyle }) =>
+    $headerStyle?.borderRadius || `30px 30px 0 0`};
 
   ${({ theme, $headerStyle }) => theme.fonts[$headerStyle?.font]};
 
@@ -101,5 +102,5 @@ const Header = styled.div`
 
   border: ${({ theme, $headerStyle }) =>
     $headerStyle?.hasBackground ||
-    `3px solid ${theme.colors.primary[$headerStyle?.bgColor]}`};
+    `1px solid ${theme.colors.primary[$headerStyle?.bgColor]}`};
 `;

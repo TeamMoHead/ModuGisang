@@ -4,12 +4,13 @@ import { NavBar, LongBtn, OutlineBox, LoadingWithText } from '../../components';
 import { AccountContext, UserContext } from '../../contexts';
 import { challengeServices } from '../../apis';
 import { StreakContent } from '../Main/cardComponents';
+import { MyChallengeContent } from './cardComponents';
 import useFetch from '../../hooks/useFetch';
 
 import * as S from '../../styles/common';
 import styled, { css } from 'styled-components';
-import { CARD_STYLES } from '../Main/DATA';
-import Calendar from 'react-calendar';
+import { CARD_STYLES, HEADER_STYLES } from './DATA';
+import { CustomCalendar } from '../../components';
 
 const MyStreak = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const MyStreak = () => {
     const response = await fetchData(() =>
       challengeServices.getCallendarInfo({ accessToken, userId, month }),
     );
+    console.log('getCallendar', response);
   };
 
   const handleClickOnDate = async ({ accessToken, userId, date }) => {
@@ -33,7 +35,7 @@ const MyStreak = () => {
   };
 
   useEffect(() => {
-    getCallendar({ accessToken, userId, month: 4 });
+    getCallendar({ accessToken, userId, month: 5 });
   }, []);
 
   if (isStreakLoading) {
@@ -61,16 +63,15 @@ const MyStreak = () => {
           }
           boxStyle={CARD_STYLES.myStreak}
         />
-        <ChallengeCardWrapper boxStyle={CARD_STYLES.myStreakChallenge} />
-        <CalendarCardWrapper
-          content={<Calendar />}
-          boxStyle={CARD_STYLES.myStreakCallendar}
+        <ChallengeCardWrapper
+          boxStyle={CARD_STYLES.myStreakChallenge}
+          header={HEADER_STYLES.myStreakChallenge}
+          content={<MyChallengeContent />}
         />
-        <LongBtn
-          onClickHandler={() => {
-            handleClickOnDate({ accessToken, userId, date: '2024-05-09' });
-          }}
-          btnName="5월 9일 확인하기"
+        <CalendarCardWrapper
+          content={<CustomCalendar />}
+          header={HEADER_STYLES.myStreakCallendar}
+          boxStyle={CARD_STYLES.myStreakCallendar}
         />
       </S.PageWrapper>
     </>
