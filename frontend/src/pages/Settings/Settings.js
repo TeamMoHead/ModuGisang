@@ -11,7 +11,7 @@ const Settings = () => {
   const { fetchData } = useFetch();
   const navigate = useNavigate();
 
-  const { getUserData } = useContext(UserContext);
+  const { getMyData } = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
   const { accessToken, setAccessToken, setUserId, userId } =
     useContext(AccountContext);
@@ -90,7 +90,7 @@ const Settings = () => {
 
   useEffect(() => {
     if (accessToken && userId) {
-      getUserData();
+      getMyData();
     }
   }, [challengeData]);
 

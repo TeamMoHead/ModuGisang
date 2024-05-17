@@ -74,8 +74,6 @@ const NavBar = () => {
     }
   }, [params]);
 
-  console.log(pageType, hasLeftBtn, hasRightBtn);
-
   return (
     <Wrapper $hasLeftBtn={hasLeftBtn} $hasRightBtn={hasRightBtn}>
       {hasLeftBtn && (
