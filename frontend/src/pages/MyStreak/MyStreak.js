@@ -4,13 +4,12 @@ import { NavBar, LongBtn, OutlineBox, LoadingWithText } from '../../components';
 import { AccountContext, UserContext } from '../../contexts';
 import { challengeServices } from '../../apis';
 import { StreakContent } from '../Main/cardComponents';
-import { MyChallengeContent } from './cardComponents';
+import { MyChallengeContent, MyStreakCalendar } from './cardComponents';
 import useFetch from '../../hooks/useFetch';
 
 import * as S from '../../styles/common';
 import styled, { css } from 'styled-components';
 import { CARD_STYLES, HEADER_STYLES } from './DATA';
-import { CustomCalendar } from '../../components';
 
 const MyStreak = () => {
   const navigate = useNavigate();
@@ -69,7 +68,7 @@ const MyStreak = () => {
           content={<MyChallengeContent />}
         />
         <CalendarCardWrapper
-          content={<CustomCalendar />}
+          content={<MyStreakCalendar />}
           header={HEADER_STYLES.myStreakCallendar}
           boxStyle={CARD_STYLES.myStreakCallendar}
         />

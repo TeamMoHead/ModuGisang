@@ -1,3 +1,4 @@
 import MyChallengeContent from './MyChallengeContent';
+import MyStreakCalendar from './MyStreakCalendar';
 
-export { MyChallengeContent };
+export { MyChallengeContent, MyStreakCalendar };
