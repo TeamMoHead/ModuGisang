@@ -140,24 +140,28 @@ export class UserService {
     const count = invitations?.invitations.filter(
       (invitation) => !invitation.isExpired,
     ).length; // 초대받은 챌린지의 수
+    const currentStreak = invitations?.streak?.currentStreak ?? 0;
     return {
       invitations: invitations,
-      currentStreak: invitations.streak.currentStreak,
+      currentStreak: currentStreak,
+      lastActiveDate: invitations?.streak?.lastActiveDate ?? null,
       count: count,
     };
   }
 
   async setStreak(userId: number) {
-    const today = new Date();
+    const today = this.getCurrentTime();
     const streak = await this.getStreak(userId);
-    const oneDayInMs = 1000 * 60 * 60 * 24;
 
     if (streak) {
+      const diffDays = this.getDayDifference(today, streak.lastActiveDate);
       // streak가 있을 때
-      const diffDays = Math.floor(
-        (today.getTime() - streak.lastActiveDate.getTime()) / oneDayInMs,
-      );
-      if (diffDays == 1) {
+      // const oneDayInMs = 1000 * 60 * 60 * 24;
+      // const diffDays = Math.floor(
+      //   (today.getTime() - streak.lastActiveDate.getTime()) / oneDayInMs,
+      // );
+      if (diffDays <= 1) {
+        // 당일 또는 어제 한 경우 스트릭 증가 -> 당일에 두번하는 경우는 실제로 없으니 나중에 바꾸기
         streak.currentStreak = streak.currentStreak + 1;
       } else {
         streak.currentStreak = 1;
@@ -184,5 +188,28 @@ export class UserService {
     } catch (e) {
       console.log('getStreak error', e);
     }
+  }
+  getCurrentTime() {
+    const today = new Date();
+    const koreaOffset = 9 * 60; // KST는 UTC+9
+    const localOffset = today.getTimezoneOffset(); // 현재 로컬 시간대의 오프셋 (분 단위)
+
+    // UTC 시간에 KST 오프셋을 적용
+    return new Date(today.getTime() + (localOffset + koreaOffset) * 60000);
+  }
+
+  isContinuous(lastActiveDate: Date | null): boolean {
+    if (!lastActiveDate || lastActiveDate === null) {
+      return false;
+    }
+    const today = this.getCurrentTime();
+    const diffDays = this.getDayDifference(today, lastActiveDate);
+    return !(diffDays > 1);
+  }
+  getDayDifference(today: Date, lastActiveDate: Date): number {
+    const oneDayInMs = 1000 * 60 * 60 * 24;
+    return Math.floor(
+      (today.getTime() - lastActiveDate.getTime()) / oneDayInMs,
+    );
   }
 }
