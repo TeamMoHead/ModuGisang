@@ -16,7 +16,7 @@ export const HEADER_STYLES = {
   myStreakChallenge: {
     text: '챌린지 달성 기록',
     style: {
-      font: 'IBMlarge',
+      font: 'IBMmediumlarge',
       fontColor: 'purple',
       bgColor: 'purple',
       hasBackground: false,
@@ -26,7 +26,7 @@ export const HEADER_STYLES = {
   myStreakCallendar: {
     text: '일자별 기록',
     style: {
-      font: 'IBMlarge',
+      font: 'IBMmediumlarge',
       fontColor: 'purple',
       bgColor: 'purple',
       hasBackground: false,

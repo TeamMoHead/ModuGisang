@@ -18,7 +18,15 @@ const headerSample = {
   },
 };
 
-const OutlineBox = ({ boxStyle, header, content, onClickHandler }) => {
+const footerSample = {
+  text: '더보기',
+  style: {
+    font: 'IBMmedium',
+    fontColor: 'purple',
+  },
+};
+
+const OutlineBox = ({ boxStyle, header, content, footer, onClickHandler }) => {
   const isClickable = !!onClickHandler;
 
   return (
@@ -39,6 +47,10 @@ const OutlineBox = ({ boxStyle, header, content, onClickHandler }) => {
       )}
 
       {content}
+
+      {footer !== undefined && (
+        <Footer $footerStyle={footer?.style}>{footer?.text}</Footer>
+      )}
     </Wrapper>
   );
 };
@@ -103,4 +115,26 @@ const Header = styled.div`
   border: ${({ theme, $headerStyle }) =>
     $headerStyle?.hasBackground ||
     `1px solid ${theme.colors.primary[$headerStyle?.bgColor]}`};
+`;
+
+const Footer = styled.div`
+  padding: 12px;
+  align-self: center;
+  justify-self: center;
+  text-align: center;
+
+  border-radius: ${({ theme, $footerStyle }) =>
+    $footerStyle?.borderRadius || `30px 30px 0 0`};
+
+  ${({ theme, $footerStyle }) => theme.fonts[$footerStyle?.font]};
+
+  color: ${({ $footerStyle, theme }) =>
+    $footerStyle && theme.colors.primary[$footerStyle?.fontColor]};
+
+  background-color: ${({ $footerStyle, theme }) =>
+    $footerStyle?.hasBackground && theme.colors.primary[$footerStyle?.bgColor]};
+
+  border: ${({ theme, $footerStyle }) =>
+    $footerStyle?.hasBackground ||
+    `1px solid ${theme.colors.primary[$footerStyle?.bgColor]}`};
 `;

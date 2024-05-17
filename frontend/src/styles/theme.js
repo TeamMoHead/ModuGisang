@@ -46,6 +46,11 @@ const fonts = {
     line-height: 34px;
     letter-spacing: -2.5%;
   `,
+  IBMmediumlarge: css`
+    font: 20px 'IBM Plex Sans KR';
+    line-height: 30px;
+    letter-spacing: -2.5%;
+  `,
   IBMmedium: css`
     font: 18px 'IBM Plex Sans KR';
     line-height: 0px;

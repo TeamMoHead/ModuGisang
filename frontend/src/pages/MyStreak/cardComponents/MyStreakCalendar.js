@@ -1,12 +1,11 @@
 import Calendar from 'react-calendar';
-import '../../../styles/MyStreakCalendar.css';
 import dayjs from 'dayjs';
 import styled from 'styled-components';
 
 const MyStreakCalendar = ({ startDate, handleDateChange, tileClassName }) => {
   return (
     <MyStreakCalendarWrapper>
-      <Calendar
+      <StyledMyStreakCalendar
         locale="ko"
         calendarType={'hebrew'}
         prev2Label={null}
@@ -33,4 +32,10 @@ const CalendarArrow = styled.div`
 const MyStreakCalendarWrapper = styled.div`
   ${({ theme }) => theme.flex.center}
   padding: 24px;
+`;
+
+const StyledMyStreakCalendar = styled(Calendar)`
+  .react-calendar__tile {
+    font-size: 16px;
+  }
 `;
