@@ -184,6 +184,7 @@ const OpenViduContextProvider = ({ children }) => {
         mateVideoRefs,
         mateStreams,
         sendMissionStatus,
+        setMicOn,
       }}
     >
       {children}

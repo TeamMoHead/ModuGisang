@@ -37,29 +37,22 @@ export class OpenviduService {
 
     if (!session) {
       throw new HttpException('Session not found', HttpStatus.NOT_FOUND);
-    } else {
-      try {
-        const tokenOptions = {
-          data: `{"userId": "${body.userData.userId}", "userName": "${body.userData.userName}"}`,
-          role: OpenViduRole.PUBLISHER,
-        };
-        const response = await session.generateToken(tokenOptions);
-        console.log('Generated Token: ', response);
-        if (response != null) {
-          return response;
-        } else {
-          throw new HttpException(
-            'Token generation failed',
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-        }
-      } catch (error) {
-        console.error('Error creating connection: ', error);
-        throw new HttpException(
-          'Error creating connection: ' + error.message,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
+    }
+    const tokenOptions = {
+      data: `{"userId": "${body.userData.userId}", "userName": "${body.userData.userName}"}`,
+      role: OpenViduRole.PUBLISHER,
+    };
+
+    try {
+      const response = await session.generateToken(tokenOptions);
+      console.log('Generated Token: ', response);
+      return response;
+    } catch (error) {
+      console.error('Error creating connection: ', error);
+      throw new HttpException(
+        'Error creating connection: ' + error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 

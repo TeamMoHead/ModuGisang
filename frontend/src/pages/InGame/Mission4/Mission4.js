@@ -17,7 +17,7 @@ const Mission4 = () => {
     setIsRoundPassed,
     setMyMissionStatus,
   } = useContext(GameContext);
-  const { myStream } = useContext(OpenViduContext);
+  const { myStream, setMicOn } = useContext(OpenViduContext);
 
   const [stream, setStream] = useState(null);
   const [decibels, setDecibels] = useState(0); // 데시벨 상태
@@ -36,8 +36,8 @@ const Mission4 = () => {
     if (!myStream) {
       return;
     }
-    const actualStream = myStream.stream.getMediaStream();
-    setStream(actualStream);
+    //const actualStream = myStream.stream.getMediaStream();
+    initializeStream();
 
     return () => {
       stopAudioStream();
@@ -58,6 +58,7 @@ const Mission4 = () => {
       if (elapsedSeconds > TIME_LIMIT) {
         clearInterval(intervalId);
         setIsGameOver(true);
+        micSetting(true);
       }
     }, 1000);
 
@@ -102,6 +103,7 @@ const Mission4 = () => {
         clearInterval(intervalId);
         setMyMissionStatus(true);
         setIsRoundPassed(true);
+        micSetting(true);
 
         return;
       }
@@ -120,6 +122,10 @@ const Mission4 = () => {
       stream.getTracks().forEach(track => track.stop());
       setStream(null);
     }
+  }
+  function micSetting(state) {
+    myStream.publishAudio(state);
+    setMicOn(state);
   }
 
   function updateGameScore(remainingTime) {
@@ -146,6 +152,25 @@ const Mission4 = () => {
     setSunPositionY(newSunPositionY);
   }
 
+  async function getAudioStream() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: false,
+      });
+      return stream;
+    } catch (error) {
+      console.error('Error accessing audio stream', error);
+    }
+  }
+
+  async function initializeStream() {
+    const audioStream = await getAudioStream();
+    if (audioStream) {
+      setStream(audioStream);
+      micSetting(false);
+    }
+  }
   return (
     <>
       <MissionStarting />
