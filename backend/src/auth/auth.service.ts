@@ -58,10 +58,12 @@ export class AuthService {
       });
       const userId = decodedRefreshToken.id;
       console.log('@@@@ refresh 해석 userId : ', userId);
+      
       const user = await this.userService.getUserIfRefreshTokenMatches(
         refreshToken,
         userId,
       );
+
       if (!user) {
         throw new UnauthorizedException('Invalid user!');
       }
@@ -73,8 +75,19 @@ export class AuthService {
         userId: userId,
       };
     } catch (err) {
-      console.error('Error during token refresh:', err);
-      throw new UnauthorizedException(err);
+      if (err.name === 'JsonWebTokenError') {
+        // JWT 형식 오류
+        console.error('Invalid JWT token:', err.message);
+        throw new UnauthorizedException('Invalid token format!');
+      } else if (err.name === 'TokenExpiredError') {
+        // JWT 만료 오류
+        console.error('Expired JWT token:', err.message);
+        throw new UnauthorizedException('Token has expired!');
+      } else {
+        // 기타 오류
+        console.error('Error during token refresh:', err);
+        throw new UnauthorizedException('Could not refresh token!');
+      }
     }
   }
 
