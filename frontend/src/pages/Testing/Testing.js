@@ -17,6 +17,7 @@ const Testing = () => {
 
   useEffect(() => {
     socket.current = io('http://localhost:5001', {
+      query: { userId },
       transports: ['websocket'],
       cors: {
         origin: '*',
@@ -28,6 +29,11 @@ const Testing = () => {
       socket.current.emit('JOIN_ROOM', { challengeId, userId });
     });
 
+    socket.current.on('ROOM_STATUS', data => {
+      console.log('Room status');
+      console.log(data);
+    });
+
     socket.current.on('ALL_LOADED', () => {
       setIsAllLoaded(true);
     });
@@ -37,7 +43,7 @@ const Testing = () => {
       setCurrentMission(data.mission);
     });
 
-    socket.current.on('MISSIONS_COMPLETE', () => {
+    socket.current.on('MISSION_COMPLETE', () => {
       alert('All missions completed!');
       socket.current.emit('GET_RANKINGS', { challengeId });
     });
@@ -53,9 +59,9 @@ const Testing = () => {
       setRankings(data);
     });
 
-    // return () => {
-    //   socket.current.disconnect();
-    // };
+    return () => {
+      socket.current.disconnect();
+    };
   }, [challengeId, userId]);
 
   useEffect(() => {
@@ -74,13 +80,17 @@ const Testing = () => {
     console.log('MediaPipe loading complete');
     setIsMediaPipeLoaded(true);
     console.log('Client ID:', socket.current.id);
-    socket.current.emit('SET_LOADING_STATUS', { challengeId, status: true });
+    socket.current.emit('SET_LOADING_STATUS', {
+      challengeId,
+      status: true,
+      userId,
+    });
   };
 
   const completeMission = score => {
     console.log('Completing mission');
     console.log('Client ID:', socket.current.id);
-    socket.current.emit('COMPLETE_MISSION', { challengeId, score });
+    socket.current.emit('COMPLETE_MISSION', { challengeId, score, userId });
   };
 
   const reconnect = () => {

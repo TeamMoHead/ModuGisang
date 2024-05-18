@@ -214,16 +214,18 @@ const ProgressIndicator = styled.div`
 
 const Introduction = styled.div`
   ${({ theme }) => theme.flex.left};
+  align-items: center;
 `;
 
 const StatusIcon = styled.div`
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  margin-right: 8px;
+  margin: 0 8px 8px 0;
 
   background-color: ${({ $isLoaded, theme }) =>
     $isLoaded ? theme.colors.primary.emerald : theme.colors.system.red};
+  opacity: ${({ $isLoaded }) => ($isLoaded ? 1 : 0.5)};
 `;
 
 const Instruction = styled.p`

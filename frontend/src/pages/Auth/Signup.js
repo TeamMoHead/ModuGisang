@@ -61,6 +61,7 @@ const Signup = () => {
       <Title>이메일 주소</Title>
       <EmailBox>
         <InputBox
+          hasIcon={false}
           type="email"
           value={email}
           onChange={handleEmailChange}
@@ -107,6 +108,7 @@ const Signup = () => {
       {/*  */}
       <Title>비밀번호</Title>
       <InputBox
+        hasIcon={false}
         type="password"
         value={password}
         onChange={handlePasswordChange}
@@ -114,6 +116,7 @@ const Signup = () => {
       {/*  */}
       <Title>비밀번호 확인</Title>
       <InputBox
+        hasIcon={false}
         type="password"
         value={checkPassword}
         onChange={handleCheckPasswordChange}
@@ -142,77 +145,6 @@ const Signup = () => {
         }
         disabled={isSamePassword}
       />
-      {/* <form>
-        <InputBox
-          label="Email"
-          type="email"
-          value={email}
-          onChange={handleEmailChange}
-          disabled={isEmailChecked}
-        />
-        <LongBtn
-          onClickHandler={async e =>
-            await handleCheckEmail({
-              e,
-              email,
-              setIsEmailChecked,
-              setIsEmailCheckLoading,
-            })
-          }
-          disabled={isEmailChecked}
-          btnName="중복 체크"
-          style={{ backgroundColor: isEmailChecked ? 'gray' : 'white' }}
-        />
-        <InputBox
-          label="Code"
-          type="password"
-          value={verifyCode}
-          onChange={handleVerifyCodeChange}
-          disabled={isVerifyCodeChecked}
-        />
-        <LongBtn
-          type="button"
-          onClickHandler={async e =>
-            await handleCheckVerifyCode({
-              e,
-              verifyCode,
-              email,
-              setIsVerifyCodeCheckLoading,
-              setIsVerifyCodeChecked,
-            })
-          }
-          disabled={isVerifyCodeChecked}
-          btnName="인증번호 확인"
-          style={{ backgroundColor: isVerifyCodeChecked ? 'gray' : 'white' }}
-        />
-        <InputBox
-          label="Username"
-          type="text"
-          value={userName}
-          onChange={handleUserNameChange}
-        />
-        <InputBox
-          label="Password"
-          type="password"
-          value={password}
-          onChange={handlePasswordChange}
-        />
-        <LongBtn
-          type="submit"
-          btnName="회원가입"
-          onClickHandler={async e =>
-            await handleSubmitSignUp({
-              e,
-              email,
-              password,
-              userName,
-              isEmailChecked,
-              isVerifyCodeChecked,
-              setIsSignUpLoading,
-            })
-          }
-        />
-      </form> */}
     </S.PageWrapper>
   );
 };

@@ -20,7 +20,7 @@ export class Challenges {
   @JoinColumn({ name: 'host_id' })
   host: Users;
 
-  @Column({ name: 'host_id', unique: true })
+  @Column({ name: 'host_id' })
   hostId: number;
 
   @Column({ type: 'timestamp', name: 'start_date' })
@@ -32,9 +32,13 @@ export class Challenges {
   @Column({ name: 'duration_days' })
   duration: number;
 
-  @OneToMany(() => Attendance, (attendance) => attendance.challenge)
+  @OneToMany(() => Attendance, (attendance) => attendance.challenge, {
+    cascade: true,
+  })
   attendances: Attendance[];
 
-  @OneToMany(() => Invitations, (invitation) => invitation.challenge)
+  @OneToMany(() => Invitations, (invitation) => invitation.challenge, {
+    cascade: true,
+  })
   invitations: Invitations[];
 }

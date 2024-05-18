@@ -13,13 +13,13 @@ export class AttendanceService {
     this.attandanceRepository = attandanceRepository;
   }
 
-  async attend(scoreDto: ScoreDto) {
+  async attend(scoreDto: ScoreDto, redisScore: number) {
     try {
       const date = new Date();
       const attendance = new Attendance();
       attendance.userId = scoreDto.userId;
       attendance.challengeId = scoreDto.challengeId;
-      attendance.score = scoreDto.score;
+      attendance.score = redisScore;
       attendance.date = date;
       await this.attandanceRepository.save(attendance);
     } catch (e) {
