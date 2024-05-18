@@ -1,5 +1,4 @@
 import theme from '../../styles/theme';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const MYSTREAK_STYLE = {
   isBold: false,
@@ -42,6 +41,7 @@ export const FOOTER_STYLES = {
       font: 'IBMmediumlarge',
       fontColor: 'purple',
       bgColor: 'purple',
+      borderRadius: '0 0 20px 20px',
     },
   },
 };

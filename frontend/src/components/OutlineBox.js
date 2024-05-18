@@ -26,7 +26,14 @@ const footerSample = {
   },
 };
 
-const OutlineBox = ({ boxStyle, header, content, footer, onClickHandler }) => {
+const OutlineBox = ({
+  boxStyle,
+  header,
+  content,
+  footer,
+  footerContent,
+  onClickHandler,
+}) => {
   const isClickable = !!onClickHandler;
 
   return (
@@ -49,7 +56,7 @@ const OutlineBox = ({ boxStyle, header, content, footer, onClickHandler }) => {
       {content}
 
       {footer !== undefined && (
-        <Footer $footerStyle={footer?.style}>{footer?.text}</Footer>
+        <Footer $footerStyle={footer?.style}>{footerContent}</Footer>
       )}
     </Wrapper>
   );

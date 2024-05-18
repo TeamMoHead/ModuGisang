@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { NavBar, OutlineBox, LoadingWithText } from '../../components';
+import { NavBar, OutlineBox, LoadingWithText, LongBtn } from '../../components';
 import { AccountContext, UserContext } from '../../contexts';
 import { challengeServices } from '../../apis';
 import { StreakContent } from '../Main/cardComponents';
@@ -44,6 +44,12 @@ const MyStreak = () => {
     const response = await fetchData(() =>
       challengeServices.getCalendarInfoByDate({ accessToken, userId, date }),
     );
+    const {
+      isLoading: isGetCalendarByDateLoading,
+      data: getCalendarByDateData,
+      error: getCalendarByDateError,
+    } = response;
+    console.log(getCalendarByDateData);
   };
 
   const handleActiveStartDateChange = ({ activeStartDate, view }) => {
@@ -102,7 +108,13 @@ const MyStreak = () => {
           header={HEADER_STYLES.myStreakCalendar}
           boxStyle={CARD_STYLES.myStreakCalendar}
           footer={FOOTER_STYLES.myStreakCalendar}
-          footerContent={<ChallengeHistoryContent></ChallengeHistoryContent>}
+          // footerContent={<ChallengeHistoryContent />}
+        />
+        <LongBtn
+          onClickHandler={() => {
+            handleClickOnDate({ accessToken, userId, date: '2024-05-17' });
+          }}
+          btnName="5월 9일 확인하기"
         />
       </S.PageWrapper>
     </>
