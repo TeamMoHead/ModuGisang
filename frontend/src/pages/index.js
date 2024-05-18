@@ -5,6 +5,7 @@ import MyStreak from './MyStreak/MyStreak';
 import JoinChallenge from './JoinChallenge/JoinChallenge';
 import CreateChallenge from './CreateChallenge/CreateChallenge';
 import Settings from './Settings/Settings';
+import Testing from './Testing/Testing';
 
 export {
   Main,
@@ -14,4 +15,5 @@ export {
   JoinChallenge,
   CreateChallenge,
   Settings,
+  Testing,
 };

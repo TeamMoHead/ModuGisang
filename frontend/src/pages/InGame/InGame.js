@@ -78,18 +78,7 @@ const InGame = () => {
     //     navigate('/main');
     //   }
     // }
-
     // console.log('inGameMode:', inGameMode);
-
-    return () => {
-      // localStorage.removeItem('inGameMode');
-      if (myVideoRef.current) {
-        if (myStream instanceof MediaStream) {
-          myStream.getTracks().forEach(track => track.stop());
-          myVideoRef.current.srcObject = null;
-        }
-      }
-    };
   }, [inGameMode, isTooEarly, isTooLate, redirected]);
 
   useEffect(() => {
@@ -121,6 +110,13 @@ const InGame = () => {
       setIsHolisticLoaded(false);
       setIsHolisticInitialized(false);
       setIsWarmUpDone(false);
+
+      if (myVideoRef.current) {
+        if (myStream instanceof MediaStream) {
+          myStream.getTracks().forEach(track => track.stop());
+          myVideoRef.current.srcObject = null;
+        }
+      }
     };
   }, []);
 
