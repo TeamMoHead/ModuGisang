@@ -14,6 +14,7 @@ const WarmUpModel = () => {
     poseModel,
     holisticModel,
     initializePoseModel,
+    setIsWarmUpDone,
     isWarmUpDone,
   } = useContext(MediaPipeContext);
 
@@ -96,6 +97,13 @@ const WarmUpModel = () => {
       holisticImageRef.current = image;
     };
   }, [holisticModel, holisticCanvasRef, isHolisticLoaded]);
+
+  useEffect(() => {
+    if (isPoseInitialized && isHolisticInitialized) {
+      console.log('=========Warm up is done!===========');
+      setIsWarmUpDone(true);
+    }
+  }, [isPoseInitialized, isHolisticInitialized]);
 
   useEffect(() => {
     if (

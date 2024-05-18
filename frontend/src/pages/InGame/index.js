@@ -1,3 +1,4 @@
+import LoadModel from './LoadModel/LoadModel';
 import Waiting from './Waiting/Waiting';
 import Mission1 from './Mission1/Mission1';
 import Mission2 from './Mission2/Mission2';
@@ -8,6 +9,7 @@ import Affirmation from './Affirmation/Affirmation';
 import Result from './Result/Result';
 
 export {
+  LoadModel,
   Waiting,
   Mission1,
   Mission2,

@@ -4,6 +4,7 @@ import { GameContext, OpenViduContext } from '../../../contexts';
 import { LoadingWithText } from '../../../components';
 
 import {
+  LoadModel,
   Waiting,
   Mission1,
   Mission2,
@@ -16,6 +17,7 @@ import {
 import styled from 'styled-components';
 
 const GAME_MODE = {
+  100: 'loadModel',
   0: 'waiting',
   1: 'mission1',
   2: 'mission2',
@@ -27,6 +29,7 @@ const GAME_MODE = {
 };
 
 const GAME_MODE_COMPONENTS = {
+  100: <LoadModel />,
   0: <Waiting />,
   1: <Mission1 />,
   2: <Mission2 />,
@@ -64,6 +67,8 @@ const MyVideo = () => {
     };
   }, [myVideoRef]);
 
+  console.log('=========GameMode:: MyVideo=====', inGameMode);
+
   return (
     <Wrapper>
       {isVideoLoading && (
@@ -84,6 +89,7 @@ const MyVideo = () => {
         $myMissionStatus={myMissionStatus}
         $isResultMode={GAME_MODE[inGameMode] === 'result'}
         $amTheTopUser={true}
+        $isLoadingModelMode={GAME_MODE[inGameMode] === 'loadModel'}
       />
     </Wrapper>
   );
@@ -100,6 +106,9 @@ const Wrapper = styled.div`
 `;
 
 const Video = styled.video`
+  display: ${({ $isLoadingModelMode }) =>
+    $isLoadingModelMode ? 'none' : 'block'};
+
   position: absolute;
   top: 0;
 

@@ -56,7 +56,9 @@ const Result = () => {
     const response = await fetchData(() =>
       inGameServices.getGameResults({ accessToken, challengeId }),
     );
+
     const { isLoading, data, error } = response;
+
     if (!isLoading && data) {
       setGameResults(data);
     } else {
@@ -68,6 +70,7 @@ const Result = () => {
     const response = await fetchData(() =>
       userServices.getUserInfo({ accessToken, userId: theTopUserId }),
     );
+
     setTheTopUserData(response.data);
   };
 
@@ -243,14 +246,12 @@ const Result = () => {
           </Rankings>
         </UpperArea>
         {theRestUsersStream?.length > 0 && (
-          <>
-            <TheRestUsersWrapper $isSingle={theRestUsersStream?.length === 1}>
-              {theRestUsersStream?.length > 0 &&
-                theRestUsersStream?.map((thisUserStream, idx) => (
-                  <TheRestVideo key={idx} thisUserStream={thisUserStream} />
-                ))}
-            </TheRestUsersWrapper>
-          </>
+          <TheRestUsersWrapper $isSingle={theRestUsersStream?.length === 1}>
+            {theRestUsersStream?.length > 0 &&
+              theRestUsersStream?.map((thisUserStream, idx) => (
+                <TheRestVideo key={idx} thisUserStream={thisUserStream} />
+              ))}
+          </TheRestUsersWrapper>
         )}
       </Wrapper>
       <DummyMyVideo ref={myVideoRef} />
