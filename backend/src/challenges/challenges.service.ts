@@ -205,6 +205,7 @@ export class ChallengesService {
         'attendance.challengeId = :challengeId AND attendance.date = :date',
         { challengeId, date },
       )
+      .orderBy('attendance.score', 'DESC') // 점수 내림차순 정렬
       .getMany();
 
     // 결과 데이터 매핑
