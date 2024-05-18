@@ -58,7 +58,9 @@ export class InGameService {
         .catch((e) => {
           console.error('Failed to save to Streak:', e);
         });
-      this.retryOperation(() => this.attendanceService.attend(scoreDto))
+      this.retryOperation(() =>
+        this.attendanceService.attend(scoreDto, redisScore),
+      )
         .then(() => console.log('Database Save Success'))
         .catch((e) => {
           console.error('Failed to save to database:', e);

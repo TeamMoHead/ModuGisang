@@ -17,6 +17,7 @@ const Testing = () => {
 
   useEffect(() => {
     socket.current = io('http://localhost:5001', {
+      query: { userId },
       transports: ['websocket'],
       cors: {
         origin: '*',
@@ -25,37 +26,42 @@ const Testing = () => {
 
     socket.current.on('connect', () => {
       console.log('Connected to server');
-      socket.current.emit('joinRoom', { challengeId, userId });
+      socket.current.emit('JOIN_ROOM', { challengeId, userId });
     });
 
-    socket.current.on('allLoaded', () => {
+    socket.current.on('ROOM_STATUS', data => {
+      console.log('Room status');
+      console.log(data);
+    });
+
+    socket.current.on('ALL_LOADED', () => {
       setIsAllLoaded(true);
     });
 
-    socket.current.on('missionState', data => {
+    socket.current.on('MISSION_STATE', data => {
       console.log('Mission state:', data);
       setCurrentMission(data.mission);
     });
 
-    socket.current.on('missionsComplete', () => {
+    socket.current.on('MISSION_COMPLETE', () => {
       alert('All missions completed!');
-      socket.current.emit('getRankings', { challengeId });
+      socket.current.emit('GET_RANKINGS', { challengeId });
     });
 
-    socket.current.on('updateScores', data => {
+    socket.current.on('UPDATE_SCORES', data => {
       setScores(prevScores => [
         ...prevScores,
         { userId: data.userId, score: data.score },
       ]);
     });
 
-    socket.current.on('rankings', data => {
+    socket.current.on('RAKINGS', data => {
       setRankings(data);
     });
 
-    // return () => {
-    //   socket.current.disconnect();
-    // };
+    return () => {
+      socket.current.disconnect();
+    };
   }, [challengeId, userId]);
 
   useEffect(() => {
@@ -67,26 +73,30 @@ const Testing = () => {
   const startMission = () => {
     console.log('Starting mission');
     console.log('Client ID:', socket.current.id);
-    socket.current.emit('startMission', { challengeId });
+    socket.current.emit('START_MISSION', { challengeId });
   };
 
   const mediaPipeLodingTrue = () => {
     console.log('MediaPipe loading complete');
     setIsMediaPipeLoaded(true);
     console.log('Client ID:', socket.current.id);
-    socket.current.emit('setLoadingStatus', { challengeId, status: true });
+    socket.current.emit('SET_LOADING_STATUS', {
+      challengeId,
+      status: true,
+      userId,
+    });
   };
 
   const completeMission = score => {
     console.log('Completing mission');
     console.log('Client ID:', socket.current.id);
-    socket.current.emit('completeMission', { challengeId, score });
+    socket.current.emit('COMPLETE_MISSION', { challengeId, score, userId });
   };
 
   const reconnect = () => {
     console.log('Reconnecting');
     console.log('Client ID:', socket.current.id);
-    socket.current.emit('reconnect', { challengeId, userId });
+    socket.current.emit('RECONNECT', { challengeId, userId });
   };
 
   return (
