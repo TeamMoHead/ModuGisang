@@ -14,6 +14,7 @@ interface ClientData {
   status: boolean;
   userId: string;
   joinTime: number;
+  // clientSocketId: string;
 }
 
 interface Room {
@@ -23,7 +24,7 @@ interface Room {
   disconnectTimers: { [key: string]: NodeJS.Timeout };
 }
 
-@WebSocketGateway(5001, {
+@WebSocketGateway(+process.env.SOCKET_PORT, {
   transports: ['websocket'],
   cors: {
     origin: '*', // 모든 출처 허용. 필요한 경우 특정 출처로 제한 가능
@@ -42,11 +43,6 @@ export class GameStatusGateway
     // Client connection 확인 핸들러
     // Client가 연결되었을 때 호출, Client ID를 로그에 출력
     console.log('Client connected:', client.id);
-    console.log('Client connected:', client.handshake.query);
-    console.log('Client connected:', client.handshake.query.userId);
-    console.log('Client connected:', client.handshake.query.challengeId);
-    console.log('Client connected:', client.handshake.query.token);
-    console.log('Client connected:', client);
   }
 
   handleDisconnect(client: Socket) {
@@ -60,13 +56,13 @@ export class GameStatusGateway
           delete room.clients[client.id];
           delete room.disconnectTimers[client.id];
           this.checkAllLoaded(roomId);
-        }, 1000);
+        }, 30000);
         // 연결 해제시 각 방에서 해당 클라이언트를 제거하고 30초 후에 삭제 ?
       }
     }
   }
 
-  @SubscribeMessage('joinRoom')
+  @SubscribeMessage('JOIN_ROOM')
   async handleJoinRoom(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { challengeId: string; userId: string },
@@ -79,11 +75,10 @@ export class GameStatusGateway
     console.log('joinRoom data:', data);
     console.log('Client ID:', client.id); // 이 로그가 제대로 출력되는지 확인합니다
 
-    client.join(data.challengeId); //
-    console.log('joining room');
-
     if (!this.rooms[data.challengeId]) {
+      // challengeId에 해당하는 방이 없는 경우
       this.rooms[data.challengeId] = {
+        // 새로운 방 생성
         clients: {},
         missions: [
           'Waiting Room',
@@ -98,40 +93,43 @@ export class GameStatusGateway
         disconnectTimers: {},
       };
     }
+    client.join(data.challengeId); //
 
     // 클라이언트가 이미 방에 존재하지 않는 경우에만 추가
-    if (!this.rooms[data.challengeId].clients[client.id]) {
+    if (!this.rooms[data.challengeId].clients[data.userId]) {
       const joinTime = Date.now();
-      this.rooms[data.challengeId].clients[client.id] = {
+      this.rooms[data.challengeId].clients[data.userId] = {
         status: false,
         userId: data.userId,
         joinTime,
+        // clientSocketId: client.id,
       };
-      console.log(`Client ${client.id} joined room ${data.challengeId}`);
+      console.log(`Client ${data.userId} joined room ${data.challengeId}`);
     }
 
     const currentMission =
       this.rooms[data.challengeId].missions[
         this.rooms[data.challengeId].currentMissionIndex
       ];
-    client.emit('missionState', { mission: currentMission });
+    client.emit('MISSION_STATE', { mission: currentMission });
   }
 
-  @SubscribeMessage('setLoadingStatus')
+  @SubscribeMessage('SET_LOADING_STATUS')
   handleSetLoadingStatus(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { challengeId: string; status: boolean },
+    @MessageBody()
+    data: { challengeId: string; status: boolean; userId: string },
   ) {
     console.log('SetLoadingStatus client:', client.id); // 변경된 로그
     console.log('SetLoadingStatus data:', data);
 
     if (this.rooms[data.challengeId]) {
-      this.rooms[data.challengeId].clients[client.id].status = data.status;
+      this.rooms[data.challengeId].clients[data.userId].status = data.status;
       this.checkAllLoaded(data.challengeId);
     }
   }
 
-  @SubscribeMessage('reconnect')
+  @SubscribeMessage('RECONNECT')
   handleReconnect(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { challengeId: string; userId: string },
@@ -150,7 +148,7 @@ export class GameStatusGateway
         }
       }
       const currentMission = room.missions[room.currentMissionIndex];
-      client.emit('missionState', { mission: currentMission });
+      client.emit('MISSION_STATE', { mission: currentMission });
     }
   }
 
@@ -161,11 +159,15 @@ export class GameStatusGateway
     const allLoaded =
       statuses.length > 0 && statuses.every((status) => status === true);
     if (allLoaded) {
-      this.server.to(challengeId).emit('allLoaded');
+      this.server.to(challengeId).emit('ALL_LOADED');
+    } else {
+      this.server
+        .to(challengeId)
+        .emit('ROOM_STATUS', Object.values(room.clients));
     }
   }
 
-  @SubscribeMessage('startMission')
+  @SubscribeMessage('START_MISSION')
   handleStartMission(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { challengeId: string },
@@ -177,12 +179,12 @@ export class GameStatusGateway
         console.log('Starting mission:', currentMission);
         this.server
           .to(data.challengeId)
-          .emit('missionState', { mission: currentMission });
+          .emit('MISSION_STATE', { mission: currentMission });
       }
     }
   }
 
-  @SubscribeMessage('completeMission')
+  @SubscribeMessage('COMPLETE_MISSION')
   async handleCompleteMission(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { challengeId: string; score: number },
@@ -195,7 +197,7 @@ export class GameStatusGateway
       const weightedScore = data.score + clientData.joinTime / 1e12;
       await this.redisClient.zincrby(key, weightedScore, clientData.userId);
 
-      this.server.to(data.challengeId).emit('updateScores', {
+      this.server.to(data.challengeId).emit('UPDATE_SCORES', {
         userId: clientData.userId,
         score: weightedScore,
       });
@@ -206,21 +208,21 @@ export class GameStatusGateway
           const nextMission = room.missions[room.currentMissionIndex];
           this.server
             .to(data.challengeId)
-            .emit('missionState', { mission: nextMission });
+            .emit('MISSION_STATE', { mission: nextMission });
         } else {
-          this.server.to(data.challengeId).emit('missionsComplete');
+          this.server.to(data.challengeId).emit('MISSION_COMPLETE');
         }
       }
     }
   }
 
-  @SubscribeMessage('getRankings')
+  @SubscribeMessage('GET_RANKINGS')
   async handleGetRankings(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { challengeId: string },
   ) {
     const key = `room:${data.challengeId}:scores`;
     const rankings = await this.redisClient.zrevrange(key, 0, -1);
-    client.emit('rankings', rankings);
+    client.emit('RANKINGS', rankings);
   }
 }
