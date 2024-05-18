@@ -43,5 +43,9 @@ export class RedisCacheService {
   ): Promise<string[]> {
     return await this.redis.zrevrange(groupKey, start, stop, 'WITHSCORES');
   }
+
+  async zincrby(key, weightedScore, userId) {
+    return await this.redis.zincrby(key, weightedScore, userId);
+  }
 }
 export default RedisCacheService;
