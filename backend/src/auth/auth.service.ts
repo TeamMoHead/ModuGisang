@@ -58,7 +58,6 @@ export class AuthService {
       });
       const userId = decodedRefreshToken.id;
       console.log('@@@@ refresh 해석 userId : ', userId);
-      
       const user = await this.userService.getUserIfRefreshTokenMatches(
         refreshToken,
         userId,
