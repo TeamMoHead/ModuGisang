@@ -67,8 +67,9 @@ const MateVideo = ({ mateId, mateName, onClick }) => {
     }
   }, [matesMissionStatus]);
 
+  console.log(mateData?.streakDays > 100, '=====', inGameMode === 0);
   return (
-    <Wrapper onClick={onClick}>
+    <Wrapper onClick={onClick} $isWaitingRoom={inGameMode === 0}>
       {mateStatus.online ? (
         <Video
           ref={mateVideoRef}
@@ -76,6 +77,7 @@ const MateVideo = ({ mateId, mateName, onClick }) => {
           playsInline
           $isCompleted={mateStatus.missionCompleted}
           $isNotGame={inGameMode === 0 || inGameMode === 6}
+          $isWaitingRoom={inGameMode === 0}
           $isHighStreak={mateData?.streakDays > 100}
         />
       ) : (
@@ -101,9 +103,12 @@ const Wrapper = styled.div`
   flex-direction: column;
 
   box-shadow: ${({ theme }) => theme.boxShadow.basic};
+
+  border-radius: ${({ theme }) => theme.radius.small};
 `;
 
 const Video = styled.video`
+  z-index: 100;
   position: absolute;
   width: 100%;
   height: 66%;
@@ -117,22 +122,26 @@ const Video = styled.video`
         ? `3px solid ${theme.colors.primary.emerald}`
         : `3px solid ${theme.colors.system.red}`};
 
-  ${({ $isHighStreak }) =>
+  animation: ${({ $isHighStreak, $isWaitingRoom }) =>
     $isHighStreak &&
-    css`
-      animation: shadow-animation 2s infinite alternate ease-in-out;
-      @keyframes shadow-animation {
-        0% {
-          box-shadow: 2px 3px 5px rgba(21, 245, 185, 0.5);
-        }
-        50% {
-          box-shadow: 4px 6px 10px rgba(21, 245, 185, 0.8);
-        }
-        100% {
-          box-shadow: 2px 3px 5px rgba(21, 245, 185, 0.5);
-        }
-      }
-    `}
+    $isWaitingRoom &&
+    `emerald-glow 2s infinite alternate ease-in-out`};
+
+  @keyframes emerald-glow {
+    0% {
+      box-shadow: 2px 3px 5px rgba(21, 245, 185, 0.5);
+    }
+    50% {
+      box-shadow: 3px 6px 8px rgba(21, 245, 185, 0.8);
+    }
+    100% {
+      box-shadow: 2px 3px 5px rgba(21, 245, 185, 0.5);
+    }
+  }
+  // mirror mode
+  will-change: transform;
+  transform: rotateY(180deg) translateZ(0);
+  -webkit-transform: rotateY(180deg);
 `;
 
 const UserName = styled.span`
