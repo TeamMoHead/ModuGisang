@@ -1,10 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { UserContext } from '../contexts';
+import { UserContext, ChallengeContext } from '../contexts';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { RoundBtn } from '../components';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
+
+const PAGE_TYPES = [
+  'main',
+  'myStreak',
+  'joinChallenge',
+  'createChallenge',
+  'settings',
+];
 
 const NavBar = () => {
+  const { getChallengeData } = useContext(ChallengeContext);
   const { myData } = useContext(UserContext);
   const { userName } = myData;
   const { pathname } = useLocation();
@@ -13,6 +22,19 @@ const NavBar = () => {
   const [hasLeftBtn, setHasLeftBtn] = useState(false);
   const [hasRightBtn, setHasRightBtn] = useState(true);
   const [pageType, setPageType] = useState('main');
+
+  const goBack = () => {
+    navigate('/');
+  };
+
+  const goToSettings = () => {
+    navigate('/settings');
+  };
+
+  const RIGHT_BTN_FUNCS = {
+    main: goToSettings,
+    settings: getChallengeData,
+  };
 
   const TITLE_BY_PAGE_TYPE = {
     main: (
@@ -27,22 +49,20 @@ const NavBar = () => {
     settings: '설정',
   };
 
-  const goBack = () => {
-    navigate('/');
-  };
-
-  const goToSettings = () => {
-    navigate('/settings');
-  };
-
   useEffect(() => {
-    const page = pathname.split('/')[1];
+    let page = pathname.split('/')[1];
+    if (page === undefined || page === '') {
+      page = 'main';
+    }
 
-    if (page) {
+    if (PAGE_TYPES.includes(page)) {
       setPageType(page);
 
       if (page === 'main') {
         setHasLeftBtn(false);
+        setHasRightBtn(true);
+      } else if (page === 'settings') {
+        setHasLeftBtn(true);
         setHasRightBtn(true);
       } else {
         setHasLeftBtn(true);
@@ -50,7 +70,7 @@ const NavBar = () => {
       }
     } else {
       setHasLeftBtn(false);
-      setHasRightBtn(true);
+      setHasRightBtn(false);
     }
   }, [params]);
 
@@ -60,10 +80,15 @@ const NavBar = () => {
         <RoundBtn btnStyle={BACK_BTN_STYLE} onClickHandler={goBack} />
       )}
 
-      <Title $hasLeftBtn={hasLeftBtn}>{TITLE_BY_PAGE_TYPE[pageType]}</Title>
+      <Title $hasLeftBtn={hasLeftBtn} $hasRightBtn={hasRightBtn}>
+        {TITLE_BY_PAGE_TYPE[pageType]}
+      </Title>
 
       {hasRightBtn && (
-        <RoundBtn btnStyle={SETTINGS_BTN_STYLE} onClickHandler={goToSettings} />
+        <RoundBtn
+          btnStyle={RIGHT_BTN_STYLES[pageType]}
+          onClickHandler={RIGHT_BTN_FUNCS[pageType]}
+        />
       )}
     </Wrapper>
   );
@@ -90,8 +115,12 @@ const Wrapper = styled.nav`
 `;
 
 const Title = styled.header`
-  justify-self: ${({ $hasLeftBtn }) => ($hasLeftBtn ? 'center' : 'flex-start')};
-  margin-left: ${({ $hasLeftBtn }) => $hasLeftBtn && '-40px'};
+  justify-self: ${({ $hasLeftBtn, $hasRightBtn }) =>
+    !$hasLeftBtn && $hasRightBtn ? 'flex-start' : 'center'};
+  margin-left: ${({ $hasLeftBtn, $hasRightBtn }) =>
+    $hasLeftBtn && !$hasRightBtn && '-40px'};
+  margin-right: ${({ $hasLeftBtn, $hasRightBtn }) =>
+    !$hasLeftBtn && $hasRightBtn && '0px'};
   margin-bottom: -8px;
 
   ${({ theme }) => theme.fonts.JuaSmall}
@@ -123,4 +152,20 @@ const SETTINGS_BTN_STYLE = {
     color: 'white',
     hoverColor: 'purple',
   },
+};
+
+const REFRESH_BTN_STYLE = {
+  size: 40,
+  disabled: false,
+  icon: 'refresh',
+  iconStyle: {
+    size: 20,
+    color: 'white',
+    hoverColor: 'purple',
+  },
+};
+
+const RIGHT_BTN_STYLES = {
+  main: SETTINGS_BTN_STYLE,
+  settings: REFRESH_BTN_STYLE,
 };
