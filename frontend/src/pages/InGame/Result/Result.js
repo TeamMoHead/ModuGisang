@@ -338,8 +338,8 @@ const TheTopVideo = styled.video`
   border-radius: ${({ theme }) => theme.radius.medium};
   border: transparent;
 
-  animation: shadow-animation 2s infinite alternate ease-in-out;
-  @keyframes shadow-animation {
+  animation: yellow-glow 2s infinite alternate ease-in-out;
+  @keyframes yellow-glow {
     0% {
       box-shadow: 2px 3px 30px rgba(255, 209, 0, 0.5);
     }

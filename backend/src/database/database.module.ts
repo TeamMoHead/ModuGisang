@@ -21,7 +21,9 @@ import { Users } from 'src/users/entities/users.entity';
         password: configService.get<string>('POSTGRESQL_DATABASE_PASSWORD'),
         logging: true,
 
-        synchronize: process.env.NODE_ENV !== 'production',
+        synchronize: true,
+        timezone: 'Asia/Seoul',
+        // synchronize: process.env.NODE_ENV !== 'production',
         entities: [Users, Attendance, Challenges, Invitations, Streak],
 
         ssl:
