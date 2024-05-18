@@ -1,48 +1,71 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import { UserContext } from '../../../contexts';
+import { CHALLANGE_HISTORY_TEXT } from '../DATA';
 
 const ChallengeHistoryContent = ({ selectedDate, history }) => {
   const { myData } = useContext(UserContext);
   const { userName } = myData;
 
-  console.log(selectedDate);
+  const [sortedHistory, setSortedHistory] = useState([]);
 
-  if (!history || history.length === 0) {
+  console.log(selectedDate);
+  console.log(history);
+
+  useEffect(() => {
+    if (history && history.length > 0) {
+      const newSortedHistory = [...history].sort((a, b) => b.score - a.score);
+      setSortedHistory(newSortedHistory);
+    }
+  }, [selectedDate, history]);
+
+  if (!history || history.length === 0 || sortedHistory.length === 0) {
     return (
       <HistoryWrapper>
-        <NoHistoryText>선택한 날짜의 챌린지 기록이 없습니다.</NoHistoryText>
+        <NoHistoryText>{CHALLANGE_HISTORY_TEXT.noHistory}</NoHistoryText>
       </HistoryWrapper>
     );
   }
-  const myHistory = history.filter(item => item.userName === userName);
-  console.log('나의 기록', myHistory);
-  const { wakeTime, myScore } = myHistory;
+
+  const formatWakeTime = time => {
+    const [hour, minute] = time.split(':');
+    if (parseInt(hour, 10) < 12) {
+      return `${parseInt(hour, 10)}: ${parseInt(minute, 10)} AM`;
+    } else if (parseInt(hour, 10) === 12) {
+      return `${parseInt(hour, 10)}: ${parseInt(minute, 10)} PM`;
+    } else {
+      return `${parseInt(hour, 10) - 12}시 ${parseInt(minute, 10)} PM`;
+    }
+  };
+
+  const myHistory = history.find(item => item.userName === userName);
+  const wakeTime = formatWakeTime(myHistory.wakeTime);
+  const myScore = myHistory.score;
 
   return (
     <HistoryWrapper>
       <TextWrapper>
         <MiniCircle />
-        <BoldText>기상 시간 |</BoldText>
+        <BoldText>{CHALLANGE_HISTORY_TEXT.wakeTime}</BoldText>
         <PlainText>{wakeTime}</PlainText>
       </TextWrapper>
       <TextWrapper>
         <MiniCircle />
-        <BoldText>미라클 게임 결과 | </BoldText>
+        <BoldText>{CHALLANGE_HISTORY_TEXT.score}</BoldText>
         <PlainText>{myScore}점</PlainText>
       </TextWrapper>
       <TextWrapper>
         <MiniCircle />
-        <BoldText>미라클 메이트</BoldText>
+        <BoldText>{CHALLANGE_HISTORY_TEXT.mates}</BoldText>
       </TextWrapper>
-      {history.map((item, index) => (
-        <MatesWrapper>
+      {sortedHistory.map((item, index) => (
+        <MatesWrapper key={index}>
           <UserProfile
-            key={item.userName}
             src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${item.userName}`}
           />
-          <BoldText key={index}>{item.userName} |</BoldText>
+          <BoldText>{item.userName} |</BoldText>
           <PlainText>{item.score}점</PlainText>
+          <PlainText>({index + 1}위)</PlainText>
         </MatesWrapper>
       ))}
     </HistoryWrapper>
@@ -76,7 +99,6 @@ const NoHistoryText = styled.p`
 const UserProfile = styled.img`
   width: 25px;
   height: 25px;
-
   border-radius: 50%;
   object-fit: cover;
   background-color: ${({ theme }) => theme.colors.primary.white};

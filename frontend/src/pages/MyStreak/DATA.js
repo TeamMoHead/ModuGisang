@@ -1,5 +1,14 @@
 import theme from '../../styles/theme';
 
+// =============== 데이터 Constants ===============
+export const CHALLANGE_HISTORY_TEXT = {
+  noHistory: '선택한 날짜의 챌린지 기록이 없습니다.',
+  wakeTime: '기상 시간 |',
+  score: '미라클 게임 결과 |',
+  mates: '미라클 메이트',
+};
+
+// =============== 스타일 Constants ===============
 const MYSTREAK_STYLE = {
   isBold: false,
   lineColor: 'gradient',

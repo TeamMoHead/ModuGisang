@@ -14,7 +14,6 @@ import dayjs from 'dayjs';
 import * as S from '../../styles/common';
 import styled from 'styled-components';
 import { CARD_STYLES, FOOTER_STYLES, HEADER_STYLES } from './DATA';
-import { format } from 'prettier';
 
 const MyStreak = () => {
   const { fetchData } = useFetch();
