@@ -135,9 +135,15 @@ export class ChallengesService {
         date: Between(startDate, endDate),
       },
     });
-    return attendances.map(
-      (attendance) => attendance.date.toISOString().split('T')[0],
-    ); // 날짜만 반환
+    console.log(attendances);
+    return attendances.map((attendance) => {
+      // attendance.date가 Date 객체인지 확인하고, 그렇지 않다면 변환
+      const date = new Date(attendance.date);
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date format');
+      }
+      return date.toISOString().split('T')[0];
+    }); // 날짜만 반환
   }
 
   async getInvitations(guestId: number) {
@@ -166,21 +172,27 @@ export class ChallengesService {
     userId: number,
     date: Date,
   ): Promise<ChallengeResultDto[]> {
-    // 먼저 사용자가 참여하고 있는 챌린지 ID를 조회
-    const userWithChallenge = await this.userRepository.findOne({
-      where: { _id: userId },
+    const nowAttendance = await this.attendanceRepository.findOne({
+      where: { userId: userId, date: date },
     });
-    if (!userWithChallenge || !userWithChallenge.challengeId) {
-      throw new Error('No challenge found for the user.');
+
+    if (!nowAttendance) {
+      throw new Error('Attendance does not exist');
     }
 
-    const challengeId = userWithChallenge.challengeId;
+    const challengeId = nowAttendance.challengeId;
 
     // 해당 챌린지 ID와 일치하는 날짜에 모든 참석 기록을 조회
     const attendances = await this.attendanceRepository
       .createQueryBuilder('attendance')
       .leftJoinAndSelect('attendance.user', 'user')
-      .select(['attendance.score', 'user.userName', 'user._id']) // 필요한 필드만 선택
+      .leftJoinAndSelect('attendance.challenge', 'challenge')
+      .select([
+        'attendance.score',
+        'user.userName',
+        'user._id',
+        'challenge.wakeTime',
+      ]) // 필요한 필드만 선택
       .where(
         'attendance.challengeId = :challengeId AND attendance.date = :date',
         { challengeId, date },
@@ -191,6 +203,7 @@ export class ChallengesService {
     return attendances.map((attendance) => ({
       userName: attendance.user.userName,
       score: attendance.score,
+      wakeTime: attendance.challenge.wakeTime,
     }));
   }
 

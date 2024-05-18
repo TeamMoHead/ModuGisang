@@ -22,7 +22,9 @@ export class AuthService {
   // accessToken 생성
   async validateUser(user: Users): Promise<string> {
     const payload = { sub: user._id, _id: user._id, username: user.userName };
-    return this.jwtService.signAsync(payload);
+    return this.jwtService.signAsync(payload, {
+      expiresIn: this.configService.get<string>('ACCESS_TOKEN_EXP'), // Add expiresIn
+    });
   }
   // 토큰 Payload에 해당하는 아아디의 유저 가져오기
   async tokenValidateUser(payload: Payload): Promise<UserDto | undefined> {
@@ -37,13 +39,15 @@ export class AuthService {
 
   // refreshToken 생성
   async generateRefreshToken(_id: number): Promise<string> {
-    return this.jwtService.signAsync(
-      { id: _id },
+    const result = await this.jwtService.signAsync(
+      { _id: _id }, // id 값 변경?
       {
         secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),
         expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXP'),
       },
     );
+    console.log('\n@@@@@@@@@@refreshToken:', result);
+    return result;
   }
 
   async refresh(refreshTokenDto: RefreshTokenDto): Promise<any> {
@@ -52,11 +56,14 @@ export class AuthService {
       const decodedRefreshToken = this.jwtService.verify(refreshToken, {
         secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),
       });
-      const userId = decodedRefreshToken.id;
+      const userId = decodedRefreshToken._id;
+      console.log('@@@@ refresh 해석 userId : ', userId);
+
       const user = await this.userService.getUserIfRefreshTokenMatches(
         refreshToken,
         userId,
       );
+
       if (!user) {
         throw new UnauthorizedException('Invalid user!');
       }
@@ -68,7 +75,19 @@ export class AuthService {
         userId: userId,
       };
     } catch (err) {
-      throw new UnauthorizedException(err);
+      if (err.name === 'JsonWebTokenError') {
+        // JWT 형식 오류
+        console.error('Invalid JWT token:', err.message);
+        throw new UnauthorizedException('Invalid token format!');
+      } else if (err.name === 'TokenExpiredError') {
+        // JWT 만료 오류
+        console.error('Expired JWT token:', err.message);
+        throw new UnauthorizedException('Token has expired!');
+      } else {
+        // 기타 오류
+        console.error('Error during token refresh:', err);
+        throw new UnauthorizedException('Could not refresh token!');
+      }
     }
   }
 
@@ -79,10 +98,12 @@ export class AuthService {
     }
     const payload = {
       sub: userFind._id,
-      id: userFind._id,
+      _id: userFind._id,
       username: userFind.userName,
     };
-    return this.jwtService.signAsync(payload);
+    return this.jwtService.signAsync(payload, {
+      expiresIn: this.configService.get<string>('ACCESS_TOKEN_EXP'), // Add expiresIn
+    });
   }
   async authNumcheck(email: string, data: string) {
     console.log('Inservice data :' + data);
