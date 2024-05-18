@@ -6,39 +6,98 @@ import {
 } from '../../../contexts';
 import * as pose from '@mediapipe/pose';
 import { MissionStarting, MissionEnding } from '../components';
-import arrow from '../../../assets/arrows/arrow.svg';
+import CustomAnswerImg from './CustomAnswerImg';
 import styled from 'styled-components';
 
 const tables = {
   0: {
-    question: '8 X 6',
-    correct: '48',
-    wrong: '42',
-    direction: 2, // 1 왼쪽, 2 오른쪽
-    score: 5,
+    question: '3 X 7',
+    correct: '21',
+    wrong: '12',
+    direction: 2, // 0 표시 안 함, 1 왼쪽이 정답, 2 오른쪽이 정답
+    score: 1,
   },
   1: {
+    question: '5 X 5',
+    correct: '25',
+    wrong: '35',
+    direction: 2,
+    score: 1,
+  },
+  2: {
+    question: '6 X 2',
+    correct: '12',
+    wrong: '42',
+    direction: 1,
+    score: 1,
+  },
+  3: {
+    question: '4 X 8',
+    correct: '32',
+    wrong: '23',
+    direction: 2,
+    score: 1,
+  },
+  4: {
+    question: '9 X 6',
+    correct: '54',
+    wrong: '48',
+    direction: 2,
+    score: 2,
+  },
+  5: {
+    question: '10 X 11',
+    correct: '110',
+    wrong: '101',
+    direction: 1,
+    score: 2,
+  },
+  6: {
     question: '13 X 13',
     correct: '169',
     wrong: '196',
     direction: 1,
-    score: 7,
+    score: 2,
   },
-  2: {
+  7: {
+    question: '15 X 5',
+    correct: '75',
+    wrong: '196',
+    direction: 2,
+    score: 2,
+  },
+  8: {
     question: '23 X 17',
     correct: '391',
     wrong: '401',
-    direction: 2,
-    score: 8,
+    direction: 1,
+    score: 4,
+  },
+  9: {
+    question: '32 X 28',
+    correct: '896',
+    wrong: '616',
+    direction: 1,
+    score: 4,
+  },
+  10: {
+    question: '미션 종료!',
+    correct: '0',
+    wrong: '0',
+    direction: 0,
+    score: 0,
   },
 };
 
-let raisingHand = false;
-let isMissionFinished = false;
+let raisingHand = 0;
+let isHandDownCount = 0; // 손을 계속 들고 있을 때 대비
 let isWaiting = false;
+let isMissionFinished = false;
+let totalScore = 0;
 
 const Mission5 = () => {
-  const { poseModel } = useContext(MediaPipeContext);
+  const { poseModel, setIsPoseLoaded, setIsPoseInitialized } =
+    useContext(MediaPipeContext);
   const {
     isMissionStarting,
     isMissionEnding,
@@ -46,19 +105,28 @@ const Mission5 = () => {
     myMissionStatus,
     setMyMissionStatus,
     setIsRoundPassed,
+    setIsRoundFailed,
     setGameScore,
   } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
 
-  const [isCorrect, setIsCorrect] = useState(false);
   const [roundIdx, setRoundIdx] = useState(0);
-
   const [hand, setHand] = useState(0); // 0 없음, 1 왼손, 2 오른손
-  const score = useRef(0);
+
+  const getColor = direction => {
+    if (direction === 1) {
+      if (hand === 1) return '#008000';
+      if (hand === 2) return '#FF00000';
+    }
+    if (direction === 2 && hand === 2) {
+      if (hand === 1) return '#FF0000';
+      if (hand === 2) return '#008000';
+    }
+    return '#808080';
+  };
 
   const multipleGame = poseLandmarks => {
     if (!poseLandmarks || isMissionFinished || isWaiting || myMissionStatus) {
-      console.log('----- Check point');
       return;
     }
 
@@ -66,31 +134,49 @@ const Mission5 = () => {
     const left = poseLandmarks[pose.POSE_LANDMARKS.LEFT_WRIST];
     const right = poseLandmarks[pose.POSE_LANDMARKS.RIGHT_WRIST];
 
-    if (nose.y < left.y && nose.y > right.y) {
+    if (isHandDownCount > 50 && nose.y < left.y && nose.y > right.y) {
       setHand(1);
       raisingHand = 1; // 왼손을 들고 있음
-    } else if (nose.y > left.y && nose.y < right.y) {
+      isHandDownCount = 0;
+    } else if (isHandDownCount > 50 && nose.y > left.y && nose.y < right.y) {
       setHand(2);
       raisingHand = 2; // 오른손을 들고 있음
+      isHandDownCount = 0;
+      // } else if (nose.y < left.y && nose.y < right.y) {
     } else {
       setHand(0);
-      raisingHand = false; // 그 외면 false로 초기화
+      raisingHand = 0;
+      isHandDownCount += 1;
     }
 
     const direction = tables[roundIdx].direction;
-    if (hand === direction) {
+    if (raisingHand > 0) {
       isWaiting = true;
-      setIsCorrect(true);
-      console.log('----- CORRECT !');
-      setGameScore(prev => prev + tables[roundIdx].score);
+
+      if (raisingHand === direction) {
+        setIsRoundPassed(true);
+        setTimeout(() => setIsRoundPassed(false), 100);
+        console.log('----- CORRECT !');
+        setGameScore(prev => prev + tables[roundIdx].score);
+        totalScore += tables[roundIdx].score;
+        console.log('----- score: ', totalScore);
+      } else {
+        setIsRoundFailed(true);
+        setTimeout(() => setIsRoundFailed(false), 100);
+        console.log('----- STUPID !');
+      }
 
       setTimeout(() => {
         setIsRoundPassed(true);
-        if (roundIdx === 2) setMyMissionStatus(true);
-        else setRoundIdx(prev => prev + 1);
-        setIsCorrect(false);
+        if (roundIdx >= Object.keys(tables).length - 2) {
+          isMissionFinished = true;
+          setRoundIdx(Object.keys(tables).length - 1);
+          if (totalScore >= 10) setMyMissionStatus(true);
+        } else setRoundIdx(prev => prev + 1);
+        setHand(0);
+        raisingHand = 0;
         isWaiting = false;
-      }, 3000); // 3초 후에 다음 라운드로 넘어감
+      }, 2000);
     }
   };
 
@@ -105,7 +191,6 @@ const Mission5 = () => {
     }
 
     const videoElement = myVideoRef.current;
-    let animationFrameId;
 
     poseModel.current.onResults(results => {
       if (results.poseLandmarks) {
@@ -116,7 +201,7 @@ const Mission5 = () => {
     const handleCanPlay = () => {
       if (poseModel.current) {
         poseModel.current.send({ image: videoElement }).then(() => {
-          animationFrameId = requestAnimationFrame(handleCanPlay);
+          requestAnimationFrame(handleCanPlay);
         });
       }
     };
@@ -129,9 +214,11 @@ const Mission5 = () => {
 
     return () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
-      cancelAnimationFrame(animationFrameId);
+      poseModel.current = null;
+      setIsPoseLoaded(false);
+      setIsPoseInitialized(false);
     };
-  }, [isMissionStarting, poseModel, inGameMode, myVideoRef, roundIdx]);
+  }, [isMissionStarting, poseModel]);
 
   return (
     <>
@@ -141,28 +228,35 @@ const Mission5 = () => {
         <>
           <Wrapper>
             <FormulaWrapper>
-              <Formula>{tables[roundIdx].question} = ?</Formula>
+              <Formula>{tables[roundIdx].question}</Formula>
             </FormulaWrapper>
-            {isCorrect && (
-              <RoundPassStatus $isCorrect={isCorrect}>정답!</RoundPassStatus>
-            )}
             <AnswerBox>
-              <Answer alt="left">
-                <AnswerImage src={arrow} active={hand === 1} />
-                <AnswerText>
-                  {tables[roundIdx].direction === 1
-                    ? tables[roundIdx].correct
-                    : tables[roundIdx].wrong}
-                </AnswerText>
-              </Answer>
-              <Answer alt="right">
-                <AnswerImage src={arrow} active={hand === 2} />
-                <AnswerText>
-                  {tables[roundIdx].direction === 2
-                    ? tables[roundIdx].correct
-                    : tables[roundIdx].wrong}
-                </AnswerText>
-              </Answer>
+              {tables[roundIdx].direction !== 0 && (
+                <Answer alt="left">
+                  <CustomAnswerImg
+                    selected={hand === 1}
+                    color={getColor(tables[roundIdx].direction)}
+                  />
+                  <AnswerText>
+                    {tables[roundIdx].direction === 1
+                      ? tables[roundIdx].correct
+                      : tables[roundIdx].wrong}
+                  </AnswerText>
+                </Answer>
+              )}
+              {tables[roundIdx].direction !== 0 && (
+                <Answer alt="right">
+                  <CustomAnswerImg
+                    selected={hand === 2}
+                    color={getColor(tables[roundIdx].direction)}
+                  />
+                  <AnswerText>
+                    {tables[roundIdx].direction === 2
+                      ? tables[roundIdx].correct
+                      : tables[roundIdx].wrong}
+                  </AnswerText>
+                </Answer>
+              )}
             </AnswerBox>
           </Wrapper>
         </>
@@ -203,32 +297,15 @@ const Formula = styled.div`
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 `;
 
-const RoundPassStatus = styled.div`
-  z-index: 600;
-  position: absolute;
-
-  width: 100vw;
-  height: 100vh;
-
-  ${({ theme }) => theme.flex.center};
-
-  font: 700 50px 'Jua';
-
-  color: ${({ theme }) => theme.colors.system.white};
-  -webkit-text-stroke: ${({ theme, $isCorrect }) =>
-      $isCorrect ? theme.colors.primary.emerald : theme.colors.system.red}
-    4px;
-`;
-
 const AnswerBox = styled.div`
   z-index: 200;
 
   position: absolute;
-  bottom: 90px;
+  top: 10px;
 
-  width: calc(100% - 6px);
-  height: 90px;
-  padding: 0 20px;
+  width: calc(100% - 16px);
+  height: 120px;
+  padding: 0 30px;
 
   ${({ theme }) => theme.flex.between}
 `;
@@ -239,29 +316,11 @@ const Answer = styled.div`
   height: 80px;
 `;
 
-const AnswerImage = styled.img`
-  width: 100%;
-  height: 100%;
-  filter: ${({ active }) => (active ? 'none' : 'grayscale(100%)')};
-`;
-
 const AnswerText = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-30%, 15%);
   ${({ theme }) => theme.fonts.JuaMedium};
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
 `;
-
-const CORRECT_ICON_STYLE = {
-  size: 40,
-  color: 'emerald',
-  hoverColor: 'emerald',
-};
-
-const WRONG_ICON_STYLE = {
-  size: 40,
-  color: 'red',
-  hoverColor: 'red',
-};
