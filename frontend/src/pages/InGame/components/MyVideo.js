@@ -67,8 +67,6 @@ const MyVideo = () => {
     };
   }, [myVideoRef]);
 
-  console.log('=========GameMode:: MyVideo=====', inGameMode);
-
   return (
     <Wrapper>
       {isVideoLoading && (
@@ -85,7 +83,7 @@ const MyVideo = () => {
         ref={myVideoRef}
         autoPlay
         playsInline
-        $isWaitingMode={GAME_MODE[inGameMode] === 'wating'}
+        $isWaitingMode={GAME_MODE[inGameMode] === 'waiting'}
         $myMissionStatus={myMissionStatus}
         $isResultMode={GAME_MODE[inGameMode] === 'result'}
         $amTheTopUser={true}

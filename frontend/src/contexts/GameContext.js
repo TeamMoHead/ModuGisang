@@ -73,9 +73,10 @@ const GameContextProvider = ({ children }) => {
   );
 
   const [isMyReadyStatusSent, setIsMyReadyStatusSent] = useState(false);
-  const [matesReadyStatus, setMatesReadyStatus] = useState([
-    // { userId: 'int', ready: 'boolean' },
-  ]);
+  const [matesReadyStatus, setMatesReadyStatus] = useState(
+    null,
+    //  {[userId]: { ready: 'boolean' }, ...}
+  );
   const [isEnteredTimeSent, setIsEnteredTimeSent] = useState(false);
   const [isGameScoreSent, setIsGameScoreSent] = useState(false);
   const [gameScore, setGameScore] = useState(0); // Mission1, 2, 3, 4에서 축적되는 점수

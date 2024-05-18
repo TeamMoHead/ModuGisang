@@ -24,7 +24,7 @@ const OpenViduContextProvider = ({ children }) => {
 
   const { userId, userName } = myData;
 
-  const [OVInstance, setOVInstance] = useState(null); // OpenVidu 객체 [openvidu-browser
+  const [OVInstance, setOVInstance] = useState(null); // OpenVidu 객체
   const [videoSession, setVideoSession] = useState(null);
   const [connectionToken, setConnectionToken] = useState('');
   const myVideoRef = useRef(null);
@@ -56,17 +56,6 @@ const OpenViduContextProvider = ({ children }) => {
     setMicOn(prev => !prev);
   };
 
-  const leaveSession = () => {
-    if (videoSession) {
-      videoSession.disconnect();
-    }
-
-    setOVInstance(null);
-    setVideoSession(null);
-    setMateStreams([]);
-    setMyStream(null);
-  };
-
   const sendModelLoadingStart = async () => {
     try {
       videoSession
@@ -75,9 +64,7 @@ const OpenViduContextProvider = ({ children }) => {
           to: [],
           type: 'modelLoadingStart',
         })
-        .then(() => {
-          console.log('====> Model Loading Start successfully Sent to Mates');
-        })
+        .then(() => {})
         .catch(error => {
           console.error(error);
         });
@@ -95,7 +82,6 @@ const OpenViduContextProvider = ({ children }) => {
           type: 'readyToStartGame',
         })
         .then(() => {
-          console.log('====> My Ready Status successfully Sent to Mates');
           setIsMyReadyStatusSent(true);
         })
         .catch(error => {
@@ -115,9 +101,7 @@ const OpenViduContextProvider = ({ children }) => {
           to: [],
           type: 'missionStatus',
         })
-        .then(() => {
-          console.log('====> My Mission Status successfully Sent to Mates');
-        })
+        .then(() => {})
         .catch(error => {
           console.error(error);
         });
@@ -160,28 +144,20 @@ const OpenViduContextProvider = ({ children }) => {
       console.warn(exception);
     });
 
-    videoSession.on('signal:leave', event => {
-      console.log('---Signal Leave Test:: ', event);
-      if (event.data === userId.userId) {
-        leaveSession();
-      }
-    });
-
     videoSession.on('signal:modelLoadingStart', event => {
       const data = JSON.parse(event.data);
-      console.log('=====Model Loading Start Signal Received:', data);
-      setMatesReadyStatus(prev => [
+      setMatesReadyStatus(prev => ({
         ...prev,
-        { userId: data.userId, ready: false },
-      ]);
+        [data.userId]: { ready: false },
+      }));
     });
 
     videoSession.on('signal:readyToStartGame', event => {
       const data = JSON.parse(event.data);
-      setMatesReadyStatus(prev => [
+      setMatesReadyStatus(prev => ({
         ...prev,
-        { userId: data.userId, ready: data.ready },
-      ]);
+        [data.userId]: { ready: data.ready },
+      }));
     });
 
     videoSession.on('signal:missionStatus', event => {
