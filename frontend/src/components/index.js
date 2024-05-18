@@ -15,7 +15,6 @@ import CustomRadio from './CustomRadio';
 import CustomCalendar from './CustomCalendar';
 import SearchBox from './SearchBox';
 import InvitationCard from './InvitationCard';
-import IconInputBox from './IconInputBox';
 
 export {
   Icon,
@@ -35,5 +34,4 @@ export {
   CustomCalendar,
   SearchBox,
   InvitationCard,
-  IconInputBox,
 };
