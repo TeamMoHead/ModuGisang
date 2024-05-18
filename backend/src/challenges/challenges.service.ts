@@ -175,6 +175,9 @@ export class ChallengesService {
     }
 
     const challengeId = userWithChallenge.challengeId;
+    const challenge = await this.challengeRepository.findOne({
+      where: { _id: challengeId },
+    });
 
     // 해당 챌린지 ID와 일치하는 날짜에 모든 참석 기록을 조회
     const attendances = await this.attendanceRepository
@@ -191,6 +194,7 @@ export class ChallengesService {
     return attendances.map((attendance) => ({
       userName: attendance.user.userName,
       score: attendance.score,
+      wakeTime: challenge.wakeTime,
     }));
   }
 
