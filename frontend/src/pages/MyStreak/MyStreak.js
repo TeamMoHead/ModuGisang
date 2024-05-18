@@ -39,7 +39,6 @@ const MyStreak = () => {
       data: getCalendarData,
       error: getCalendarDataError,
     } = response;
-    console.log(response);
     if (!isGetCalendarLoading && getCalendarData) {
       const calendarData = new Set(getCalendarData);
       setChallengeDates([...calendarData]);
@@ -66,10 +65,10 @@ const MyStreak = () => {
       error: getCalendarByDateError,
     } = response;
     if (!isGetCalendarByDateLoading && getCalendarByDateData) {
-      console.log(response);
       setChallengeHistory(getCalendarByDateData);
     } else if (!isGetCalendarByDateLoading && getCalendarByDateError) {
       console.error(getCalendarByDateError);
+      setChallengeHistory([]);
     }
   };
 
@@ -129,7 +128,6 @@ const MyStreak = () => {
             <CalendarContent
               startDate={new Date()}
               handleDateChange={date => {
-                console.log(date);
                 handleClickOnDate(date);
               }}
               challengeDates={challengeDates}

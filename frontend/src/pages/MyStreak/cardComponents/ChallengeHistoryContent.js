@@ -9,12 +9,17 @@ const ChallengeHistoryContent = ({ selectedDate, history }) => {
 
   const [sortedHistory, setSortedHistory] = useState([]);
 
-  console.log(selectedDate);
-  console.log(history);
-
   useEffect(() => {
     if (history && history.length > 0) {
-      const newSortedHistory = [...history].sort((a, b) => b.score - a.score);
+      const newSortedHistory = [...history]
+        .map((item, index) => ({
+          ...item,
+          score: parseFloat(item.score.toFixed(1)),
+        }))
+        .map((item, index) => ({
+          ...item,
+          rank: index + 1,
+        }));
       setSortedHistory(newSortedHistory);
     }
   }, [selectedDate, history]);
@@ -30,44 +35,55 @@ const ChallengeHistoryContent = ({ selectedDate, history }) => {
   const formatWakeTime = time => {
     const [hour, minute] = time.split(':');
     if (parseInt(hour, 10) < 12) {
-      return `${parseInt(hour, 10)}: ${parseInt(minute, 10)} AM`;
+      return `${parseInt(hour, 10)}:${parseInt(minute, 10)} AM`;
     } else if (parseInt(hour, 10) === 12) {
-      return `${parseInt(hour, 10)}: ${parseInt(minute, 10)} PM`;
+      return `${parseInt(hour, 10)}:${parseInt(minute, 10)} PM`;
     } else {
       return `${parseInt(hour, 10) - 12}시 ${parseInt(minute, 10)} PM`;
     }
   };
 
-  const myHistory = history.find(item => item.userName === userName);
+  const myHistory = sortedHistory.find(item => item.userName === userName);
   const wakeTime = formatWakeTime(myHistory.wakeTime);
   const myScore = myHistory.score;
+  const myRank = myHistory.rank;
 
   return (
     <HistoryWrapper>
       <TextWrapper>
         <MiniCircle />
-        <BoldText>{CHALLANGE_HISTORY_TEXT.wakeTime}</BoldText>
-        <PlainText>{wakeTime}</PlainText>
+        <WakeUpWrapper>
+          <BoldText>{CHALLANGE_HISTORY_TEXT.wakeTime}</BoldText>
+          <BoldText>|</BoldText>
+          <PlainText>{wakeTime}</PlainText>
+        </WakeUpWrapper>
       </TextWrapper>
       <TextWrapper>
         <MiniCircle />
-        <BoldText>{CHALLANGE_HISTORY_TEXT.score}</BoldText>
-        <PlainText>{myScore}점</PlainText>
+        <ScoreWrapper>
+          <BoldText>{CHALLANGE_HISTORY_TEXT.score}</BoldText>
+          <BoldText>|</BoldText>
+          <PlainText>{myScore}점</PlainText>
+          <PlainText>({myRank}위)</PlainText>
+        </ScoreWrapper>
       </TextWrapper>
       <TextWrapper>
         <MiniCircle />
         <BoldText>{CHALLANGE_HISTORY_TEXT.mates}</BoldText>
       </TextWrapper>
-      {sortedHistory.map((item, index) => (
-        <MatesWrapper key={index}>
-          <UserProfile
-            src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${item.userName}`}
-          />
-          <BoldText>{item.userName} |</BoldText>
-          <PlainText>{item.score}점</PlainText>
-          <PlainText>({index + 1}위)</PlainText>
-        </MatesWrapper>
-      ))}
+      <MatesContainer>
+        {sortedHistory.map((item, index) => (
+          <MatesWrapper key={index}>
+            <UserProfile
+              src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${item.userName}`}
+            />
+            <BoldText>{item.userName}</BoldText>
+            <BoldText>|</BoldText>
+            <PlainText>{item.score}점</PlainText>
+            <PlainText>({item.rank}위)</PlainText>
+          </MatesWrapper>
+        ))}
+      </MatesContainer>
     </HistoryWrapper>
   );
 };
@@ -86,9 +102,27 @@ const TextWrapper = styled.div`
 
 const MatesWrapper = styled.div`
   ${({ theme }) => theme.flex.left}
-  justify-content: space-evenly;
-  margin: 14px 0 7px 14px;
+  width: 80%;
+  justify-content: space-between;
+  margin: 14px 0 7px 0;
   flex-direction: row;
+`;
+
+const WakeUpWrapper = styled.div`
+  ${({ theme }) => theme.flex.left}
+  width: 50%;
+  justify-content: space-between;
+`;
+
+const ScoreWrapper = styled.div`
+  ${({ theme }) => theme.flex.left}
+  width: 70%;
+  justify-content: space-between;
+`;
+
+const MatesContainer = styled.div`
+  ${({ theme }) => theme.flex.left}
+  flex-direction: column;
 `;
 
 const NoHistoryText = styled.p`
@@ -97,8 +131,8 @@ const NoHistoryText = styled.p`
 `;
 
 const UserProfile = styled.img`
-  width: 25px;
-  height: 25px;
+  width: 31px;
+  height: 31px;
   border-radius: 50%;
   object-fit: cover;
   background-color: ${({ theme }) => theme.colors.primary.white};

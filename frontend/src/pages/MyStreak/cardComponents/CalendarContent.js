@@ -16,7 +16,8 @@ const MyStreakCalendar = ({
   };
 
   const handleClickOnDate = date => {
-    setClickedDate(dayjs(date).format('YYYY-MM-DD'));
+    const formattedDate = dayjs(date).format('YYYY-MM-DD');
+    setClickedDate(formattedDate);
     handleDateChange(date);
   };
 
@@ -31,6 +32,8 @@ const MyStreakCalendar = ({
         className = 'react-calendar__tile--active';
       } else if (formattedDate === today && isChallengeDay(date)) {
         className = 'react-calendar__tile--now challenge-day';
+      } else if (formattedDate === today) {
+        className = 'react-calendar__tile--now';
       } else if (isChallengeDay(date)) {
         className = 'challenge-day';
       }
@@ -48,9 +51,9 @@ const MyStreakCalendar = ({
         prevLabel={<CalendarArrow> {'<'} </CalendarArrow>}
         nextLabel={<CalendarArrow> {'>'} </CalendarArrow>}
         formatDay={(locale, date) => dayjs(date).format('D')}
-        formatMonthYear={(locale, date) => dayjs(date).format('YYYY년 / M월')} // 네비게이션에서 2023년 / 12월 이렇게 보이도록 설정
-        onChange={handleClickOnDate} // 바뀔 때 사용하는 함수
-        value={startDate} // 해당 값 사용하는 함수
+        formatMonthYear={(locale, date) => dayjs(date).format('YYYY년 / M월')}
+        onChange={handleClickOnDate}
+        value={startDate}
         tileClassName={tileClassName}
         onActiveStartDateChange={handleActiveStartDateChange}
       />
@@ -67,7 +70,7 @@ const CalendarArrow = styled.div`
 
 const MyStreakCalendarWrapper = styled.div`
   ${({ theme }) => theme.flex.center}
-  padding: 24px;
+  padding: 0 24px 24px 24px;
 `;
 
 const StyledMyStreakCalendar = styled(Calendar)`
@@ -80,9 +83,8 @@ const StyledMyStreakCalendar = styled(Calendar)`
     box-sizing: border-box;
   }
   .react-calendar__tile--now {
-    background: ${({ theme }) => theme.colors.primary.emerald};
+    background: ${({ theme }) => theme.gradient.onlyEmerald};
     color: ${({ theme }) => theme.colors.primary.white};
-    border: 2px solid ${({ theme }) => theme.colors.primary.emerald};
     border-radius: 100%;
   }
   .react-calendar__tile--now.challenge-day {
@@ -94,6 +96,9 @@ const StyledMyStreakCalendar = styled(Calendar)`
   .react-calendar__tile--active {
     border-radius: 100%;
     color: ${({ theme }) => theme.colors.primary.navy} !important;
-    background-color: ${({ theme }) => theme.colors.primary.purple};
+    background: ${({ theme }) => theme.gradient.largerPurple};
+  }
+  .react-calendar__tile--active.react-calendar__tile--now {
+    background: ${({ theme }) => theme.gradient.largerPurple} !important;
   }
 `;
