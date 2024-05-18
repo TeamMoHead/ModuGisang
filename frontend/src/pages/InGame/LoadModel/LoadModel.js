@@ -13,7 +13,7 @@ import styled from 'styled-components';
 import * as S from '../../../styles/common';
 
 const LOADING_STATUS = {
-  loadingMyModel: (
+  loadMyModel: (
     <>
       <p>게임에 필요한 AI를</p>
       <p> 준비중이에요</p>
@@ -21,6 +21,8 @@ const LOADING_STATUS = {
   ),
   waitingMates: '친구들을 기다리는 중이에요',
 };
+
+const INSTRUCTIONS = ['🤾 모션인식 AI', '😆 안면인식 AI'];
 
 const LoadModel = () => {
   const workerRef = useRef(null);
@@ -40,8 +42,11 @@ const LoadModel = () => {
     turnMicOnOff,
   } = useContext(OpenViduContext);
   const { matesReadyStatus, startFirstMission } = useContext(GameContext);
-  const [loadingMode, setLoadingMode] = useState('loadingMyModel');
-  const [instructions, setInstructions] = useState('🕺 모션 인식 AI 준비중');
+  const [loadingMode, setLoadingMode] = useState('loadMyModel');
+  const [loadedModel, setLoadedModel] = useState({
+    0: false,
+    1: false,
+  });
   const [loadedStates, setLoadedStates] = useState({
     poseLoaded: false,
     poseInitialized: false,
@@ -66,13 +71,14 @@ const LoadModel = () => {
     if (isPoseInitialized && !loadedStates.poseInitialized) {
       progressRef.current += 25;
       setLoadedStates(prev => ({ ...prev, poseInitialized: true }));
+      setLoadedModel(prev => ({ ...prev, 0: true }));
     }
     if (isHolisticLoaded && !loadedStates.holisticLoaded) {
       progressRef.current += 25;
       setLoadedStates(prev => ({ ...prev, holisticLoaded: true }));
-      setInstructions('😆 안면 인식 AI 준비중');
     }
     if (isHolisticInitialized && !loadedStates.holisticInitialized) {
+      setLoadedModel(prev => ({ ...prev, 1: true }));
       progressRef.current += 25;
       setLoadedStates(prev => ({ ...prev, holisticInitialized: true }));
     }
@@ -105,11 +111,14 @@ const LoadModel = () => {
 
   useEffect(() => {
     if (isWarmUpDone && matesReadyStatus) {
-      const matesWithoutMe = mateList.map(({ userId }) => ({
+      const matesWithoutMe = mateList.map(({ userId, userName }) => ({
         userId,
+        userName,
         ready: matesReadyStatus[userId].ready,
       }));
+      setMateList(matesWithoutMe);
       const readyMates = matesWithoutMe.filter(mate => mate.ready);
+
       progressRef.current = (readyMates?.length / mateList?.length) * 100;
 
       if (readyMates?.length === mateList?.length) {
@@ -125,14 +134,29 @@ const LoadModel = () => {
     <>
       <Wrapper>
         <LoadingWithText loadingMSG={LOADING_STATUS[loadingMode]} />
-        {loadingMode === 'loadingMyModel' && (
-          <Instruction>{instructions}</Instruction>
-        )}
         <ProgressBar>
           <ProgressWrapper>
             <ProgressIndicator $progress={progressRef.current} />
           </ProgressWrapper>
         </ProgressBar>
+        {loadingMode === 'loadMyModel' &&
+          INSTRUCTIONS.map((instructions, idx) => (
+            <Introduction key={idx}>
+              <StatusIcon $isLoaded={loadedModel[idx]} />
+              <Instruction $isLoaded={loadedModel[idx]}>
+                {instructions}
+              </Instruction>
+            </Introduction>
+          ))}
+        {loadingMode === 'waitingMates' &&
+          mateList.map(({ userId, userName }, idx) => (
+            <Introduction key={idx}>
+              <StatusIcon $isLoaded={matesReadyStatus[userId]?.ready} />
+              <Instruction $isLoaded={matesReadyStatus[userId]?.ready}>
+                {userName}
+              </Instruction>
+            </Introduction>
+          ))}
       </Wrapper>
 
       <WarmUpModel />
@@ -158,17 +182,11 @@ const Wrapper = styled.div`
   background-position: center;
 `;
 
-const Instruction = styled.p`
-  ${({ theme }) => theme.fonts.IBMMedium};
-  color: ${({ theme }) => theme.colors.primary.purple};
-
-  text-align: center;
-  margin: 20px 0 20px 0;
-`;
-
 const ProgressBar = styled.div`
   width: 100%;
   height: 30px;
+
+  margin: 30px 0 20px 0;
 `;
 
 const ProgressWrapper = styled.div`
@@ -192,6 +210,29 @@ const ProgressIndicator = styled.div`
 
   background-color: ${({ theme }) => theme.colors.primary.emerald};
   transition: width 0.2s ease;
+`;
+
+const Introduction = styled.div`
+  ${({ theme }) => theme.flex.left};
+`;
+
+const StatusIcon = styled.div`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+
+  background-color: ${({ $isLoaded, theme }) =>
+    $isLoaded ? theme.colors.primary.emerald : theme.colors.system.red};
+`;
+
+const Instruction = styled.p`
+  ${({ theme }) => theme.fonts.IBMMedium};
+  color: ${({ $isLoaded, theme }) =>
+    $isLoaded ? theme.colors.primary.white : theme.colors.neutral.gray};
+
+  text-align: center;
+  margin-bottom: 10px;
 `;
 
 // useEffect(() => {
