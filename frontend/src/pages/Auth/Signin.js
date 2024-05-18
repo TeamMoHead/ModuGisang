@@ -11,7 +11,7 @@ import { CONFIGS } from '../../config';
 import styled from 'styled-components';
 
 import { onlysun } from '../../assets/icons';
-import { IconInputBox } from '../../components';
+import { InputBox } from '../../components';
 
 const Signin = () => {
   const { TEST_EMAIL, TEST_PASSWORD } = CONFIGS;
@@ -49,15 +49,17 @@ const Signin = () => {
         <Subtitle>친구와 함께 미라클 모닝 챌린지</Subtitle>
       </TitleBox>
 
-      <IconInputBox
+      <InputBox
+        hasIcon={true}
         type="email"
-        icon={'user'}
+        icon="user"
         iconStyle={iconStyle}
         value={loginEmail}
         onChange={handleLoginEmailChange}
         onClickHandler={null}
       />
-      <IconInputBox
+      <InputBox
+        hasIcon={true}
         type="password"
         icon={'key'}
         iconStyle={iconStyle}
@@ -66,20 +68,6 @@ const Signin = () => {
         onClickHandler={null}
       />
       <>
-        {/* <form>
-          <InputBox
-            label="Email"
-            type="email"
-            value={loginEmail}
-            onChange={handleLoginEmailChange}
-          />
-          <InputBox
-            label="Password"
-            type="password"
-            value={loginPassword}
-            onChange={handleLoginPasswordChange}
-          />
-        </form> */}
         <LongBtn
           onClickHandler={async e =>
             await handleSubmitLogIn({
