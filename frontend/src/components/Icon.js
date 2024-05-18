@@ -20,6 +20,7 @@ import {
   faXmark,
   faFaceFrown,
   faFaceSmile,
+  faKey,
 } from '@fortawesome/free-solid-svg-icons';
 
 import noMusic from '../assets/icons/musicOff.svg';
@@ -30,6 +31,7 @@ const iconList = {
   login: faUserCheck,
   logout: faSignOutAlt,
   user: faUser,
+  key: faKey,
   trash: faTrashCan,
   sadFace: faSadTear,
   loading: faSpinner,

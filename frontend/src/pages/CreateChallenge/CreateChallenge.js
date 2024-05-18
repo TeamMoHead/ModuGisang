@@ -2,20 +2,18 @@ import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   NavBar,
-  InputBox,
   LongBtn,
   TimePicker,
   OutlineBox,
   CustomRadio,
   CustomCalendar,
-  SearchBox,
+  IconInputBox,
   Icon,
 } from '../../components';
 import { AccountContext, ChallengeContext } from '../../contexts';
 import { challengeServices } from '../../apis/challengeServices';
 import * as S from '../../styles/common';
 import styled from 'styled-components';
-import { useEffect } from 'react';
 
 const CreateChallenge = () => {
   const navigate = useNavigate();
@@ -164,29 +162,25 @@ const CreateChallenge = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (mates.length > 0) {
-      const isoWakeTime = convertToISODate(startDate, wakeTime);
-      const localStartDate = new Date(
-        startDate.getTime() - startDate.getTimezoneOffset() * 60000,
-      )
-        .toISOString()
-        .slice(0, 10);
-      const response = await handleCreateChallenge({
-        newChallengeData: {
-          hostId: userId,
-          duration: Number(duration),
-          startDate: localStartDate,
-          wakeTime: isoWakeTime,
-          mates,
-        },
-      });
-      setIsCreateChallengeLoading(false);
-      if (response.data) {
-        alert('챌린지가 생성되었습니다.');
-        navigate('/main');
-      }
-    } else {
-      alert('Please fill in all fields.');
+    const isoWakeTime = convertToISODate(startDate, wakeTime);
+    const localStartDate = new Date(
+      startDate.getTime() - startDate.getTimezoneOffset() * 60000,
+    )
+      .toISOString()
+      .slice(0, 10);
+    const response = await handleCreateChallenge({
+      newChallengeData: {
+        hostId: userId,
+        duration: Number(duration),
+        startDate: localStartDate,
+        wakeTime: isoWakeTime,
+        mates,
+      },
+    });
+    setIsCreateChallengeLoading(false);
+    if (response.data) {
+      alert('챌린지가 생성되었습니다.');
+      navigate('/main');
     }
   };
 
@@ -263,7 +257,10 @@ const CreateChallenge = () => {
         </TimeBox>
 
         <Title>미라클 메이트 초대</Title>
-        <SearchBox
+        <IconInputBox
+          type={'email'}
+          icon={'search'}
+          iconStyle={searchIcon}
           value={emailInput}
           onChange={handleEmailChange}
           onClickHandler={checkEmail}
@@ -382,6 +379,12 @@ const Day = styled.div`
 
 const iconStyle = {
   size: 11,
+  color: 'purple',
+  hoverColor: 'white',
+};
+
+const searchIcon = {
+  size: 20,
   color: 'purple',
   hoverColor: 'white',
 };
