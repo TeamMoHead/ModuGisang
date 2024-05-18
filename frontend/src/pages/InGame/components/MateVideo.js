@@ -6,8 +6,7 @@ import {
 } from '../../../contexts';
 import { userServices } from '../../../apis';
 import useFetch from '../../../hooks/useFetch';
-import styled from 'styled-components';
-import { css } from '@emotion/react';
+import styled, { keyframes } from 'styled-components';
 
 const MateVideo = ({ mateId, mateName, onClick }) => {
   const { fetchData } = useFetch();
@@ -67,7 +66,6 @@ const MateVideo = ({ mateId, mateName, onClick }) => {
     }
   }, [matesMissionStatus]);
 
-  console.log(mateData?.streakDays > 100, '=====', inGameMode === 0);
   return (
     <Wrapper onClick={onClick} $isWaitingRoom={inGameMode === 0}>
       {mateStatus.online ? (
@@ -78,7 +76,7 @@ const MateVideo = ({ mateId, mateName, onClick }) => {
           $isCompleted={mateStatus.missionCompleted}
           $isNotGame={inGameMode === 0 || inGameMode === 6}
           $isWaitingRoom={inGameMode === 0}
-          $isHighStreak={mateData?.streakDays > 100}
+          $isHighStreak={mateData?.streakDays >= 300}
         />
       ) : (
         <EmptyVideo>Zzz...</EmptyVideo>
@@ -122,22 +120,24 @@ const Video = styled.video`
         ? `3px solid ${theme.colors.primary.emerald}`
         : `3px solid ${theme.colors.system.red}`};
 
+  @keyframes emeraldGlow {
+    0% {
+      box-shadow: 0 0 10px 0 rgba(21, 245, 186, 0.5);
+    }
+    50% {
+      border-color: rgba(21, 245, 186, 1);
+      box-shadow: 0 0 20px 0 rgba(21, 245, 186, 0.7);
+    }
+    100% {
+      box-shadow: 0 0 10px 0 rgba(21, 245, 186, 0.5);
+    }
+  }
+
   animation: ${({ $isHighStreak, $isWaitingRoom }) =>
     $isHighStreak &&
     $isWaitingRoom &&
-    `emerald-glow 2s infinite alternate ease-in-out`};
+    `emeraldGlow 2s infinite alternate ease-in-out`};
 
-  @keyframes emerald-glow {
-    0% {
-      box-shadow: 2px 3px 5px rgba(21, 245, 185, 0.5);
-    }
-    50% {
-      box-shadow: 3px 6px 8px rgba(21, 245, 185, 0.8);
-    }
-    100% {
-      box-shadow: 2px 3px 5px rgba(21, 245, 185, 0.5);
-    }
-  }
   // mirror mode
   will-change: transform;
   transform: rotateY(180deg) translateZ(0);
