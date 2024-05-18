@@ -7,8 +7,6 @@ import {
   faUser,
   faSignOutAlt,
   faUserCheck,
-  faTrashCan,
-  faSadTear,
   faSpinner,
   faGear,
   faMicrophone,
@@ -20,6 +18,10 @@ import {
   faXmark,
   faFaceFrown,
   faFaceSmile,
+  faKey,
+  faArrowsRotate,
+  faSadTear,
+  faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 
 import noMusic from '../assets/icons/musicOff.svg';
@@ -30,6 +32,7 @@ const iconList = {
   login: faUserCheck,
   logout: faSignOutAlt,
   user: faUser,
+  key: faKey,
   trash: faTrashCan,
   sadFace: faSadTear,
   loading: faSpinner,
@@ -44,6 +47,7 @@ const iconList = {
   frown: faFaceFrown,
   search: faMagnifyingGlass,
   close: faXmark,
+  refresh: faArrowsRotate,
 };
 
 const iconStyleSample = {

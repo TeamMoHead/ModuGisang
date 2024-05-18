@@ -6,8 +6,7 @@ import {
 } from '../../../contexts';
 import { userServices } from '../../../apis';
 import useFetch from '../../../hooks/useFetch';
-import styled from 'styled-components';
-import { css } from '@emotion/react';
+import styled, { keyframes } from 'styled-components';
 
 const MateVideo = ({ mateId, mateName, onClick }) => {
   const { fetchData } = useFetch();
@@ -68,7 +67,7 @@ const MateVideo = ({ mateId, mateName, onClick }) => {
   }, [matesMissionStatus]);
 
   return (
-    <Wrapper onClick={onClick}>
+    <Wrapper onClick={onClick} $isWaitingRoom={inGameMode === 0}>
       {mateStatus.online ? (
         <Video
           ref={mateVideoRef}
@@ -76,7 +75,8 @@ const MateVideo = ({ mateId, mateName, onClick }) => {
           playsInline
           $isCompleted={mateStatus.missionCompleted}
           $isNotGame={inGameMode === 0 || inGameMode === 6}
-          $isHighStreak={mateData?.streakDays > 100}
+          $isWaitingRoom={inGameMode === 0}
+          $isHighStreak={mateData?.streakDays >= 300}
         />
       ) : (
         <EmptyVideo>Zzz...</EmptyVideo>
@@ -101,9 +101,12 @@ const Wrapper = styled.div`
   flex-direction: column;
 
   box-shadow: ${({ theme }) => theme.boxShadow.basic};
+
+  border-radius: ${({ theme }) => theme.radius.small};
 `;
 
 const Video = styled.video`
+  z-index: 100;
   position: absolute;
   width: 100%;
   height: 66%;
@@ -117,22 +120,28 @@ const Video = styled.video`
         ? `3px solid ${theme.colors.primary.emerald}`
         : `3px solid ${theme.colors.system.red}`};
 
-  ${({ $isHighStreak }) =>
+  @keyframes emeraldGlow {
+    0% {
+      box-shadow: 0 0 10px 0 rgba(21, 245, 186, 0.5);
+    }
+    50% {
+      border-color: rgba(21, 245, 186, 1);
+      box-shadow: 0 0 20px 0 rgba(21, 245, 186, 0.7);
+    }
+    100% {
+      box-shadow: 0 0 10px 0 rgba(21, 245, 186, 0.5);
+    }
+  }
+
+  animation: ${({ $isHighStreak, $isWaitingRoom }) =>
     $isHighStreak &&
-    css`
-      animation: shadow-animation 2s infinite alternate ease-in-out;
-      @keyframes shadow-animation {
-        0% {
-          box-shadow: 2px 3px 5px rgba(21, 245, 185, 0.5);
-        }
-        50% {
-          box-shadow: 4px 6px 10px rgba(21, 245, 185, 0.8);
-        }
-        100% {
-          box-shadow: 2px 3px 5px rgba(21, 245, 185, 0.5);
-        }
-      }
-    `}
+    $isWaitingRoom &&
+    `emeraldGlow 2s infinite alternate ease-in-out`};
+
+  // mirror mode
+  will-change: transform;
+  transform: rotateY(180deg) translateZ(0);
+  -webkit-transform: rotateY(180deg);
 `;
 
 const UserName = styled.span`

@@ -135,9 +135,15 @@ export class ChallengesService {
         date: Between(startDate, endDate),
       },
     });
-    return attendances.map(
-      (attendance) => attendance.date.toISOString().split('T')[0],
-    ); // 날짜만 반환
+    console.log(attendances);
+    return attendances.map((attendance) => {
+      // attendance.date가 Date 객체인지 확인하고, 그렇지 않다면 변환
+      const date = new Date(attendance.date);
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date format');
+      }
+      return date.toISOString().split('T')[0];
+    }); // 날짜만 반환
   }
 
   async getInvitations(guestId: number) {
@@ -175,6 +181,9 @@ export class ChallengesService {
     }
 
     const challengeId = userWithChallenge.challengeId;
+    const challenge = await this.challengeRepository.findOne({
+      where: { _id: challengeId },
+    });
 
     // 해당 챌린지 ID와 일치하는 날짜에 모든 참석 기록을 조회
     const attendances = await this.attendanceRepository
@@ -191,6 +200,7 @@ export class ChallengesService {
     return attendances.map((attendance) => ({
       userName: attendance.user.userName,
       score: attendance.score,
+      wakeTime: challenge.wakeTime,
     }));
   }
 

@@ -36,7 +36,6 @@ const GAME_MODE = {
 const HEADER_TEXT = '오늘의 미라클 메이커';
 
 const Result = () => {
-  const EffectCanvasRef = useRef(null);
   const { fetchData } = useFetch();
   const { accessToken, userId: myId } = useContext(AccountContext);
   const { challengeId } = useContext(UserContext);
@@ -159,7 +158,6 @@ const Result = () => {
   return (
     <>
       <Wrapper $hasRest={theRestUsersStream?.length > 0}>
-        {/* <EffectCanvas ref={EffectCanvasRef} /> */}
         <UpperArea>
           {(!theTopUserData || !theRestUsersStream) && (
             <LoadingWithText loadingMSG="결과를 불러오는 중입니다" />
@@ -203,14 +201,14 @@ const Result = () => {
               gameResults?.map(({ userName, score }, idx) => (
                 <RankingWrapper key={idx}>
                   <ScoreLine
-                    $scoreWidth={score < 30 ? 29 : score * 1.05}
+                    $scoreWidth={score < 31 ? 31 : score}
                     $isTheTop={idx === 0}
                   >
                     <RangkingAndScore>
                       <RankingNum>{idx + 1}</RankingNum>
                       <Score>{score}점</Score>
                     </RangkingAndScore>
-                    {score >= 61 && (
+                    {score >= 60 && (
                       <AllInLine>
                         <UserName>{userName}</UserName>
                         <UserProfile
@@ -218,8 +216,8 @@ const Result = () => {
                         />
                       </AllInLine>
                     )}
-                    {score < 61 && score >= 36 && (
-                      <ProfileInLine>
+                    {score < 60 && score >= 41 && (
+                      <ProfileInLine $scoreWidth={score}>
                         <UserProfile
                           $profileInline={true}
                           src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${userName}`}
@@ -228,8 +226,11 @@ const Result = () => {
                       </ProfileInLine>
                     )}
                   </ScoreLine>
-                  {score < 35 && (
-                    <ProfileOutLine $profileInline={false}>
+                  {score < 41 && (
+                    <ProfileOutLine
+                      $profileInline={false}
+                      $scoreWidth={score < 31 ? 31 : score}
+                    >
                       <UserProfile
                         $profileInline={false}
                         src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${userName}`}
@@ -337,8 +338,8 @@ const TheTopVideo = styled.video`
   border-radius: ${({ theme }) => theme.radius.medium};
   border: transparent;
 
-  animation: shadow-animation 2s infinite alternate ease-in-out;
-  @keyframes shadow-animation {
+  animation: yellow-glow 2s infinite alternate ease-in-out;
+  @keyframes yellow-glow {
     0% {
       box-shadow: 2px 3px 30px rgba(255, 209, 0, 0.5);
     }
@@ -418,7 +419,7 @@ const Medal = styled.img`
 const Rankings = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 50px;
+  gap: 12px;
 
   width: 100%;
   height: 50%;
@@ -428,14 +429,9 @@ const Rankings = styled.div`
 const RankingWrapper = styled.div`
   position: relative;
   width: 100%;
-  ${({ theme }) => theme.flex.between};
-  align-items: center;
 `;
 
 const ScoreLine = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
   width: ${({ $scoreWidth }) => $scoreWidth}%;
 
   ${({ theme }) => theme.flex.between};
@@ -495,7 +491,7 @@ const AllInLine = styled.div`
 
 const ProfileInLine = styled.div`
   position: absolute;
-  left: 90px;
+  left: calc(${({ $scoreWidth }) => $scoreWidth}% - 34px);
   width: 100%;
 
   ${({ theme }) => theme.flex.right};
@@ -512,7 +508,7 @@ const ProfileOutLine = styled.div`
 
   position: absolute;
   top: 0;
-  left: 110px;
+  left: calc(${({ $scoreWidth }) => $scoreWidth}% + 10px);
 
   margin-right: 8px;
 
