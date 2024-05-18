@@ -17,14 +17,12 @@ const CHALLENGE_DATA = {
   },
 };
 
-const MyChallengeContent = () => {
+const MedalContent = () => {
   const { myData } = useContext(UserContext);
 
   const myGoldMedals = myData?.medals?.gold;
   const mySilverMedals = myData?.medals?.silver;
   const myBronzeMedals = myData?.medals?.bronze;
-
-  console.log(myData);
 
   useEffect(() => {
     if (!myData) return;
@@ -32,7 +30,7 @@ const MyChallengeContent = () => {
 
   return (
     <>
-      <MyChallengeContentWrapper>
+      <MedalContentWrapper>
         <MedalsWrapper>
           <MedalIcon src={CHALLENGE_DATA.medals.gold} />
           <ChallengeText>{CHALLENGE_DATA.texts.gold}</ChallengeText>
@@ -51,14 +49,14 @@ const MyChallengeContent = () => {
           <ChallengeDaysCount>{myBronzeMedals}회</ChallengeDaysCount>
           <ChallengeText>달성</ChallengeText>
         </MedalsWrapper>
-      </MyChallengeContentWrapper>
+      </MedalContentWrapper>
     </>
   );
 };
 
-export default MyChallengeContent;
+export default MedalContent;
 
-const MyChallengeContentWrapper = styled.div`
+const MedalContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;

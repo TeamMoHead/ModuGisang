@@ -38,8 +38,6 @@ export const HEADER_STYLES = {
 export const FOOTER_STYLES = {
   myStreakCalendar: {
     style: {
-      font: 'IBMmediumlarge',
-      fontColor: 'purple',
       bgColor: 'purple',
       borderRadius: '0 0 20px 20px',
     },

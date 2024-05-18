@@ -1,99 +1,100 @@
-import styled from 'styled-components';
+import React, { useContext } from 'react';
+import styled, { css } from 'styled-components';
+import { UserContext } from '../../../contexts';
 
-const convertISOToDate = isoString => {
-  const date = new Date(isoString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}/${month}/${day}`;
-};
+const ChallengeHistoryContent = ({ selectedDate, history }) => {
+  const { myData } = useContext(UserContext);
+  const { userName } = myData;
 
-const convertDuration = duration => {
-  if (duration === 7) {
-    return '7일 (동메달)';
-  } else if (duration === 30) {
-    return '30일 (은메달)';
-  } else if (duration === 100) {
-    return '100일 (금메달)';
+  console.log(selectedDate);
+
+  if (!history || history.length === 0) {
+    return (
+      <HistoryWrapper>
+        <NoHistoryText>선택한 날짜의 챌린지 기록이 없습니다.</NoHistoryText>
+      </HistoryWrapper>
+    );
   }
-};
-
-const convertWakeTime = wakeTime => {
-  const [hours, minutes, seconds] = wakeTime.split(':').map(Number);
-  const period = hours >= 12 ? 'PM' : 'AM';
-  const adjustedHours = hours % 12 || 12; // 0 or 12 should be converted to 12
-  const formattedHours = String(adjustedHours).padStart(2, '0');
-  const formattedMinutes = String(minutes).padStart(2, '0');
-  return `${formattedHours}:${formattedMinutes} ${period}`;
-};
-
-const ChallengeHistoryContent = ({ challenge }) => {
-  let duration = convertDuration(challenge.duration);
-  let startDate = convertISOToDate(challenge.startDate);
-  let wakeTime = convertWakeTime(challenge.wakeTime);
+  const myHistory = history.filter(item => item.userName === userName);
+  console.log('나의 기록', myHistory);
+  const { wakeTime, myScore } = myHistory;
 
   return (
-    <Wrapper>
-      <Profile
-        src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${challenge.userName}`}
-      />
-      <TextBox>
-        <CardText>
-          <MiniCircle />
-          <BoldText>챌린지 호스트 | </BoldText> {challenge.userName}
-        </CardText>
-        <CardText>
-          <MiniCircle />
-          <BoldText>시작 날짜 | </BoldText> {startDate}
-        </CardText>
-        <CardText>
-          <MiniCircle />
-          <BoldText>기상 시간 | </BoldText> {wakeTime}
-        </CardText>
-        <CardText>
-          <MiniCircle />
-          <BoldText>지속 기간 | </BoldText> {duration}
-        </CardText>
-      </TextBox>
-    </Wrapper>
+    <HistoryWrapper>
+      <TextWrapper>
+        <MiniCircle />
+        <BoldText>기상 시간 |</BoldText>
+        <PlainText>{wakeTime}</PlainText>
+      </TextWrapper>
+      <TextWrapper>
+        <MiniCircle />
+        <BoldText>미라클 게임 결과 | </BoldText>
+        <PlainText>{myScore}점</PlainText>
+      </TextWrapper>
+      <TextWrapper>
+        <MiniCircle />
+        <BoldText>미라클 메이트</BoldText>
+      </TextWrapper>
+      {history.map((item, index) => (
+        <MatesWrapper>
+          <UserProfile
+            key={item.userName}
+            src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${item.userName}`}
+          />
+          <BoldText key={index}>{item.userName} |</BoldText>
+          <PlainText>{item.score}점</PlainText>
+        </MatesWrapper>
+      ))}
+    </HistoryWrapper>
   );
 };
 
 export default ChallengeHistoryContent;
 
-const Wrapper = styled.div`
-  ${({ theme }) => theme.flex.left}
-  background-color: ${({ theme }) => theme.colors.translucent.white};
-  width: 100%;
-  height: auto;
-  border: 1px solid ${({ theme }) => theme.colors.primary.purple};
-  border-radius: 20px;
-  padding: 10px;
+const HistoryWrapper = styled.div`
+  padding: 16px;
 `;
 
-const Profile = styled.img`
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  background-color: ${({ theme }) => theme.colors.primary.white};
-  margin: 5px;
-`;
-
-const TextBox = styled.div`
-  ${({ theme }) => theme.flex.center}
-  flex-direction:column;
-  align-items: flex-start;
-`;
-
-const CardText = styled.div`
-  ${({ theme }) => theme.flex.center};
+const TextWrapper = styled.div`
+  ${({ theme }) => theme.flex.left};
   ${({ theme }) => theme.fonts.IBMsmall}
-  padding:5px;
+  margin: 14px 0 14px 0;
+`;
+
+const MatesWrapper = styled.div`
+  ${({ theme }) => theme.flex.left}
+  justify-content: space-evenly;
+  margin: 14px 0 7px 14px;
+  flex-direction: row;
+`;
+
+const NoHistoryText = styled.p`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.primary.gray};
+`;
+
+const UserProfile = styled.img`
+  width: 25px;
+  height: 25px;
+
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: ${({ theme }) => theme.colors.primary.white};
+
+  ${({ $profileInline }) =>
+    $profileInline &&
+    css`
+      position: absolute;
+      left: 0;
+    `}
 `;
 
 const BoldText = styled.span`
-  font-weight: 900;
-  margin-right: 5px;
+  ${({ theme }) => theme.fonts.IBMsmallBold}
+`;
+
+const PlainText = styled.span`
+  ${({ theme }) => theme.fonts.IBMxsmall}
 `;
 
 const MiniCircle = styled.div`

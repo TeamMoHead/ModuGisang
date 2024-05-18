@@ -1,5 +1,5 @@
-import MyChallengeContent from './MedalContent';
+import MedalContent from './MedalContent';
 import CalendarContent from './CalendarContent';
 import ChallengeHistoryContent from './ChallengeHistoryContent';
 
-export { MyChallengeContent, CalendarContent, ChallengeHistoryContent };
+export { MedalContent, CalendarContent, ChallengeHistoryContent };
