@@ -56,8 +56,9 @@ export class AuthService {
       const decodedRefreshToken = this.jwtService.verify(refreshToken, {
         secret: this.configService.get<string>('REFRESH_TOKEN_SECRET_KEY'),
       });
-      const userId = decodedRefreshToken.id;
+      const userId = decodedRefreshToken._id;
       console.log('@@@@ refresh 해석 userId : ', userId);
+
       const user = await this.userService.getUserIfRefreshTokenMatches(
         refreshToken,
         userId,
