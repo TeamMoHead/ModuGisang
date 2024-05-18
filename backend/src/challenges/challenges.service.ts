@@ -172,24 +172,27 @@ export class ChallengesService {
     userId: number,
     date: Date,
   ): Promise<ChallengeResultDto[]> {
-    // 먼저 사용자가 참여하고 있는 챌린지 ID를 조회
-    const userWithChallenge = await this.userRepository.findOne({
-      where: { _id: userId },
+    const nowAttendance = await this.attendanceRepository.findOne({
+      where: { userId: userId, date: date },
     });
-    if (!userWithChallenge || !userWithChallenge.challengeId) {
-      throw new Error('No challenge found for the user.');
+
+    if (!nowAttendance) {
+      throw new Error('Attendance does not exist');
     }
 
-    const challengeId = userWithChallenge.challengeId;
-    const challenge = await this.challengeRepository.findOne({
-      where: { _id: challengeId },
-    });
+    const challengeId = nowAttendance.challengeId;
 
     // 해당 챌린지 ID와 일치하는 날짜에 모든 참석 기록을 조회
     const attendances = await this.attendanceRepository
       .createQueryBuilder('attendance')
       .leftJoinAndSelect('attendance.user', 'user')
-      .select(['attendance.score', 'user.userName', 'user._id']) // 필요한 필드만 선택
+      .leftJoinAndSelect('attendance.challenge', 'challenge')
+      .select([
+        'attendance.score',
+        'user.userName',
+        'user._id',
+        'challenge.wakeTime',
+      ]) // 필요한 필드만 선택
       .where(
         'attendance.challengeId = :challengeId AND attendance.date = :date',
         { challengeId, date },
@@ -200,7 +203,7 @@ export class ChallengesService {
     return attendances.map((attendance) => ({
       userName: attendance.user.userName,
       score: attendance.score,
-      wakeTime: challenge.wakeTime,
+      wakeTime: attendance.challenge.wakeTime,
     }));
   }
 
