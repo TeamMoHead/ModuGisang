@@ -57,7 +57,7 @@ export class UserController {
 
   @UseGuards(AuthenticateGuard)
   @Get('/:userId')
-  async searchUser(@Param('userId') userId: number) {
+  async searchUser(@Req() req, @Param('userId') userId: number) {
     const result = await this.userService.getInvis(userId);
     const invitations = result.invitations;
     const lastActiveDate = result.lastActiveDate;

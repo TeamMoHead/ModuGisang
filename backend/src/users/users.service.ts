@@ -137,6 +137,7 @@ export class UserService {
       where: { _id: userId },
       relations: ['invitations', 'streak'],
     });
+
     const count = invitations?.invitations.filter(
       (invitation) => !invitation.isExpired,
     ).length; // 초대받은 챌린지의 수

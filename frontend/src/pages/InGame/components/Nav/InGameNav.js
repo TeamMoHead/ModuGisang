@@ -98,7 +98,7 @@ const InGameNav = () => {
 export default InGameNav;
 
 const Wrapper = styled.nav`
-  z-index: 100;
+  z-index: 900;
   position: fixed;
   top: 0;
 
