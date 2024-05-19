@@ -89,7 +89,6 @@ const tables = {
   },
 };
 
-let raisingHand = 0;
 let isHandDownCount = 0; // 손을 계속 들고 있을 때 대비
 let isWaiting = false;
 let isMissionFinished = false;
@@ -114,15 +113,8 @@ const Mission5 = () => {
   const [hand, setHand] = useState(0); // 0 없음, 1 왼손, 2 오른손
 
   const getColor = direction => {
-    if (direction === 1) {
-      if (hand === 1) return '#15F5BA';
-      if (hand === 2) return '#FF008F';
-    }
-    if (direction === 2) {
-      if (hand === 1) return '#FF008F';
-      if (hand === 2) return '#15F5BA';
-    }
-    return '#808080';
+    if (direction === hand) return '#15F5BA';
+    return '#FF008F';
   };
 
   const multipleGame = poseLandmarks => {
@@ -136,36 +128,36 @@ const Mission5 = () => {
 
     if (isHandDownCount > 50 && mouth.y < left.y && mouth.y > right.y) {
       setHand(1);
-      raisingHand = 1; // 왼손을 들고 있음
       isHandDownCount = 0;
     } else if (isHandDownCount > 50 && mouth.y > left.y && mouth.y < right.y) {
       setHand(2);
-      raisingHand = 2; // 오른손을 들고 있음
       isHandDownCount = 0;
       // } else if (nose.y < left.y && nose.y < right.y) {
     } else {
       setHand(0);
-      raisingHand = 0;
       isHandDownCount += 1;
     }
+  };
+
+  useEffect(() => {
+    if (isMissionFinished || !poseModel.current || isMissionStarting) return;
+
+    poseModel.current.onResults(results => {
+      multipleGame(results.poseLandmarks);
+    });
 
     const direction = tables[roundIdx].direction;
-    if (raisingHand > 0) {
+    if (hand > 0) {
       isWaiting = true;
 
-      console.log('----- RESULT : ', direction, raisingHand);
-
-      if (raisingHand === direction) {
+      if (hand === direction) {
         setIsRoundPassed(true);
         setTimeout(() => setIsRoundPassed(false), 100);
         setGameScore(prev => prev + tables[roundIdx].score);
         totalScore += tables[roundIdx].score;
-        console.log('----- CORRECT !');
-        console.log('----- score: ', totalScore);
       } else {
         setIsRoundFailed(true);
         setTimeout(() => setIsRoundFailed(false), 100);
-        console.log('----- STUPID !');
       }
 
       setTimeout(() => {
@@ -175,11 +167,10 @@ const Mission5 = () => {
           if (totalScore >= 10) setMyMissionStatus(true);
         } else setRoundIdx(prev => prev + 1);
         setHand(0);
-        raisingHand = 0;
         isWaiting = false;
       }, 2000);
     }
-  };
+  }, [isMissionStarting, hand, roundIdx, myMissionStatus]);
 
   useEffect(() => {
     if (
@@ -192,12 +183,6 @@ const Mission5 = () => {
     }
 
     const videoElement = myVideoRef.current;
-
-    poseModel.current.onResults(results => {
-      if (results.poseLandmarks) {
-        multipleGame(results.poseLandmarks);
-      }
-    });
 
     const handleCanPlay = () => {
       if (poseModel.current) {
