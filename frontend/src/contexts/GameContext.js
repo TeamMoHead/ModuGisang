@@ -64,7 +64,7 @@ const GameContextProvider = ({ children }) => {
   const [inGameMode, setInGameMode] = useState(
     // parseInt(localStorage.getItem('inGameMode')) || 0,
     // 5,
-    5,
+    0,
   );
 
   const [isMyReadyStatusSent, setIsMyReadyStatusSent] = useState(false);
