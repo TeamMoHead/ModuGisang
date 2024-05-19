@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 
 const time = {
-  roundFinish: 12500,
+  missionFinish: 27000,
   afterCheckCorrect: 500,
-  afterFlip: 500,
+  // afterFlip: 500,
 };
 
-const Guide = ({ poseCorrect }) => {
+const Guide = ({ poseCorrect, isFlipTriggered }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   const [color, setColor] = useState(
@@ -27,34 +27,28 @@ const Guide = ({ poseCorrect }) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (
-        latestPoseCorrect.current.direction === 'left' &&
-        !latestPoseCorrect.current.active
-      ) {
-        setColor('#FF008F');
-      }
-      setTimeout(() => {
-        setIsFlipped(true);
-      }, time.afterCheckCorrect);
-      setTimeout(() => {
-        setColor('#F0F3FF');
-      }, time.afterFlip);
-    }, time.roundFinish);
+      // if (
+      //   latestPoseCorrect.current.direction === 'left' &&
+      //   !latestPoseCorrect.current.active
+      // ) {
+      //   setColor('#FF008F');
+      // }
+      // setTimeout(() => {
+      setIsFlipped(isFlipTriggered);
+      // }, time.afterCheckCorrect);
+      // setTimeout(() => {
+      //   setColor('#F0F3FF');
+      // }, time.afterFlip);
+    }, time.afterCheckCorrect);
     return () => clearTimeout(timer);
-  }, []);
+  }, [isFlipTriggered]);
 
   useEffect(() => {
-    const timer = setTimeout(
-      () => {
-        if (
-          latestPoseCorrect.current.direction === 'left' &&
-          !latestPoseCorrect.current.active
-        ) {
-          setColor('#FF008F');
-        }
-      },
-      time.roundFinish * 2 + time.afterCheckCorrect + time.afterFlip,
-    );
+    const timer = setTimeout(() => {
+      if (!latestPoseCorrect.current.active) {
+        setColor('#FF008F');
+      }
+    }, time.missionFinish);
     return () => clearTimeout(timer);
   }, []);
 
@@ -105,7 +99,7 @@ const StyledSVG = styled.svg`
   width: 120%;
   height: 120%;
   opacity: 0.5;
-  transition: 0.1s ease;
+  transition: 0.5s ease;
 
   path {
     transition: fill 1s ease;

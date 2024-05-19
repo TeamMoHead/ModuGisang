@@ -32,7 +32,6 @@ let frameCount = 0; // 현재 프레임 카운트
 
 let isPoseCorrect = false; // 자세 측정 결과
 const keypoints = {}; // 측정에 사용할 각 포인트의 위치 저장
-const roundDuration = 16000; // 1 라운드 시간
 const timeoutDuration = 27000; // 제한 시간
 
 const Mission1 = () => {
@@ -51,6 +50,7 @@ const Mission1 = () => {
   const [stretchSide, setStretchSide] = useState(round);
   const [currentRound, setCurrentRound] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [isFlipTriggered, setIsFlipTriggered] = useState(false);
 
   const updateProgress = direction => {
     const newProgress =
@@ -88,6 +88,8 @@ const Mission1 = () => {
 
           if (currentScoreLeft >= maxScore) {
             isPoseCorrect = true;
+            setTimeout(() => setCurrentRound(1), 500);
+            setIsFlipTriggered(true);
           } else {
             isPoseCorrect = false;
           }
@@ -159,13 +161,6 @@ const Mission1 = () => {
   }, [isMissionStarting, poseModel, inGameMode, myVideoRef, currentRound]);
 
   useEffect(() => {
-    setTimeout(() => {
-      setCurrentRound(1);
-      setIsRoundPassed(false);
-    }, roundDuration);
-  }, []);
-
-  useEffect(() => {
     if (
       stretchSide[0].active &&
       stretchSide[1].active &&
@@ -176,7 +171,8 @@ const Mission1 = () => {
 
     stretchSide.forEach((side, index) => {
       if (side.active && !side.scoreAdded) {
-        setIsRoundPassed(prevState => !prevState);
+        setIsRoundPassed(true);
+        setTimeout(() => setIsRoundPassed(false), 100);
         setGameScore(prevGameScore => prevGameScore + 10);
         // 점수가 추가된 후, scoreAdded 상태 업데이트
         setStretchSide(prevState =>
@@ -184,8 +180,6 @@ const Mission1 = () => {
             idx === index ? { ...item, scoreAdded: true } : item,
           ),
         );
-      } else {
-        setIsRoundPassed(prevState => prevState);
       }
     });
   }, [stretchSide]);
@@ -200,7 +194,10 @@ const Mission1 = () => {
           <ProgressWrapper title="progressWrapper">
             <ProgressIndicator progress={progress} />
           </ProgressWrapper>
-          <Guide poseCorrect={stretchSide[currentRound]} />
+          <Guide
+            poseCorrect={stretchSide[currentRound]}
+            isFlipTriggered={isFlipTriggered}
+          />
         </>
       )}
     </>
