@@ -46,7 +46,7 @@
     "build": "react-scripts build",
     "start:local": "env-cmd -f .env.local react-scripts start",
     "start:dev": "env-cmd -f .env craco start",
-    "build:dev": "env-cmd -f .env craco build",
+    "build:dev": "env-cmd -f .env react-scripts build",
     "start:prod": "env-cmd -f .env.prod craco start",
     "build:prod": "PUBLIC_URL='/static' env-cmd -f .env.prod craco build",
     "eject": "react-scripts eject"

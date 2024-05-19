@@ -8,6 +8,7 @@ import {
 import { LoadingWithText, WarmUpModel } from '../../../components';
 import { CONFIGS } from '../../../config';
 
+import { faceIcon, stretchingIcon } from '../../../assets/icons';
 import backgroundImage from '../../../assets/backgroundImage.png';
 import styled from 'styled-components';
 import * as S from '../../../styles/common';
@@ -22,7 +23,8 @@ const LOADING_STATUS = {
   waitingMates: '친구들을 기다리는 중이에요',
 };
 
-const INSTRUCTIONS = ['🤾 모션인식 AI', '😆 안면인식 AI'];
+const MODEL_ICONS = [stretchingIcon, faceIcon];
+const INSTRUCTIONS = ['모션인식 AI', '안면인식 AI'];
 
 const LoadModel = () => {
   const workerRef = useRef(null);
@@ -81,6 +83,11 @@ const LoadModel = () => {
       setLoadedModel(prev => ({ ...prev, 1: true }));
       progressRef.current += 25;
       setLoadedStates(prev => ({ ...prev, holisticInitialized: true }));
+
+      setLoadingMode('waitingMates');
+      setTimeout(() => {
+        progressRef.current = 0;
+      }, 2000);
     }
   }, [
     isPoseLoaded,
@@ -93,9 +100,6 @@ const LoadModel = () => {
   useEffect(() => {
     if (isWarmUpDone) {
       sendMyReadyStatus();
-
-      progressRef.current = 0;
-
       let mates = mateStreams.map(mate => ({
         userId: parseInt(JSON.parse(mate.stream.connection.data).userId),
         userName: JSON.parse(mate.stream.connection.data).userName,
@@ -103,9 +107,6 @@ const LoadModel = () => {
       }));
       mates.filter(mate => mate.userId !== myId);
       setMateList(mates);
-      console.log('🍀, ', mateStreams, mates);
-
-      setLoadingMode('waitingMates');
     }
   }, [isWarmUpDone, mateStreams]);
 
@@ -125,7 +126,10 @@ const LoadModel = () => {
         if (!micOn) {
           turnMicOnOff();
         }
-        startFirstMission();
+
+        setTimeout(() => {
+          startFirstMission();
+        }, 2000);
       }
     }
   }, [matesReadyStatus]);
@@ -144,6 +148,7 @@ const LoadModel = () => {
             <Introduction key={idx}>
               <StatusIcon $isLoaded={loadedModel[idx]} />
               <Instruction $isLoaded={loadedModel[idx]}>
+                <Image src={MODEL_ICONS[idx]} $isLoaded={loadedModel[idx]} />
                 {instructions}
               </Instruction>
             </Introduction>
@@ -215,16 +220,25 @@ const ProgressIndicator = styled.div`
 const Introduction = styled.div`
   ${({ theme }) => theme.flex.left};
   align-items: center;
+
+  margin-bottom: 10px;
 `;
 
 const StatusIcon = styled.div`
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  margin: 0 8px 8px 0;
+  margin-right: 8px;
 
   background-color: ${({ $isLoaded, theme }) =>
     $isLoaded ? theme.colors.primary.emerald : theme.colors.system.red};
+  opacity: ${({ $isLoaded }) => ($isLoaded ? 1 : 0.5)};
+`;
+
+const Image = styled.img`
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
   opacity: ${({ $isLoaded }) => ($isLoaded ? 1 : 0.5)};
 `;
 
@@ -234,7 +248,7 @@ const Instruction = styled.p`
     $isLoaded ? theme.colors.primary.white : theme.colors.neutral.gray};
 
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 2px;
 `;
 
 // useEffect(() => {
