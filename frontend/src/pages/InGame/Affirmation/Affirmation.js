@@ -4,7 +4,6 @@ import { MissionStarting, MissionEnding } from '../components';
 import { OpenViduContext, GameContext, UserContext } from '../../../contexts';
 
 import useSpeechToText from '../MissionEstimators/useSpeechToText';
-import MissionSoundEffects from '../Sound/MissionSoundEffects';
 
 const Affirmation = () => {
   const {
@@ -74,11 +73,9 @@ const Affirmation = () => {
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
       {isMissionStarting || (
-        <>
-          <Wrapper>
-            <TextArea>{highlightedText}</TextArea>
-          </Wrapper>
-        </>
+        <Wrapper>
+          <TextArea>{highlightedText}</TextArea>
+        </Wrapper>
       )}
     </>
   );

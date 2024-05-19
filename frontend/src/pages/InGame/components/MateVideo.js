@@ -74,7 +74,7 @@ const MateVideo = ({ mateId, mateName, onClick }) => {
           autoPlay
           playsInline
           $isCompleted={mateStatus.missionCompleted}
-          $isNotGame={inGameMode === 0 || inGameMode === 6}
+          $isNotGame={inGameMode === 0 || inGameMode === 7}
           $isWaitingRoom={inGameMode === 0}
           $isHighStreak={mateData?.streakDays >= 300}
         />

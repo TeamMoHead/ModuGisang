@@ -97,7 +97,7 @@ const Wrapper = styled.div`
 
   background-color: ${({ theme, inGameMode }) =>
     inGameMode === 4 ? 'transparent' : theme.colors.translucent.navy};
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(3px);
 `;
 
 const Result = styled.span`
@@ -108,7 +108,7 @@ const Result = styled.span`
   padding: 30px 0;
 
   background-color: ${({ theme }) => theme.colors.translucent.white};
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(2px);
 
   border-top: 4px solid
     ${({ theme, $myMissionStatus }) =>
@@ -134,7 +134,7 @@ const Result = styled.span`
 const Text = styled.span`
   text-align: center;
 
-  ${({ theme }) => theme.fonts.JuaMedium};
+  font: 700 60px 'Jua';
   color: ${({ theme }) => theme.colors.white};
   -webkit-text-stroke: ${({ theme, $myMissionStatus }) =>
       $myMissionStatus ? theme.colors.primary.emerald : theme.colors.system.red}
