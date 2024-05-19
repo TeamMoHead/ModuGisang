@@ -1,4 +1,4 @@
-import React, { useRef, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   MediaPipeContext,
   GameContext,
@@ -62,7 +62,7 @@ const tables = {
   7: {
     question: '15 X 5',
     correct: '75',
-    wrong: '196',
+    wrong: '55',
     direction: 2,
     score: 2,
   },
@@ -115,12 +115,12 @@ const Mission5 = () => {
 
   const getColor = direction => {
     if (direction === 1) {
-      if (hand === 1) return '#008000';
-      if (hand === 2) return '#FF00000';
+      if (hand === 1) return '#15F5BA';
+      if (hand === 2) return '#FF008F';
     }
-    if (direction === 2 && hand === 2) {
-      if (hand === 1) return '#FF0000';
-      if (hand === 2) return '#008000';
+    if (direction === 2) {
+      if (hand === 1) return '#FF008F';
+      if (hand === 2) return '#15F5BA';
     }
     return '#808080';
   };
@@ -130,15 +130,15 @@ const Mission5 = () => {
       return;
     }
 
-    const nose = poseLandmarks[pose.POSE_LANDMARKS.NOSE];
+    const mouth = poseLandmarks[pose.POSE_LANDMARKS.LEFT_RIGHT];
     const left = poseLandmarks[pose.POSE_LANDMARKS.LEFT_WRIST];
     const right = poseLandmarks[pose.POSE_LANDMARKS.RIGHT_WRIST];
 
-    if (isHandDownCount > 50 && nose.y < left.y && nose.y > right.y) {
+    if (isHandDownCount > 50 && mouth.y < left.y && mouth.y > right.y) {
       setHand(1);
       raisingHand = 1; // 왼손을 들고 있음
       isHandDownCount = 0;
-    } else if (isHandDownCount > 50 && nose.y > left.y && nose.y < right.y) {
+    } else if (isHandDownCount > 50 && mouth.y > left.y && mouth.y < right.y) {
       setHand(2);
       raisingHand = 2; // 오른손을 들고 있음
       isHandDownCount = 0;
@@ -156,14 +156,12 @@ const Mission5 = () => {
       if (raisingHand === direction) {
         setIsRoundPassed(true);
         setTimeout(() => setIsRoundPassed(false), 100);
-        console.log('----- CORRECT !');
         setGameScore(prev => prev + tables[roundIdx].score);
         totalScore += tables[roundIdx].score;
         console.log('----- score: ', totalScore);
       } else {
         setIsRoundFailed(true);
         setTimeout(() => setIsRoundFailed(false), 100);
-        console.log('----- STUPID !');
       }
 
       setTimeout(() => {
@@ -235,7 +233,11 @@ const Mission5 = () => {
                 <Answer alt="left">
                   <CustomAnswerImg
                     selected={hand === 1}
-                    color={getColor(tables[roundIdx].direction)}
+                    color={
+                      hand === 1
+                        ? getColor(tables[roundIdx].direction)
+                        : '#808080'
+                    }
                   />
                   <AnswerText>
                     {tables[roundIdx].direction === 1
@@ -248,7 +250,11 @@ const Mission5 = () => {
                 <Answer alt="right">
                   <CustomAnswerImg
                     selected={hand === 2}
-                    color={getColor(tables[roundIdx].direction)}
+                    color={
+                      hand === 2
+                        ? getColor(tables[roundIdx].direction)
+                        : '#808080'
+                    }
                   />
                   <AnswerText>
                     {tables[roundIdx].direction === 2
@@ -303,24 +309,27 @@ const AnswerBox = styled.div`
   position: absolute;
   top: 10px;
 
-  width: calc(100% - 16px);
+  width: calc(100% - 6px);
   height: 120px;
-  padding: 0 30px;
+  padding: 0 20px;
 
   ${({ theme }) => theme.flex.between}
 `;
 
 const Answer = styled.div`
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 110px;
+  height: 110px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const AnswerText = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-30%, 15%);
+  transform: translate(-50%, -5%);
   ${({ theme }) => theme.fonts.JuaMedium};
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+  -webkit-text-stroke: var(--Dark, #0d0a2d) 2px;
 `;
