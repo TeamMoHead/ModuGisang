@@ -8,7 +8,6 @@ import { POSES } from './POSE_DATA';
 import { MissionStarting, MissionEnding } from '../components';
 import Guide from './Guide';
 import styled from 'styled-components';
-import { MissionSoundEffects, RoundSoundEffect } from '../Sound';
 
 const round = [
   {
@@ -45,7 +44,6 @@ const Mission1 = () => {
     myMissionStatus,
     setMyMissionStatus,
     setIsRoundPassed,
-    gameScore,
     setGameScore,
   } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
