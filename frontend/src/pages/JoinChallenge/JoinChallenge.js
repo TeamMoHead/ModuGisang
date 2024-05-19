@@ -1,6 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { NavBar, LongBtn, CustomRadio, InvitationCard } from '../../components';
+import {
+  NavBar,
+  LongBtn,
+  CustomRadio,
+  InvitationCard,
+  LoadingWithText,
+} from '../../components';
 import { AccountContext, ChallengeContext } from '../../contexts';
 import { challengeServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
@@ -73,13 +79,24 @@ const JoinChallenge = () => {
   //   } else return;
   // }, [isAcceptSent, isAcceptInviLoading]);
 
-  if (isInvitationLoading) return <div>로딩중...</div>;
+  if (isInvitationLoading)
+    return (
+      <>
+        <NavBar />
+        <S.LoadingWrapper>
+          <LoadingWithText loadingMSG="초대받은 챌린지를 가져오고 있어요" />
+        </S.LoadingWrapper>
+      </>
+    );
+
   return (
     <>
       <NavBar />
       <S.PageWrapper>
         {isAcceptSent && isAcceptInviLoading ? (
-          <div>초대 승낙 하는 중... </div>
+          <S.LoadingWrapper>
+            <LoadingWithText loadingMSG="초대를 승낙하고 있어요" />
+          </S.LoadingWrapper>
         ) : (
           <>
             <CustomRadio
