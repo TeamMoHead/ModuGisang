@@ -6,7 +6,7 @@ import {
 } from '../../../contexts';
 import { userServices } from '../../../apis';
 import useFetch from '../../../hooks/useFetch';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 
 const MateVideo = ({ mateId, mateName, onClick }) => {
   const { fetchData } = useFetch();

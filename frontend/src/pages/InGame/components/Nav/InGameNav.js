@@ -11,6 +11,7 @@ import { INFO_BY_GAME_MODE } from './DATA';
 import styled from 'styled-components';
 
 const GAME_MODE = {
+  100: 'loadModel',
   0: 'waiting',
   1: 'mission1',
   2: 'mission2',
@@ -59,6 +60,7 @@ const InGameNav = () => {
   //   return () => {};
   // }, [inGameMode, turnMicOnOff]);
 
+  if (inGameMode === 100) return null;
   return (
     <Wrapper>
       {(GAME_MODE[inGameMode] === 'waiting' ||
