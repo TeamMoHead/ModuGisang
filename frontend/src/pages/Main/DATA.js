@@ -1,3 +1,5 @@
+import theme from '../../styles/theme';
+
 export const GREETINGS = ['안녕하세요, ', '님!'];
 
 export const CARD_TYPES = {
@@ -15,6 +17,7 @@ export const CARD_STYLES = {
     lineColor: 'purple',
   },
   invitations: { isBold: true, lineColor: 'purple' },
+
   // create: { isBold: true, lineColor: 'gradient' },
   // enter: { isBold: true, lineColor: 'gradient' },
 };

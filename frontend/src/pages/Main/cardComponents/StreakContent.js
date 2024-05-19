@@ -16,7 +16,7 @@ const MEDAL_ICONS = {
   bronze: bronze,
 };
 
-const StreakContent = ({ isWaitingRoom, userData }) => {
+const StreakContent = ({ isWaitingRoom, userData, showMedals = true }) => {
   const [level, setLevel] = useState('streak0');
   const { myData } = useContext(UserContext);
   const { streakDays, medals: medalCounts } = isWaitingRoom ? userData : myData;

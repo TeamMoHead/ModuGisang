@@ -46,6 +46,19 @@ const fonts = {
     line-height: 34px;
     letter-spacing: -2.5%;
   `,
+  IBMmediumlarge: css`
+    font: 20px 'IBM Plex Sans KR';
+    line-height: 30px;
+    letter-spacing: -2.5%;
+  `,
+  IBMmediumlargeBold: css`
+    font: 'IBM Plex Sans KR';
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 22px;
+    letter-spacing: -0.5px;
+  `,
   IBMmedium: css`
     font: 18px 'IBM Plex Sans KR';
     line-height: 0px;
@@ -55,6 +68,22 @@ const fonts = {
     font: 16px 'IBM Plex Sans KR';
     line-height: 18px;
     letter-spacing: -2.5%;
+  `,
+  IBMsmallBold: css`
+    font: 'IBM Plex Sans KR';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: -0.4px;
+  `,
+  IBMxsmall: css`
+    font: 'IBM Plex Sans KR';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: -0.4px;
   `,
   warning: css`
     font: 300 15px 'Noto Sans KR';
