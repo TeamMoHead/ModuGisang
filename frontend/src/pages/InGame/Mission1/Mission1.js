@@ -179,7 +179,7 @@ const Mission1 = () => {
     stretchSide.forEach((side, index) => {
       if (side.active && !side.scoreAdded) {
         setIsRoundPassed(prevState => !prevState);
-        setGameScore(prevGameScore => prevGameScore + 12.5);
+        setGameScore(prevGameScore => prevGameScore + 10);
         // 점수가 추가된 후, scoreAdded 상태 업데이트
         setStretchSide(prevState =>
           prevState.map((item, idx) =>

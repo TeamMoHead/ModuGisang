@@ -28,6 +28,7 @@ let currentStatus; // 현재 고개를 돌린 방향
 let isCentered = false;
 let isDirectionCorrect = false; // 화살표 별 측정 결과
 let isMissionFinished = false;
+const timeoutDuration = 21500; // 제한 시간
 
 const Mission3 = () => {
   const { poseModel, setIsPoseLoaded, setIsPoseInitialized } =
@@ -135,7 +136,7 @@ const Mission3 = () => {
     const timer = setTimeout(() => {
       setGameScore(prev => prev + score.current);
       isMissionFinished = true;
-    }, 17000);
+    }, timeoutDuration);
     return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 클리어
   }, []);
 
@@ -190,15 +191,15 @@ const Mission3 = () => {
         if (currentRoundIdx === 1 && currentArrowIdx === 3) {
           setCurrentArrowIdx(0); // 첫 번째 화살표로 초기화
           setMyMissionStatus(true); // 성공
-          score.current = 25;
+          score.current = 20;
         } else if (currentRoundIdx === 0 && currentArrowIdx === 3) {
-          score.current = 12;
+          score.current = 10;
           setCurrentArrowIdx(0); // 첫 번째 화살표로 초기화
           setTimeout(() => {
             setCurrentRoundIdx(currentRoundIdx + 1); // 다음 라운드로 넘어감
           }, 1000); // 1초 뒤에 실행되도록 설정
         } else {
-          score.current = currentRoundIdx * 12 + (currentArrowIdx + 1) * 3;
+          score.current = currentRoundIdx * 10 + (currentArrowIdx + 1) * 2.5;
           setCurrentArrowIdx(currentArrowIdx + 1); // 다음 화살표로 이동
         }
       }
