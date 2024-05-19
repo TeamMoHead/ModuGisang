@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 
 const time = {
-  roundFinish: 27000,
+  missionFinish: 27000,
   afterCheckCorrect: 500,
   // afterFlip: 500,
 };
@@ -48,7 +48,7 @@ const Guide = ({ poseCorrect, isFlipTriggered }) => {
       if (!latestPoseCorrect.current.active) {
         setColor('#FF008F');
       }
-    }, time.roundFinish);
+    }, time.missionFinish);
     return () => clearTimeout(timer);
   }, []);
 
