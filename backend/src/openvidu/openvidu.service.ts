@@ -1,6 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { OpenVidu, OpenViduRole } from 'openvidu-node-client';
 import { ConfigService } from '@nestjs/config';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Users } from 'src/users/entities/users.entity';
+import { UserService } from 'src/users/users.service';
 
 @Injectable()
 export class OpenviduService {
@@ -8,7 +12,12 @@ export class OpenviduService {
   private OPENVIDU_URL = this.configService.get<string>('OPENVIDU_URL');
   private OPENVIDU_SECRET = this.configService.get<string>('OPENVIDU_SECRET');
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    // @InjectRepository(Users)
+    // private userRepository: Repository<Users>,
+    private userService: UserService,
+  ) {
     this.openvidu = new OpenVidu(this.OPENVIDU_URL, this.OPENVIDU_SECRET);
   }
 
@@ -46,6 +55,7 @@ export class OpenviduService {
     try {
       const response = await session.generateToken(tokenOptions);
       console.log('Generated Token: ', response);
+      await this.userService.saveOpenviduToken(body.userData.userId, response);
       return response;
     } catch (error) {
       console.error('Error creating connection: ', error);
