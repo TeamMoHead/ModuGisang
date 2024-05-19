@@ -30,7 +30,7 @@ const GAME_MODE_DURATION = {
   2: 19000,
   3: 17000,
   4: 14500,
-  5: 13000,
+  5: 21000,
   6: 8000,
 };
 
@@ -64,6 +64,7 @@ const GameContextProvider = ({ children }) => {
 
   // =================== ROUND STATUS ===================
   const [isRoundPassed, setIsRoundPassed] = useState(false);
+  const [isRoundFailed, setIsRoundFailed] = useState(false);
 
   // =================== GAME STATUS ===================
   const [inGameMode, setInGameMode] = useState(
@@ -155,6 +156,7 @@ const GameContextProvider = ({ children }) => {
       setIsMissionEnding(false);
       setMyMissionStatus(false); // 미션 수행상태 초기화
       setIsRoundPassed(false); // 라운드 통과 상태 초기화
+      setIsRoundFailed(false);
 
       if (GAME_MODE[nextGameMode] !== 'result') {
         setTimeout(() => {
@@ -242,6 +244,8 @@ const GameContextProvider = ({ children }) => {
         //
         isRoundPassed,
         setIsRoundPassed,
+        isRoundFailed,
+        setIsRoundFailed,
         //
         isEnteredTimeSent,
         setIsEnteredTimeSent,
