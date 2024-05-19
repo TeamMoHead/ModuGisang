@@ -288,6 +288,7 @@ const Answer = styled.div`
 `;
 
 const AnswerText = styled.div`
+  z-index: 400;
   position: absolute;
   top: 50%;
   left: 50%;
