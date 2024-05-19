@@ -29,11 +29,9 @@ const MyStreakCalendar = ({
 
     if (view === 'month') {
       if (formattedDate === clickedDate) {
-        className = 'react-calendar__tile--active';
-      } else if (formattedDate === today && isChallengeDay(date)) {
-        className = 'react-calendar__tile--now challenge-day';
+        className = 'active';
       } else if (formattedDate === today) {
-        className = 'react-calendar__tile--now';
+        className = 'today';
       } else if (isChallengeDay(date)) {
         className = 'challenge-day';
       }
@@ -75,30 +73,68 @@ const MyStreakCalendarWrapper = styled.div`
 
 const StyledMyStreakCalendar = styled(Calendar)`
   .react-calendar__tile {
-    font-size: 16px;
+    ${({ theme }) => theme.fonts.IBMsmallBold}
+    position: relative;
+  }
+
+  .react-calendar__tile--now:enabled:hover,
+  .react-calendar__tile--now:enabled:focus,
+  .react-calendar__tile--active {
+    background: none !important;
+    color: none !important;
+    width: auto !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .challenge-day::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 33px;
+    height: 33px;
+    background-color: ${({ theme }) => theme.colors.primary.emerald};
+    border-radius: 50%;
+    transform: translate(-40%, -50%);
+    z-index: -1;
   }
   .challenge-day {
-    border: 2px solid ${({ theme }) => theme.colors.primary.purple};
-    border-radius: 100%;
-    box-sizing: border-box;
+    color: ${({ theme }) => theme.colors.primary.navy};
   }
-  .react-calendar__tile--now {
-    background: ${({ theme }) => theme.gradient.onlyEmerald};
-    color: ${({ theme }) => theme.colors.primary.white};
-    border-radius: 100%;
+
+  .active::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 33px;
+    height: 33px;
+    background-color: ${({ theme }) => theme.colors.primary.purple};
+    border-radius: 50%;
+    transform: translate(-40%, -50%);
+    z-index: -1;
   }
-  .react-calendar__tile--now.challenge-day {
-    background: ${({ theme }) => theme.colors.primary.emerald};
-    color: ${({ theme }) => theme.colors.primary.white} !important;
-    border: 2px solid ${({ theme }) => theme.colors.primary.purple};
-    border-radius: 100%;
+  .active {
+    color: ${({ theme }) => theme.colors.primary.navy};
   }
-  .react-calendar__tile--active {
-    border-radius: 100%;
-    color: ${({ theme }) => theme.colors.primary.navy} !important;
-    background: ${({ theme }) => theme.gradient.largerPurple};
+
+  .today::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 33px;
+    height: 33px;
+    background-color: ${({ theme }) => theme.colors.system.yellow};
+    color: ${({ theme }) => theme.colors.primary.navy};
+    border-radius: 50%;
+    transform: translate(-40%, -50%);
+    z-index: -1;
   }
-  .react-calendar__tile--active.react-calendar__tile--now {
-    background: ${({ theme }) => theme.gradient.largerPurple} !important;
+
+  .today {
+    background-color: ${({ theme }) => theme.colors.primary.emerald};
+    color: ${({ theme }) => theme.colors.primary.navy};
   }
 `;
