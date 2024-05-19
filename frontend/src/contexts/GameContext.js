@@ -1,6 +1,11 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 
-import { AccountContext, ChallengeContext, UserContext } from './';
+import {
+  AccountContext,
+  ChallengeContext,
+  UserContext,
+  MediaPipeContext,
+} from './';
 import { inGameServices } from '../apis';
 import useCheckTime from '../hooks/useCheckTime';
 import useFetch from '../hooks/useFetch';
@@ -8,6 +13,7 @@ import useFetch from '../hooks/useFetch';
 const GameContext = createContext();
 
 const GAME_MODE = {
+  100: 'loadModel',
   0: 'waiting',
   1: 'mission1',
   2: 'mission2',
@@ -24,7 +30,7 @@ const GAME_MODE_DURATION = {
   2: 21500,
   3: 21500,
   4: 14500,
-  5: 13000,
+  5: 21000,
   6: 8000,
 };
 
@@ -35,6 +41,7 @@ const GameContextProvider = ({ children }) => {
   const { accessToken, userId } = useContext(AccountContext);
   const { myData, challengeId } = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
+  const { isWarmUpDone } = useContext(MediaPipeContext);
   const { remainingTime, isTooLate, isTooEarly } = useCheckTime(
     challengeData?.wakeTime,
   );
@@ -57,12 +64,19 @@ const GameContextProvider = ({ children }) => {
 
   // =================== ROUND STATUS ===================
   const [isRoundPassed, setIsRoundPassed] = useState(false);
+  const [isRoundFailed, setIsRoundFailed] = useState(false);
 
   // =================== GAME STATUS ===================
   const [inGameMode, setInGameMode] = useState(
     // parseInt(localStorage.getItem('inGameMode')) || 0,
     // 5,
     0,
+  );
+
+  const [isMyReadyStatusSent, setIsMyReadyStatusSent] = useState(false);
+  const [matesReadyStatus, setMatesReadyStatus] = useState(
+    null,
+    //  {[userId]: { ready: 'boolean' }, ...}
   );
   const [isEnteredTimeSent, setIsEnteredTimeSent] = useState(false);
   const [isGameScoreSent, setIsGameScoreSent] = useState(false);
@@ -142,6 +156,7 @@ const GameContextProvider = ({ children }) => {
       setIsMissionEnding(false);
       setMyMissionStatus(false); // 미션 수행상태 초기화
       setIsRoundPassed(false); // 라운드 통과 상태 초기화
+      setIsRoundFailed(false);
 
       if (GAME_MODE[nextGameMode] !== 'result') {
         setTimeout(() => {
@@ -153,7 +168,7 @@ const GameContextProvider = ({ children }) => {
       }
 
       if (GAME_MODE[nextGameMode] === 'result') {
-        // localStorage.setItem('inGameMode', JSON.stringify(6));
+        // localStorage.setItem('inGameMode', JSON.stringify(7));
       }
     }
   };
@@ -173,11 +188,31 @@ const GameContextProvider = ({ children }) => {
     }, remainingTime);
   };
 
+  const startFirstMission = () => {
+    setInGameMode(1); // waiting 끝나면 첫 미션으로 전환
+    setIsMissionStarting(true); // 게임 로딩 시작
+    setMyMissionStatus(false); // 미션 수행상태 초기화
+    setIsMissionEnding(false);
+
+    setTimeout(() => {
+      setIsMissionEnding(true); // 첫 미션 종료 후 결과 표시
+      setTimeout(() => {
+        updateMode();
+      }, RESULT_TIME);
+    }, GAME_MODE_DURATION[1]); // 첫 미션 지속 시간
+  };
+
+  const startModelWarmUp = () => {
+    setTimeout(() => {
+      setInGameMode(100); // model loading 모드로 전환
+    }, remainingTime);
+  };
+
   useEffect(() => {
     if (challengeData && !isTooEarly && !isTooLate) {
       // ⭐️⭐️⭐️⭐️⭐️⭐️ 개발 편의 용 주석 ⭐️⭐️⭐️⭐️⭐️//
       // 나중에 다시 풀어야 함
-      scheduleFirstMission();
+      startModelWarmUp();
       // ===== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
     }
   }, [challengeData]);
@@ -188,6 +223,11 @@ const GameContextProvider = ({ children }) => {
     <GameContext.Provider
       value={{
         inGameMode,
+        isMyReadyStatusSent,
+        setIsMyReadyStatusSent,
+        matesReadyStatus,
+        setMatesReadyStatus,
+        startFirstMission,
         //
         isMusicMuted,
         setIsMusicMuted,
@@ -204,6 +244,8 @@ const GameContextProvider = ({ children }) => {
         //
         isRoundPassed,
         setIsRoundPassed,
+        isRoundFailed,
+        setIsRoundFailed,
         //
         isEnteredTimeSent,
         setIsEnteredTimeSent,

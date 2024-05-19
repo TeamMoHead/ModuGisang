@@ -16,10 +16,11 @@ const MEDAL_ICONS = {
   bronze: bronze,
 };
 
-const StreakContent = ({ isWaitingRoom, userData }) => {
+const StreakContent = ({ isWaitingRoom, userData, showMedals = true }) => {
   const [level, setLevel] = useState('streak0');
   const { myData } = useContext(UserContext);
   const { streakDays, medals: medalCounts } = isWaitingRoom ? userData : myData;
+  const [isDataLoading, setIsDataLoading] = useState(true);
 
   const getStreakLevel = streakDays => {
     if (streakDays < 7) {
@@ -45,42 +46,49 @@ const StreakContent = ({ isWaitingRoom, userData }) => {
   };
 
   useEffect(() => {
-    if (!myData) return;
     if (isWaitingRoom && !userData) return;
+    if (!isWaitingRoom && Object.keys(myData).length === 0) return;
     setLevel(getStreakLevel(streakDays));
+    setIsDataLoading(false);
   }, [myData, userData]);
 
   return (
     <Wrapper>
-      <TopWrapper>
-        <LevelIcon src={STREAK_LEVEL_ICON[level]} />
-        <RightArea>
-          <MediumLetter>미라클 모닝 성공</MediumLetter>
-          <Days>
-            <BigLetter>{streakDays}</BigLetter>
-            <SmallLetter>일차</SmallLetter>
-          </Days>
-        </RightArea>
-      </TopWrapper>
-      <SeperateLine $isWide={isWaitingRoom} />
-      <BottomWrapper>
-        <ChallengeRecordTitle>
-          <MediumLetter>챌린지 달성 기록</MediumLetter>
-        </ChallengeRecordTitle>
-        <Medals>
-          {['gold', 'silver', 'bronze'].map((medal, idx) => (
-            <MedalArea key={idx}>
-              {medalCounts[medal] > 0 && (
-                <MedalCount>{medalCounts[medal]}</MedalCount>
-              )}
-              <Medal
-                src={MEDAL_ICONS[medal]}
-                $hasMedal={medalCounts[medal] > 0}
-              />
-            </MedalArea>
-          ))}
-        </Medals>
-      </BottomWrapper>
+      {isDataLoading ? (
+        <LoadingWrapper>로딩중...</LoadingWrapper>
+      ) : (
+        <>
+          <TopWrapper>
+            <LevelIcon src={STREAK_LEVEL_ICON[level]} />
+            <RightArea>
+              <MediumLetter>미라클 모닝 성공</MediumLetter>
+              <Days>
+                <BigLetter>{streakDays}</BigLetter>
+                <SmallLetter>일차</SmallLetter>
+              </Days>
+            </RightArea>
+          </TopWrapper>
+          <SeperateLine $isWide={isWaitingRoom} />
+          <BottomWrapper>
+            <ChallengeRecordTitle>
+              <MediumLetter>챌린지 달성 기록</MediumLetter>
+            </ChallengeRecordTitle>
+            <Medals>
+              {['gold', 'silver', 'bronze'].map((medal, idx) => (
+                <MedalArea key={idx}>
+                  {medalCounts[medal] > 0 && (
+                    <MedalCount>{medalCounts[medal]}</MedalCount>
+                  )}
+                  <Medal
+                    src={MEDAL_ICONS[medal]}
+                    $hasMedal={medalCounts[medal] > 0}
+                  />
+                </MedalArea>
+              ))}
+            </Medals>
+          </BottomWrapper>
+        </>
+      )}
     </Wrapper>
   );
 };
@@ -90,6 +98,13 @@ const Wrapper = styled.div`
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
 `;
+
+const LoadingWrapper = styled.div`
+  ${({ theme }) => theme.flex.center};
+  width: 100%;
+  padding: 95px 0px;
+`;
+
 const TopWrapper = styled.div`
   ${({ theme }) => theme.flex.between}
   width: 100%;

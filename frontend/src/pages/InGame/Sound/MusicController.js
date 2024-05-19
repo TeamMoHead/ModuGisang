@@ -5,6 +5,7 @@ import {
   BackgroundMusic,
   MissionSoundEffects,
   RoundSoundEffect,
+  FailedSoundEffect,
 } from '../Sound';
 
 import { GameContext } from '../../../contexts';
@@ -31,8 +32,8 @@ const MusicController = () => {
     icon: 'musicOff',
     iconStyle: {
       size: 38,
-      color: 'grey',
-      hoverColor: 'grey',
+      color: 'purple',
+      hoverColor: 'purple',
     },
   };
 
@@ -49,6 +50,7 @@ const MusicController = () => {
       <BackgroundMusic />
       <MissionSoundEffects />
       <RoundSoundEffect />
+      <FailedSoundEffect />
     </>
   );
 };
@@ -56,8 +58,8 @@ const MusicController = () => {
 export default MusicController;
 
 const BtnWrapper = styled.div`
+  z-index: 800;
   position: fixed;
   top: 125px;
   right: 40px;
-  z-index: 100;
 `;

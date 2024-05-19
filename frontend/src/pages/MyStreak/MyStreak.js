@@ -1,50 +1,153 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { NavBar, LongBtn } from '../../components';
+import { NavBar, OutlineBox, LoadingWithText } from '../../components';
 import { AccountContext, UserContext } from '../../contexts';
 import { challengeServices } from '../../apis';
+import { StreakContent } from '../Main/cardComponents';
+import {
+  MedalContent,
+  CalendarContent,
+  ChallengeHistoryContent,
+} from './cardComponents';
 import useFetch from '../../hooks/useFetch';
+import dayjs from 'dayjs';
 
 import * as S from '../../styles/common';
+import styled from 'styled-components';
+import { CARD_STYLES, FOOTER_STYLES, HEADER_STYLES } from './DATA';
 
 const MyStreak = () => {
-  const navigate = useNavigate();
   const { fetchData } = useFetch();
   const { accessToken, userId } = useContext(AccountContext);
   const { myData } = useContext(UserContext);
-  const { userName, streakDays, medals, affirmation } = myData;
 
-  const getCallendar = async ({ accessToken, userId, month }) => {
+  const [isStreakLoading, setIsStreakLoading] = useState(false);
+  const [challengeDates, setChallengeDates] = useState([]);
+  const [challengeHistory, setChallengeHistory] = useState([]);
+  const [viewMonth, setViewMonth] = useState(new Date().getMonth() + 1);
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  const getCalendar = async () => {
     const response = await fetchData(() =>
-      challengeServices.getCallendarInfo({ accessToken, userId, month }),
+      challengeServices.getCalendarInfo({
+        accessToken,
+        userId,
+        month: viewMonth,
+      }),
     );
+    const {
+      isLoading: isGetCalendarLoading,
+      data: getCalendarData,
+      error: getCalendarDataError,
+    } = response;
+    if (!isGetCalendarLoading && getCalendarData) {
+      const calendarData = new Set(getCalendarData);
+      setChallengeDates([...calendarData]);
+    } else if (!isGetCalendarLoading && getCalendarDataError) {
+      console.error(getCalendarDataError);
+    }
   };
 
-  const handleClickOnDate = async ({ accessToken, userId, date }) => {
+  const handleClickOnDate = async date => {
+    const formattedDate = dayjs(date).format('YYYY-MM-DD');
+    setSelectedDate(formattedDate);
+
     const response = await fetchData(() =>
-      challengeServices.getCallendarInfoByDate({ accessToken, userId, date }),
+      challengeServices.getCalendarInfoByDate({
+        accessToken,
+        userId: userId,
+        date: formattedDate,
+      }),
     );
+
+    const {
+      isLoading: isGetCalendarByDateLoading,
+      data: getCalendarByDateData,
+      error: getCalendarByDateError,
+    } = response;
+    if (!isGetCalendarByDateLoading && getCalendarByDateData) {
+      setChallengeHistory(getCalendarByDateData);
+    } else if (!isGetCalendarByDateLoading && getCalendarByDateError) {
+      console.error(getCalendarByDateError);
+      setChallengeHistory([]);
+    }
   };
+
+  const handleActiveStartDateChange = ({ activeStartDate, view }) => {
+    if (view === 'month') {
+      const newMonth = activeStartDate.getMonth() + 1;
+      setViewMonth(newMonth);
+    }
+  };
+
+  const formatDate = date => {
+    const [year, month, day] = date.split('-');
+    return `${year.slice(2)}년 ${parseInt(month, 10)}월 ${parseInt(day, 10)}일 기록`;
+  };
+
+  console.log('챌린지 수행 날짜', challengeDates);
+  console.log('챌린지 수행 내역', challengeHistory);
+  console.log('선택된 날짜', selectedDate);
 
   useEffect(() => {
-    getCallendar({ accessToken, userId, month: 4 });
-  }, []);
+    getCalendar();
+    console.log('선택한 월', viewMonth);
+  }, [viewMonth]);
+
+  if (isStreakLoading) {
+    return (
+      <>
+        <NavBar />
+        <S.PageWrapper>
+          <LoadingWithText loadingMSG="로딩중..." />
+        </S.PageWrapper>
+      </>
+    );
+  }
 
   return (
     <>
       <NavBar />
       <S.PageWrapper>
-        <div>유저이름: {userName}</div>
-        <div>연속일수: {streakDays}</div>
-        <div>금메달: {medals?.gold}</div>
-        <div>은메달: {medals?.silver}</div>
-        <div>동메달: {medals?.bronze}</div>
-        <div>오늘의한마디: {affirmation}</div>
-        <LongBtn
-          onClickHandler={() => {
-            handleClickOnDate({ accessToken, userId, date: '2024-05-09' });
-          }}
-          btnName="5월 9일 확인하기"
+        <StreakCardWrapper
+          content={
+            <StreakContent
+              userData={myData}
+              isWaitingRoom={false}
+              showMedals={false}
+            />
+          }
+          boxStyle={CARD_STYLES.myStreak}
+        />
+        <ChallengeCardWrapper
+          boxStyle={CARD_STYLES.myStreakChallenge}
+          header={HEADER_STYLES.myStreakChallenge}
+          content={<MedalContent />}
+        />
+        <CalendarCardWrapper
+          content={
+            <CalendarContent
+              startDate={new Date()}
+              handleDateChange={date => {
+                handleClickOnDate(date);
+              }}
+              challengeDates={challengeDates}
+              handleActiveStartDateChange={handleActiveStartDateChange}
+            />
+          }
+          header={HEADER_STYLES.myStreakCalendar}
+          boxStyle={CARD_STYLES.myStreakCalendar}
+          footer={FOOTER_STYLES.myStreakCalendar}
+          footerContent={
+            selectedDate && (
+              <>
+                <SelectedDateText>{formatDate(selectedDate)}</SelectedDateText>
+                <ChallengeHistoryContent
+                  selectedDate={selectedDate}
+                  history={challengeHistory}
+                />
+              </>
+            )
+          }
         />
       </S.PageWrapper>
     </>
@@ -52,3 +155,12 @@ const MyStreak = () => {
 };
 
 export default MyStreak;
+
+const StreakCardWrapper = styled(OutlineBox)``;
+const ChallengeCardWrapper = styled(OutlineBox)``;
+const CalendarCardWrapper = styled(OutlineBox)``;
+
+const SelectedDateText = styled.div`
+  ${({ theme }) => theme.fonts.IBMmediumlargeBold}
+  color: ${({ theme }) => theme.colors.primary.emerald};
+`;

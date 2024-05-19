@@ -24,7 +24,7 @@ const Testing = () => {
       },
     });
 
-    socket.current.on('connect', () => {
+    socket.current.on('CONNECT', () => {
       console.log('Connected to server');
       socket.current.emit('JOIN_ROOM', { challengeId, userId });
     });
@@ -55,7 +55,7 @@ const Testing = () => {
       ]);
     });
 
-    socket.current.on('RAKINGS', data => {
+    socket.current.on('RANKINGS', data => {
       setRankings(data);
     });
 

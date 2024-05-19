@@ -14,12 +14,17 @@ const OpenViduContext = createContext();
 const OpenViduContextProvider = ({ children }) => {
   const { accessToken } = useContext(AccountContext);
   const { myData, challengeId } = useContext(UserContext);
-  const { inGameMode, myMissionStatus, setMatesMissionStatus } =
-    useContext(GameContext);
+  const {
+    inGameMode,
+    setIsMyReadyStatusSent,
+    setMatesReadyStatus,
+    myMissionStatus,
+    setMatesMissionStatus,
+  } = useContext(GameContext);
 
   const { userId, userName } = myData;
 
-  const [OVInstance, setOVInstance] = useState(null); // OpenVidu 객체 [openvidu-browser
+  const [OVInstance, setOVInstance] = useState(null); // OpenVidu 객체
   const [videoSession, setVideoSession] = useState(null);
   const [connectionToken, setConnectionToken] = useState('');
   const myVideoRef = useRef(null);
@@ -51,15 +56,41 @@ const OpenViduContextProvider = ({ children }) => {
     setMicOn(prev => !prev);
   };
 
-  const leaveSession = () => {
-    if (videoSession) {
-      videoSession.disconnect();
+  const sendModelLoadingStart = async () => {
+    try {
+      videoSession
+        .signal({
+          data: JSON.stringify({ userId, start: true }),
+          to: [],
+          type: 'modelLoadingStart',
+        })
+        .then(() => {})
+        .catch(error => {
+          console.error(error);
+        });
+    } catch (e) {
+      console.error('Error occured while sending model loading start', e);
     }
+  };
 
-    setOVInstance(null);
-    setVideoSession(null);
-    setMateStreams([]);
-    setMyStream(null);
+  const sendMyReadyStatus = async () => {
+    try {
+      videoSession
+        .signal({
+          data: JSON.stringify({ userId, ready: true }),
+          to: [],
+          type: 'readyToStartGame',
+        })
+        .then(() => {
+          setIsMyReadyStatusSent(true);
+        })
+        .catch(error => {
+          console.error(error);
+          setIsMyReadyStatusSent(false);
+        });
+    } catch (e) {
+      console.error('Error occured while sending my model ready status', e);
+    }
   };
 
   const sendMissionStatus = async () => {
@@ -70,9 +101,7 @@ const OpenViduContextProvider = ({ children }) => {
           to: [],
           type: 'missionStatus',
         })
-        .then(() => {
-          console.log('====> My Mission Status successfully Sent to Mates');
-        })
+        .then(() => {})
         .catch(error => {
           console.error(error);
         });
@@ -115,11 +144,20 @@ const OpenViduContextProvider = ({ children }) => {
       console.warn(exception);
     });
 
-    videoSession.on('signal:leave', event => {
-      console.log('---Signal Leave Test:: ', event);
-      if (event.data === userId.userId) {
-        leaveSession();
-      }
+    videoSession.on('signal:modelLoadingStart', event => {
+      const data = JSON.parse(event.data);
+      setMatesReadyStatus(prev => ({
+        ...prev,
+        [data.userId]: { ready: false },
+      }));
+    });
+
+    videoSession.on('signal:readyToStartGame', event => {
+      const data = JSON.parse(event.data);
+      setMatesReadyStatus(prev => ({
+        ...prev,
+        [data.userId]: { ready: data.ready },
+      }));
     });
 
     videoSession.on('signal:missionStatus', event => {
@@ -183,6 +221,8 @@ const OpenViduContextProvider = ({ children }) => {
         setMyStream,
         mateVideoRefs,
         mateStreams,
+        sendModelLoadingStart,
+        sendMyReadyStatus,
         sendMissionStatus,
         setMicOn,
       }}

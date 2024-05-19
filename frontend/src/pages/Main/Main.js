@@ -1,19 +1,9 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  UserContext,
-  ChallengeContext,
-  AccountContext,
-  MediaPipeContext,
-} from '../../contexts';
+import { UserContext, ChallengeContext, AccountContext } from '../../contexts';
 import useCheckTime from '../../hooks/useCheckTime';
 import BottomFixContent from './cardComponents/BottomFixContent';
-import {
-  NavBar,
-  OutlineBox,
-  WarmUpModel,
-  LoadingWithText,
-} from '../../components';
+import { NavBar, OutlineBox, LoadingWithText } from '../../components';
 import {
   StreakContent,
   InvitationsContent,
@@ -32,7 +22,6 @@ const Main = () => {
   const { accessToken, userId } = useContext(AccountContext);
   const { challengeId, getMyData } = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
-  const { isWarmUpDone } = useContext(MediaPipeContext);
   const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
 
   const hasChallenge = Number(challengeId) !== -1;
@@ -90,40 +79,25 @@ const Main = () => {
     );
   return (
     <>
-      {!isWarmUpDone ? (
-        <S.LoadingWrapper>
-          <LoadingWithText
-            loadingMSG={
-              isTooLate
-                ? '결과 데이터를 저장하고 있어요'
-                : '게임을 위해 필요한 AI 모델을 준비하고 있어요'
-            }
-          />
-        </S.LoadingWrapper>
-      ) : (
-        <>
-          <NavBar />
-          <S.PageWrapper>
-            <CardsWrapper>
-              {CARD_TYPES[hasChallenge ? 'hasChallenge' : 'noChallenge'].map(
-                type => (
-                  <OutlineBox
-                    key={type}
-                    content={CARD_CONTENTS[type]}
-                    onClickHandler={CARD_ON_CLICK_HANDLERS[type]}
-                    boxStyle={CARD_STYLES[type]}
-                  />
-                ),
-              )}
-            </CardsWrapper>
-            <BottomFixContent
-              challengeData={challengeData}
-              Handler={CARD_ON_CLICK_HANDLERS}
-            />
-          </S.PageWrapper>
-        </>
-      )}
-      <WarmUpModel />
+      <NavBar />
+      <S.PageWrapper>
+        <CardsWrapper>
+          {CARD_TYPES[hasChallenge ? 'hasChallenge' : 'noChallenge'].map(
+            type => (
+              <OutlineBox
+                key={type}
+                content={CARD_CONTENTS[type]}
+                onClickHandler={CARD_ON_CLICK_HANDLERS[type]}
+                boxStyle={CARD_STYLES[type]}
+              />
+            ),
+          )}
+        </CardsWrapper>
+        <BottomFixContent
+          challengeData={challengeData}
+          Handler={CARD_ON_CLICK_HANDLERS}
+        />
+      </S.PageWrapper>
     </>
   );
 };
