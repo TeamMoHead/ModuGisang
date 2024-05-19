@@ -157,8 +157,8 @@ export class AuthController {
     console.log('@@@@AuthenticateGuard/Param/userId@@@@', userId);
     // const token = await this.userService.removeRefreshToken(req.user._id);
     const token = await this.userService.removeRefreshToken(Number(userId));
-    console.log(token.affected);
-    if (token.affected > 0) {
+    // console.log(token.affected);
+    if (token == 1) {
       return {
         status: 'success',
         message: '로그아웃 성공',

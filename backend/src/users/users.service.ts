@@ -6,6 +6,7 @@ import { UserDto } from 'src/auth/dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Streak } from './entities/streak.entity';
+import RedisCacheService from 'src/redis-cache/redis-cache.service';
 // import { refreshJwtConstants } from 'src/auth/constants';
 
 @Injectable()
@@ -16,6 +17,7 @@ export class UserService {
     @InjectRepository(Streak)
     private streakRepository: Repository<Streak>,
     private configService: ConfigService,
+    private readonly redisService: RedisCacheService,
   ) {
     this.userRepository = userRepository;
     this.streakRepository = streakRepository;
@@ -51,14 +53,21 @@ export class UserService {
   }
 
   // refreshToken db에 저장
+  // redis 로 변경
   async setCurrentRefreshToken(refreshToken: string, user: Users) {
     const currentRefreshToken =
       await this.getCurrentHashedRefreshToken(refreshToken);
     const currentRefreshTokenExp = await this.getCurrentRefreshTokenExp();
-    await this.userRepository.update(user._id, {
-      currentRefreshToken: currentRefreshToken,
-      currentRefreshTokenExp: currentRefreshTokenExp,
-    });
+    // await this.userRepository.update(user._id, {
+    //   currentRefreshToken: currentRefreshToken,
+    //   currentRefreshTokenExp: currentRefreshTokenExp,
+    // });
+
+    await this.redisService.set(
+      `refreshToken:${user._id}`,
+      currentRefreshToken,
+      parseInt(this.configService.get<string>('REFRESH_TOKEN_EXP')) / 1000,
+    );
   }
 
   async getCurrentHashedRefreshToken(refreshToken: string): Promise<string> {
@@ -74,8 +83,10 @@ export class UserService {
     return currentRefreshTokenExp;
   }
 
-  async getUserRefreshToken(userId: number): Promise<UserDto> {
-    const user = await this.userRepository.findOne({ where: { _id: userId } });
+  // redis로 변경
+  async getUserRefreshToken(userId: number): Promise<string> {
+    // const user = await this.userRepository.findOne({ where: { _id: userId } });
+    const user = await this.redisService.get(`refreshToken:${userId}`);
     if (!user) {
       return null;
     }
@@ -83,21 +94,20 @@ export class UserService {
     return user;
   }
 
+  // redis로 변경
   async getUserIfRefreshTokenMatches(
     refreshToken: string,
     userId: number,
   ): Promise<UserDto> {
     const user = await this.userRepository.findOne({ where: { _id: userId } });
+    const refresh = await this.redisService.get(`refreshToken:${userId}`);
 
-    if (!user.currentRefreshToken) {
+    if (!refresh) {
       return null;
     }
 
     try {
-      const isRefreshTokenMatching = await argon2.verify(
-        user.currentRefreshToken,
-        refreshToken,
-      );
+      const isRefreshTokenMatching = await argon2.verify(refresh, refreshToken);
 
       if (isRefreshTokenMatching) {
         const userDto = new UserDto();
@@ -110,14 +120,16 @@ export class UserService {
     }
   }
 
+  // redis로 변경
   async removeRefreshToken(userId: number): Promise<any> {
-    return await this.userRepository.update(
-      { _id: userId },
-      {
-        currentRefreshToken: null,
-        currentRefreshTokenExp: null,
-      },
-    );
+    // return await this.userRepository.update(
+    //   { _id: userId },
+    //   {
+    //     currentRefreshToken: null,
+    //     currentRefreshTokenExp: null,
+    //   },
+    // );
+    return await this.redisService.del(`refreshToken:${userId}`);
   }
 
   async updateAffirm(user: Users, affirmation: string) {

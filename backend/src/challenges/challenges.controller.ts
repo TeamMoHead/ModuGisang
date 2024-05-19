@@ -5,6 +5,7 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  InternalServerErrorException,
   NotFoundException,
   NotImplementedException,
   Param,
@@ -88,11 +89,23 @@ export class ChallengesController {
     @Param('userId') userId: number,
     @Param('date') date: Date,
   ): Promise<ChallengeResultDto[]> {
-    const result = await this.challengeService.getResultsByDateAndUser(
-      userId,
-      date,
-    );
-    return result;
+    try {
+      const result = await this.challengeService.getResultsByDateAndUser(
+        userId,
+        date,
+      );
+      return result;
+    } catch (error) {
+      if (error.message === 'Attendance does not exist') {
+        throw new NotFoundException(
+          'No attendance records found for the given user and date',
+        );
+      }
+      if (error.message === 'No challenge found for the user.') {
+        throw new NotFoundException('No challenge found for the given user');
+      }
+      throw new InternalServerErrorException('An unexpected error occurred');
+    }
   }
   @Post('/changeWakeTime')
   async setChallengeWakeTime(@Body() setChallengeWakeTimeDto): Promise<void> {

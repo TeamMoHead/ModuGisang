@@ -50,16 +50,20 @@ export class Users {
   @Column({ name: 'current_refresh_token_exp', nullable: true })
   currentRefreshTokenExp: Date;
 
-  @OneToMany(() => Attendance, (attendance) => attendance.user)
+  @OneToMany(() => Attendance, (attendance) => attendance.user, {
+    cascade: true,
+  })
   attendances: Attendance[];
 
-  @OneToMany(() => Invitations, (invitation) => invitation.guest)
+  @OneToMany(() => Invitations, (invitation) => invitation.guest, {
+    cascade: true,
+  })
   invitations: Invitations[];
 
-  @OneToOne(() => Streak, (streak) => streak.user)
+  @OneToOne(() => Streak, (streak) => streak.user, { cascade: true })
   streak: Streak;
 
-  @OneToMany(() => Challenges, (challenge) => challenge.host)
+  @OneToMany(() => Challenges, (challenge) => challenge.host, { cascade: true })
   hostedChallenges: Challenges[];
 }
 
