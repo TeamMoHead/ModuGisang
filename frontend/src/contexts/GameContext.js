@@ -30,7 +30,7 @@ const GAME_MODE_DURATION = {
   2: 30000,
   3: 30000,
   4: 25000,
-  5: 30000,
+  5: 25000,
   6: 25000,
 };
 
@@ -211,7 +211,6 @@ const GameContextProvider = ({ children }) => {
   useEffect(() => {
     if (challengeData && !isTooEarly && !isTooLate) {
       // ⭐️⭐️⭐️⭐️⭐️⭐️ 개발 편의 용 주석 ⭐️⭐️⭐️⭐️⭐️//
-      // 나중에 다시 풀어야 함
       startModelWarmUp();
       // ===== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
     }

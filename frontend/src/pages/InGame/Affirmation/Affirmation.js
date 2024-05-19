@@ -106,8 +106,8 @@ const TextArea = styled.div`
   padding: 15px;
 
   ${({ theme }) => theme.fonts.IBMLarge}
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 25px;
+  font-weight: bold;
   text-align: center;
 
   background-color: ${({ theme }) => theme.colors.translucent.navy};
