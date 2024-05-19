@@ -35,7 +35,7 @@ let prevforehead = null;
 let isMovingScore = 0;
 let isMovingStatus = true; // 움직이는 중인지 여부
 let myPostitStatus = [false, false, false]; // 측정 결과
-const timeoutDuration = 15000; // 제한 시간
+const timeoutDuration = 27000; // 제한 시간
 let isTimeOut = false; // 타임 아웃 여부
 let isGameStart = false;
 
@@ -48,7 +48,7 @@ const Mission2 = () => {
       size: 0, // width, height
       imageUrl: yellow0,
       shouldFall: false, // 포스트잇이 떨어졌는지 여부
-      scorePoint: 9, // 더할 점수. 이마는 상대적으로 떼기 어려워서 추가 점수 있음
+      scorePoint: 8, // 더할 점수. 이마는 상대적으로 떼기 어려워서 추가 점수 있음
     },
     {
       // 왼쪽 볼
@@ -57,7 +57,7 @@ const Mission2 = () => {
       size: 0,
       imageUrl: pink0,
       shouldFall: false,
-      scorePoint: 8,
+      scorePoint: 6,
     },
     {
       // 오른쪽 볼
@@ -66,7 +66,7 @@ const Mission2 = () => {
       size: 0,
       imageUrl: green0,
       shouldFall: false,
-      scorePoint: 8,
+      scorePoint: 6,
     },
   ]); // 포스트잇의 정보
 
@@ -128,7 +128,7 @@ const Mission2 = () => {
       const leftCheek = faceLandmarks[61]; // 왼쪽 볼
       const rightCheek = faceLandmarks[291]; // 오른쪽 볼
 
-      if (!isMovingStatus) {
+      if (!isMovingStatus && !isTimeOut) {
         // 눈썹 움직임 확인
         if (topScore < targetNumber && !myPostitStatus[0]) {
           // 이전 볼의 좌표랑 비교해서 움직임을 확인

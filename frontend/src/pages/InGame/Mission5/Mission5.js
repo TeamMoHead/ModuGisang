@@ -25,62 +25,27 @@ const tables = {
     score: 1,
   },
   2: {
-    question: '6 X 2',
-    correct: '12',
-    wrong: '42',
-    direction: 1,
-    score: 1,
-  },
-  3: {
-    question: '4 X 8',
-    correct: '32',
-    wrong: '23',
-    direction: 2,
-    score: 1,
-  },
-  4: {
-    question: '9 X 6',
-    correct: '54',
-    wrong: '48',
-    direction: 2,
-    score: 2,
-  },
-  5: {
     question: '10 X 11',
     correct: '110',
     wrong: '101',
     direction: 1,
     score: 2,
   },
-  6: {
+  3: {
     question: '13 X 13',
     correct: '169',
     wrong: '196',
     direction: 1,
     score: 2,
   },
-  7: {
-    question: '15 X 5',
-    correct: '75',
-    wrong: '55',
-    direction: 2,
-    score: 2,
-  },
-  8: {
-    question: '23 X 17',
-    correct: '391',
-    wrong: '401',
-    direction: 1,
-    score: 4,
-  },
-  9: {
+  4: {
     question: '32 X 28',
     correct: '896',
     wrong: '616',
-    direction: 1,
+    direction: 2,
     score: 4,
   },
-  10: {
+  5: {
     question: '미션 종료!',
     correct: '0',
     wrong: '0',
@@ -92,7 +57,9 @@ const tables = {
 let isHandDownCount = 0; // 손을 계속 들고 있을 때 대비
 let isWaiting = false;
 let isMissionFinished = false;
+let isGameStart = false;
 let totalScore = 0;
+const timeoutDuration = 22000; // 제한 시간
 
 const Mission5 = () => {
   const { poseModel, setIsPoseLoaded, setIsPoseInitialized } =
@@ -168,7 +135,7 @@ const Mission5 = () => {
         } else setRoundIdx(prev => prev + 1);
         setHand(0);
         isWaiting = false;
-      }, 2000);
+      }, 1000);
     }
   }, [isMissionStarting, hand, roundIdx, myMissionStatus]);
 
@@ -180,6 +147,15 @@ const Mission5 = () => {
       isMissionStarting
     ) {
       return;
+    }
+
+    const handleTimeout = () => {
+      isMissionFinished = true;
+    };
+
+    if (!isGameStart) {
+      isGameStart = true;
+      setTimeout(handleTimeout, timeoutDuration);
     }
 
     const videoElement = myVideoRef.current;
