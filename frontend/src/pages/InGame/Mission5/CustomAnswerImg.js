@@ -1,17 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const StyledSvg = styled.svg`
-  /* width: 100px;
-  height: 100px; */
-  opacity: 0.8;
-  fill: ${({ color }) => color};
-`;
-
-const CustomAnswerImg = ({ color }) => {
+const CustomAnswerImg = ({ color, direction }) => {
   return (
     <StyledSvg
       color={color}
+      direction={direction}
       viewBox="0 0 496.64 468.21"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -21,3 +15,12 @@ const CustomAnswerImg = ({ color }) => {
 };
 
 export default CustomAnswerImg;
+
+const StyledSvg = styled.svg`
+  /* width: 100px;
+  height: 100px; */
+  opacity: 0.7;
+  fill: ${({ color }) => color};
+  transform: ${({ direction }) =>
+    direction === 'left' ? 'rotateY(180deg)' : 'rotateY(0deg)'};
+`;
