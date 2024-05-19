@@ -27,7 +27,7 @@ let currentStatus; // 현재 고개를 돌린 방향
 let isCentered = false;
 let isDirectionCorrect = false; // 화살표 별 측정 결과
 let isMissionFinished = false;
-const timeoutDuration = 21500; // 제한 시간
+const timeoutDuration = 27000;
 
 const Mission3 = () => {
   const { poseModel, setIsPoseLoaded, setIsPoseInitialized } =

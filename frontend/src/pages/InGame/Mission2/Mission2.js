@@ -35,7 +35,7 @@ let prevforehead = null;
 let isMovingScore = 0;
 let isMovingStatus = true; // 움직이는 중인지 여부
 let myPostitStatus = [false, false, false]; // 측정 결과
-const timeoutDuration = 17500; // 제한 시간
+const timeoutDuration = 27000; // 제한 시간
 let isTimeOut = false; // 타임 아웃 여부
 let isGameStart = false;
 
@@ -128,7 +128,7 @@ const Mission2 = () => {
       const leftCheek = faceLandmarks[61]; // 왼쪽 볼
       const rightCheek = faceLandmarks[291]; // 오른쪽 볼
 
-      if (!isMovingStatus) {
+      if (!isMovingStatus && !isTimeOut) {
         // 눈썹 움직임 확인
         if (topScore < targetNumber && !myPostitStatus[0]) {
           // 이전 볼의 좌표랑 비교해서 움직임을 확인

@@ -52,6 +52,7 @@ export class UserController {
       affirmation: invitations.affirmation,
       challengeId: invitations.challengeId,
       profile: invitations.profile,
+      openviduToken: invitations.openviduToken,
     };
   }
 
@@ -75,6 +76,7 @@ export class UserController {
       affirmation: invitations.affirmation,
       challengeId: invitations.challengeId,
       profile: invitations.profile,
+      openviduToken: invitations.openviduToken,
     };
   }
 

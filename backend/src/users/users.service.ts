@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Users } from './entities/users.entity';
 import * as argon2 from 'argon2';
 import { Repository } from 'typeorm';
@@ -224,5 +228,14 @@ export class UserService {
     return Math.floor(
       (today.getTime() - lastActiveDate.getTime()) / oneDayInMs,
     );
+  }
+
+  async saveOpenviduToken(userId: number, token: string) {
+    const user = await this.userRepository.findOne({ where: { _id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    user.openviduToken = token;
+    await this.userRepository.save(user);
   }
 }

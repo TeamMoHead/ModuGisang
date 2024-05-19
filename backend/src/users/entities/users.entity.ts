@@ -44,11 +44,14 @@ export class Users {
   @Column({ type: 'json' })
   medals: Medals;
 
-  @Column({ name: 'current_refresh_token', length: 255, nullable: true })
-  currentRefreshToken: string;
+  // @Column({ name: 'current_refresh_token', length: 255, nullable: true })
+  // currentRefreshToken: string;
 
-  @Column({ name: 'current_refresh_token_exp', nullable: true })
-  currentRefreshTokenExp: Date;
+  // @Column({ name: 'current_refresh_token_exp', nullable: true })
+  // currentRefreshTokenExp: Date;
+
+  @Column({ name: 'openvidu_token', length: 255, nullable: true })
+  openviduToken: string;
 
   @OneToMany(() => Attendance, (attendance) => attendance.user, {
     cascade: true,
