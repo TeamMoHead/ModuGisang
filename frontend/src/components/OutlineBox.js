@@ -68,6 +68,10 @@ const Wrapper = styled.div`
   position: relative;
   width: 100%;
   height: max-content;
+  background: rgba(240, 243, 255, 0.06);
+  border-radius: ${({ $boxStyle, theme }) =>
+    $boxStyle?.borderRadius || theme.radius.medium};
+  backdrop-filter: blur(10px);
 
   cursor: ${({ $isClickable }) => ($isClickable ? 'pointer' : 'default')};
 
