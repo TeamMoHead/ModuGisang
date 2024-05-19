@@ -92,7 +92,9 @@ const tables = {
 let isHandDownCount = 0; // 손을 계속 들고 있을 때 대비
 let isWaiting = false;
 let isMissionFinished = false;
+let isGameStart = false;
 let totalScore = 0;
+const timeoutDuration = 27000; // 제한 시간
 
 const Mission5 = () => {
   const { poseModel, setIsPoseLoaded, setIsPoseInitialized } =
@@ -168,7 +170,7 @@ const Mission5 = () => {
         } else setRoundIdx(prev => prev + 1);
         setHand(0);
         isWaiting = false;
-      }, 2000);
+      }, 1000);
     }
   }, [isMissionStarting, hand, roundIdx, myMissionStatus]);
 
@@ -180,6 +182,15 @@ const Mission5 = () => {
       isMissionStarting
     ) {
       return;
+    }
+
+    const handleTimeout = () => {
+      isMissionFinished = true;
+    };
+
+    if (!isGameStart) {
+      isGameStart = true;
+      setTimeout(handleTimeout, timeoutDuration);
     }
 
     const videoElement = myVideoRef.current;

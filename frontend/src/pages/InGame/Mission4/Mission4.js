@@ -29,7 +29,7 @@ const Mission4 = () => {
   const [elapsedTime, setElapsedTime] = useState(0); // 경과 시간 (초 단위)
   const startTimeRef = useRef(null); // 시작 시간 저장
   const [isGameOver, setIsGameOver] = useState(false);
-  const TIME_LIMIT = 30; // 통과 제한 시간 (초 단위)
+  const TIME_LIMIT = 24; // 통과 제한 시간 (초 단위)
   const [remainingTime, setRemainingTime] = useState(0);
 
   useEffect(() => {

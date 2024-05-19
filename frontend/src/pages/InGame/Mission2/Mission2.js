@@ -128,7 +128,7 @@ const Mission2 = () => {
       const leftCheek = faceLandmarks[61]; // 왼쪽 볼
       const rightCheek = faceLandmarks[291]; // 오른쪽 볼
 
-      if (!isMovingStatus) {
+      if (!isMovingStatus && !isTimeOut) {
         // 눈썹 움직임 확인
         if (topScore < targetNumber && !myPostitStatus[0]) {
           // 이전 볼의 좌표랑 비교해서 움직임을 확인

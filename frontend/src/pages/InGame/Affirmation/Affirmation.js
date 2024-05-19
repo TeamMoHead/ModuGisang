@@ -19,7 +19,7 @@ const Affirmation = () => {
   const user = useContext(UserContext);
   const affirmationText = user.myData.affirmation || '';
   const [highlightedText, setHighlightedText] = useState('');
-  const { transcript, stop } = useSpeechToText(8);
+  const { transcript, stop } = useSpeechToText(24);
   const [affirResult, setAffirResult] = useState(false);
   const newTranscriptRef = useRef('');
   const idx = useRef(0);
