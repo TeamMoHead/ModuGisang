@@ -153,19 +153,22 @@ const Mission5 = () => {
     if (raisingHand > 0) {
       isWaiting = true;
 
+      console.log('----- RESULT : ', direction, raisingHand);
+
       if (raisingHand === direction) {
         setIsRoundPassed(true);
         setTimeout(() => setIsRoundPassed(false), 100);
         setGameScore(prev => prev + tables[roundIdx].score);
         totalScore += tables[roundIdx].score;
+        console.log('----- CORRECT !');
         console.log('----- score: ', totalScore);
       } else {
         setIsRoundFailed(true);
         setTimeout(() => setIsRoundFailed(false), 100);
+        console.log('----- STUPID !');
       }
 
       setTimeout(() => {
-        setIsRoundPassed(true);
         if (roundIdx >= Object.keys(tables).length - 2) {
           isMissionFinished = true;
           setRoundIdx(Object.keys(tables).length - 1);

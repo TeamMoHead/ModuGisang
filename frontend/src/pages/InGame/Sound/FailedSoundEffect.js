@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { GameContext } from '../../../contexts';
 
-import failedSound from '../../../assets/soundEffects/missionFailure.mp3';
+import failedSound from '../../../assets/soundEffects/roundFailure.mp3';
 
 const FailedSoundEffect = () => {
   const { isMusicMuted, isRoundFailed, inGameMode } = useContext(GameContext);

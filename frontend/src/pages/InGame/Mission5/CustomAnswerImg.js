@@ -4,6 +4,7 @@ import styled from 'styled-components';
 const StyledSvg = styled.svg`
   /* width: 100px;
   height: 100px; */
+  opacity: 0.8;
   fill: ${({ color }) => color};
 `;
 

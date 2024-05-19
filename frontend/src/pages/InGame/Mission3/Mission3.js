@@ -148,11 +148,12 @@ const Mission3 = () => {
       return;
     }
     const videoElement = myVideoRef.current;
+    let animationFrameId;
 
     const handleCanPlay = () => {
       if (poseModel.current !== null) {
         poseModel.current.send({ image: videoElement }).then(() => {
-          requestAnimationFrame(handleCanPlay);
+          animationFrameId = requestAnimationFrame(handleCanPlay);
         });
       }
     };
@@ -165,11 +166,9 @@ const Mission3 = () => {
 
     return () => {
       videoElement.removeEventListener('canplay', handleCanPlay);
-      poseModel.current = null;
-      setIsPoseLoaded(false);
-      setIsPoseInitialized(false);
+      cancelAnimationFrame(animationFrameId);
     };
-  }, [isMissionStarting, poseModel]);
+  }, [isMissionStarting, poseModel, inGameMode, myVideoRef]);
 
   useEffect(() => {
     if (isMissionFinished) return;

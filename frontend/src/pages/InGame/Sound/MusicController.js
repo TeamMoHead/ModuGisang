@@ -5,6 +5,7 @@ import {
   BackgroundMusic,
   MissionSoundEffects,
   RoundSoundEffect,
+  FailedSoundEffect,
 } from '../Sound';
 
 import { GameContext } from '../../../contexts';
@@ -49,6 +50,7 @@ const MusicController = () => {
       <BackgroundMusic />
       <MissionSoundEffects />
       <RoundSoundEffect />
+      <FailedSoundEffect />
     </>
   );
 };
