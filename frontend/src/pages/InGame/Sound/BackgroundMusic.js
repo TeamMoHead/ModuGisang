@@ -22,7 +22,7 @@ const getMusicSrc = gameMode => {
   }
 };
 
-const DEFAULT_VOLUME = 0.2;
+const DEFAULT_VOLUME = 0.1;
 
 const fadeAudio = (audio, type, duration = 3000) => {
   const maxVolume = DEFAULT_VOLUME;

@@ -32,8 +32,8 @@ let frameCount = 0; // 현재 프레임 카운트
 
 let isPoseCorrect = false; // 자세 측정 결과
 const keypoints = {}; // 측정에 사용할 각 포인트의 위치 저장
-const roundDuration = 11000; // 1 라운드 시간
-const timeoutDuration = 18000; // 제한 시간
+const roundDuration = 16000; // 1 라운드 시간
+const timeoutDuration = 27000; // 제한 시간
 
 const Mission1 = () => {
   const { poseModel } = useContext(MediaPipeContext);
@@ -177,7 +177,7 @@ const Mission1 = () => {
     stretchSide.forEach((side, index) => {
       if (side.active && !side.scoreAdded) {
         setIsRoundPassed(prevState => !prevState);
-        setGameScore(prevGameScore => prevGameScore + 12.5);
+        setGameScore(prevGameScore => prevGameScore + 10);
         // 점수가 추가된 후, scoreAdded 상태 업데이트
         setStretchSide(prevState =>
           prevState.map((item, idx) =>
