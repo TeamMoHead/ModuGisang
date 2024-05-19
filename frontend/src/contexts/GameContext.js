@@ -1,11 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 
-import {
-  AccountContext,
-  ChallengeContext,
-  UserContext,
-  MediaPipeContext,
-} from './';
+import { AccountContext, ChallengeContext, UserContext } from './';
 import { inGameServices } from '../apis';
 import useCheckTime from '../hooks/useCheckTime';
 import useFetch from '../hooks/useFetch';
@@ -41,7 +36,6 @@ const GameContextProvider = ({ children }) => {
   const { accessToken, userId } = useContext(AccountContext);
   const { myData, challengeId } = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
-  const { isWarmUpDone } = useContext(MediaPipeContext);
   const { remainingTime, isTooLate, isTooEarly } = useCheckTime(
     challengeData?.wakeTime,
   );
@@ -99,7 +93,6 @@ const GameContextProvider = ({ children }) => {
 
     const { isLoading, data, error } = response;
     if (!isLoading && data) {
-      console.log('========>Entered Time Sent Successfully=> ', data);
       setIsEnteredTimeSent(true);
     } else {
       console.error('Entered Time Sent Error => ', error);
@@ -119,7 +112,6 @@ const GameContextProvider = ({ children }) => {
     );
     const { isLoading, data, error } = response;
     if (!isLoading && data) {
-      console.log('===========> My Game Score Sent Successfully => ', data);
       setIsGameScoreSent(true);
     } else {
       console.error('My Game Score Sent Error => ', error);
@@ -135,7 +127,6 @@ const GameContextProvider = ({ children }) => {
     );
     const { isLoading, data, error } = response;
     if (!isLoading && data) {
-      console.log('============>Game Results => ', data);
       setGameResults(data);
       setIsGameResultReceived(true);
       return data;
@@ -171,21 +162,6 @@ const GameContextProvider = ({ children }) => {
         // localStorage.setItem('inGameMode', JSON.stringify(7));
       }
     }
-  };
-
-  const scheduleFirstMission = () => {
-    setTimeout(() => {
-      setInGameMode(1); // waiting 끝나면 첫 미션으로 전환
-      setIsMissionStarting(true); // 게임 로딩 시작
-      setMyMissionStatus(false); // 미션 수행상태 초기화
-      setIsMissionEnding(false);
-      setTimeout(() => {
-        setIsMissionEnding(true); // 첫 미션 종료 후 결과 표시
-        setTimeout(() => {
-          updateMode();
-        }, RESULT_TIME);
-      }, GAME_MODE_DURATION[1]); // 첫 미션 지속 시간
-    }, remainingTime);
   };
 
   const startFirstMission = () => {
