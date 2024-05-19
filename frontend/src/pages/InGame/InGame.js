@@ -21,6 +21,7 @@ import { MusicController } from './Sound';
 import styled, { css } from 'styled-components';
 
 const GAME_MODE = {
+  100: 'loadModel',
   0: 'waiting',
   1: 'mission1',
   2: 'mission2',

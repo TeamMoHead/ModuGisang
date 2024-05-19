@@ -56,7 +56,9 @@ const Result = () => {
     const response = await fetchData(() =>
       inGameServices.getGameResults({ accessToken, challengeId }),
     );
+
     const { isLoading, data, error } = response;
+
     if (!isLoading && data) {
       setGameResults(data);
     } else {
@@ -68,6 +70,7 @@ const Result = () => {
     const response = await fetchData(() =>
       userServices.getUserInfo({ accessToken, userId: theTopUserId }),
     );
+
     setTheTopUserData(response.data);
   };
 
@@ -79,9 +82,7 @@ const Result = () => {
 
   useEffect(() => {
     if (GAME_MODE[inGameMode] === 'result' && !isGameResultReceived) {
-      const results = getGameResults();
-
-      console.log('###### ======> GET RESULTS 결과: ', results);
+      getGameResults();
     } else return;
   }, [inGameMode, isGameResultReceived]);
 
@@ -100,6 +101,7 @@ const Result = () => {
       if (theTopUserId === myId) {
         setTheTopUserVideo(myStream);
         myStream.addVideoElement(theTopVideoRef.current);
+        setTheRestUsersStream(theRestUsersStream);
       } else {
         const theTopUserVideo = mateStreams.find(
           mate =>
@@ -114,7 +116,6 @@ const Result = () => {
 
   useEffect(() => {
     if (theTopVideoRef && theTopUserVideo) {
-      console.log('=-=-=-==-=-==---=-TOP VIDEO=-=-=-=-=-=-=--=-=-');
       theTopUserVideo?.addVideoElement(theTopVideoRef.current);
     }
   }, [theTopUserVideo, theTopVideoRef]);
@@ -142,18 +143,6 @@ const Result = () => {
     confettiEffect(3);
     fireworks();
   }, []);
-
-  console.log(
-    '🗓️🗓️🗓️🗓️🗓️🗓️ RESULT COMPONENT:: \n',
-    'GAME RESULT: ',
-    gameResults,
-    'TOP USER DATA: ',
-    theTopUserData,
-    'ORIGINAL MATE STREAMS: ',
-    mateStreams,
-    'FRIENDS STREAMS: ',
-    theRestUsersStream,
-  );
 
   return (
     <>
@@ -185,14 +174,21 @@ const Result = () => {
                 일차
               </TheTopStreak>
               <Medals>
-                {['gold', 'silver', 'bronze'].map((medal, idx) => (
-                  <MedalArea>
-                    {theTopUserData?.medals[medal] > 0 && (
-                      <MedalCount>{theTopUserData?.medals[medal]}</MedalCount>
-                    )}
-                    <Medal key={idx} src={MEDAL_ICONS[medal]} />
-                  </MedalArea>
-                ))}
+                {['gold', 'silver', 'bronze'].map((medal, idx) => {
+                  const medalCount = theTopUserData?.medals[medal];
+                  return (
+                    <MedalArea key={idx}>
+                      {theTopUserData?.medals[medal] > 0 && (
+                        <MedalCount>{medalCount}</MedalCount>
+                      )}
+                      <Medal
+                        key={idx}
+                        src={MEDAL_ICONS[medal]}
+                        $count={medalCount}
+                      />
+                    </MedalArea>
+                  );
+                })}
               </Medals>{' '}
             </TheTopUserInfo>
           </TheTopUserArea>
@@ -243,14 +239,12 @@ const Result = () => {
           </Rankings>
         </UpperArea>
         {theRestUsersStream?.length > 0 && (
-          <>
-            <TheRestUsersWrapper $isSingle={theRestUsersStream?.length === 1}>
-              {theRestUsersStream?.length > 0 &&
-                theRestUsersStream?.map((thisUserStream, idx) => (
-                  <TheRestVideo key={idx} thisUserStream={thisUserStream} />
-                ))}
-            </TheRestUsersWrapper>
-          </>
+          <TheRestUsersWrapper $isSingle={theRestUsersStream?.length === 1}>
+            {theRestUsersStream?.length > 0 &&
+              theRestUsersStream?.map((thisUserStream, idx) => (
+                <TheRestVideo key={idx} thisUserStream={thisUserStream} />
+              ))}
+          </TheRestUsersWrapper>
         )}
       </Wrapper>
       <DummyMyVideo ref={myVideoRef} />
@@ -414,6 +408,8 @@ const Medal = styled.img`
   margin: auto;
 
   width: 20px;
+
+  opacity: ${({ $count }) => ($count > 0 ? 1 : 0.3)};
 `;
 
 const Rankings = styled.div`

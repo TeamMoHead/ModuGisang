@@ -23,6 +23,7 @@ export default LoadingWithText;
 
 const Wrapper = styled.div`
   ${({ theme }) => theme.flex.center}
+  text-align: center;
 `;
 
 const LoadingAnimator = styled.div`
