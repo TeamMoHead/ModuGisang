@@ -69,24 +69,28 @@ const StreakContent = ({ isWaitingRoom, userData, showMedals = true }) => {
             </RightArea>
           </TopWrapper>
           <SeperateLine $isWide={isWaitingRoom} />
-          <BottomWrapper>
-            <ChallengeRecordTitle>
-              <MediumLetter>챌린지 달성 기록</MediumLetter>
-            </ChallengeRecordTitle>
-            <Medals>
-              {['gold', 'silver', 'bronze'].map((medal, idx) => (
-                <MedalArea key={idx}>
-                  {medalCounts[medal] > 0 && (
-                    <MedalCount>{medalCounts[medal]}</MedalCount>
-                  )}
-                  <Medal
-                    src={MEDAL_ICONS[medal]}
-                    $hasMedal={medalCounts[medal] > 0}
-                  />
-                </MedalArea>
-              ))}
-            </Medals>
-          </BottomWrapper>
+          {showMedals && (
+            <>
+              <BottomWrapper>
+                <ChallengeRecordTitle>
+                  <MediumLetter>챌린지 달성 기록</MediumLetter>
+                </ChallengeRecordTitle>
+                <Medals>
+                  {['gold', 'silver', 'bronze'].map((medal, idx) => (
+                    <MedalArea key={idx}>
+                      {medalCounts[medal] > 0 && (
+                        <MedalCount>{medalCounts[medal]}</MedalCount>
+                      )}
+                      <Medal
+                        src={MEDAL_ICONS[medal]}
+                        $hasMedal={medalCounts[medal] > 0}
+                      />
+                    </MedalArea>
+                  ))}
+                </Medals>
+              </BottomWrapper>
+            </>
+          )}
         </>
       )}
     </Wrapper>
