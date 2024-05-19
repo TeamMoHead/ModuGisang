@@ -7,7 +7,7 @@ import {
   OutlineBox,
   CustomRadio,
   CustomCalendar,
-  InputBox,
+  InputLine,
   Icon,
 } from '../../components';
 import { AccountContext, ChallengeContext } from '../../contexts';
@@ -257,7 +257,7 @@ const CreateChallenge = () => {
         </TimeBox>
 
         <Title>미라클 메이트 초대</Title>
-        <InputBox
+        <InputLine
           hasIcon={true}
           type={'email'}
           icon={'search'}

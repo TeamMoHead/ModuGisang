@@ -22,6 +22,7 @@ import {
   faArrowsRotate,
   faSadTear,
   faTrashCan,
+  faPenToSquare,
 } from '@fortawesome/free-solid-svg-icons';
 
 import noMusic from '../assets/icons/musicOff.svg';
@@ -48,6 +49,7 @@ const iconList = {
   search: faMagnifyingGlass,
   close: faXmark,
   refresh: faArrowsRotate,
+  edit: faPenToSquare,
 };
 
 const iconStyleSample = {
