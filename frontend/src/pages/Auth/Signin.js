@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { LoadingWithText, LongBtn } from '../../components';
+import { LoadingWithText, LongBtn, InputLine } from '../../components';
 
 import useAuth from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,6 @@ import { CONFIGS } from '../../config';
 import styled from 'styled-components';
 
 import { onlysun } from '../../assets/icons';
-import { InputBox } from '../../components';
 
 const Signin = () => {
   const { TEST_EMAIL, TEST_PASSWORD } = CONFIGS;
@@ -49,7 +48,7 @@ const Signin = () => {
         <Subtitle>친구와 함께 미라클 모닝 챌린지</Subtitle>
       </TitleBox>
 
-      <InputBox
+      <InputLine
         hasIcon={true}
         type="email"
         icon="user"
@@ -58,7 +57,7 @@ const Signin = () => {
         onChange={handleLoginEmailChange}
         onClickHandler={null}
       />
-      <InputBox
+      <InputLine
         hasIcon={true}
         type="password"
         icon={'key'}
@@ -135,6 +134,8 @@ const Subtitle = styled.div`
 `;
 
 const SignUp = styled.a`
+  position: fixed;
+  bottom: 43px;
   ${({ theme }) => theme.fonts.JuaSmall};
   color: ${({ theme }) => theme.colors.neutral.lightGray};
   text-decoration: underline;

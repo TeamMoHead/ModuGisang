@@ -118,7 +118,7 @@ const TopWrapper = styled.div`
 const SeperateLine = styled.div`
   width: ${({ $isWide }) => ($isWide ? '100%' : '90%')};
   height: 1px;
-  background: ${({ theme }) => theme.colors.neutral.lightGray};
+  background: ${({ theme }) => theme.colors.translucent.white};
 `;
 
 const BottomWrapper = styled.div`

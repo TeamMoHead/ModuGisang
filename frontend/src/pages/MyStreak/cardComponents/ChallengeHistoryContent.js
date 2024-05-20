@@ -39,7 +39,7 @@ const ChallengeHistoryContent = ({ selectedDate, history }) => {
     } else if (parseInt(hour, 10) === 12) {
       return `${parseInt(hour, 10)}:${parseInt(minute, 10)} PM`;
     } else {
-      return `${parseInt(hour, 10) - 12}시 ${parseInt(minute, 10)} PM`;
+      return `${parseInt(hour, 10) - 12}:${parseInt(minute, 10)} PM`;
     }
   };
 
@@ -116,7 +116,7 @@ const WakeUpWrapper = styled.div`
 
 const ScoreWrapper = styled.div`
   ${({ theme }) => theme.flex.left}
-  width: 70%;
+  width: 75%;
   justify-content: space-between;
 `;
 

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { Challenges } from './challenges.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, IsNull, Repository, createQueryBuilder } from 'typeorm';
@@ -177,7 +182,10 @@ export class ChallengesService {
     });
 
     if (!nowAttendance) {
-      throw new Error('Attendance does not exist');
+      throw new HttpException(
+        'Attendance does not exist',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     const challengeId = nowAttendance.challengeId;
