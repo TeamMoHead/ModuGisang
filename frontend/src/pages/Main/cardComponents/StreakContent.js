@@ -110,7 +110,8 @@ const LoadingWrapper = styled.div`
 `;
 
 const TopWrapper = styled.div`
-  ${({ theme }) => theme.flex.between}
+  display: flex;
+  flex-direction: row;
   width: 100%;
   padding: 24px 24px 15px 24px;
 `;
@@ -135,21 +136,26 @@ const LevelIcon = styled.img`
 `;
 
 const RightArea = styled.div`
-  ${({ theme }) => theme.flex.left}
+  display: flex;
   flex-direction: column;
+  justify-content: flex-end;
+  width: 100%;
 `;
 
 const BigLetter = styled.span`
-  ${({ theme }) => theme.fonts.JuaLarge};
+  ${({ theme }) => theme.fonts.JuaLargeMedium};
+  ${({ theme }) => theme.flex.right};
 
   background: ${({ theme }) => theme.gradient.largerEmerald};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  width: 70%;
   background-clip: text;
   color: transparent;
 `;
 
 const MediumLetter = styled.span`
+  ${({ theme }) => theme.flex.right}
   ${({ theme }) => theme.fonts.IBMmedium};
   color: ${({ theme }) => theme.colors.primary.white};
   font: 18px 'IBM Plex Sans KR';
@@ -161,7 +167,9 @@ const MediumLetter = styled.span`
 const SmallLetter = styled.span`
   ${({ theme }) => theme.fonts.JuaSmall}
   margin-bottom: 10px;
-  margin-left: 5px;
+  padding-left: 10px;
+  padding-right: 5px;
+  width: 30%;
 `;
 
 const ChallengeRecordTitle = styled.div`

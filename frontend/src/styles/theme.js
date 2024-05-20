@@ -31,6 +31,11 @@ const fonts = {
     line-height: 90px;
     letter-spacing: -4%;
   `,
+  JuaLargeMedium: css`
+    font: 70px 'Jua';
+    line-height: 70px;
+    letter-spacing: -3%;
+  `,
   JuaMedium: css`
     font: 40px 'Jua';
     line-height: 40px;
