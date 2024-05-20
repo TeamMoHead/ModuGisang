@@ -26,12 +26,12 @@ const GAME_MODE = {
 
 // mission 당 소요 시간
 const GAME_MODE_DURATION = {
-  1: 21500,
-  2: 19000,
-  3: 17000,
-  4: 14500,
-  5: 21000,
-  6: 8000,
+  1: 30000,
+  2: 30000,
+  3: 30000,
+  4: 25000,
+  5: 25000,
+  6: 25000,
 };
 
 const RESULT_TIME = 2000;
@@ -211,7 +211,6 @@ const GameContextProvider = ({ children }) => {
   useEffect(() => {
     if (challengeData && !isTooEarly && !isTooLate) {
       // ⭐️⭐️⭐️⭐️⭐️⭐️ 개발 편의 용 주석 ⭐️⭐️⭐️⭐️⭐️//
-      // 나중에 다시 풀어야 함
       startModelWarmUp();
       // ===== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
     }
