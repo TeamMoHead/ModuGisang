@@ -28,8 +28,8 @@ const colors = {
 const fonts = {
   JuaLarge: css`
     font: 80px 'Jua';
-    line-height: 80px;
-    letter-spacing: -6%;
+    line-height: 90px;
+    letter-spacing: -4%;
   `,
   JuaMedium: css`
     font: 40px 'Jua';
