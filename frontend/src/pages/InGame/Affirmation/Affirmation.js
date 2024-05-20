@@ -106,6 +106,7 @@ const TextArea = styled.div`
   font-size: 25px;
   font-weight: bold;
   text-align: center;
+  line-height: 35px;
 
   background-color: ${({ theme }) => theme.colors.translucent.navy};
 
