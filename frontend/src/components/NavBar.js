@@ -22,6 +22,7 @@ const NavBar = () => {
   const [hasLeftBtn, setHasLeftBtn] = useState(false);
   const [hasRightBtn, setHasRightBtn] = useState(true);
   const [pageType, setPageType] = useState('main');
+  const [scrolled, setScrolled] = useState(false);
 
   const goBack = () => {
     navigate('/');
@@ -74,8 +75,27 @@ const NavBar = () => {
     }
   }, [params]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 25) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
-    <Wrapper $hasLeftBtn={hasLeftBtn} $hasRightBtn={hasRightBtn}>
+    <Wrapper
+      $hasLeftBtn={hasLeftBtn}
+      $hasRightBtn={hasRightBtn}
+      $scrolled={scrolled}
+    >
       {hasLeftBtn && (
         <RoundBtn btnStyle={BACK_BTN_STYLE} onClickHandler={goBack} />
       )}
@@ -112,6 +132,11 @@ const Wrapper = styled.nav`
   width: 100vw;
   height: 100px;
   padding: 0 24px;
+  z-index: 100;
+  background: ${({ $scrolled, theme }) =>
+    $scrolled ? theme.colors.translucent.white : 'transparent'};
+  backdrop-filter: ${({ $scrolled }) => ($scrolled ? 'blur(15px)' : 'none')};
+  transition: background 0.3s ease;
 `;
 
 const Title = styled.header`

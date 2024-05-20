@@ -116,7 +116,7 @@ const WakeUpWrapper = styled.div`
 
 const ScoreWrapper = styled.div`
   ${({ theme }) => theme.flex.left}
-  width: 70%;
+  width: 75%;
   justify-content: space-between;
 `;
 
