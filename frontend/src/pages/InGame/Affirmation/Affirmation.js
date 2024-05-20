@@ -19,7 +19,7 @@ const Affirmation = () => {
   const user = useContext(UserContext);
   const affirmationText = user.myData.affirmation || '';
   const [highlightedText, setHighlightedText] = useState('');
-  const { transcript, stop } = useSpeechToText(8);
+  const { transcript, stop } = useSpeechToText(24);
   const [affirResult, setAffirResult] = useState(false);
   const newTranscriptRef = useRef('');
   const idx = useRef(0);
@@ -106,8 +106,8 @@ const TextArea = styled.div`
   padding: 15px;
 
   ${({ theme }) => theme.fonts.IBMLarge}
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 25px;
+  font-weight: bold;
   text-align: center;
 
   background-color: ${({ theme }) => theme.colors.translucent.navy};
