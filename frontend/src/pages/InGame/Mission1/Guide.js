@@ -11,6 +11,7 @@ const Guide = ({ poseCorrect, isFlipTriggered, progress }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [color, setColor] = useState('#F0F3FF');
   const [gradientProgress, setGradientProgress] = useState(0);
+  const [stopOpacity, setStopOpacity] = useState(1);
 
   const latestPoseCorrect = useRef(poseCorrect); // useRef를 사용하여 최신 poseCorrect를 저장
 
@@ -52,6 +53,7 @@ const Guide = ({ poseCorrect, isFlipTriggered, progress }) => {
 
   useEffect(() => {
     setGradientProgress(progress);
+    setStopOpacity(0.85);
   }, [progress]);
 
   return (
@@ -60,6 +62,7 @@ const Guide = ({ poseCorrect, isFlipTriggered, progress }) => {
         preserveAspectRatio="xMaxYMax meet"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="230 0 100 480"
+        $color={color}
         $isFlipped={isFlipped}
         progress={gradientProgress}
       >
@@ -69,14 +72,14 @@ const Guide = ({ poseCorrect, isFlipTriggered, progress }) => {
               offset={`${gradientProgress}%`}
               style={{
                 stopColor: '#15F5BA',
-                stopOpacity: 1,
+                stopOpacity: stopOpacity,
               }}
             />
             <stop
               offset={`${gradientProgress}%`}
               style={{
                 stopColor: '#F0F3FF',
-                stopOpacity: 1,
+                stopOpacity: 0.5,
               }}
             />
           </linearGradient>
@@ -119,11 +122,11 @@ const GuideWrapper = styled.div`
 const StyledSVG = styled.svg`
   width: 120%;
   height: 120%;
-  opacity: 0.5;
+
   transition: 0.5s ease;
 
   path {
-    transition: fill 1s ease;
+    transition: 1s ease;
   }
   transform: ${({ $isFlipped }) => ($isFlipped ? 'scaleX(-1)' : 'none')};
   z-index: 2;
