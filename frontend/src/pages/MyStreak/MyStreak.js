@@ -20,11 +20,12 @@ const MyStreak = () => {
   const { accessToken, userId } = useContext(AccountContext);
   const { myData } = useContext(UserContext);
 
-  const [isStreakLoading, setIsStreakLoading] = useState(false);
   const [challengeDates, setChallengeDates] = useState([]);
   const [challengeHistory, setChallengeHistory] = useState([]);
   const [viewMonth, setViewMonth] = useState(new Date().getMonth() + 1);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [isCalendarLoading, setIsCalendarLoading] = useState(true);
+  const [isMedalLoading, setIsMedalLoading] = useState(true);
 
   const getCalendar = async () => {
     const response = await fetchData(() =>
@@ -84,25 +85,24 @@ const MyStreak = () => {
     return `${year.slice(2)}년 ${parseInt(month, 10)}월 ${parseInt(day, 10)}일 기록`;
   };
 
-  console.log('챌린지 수행 날짜', challengeDates);
-  console.log('챌린지 수행 내역', challengeHistory);
-  console.log('선택된 날짜', selectedDate);
+  console.log('myData', myData);
 
   useEffect(() => {
     getCalendar();
     console.log('선택한 월', viewMonth);
   }, [viewMonth]);
 
-  if (isStreakLoading) {
-    return (
-      <>
-        <NavBar />
-        <S.PageWrapper>
-          <LoadingWithText loadingMSG="로딩중..." />
-        </S.PageWrapper>
-      </>
-    );
-  }
+  useEffect(() => {
+    if (myData.medals) {
+      setIsMedalLoading(false);
+    }
+  }, [myData]);
+
+  useEffect(() => {
+    if (myData.medals) {
+      setIsCalendarLoading(false);
+    }
+  }, [myData]);
 
   return (
     <>
@@ -121,18 +121,32 @@ const MyStreak = () => {
         <ChallengeCardWrapper
           boxStyle={CARD_STYLES.myStreakChallenge}
           header={HEADER_STYLES.myStreakChallenge}
-          content={<MedalContent />}
+          content={
+            isMedalLoading ? (
+              <LoadingWrapper>
+                <LoadingWithText />
+              </LoadingWrapper>
+            ) : (
+              <MedalContent />
+            )
+          }
         />
         <CalendarCardWrapper
           content={
-            <CalendarContent
-              startDate={new Date()}
-              handleDateChange={date => {
-                handleClickOnDate(date);
-              }}
-              challengeDates={challengeDates}
-              handleActiveStartDateChange={handleActiveStartDateChange}
-            />
+            isCalendarLoading ? (
+              <LoadingWrapper>
+                <LoadingWithText />
+              </LoadingWrapper>
+            ) : (
+              <CalendarContent
+                startDate={new Date()}
+                handleDateChange={date => {
+                  handleClickOnDate(date);
+                }}
+                challengeDates={challengeDates}
+                handleActiveStartDateChange={handleActiveStartDateChange}
+              />
+            )
           }
           header={HEADER_STYLES.myStreakCalendar}
           boxStyle={CARD_STYLES.myStreakCalendar}
@@ -163,4 +177,10 @@ const CalendarCardWrapper = styled(OutlineBox)``;
 const SelectedDateText = styled.div`
   ${({ theme }) => theme.fonts.IBMmediumlargeBold}
   color: ${({ theme }) => theme.colors.primary.emerald};
+`;
+
+const LoadingWrapper = styled.div`
+  ${({ theme }) => theme.flex.center};
+  width: 100%;
+  padding: 89px 0px;
 `;

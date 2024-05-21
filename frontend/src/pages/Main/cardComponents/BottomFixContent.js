@@ -5,10 +5,25 @@ import CreateContent from './CreateContent';
 import { Icon } from '../../../components';
 // import { Timer } from '../../InGame/components/Nav';
 
+import { LoadingWithText } from '../../../components';
+
 const BottomFixContent = ({ challengeData, Handler }) => {
-  const challengeId = challengeData.challengeId;
+  const challengeId = challengeData?.challengeId;
   const wakeTime = challengeData.wakeTime;
-  const [timeLeft, setTimeLeft] = useState('00:00:00');
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [isChallengeIdLoading, setIsChallengeIdLoading] = useState(true);
+
+  useEffect(() => {
+    // challengeData가 로드된 후에 로딩 상태를 해제
+    if (challengeId !== undefined) {
+      setIsChallengeIdLoading(false);
+    }
+    if (challengeId === undefined) {
+      setTimeout(() => {
+        setIsChallengeIdLoading(false);
+      }, 1000);
+    }
+  }, [challengeData, challengeId]);
 
   useEffect(() => {
     if (!wakeTime) return; // wakeTime이 없으면 실행하지 않음
@@ -39,7 +54,7 @@ const BottomFixContent = ({ challengeData, Handler }) => {
             `${remainingHours}:${remainingMinutes}:${remainingSeconds}`,
           );
         }
-      }, 1000);
+      }, 250);
 
       return () => clearInterval(interval);
     };
@@ -47,9 +62,15 @@ const BottomFixContent = ({ challengeData, Handler }) => {
     countdown();
   }, [wakeTime]);
 
-  return (
+  return isChallengeIdLoading ? (
     <Wrapper>
-      {challengeId === -1 || challengeId === undefined ? (
+      <LoadingWrapper>
+        <LoadingWithText loadingMSG="정보를 불러오는 중입니다." />
+      </LoadingWrapper>
+    </Wrapper>
+  ) : (
+    <Wrapper>
+      {challengeId === undefined ? (
         <>
           <ChallengeTitle>참여중인 챌린지가 없어요</ChallengeTitle>
           <SeperateLine />
@@ -67,11 +88,11 @@ const BottomFixContent = ({ challengeData, Handler }) => {
             </TimeTitleWrapper>
             <SeperateLine />
             <Timer>
-              <TimerText>{timeLeft.split(':')[0]}</TimerText>
-              <TimerText2>:</TimerText2>
-              <TimerText>{timeLeft.split(':')[1]}</TimerText>
-              <TimerText2>:</TimerText2>
-              <TimerText>{timeLeft.split(':')[2]}</TimerText>
+              <TimerText>{timeLeft?.split(':')[0]}</TimerText>
+              {timeLeft && <TimerText2>:</TimerText2>}
+              <TimerText>{timeLeft?.split(':')[1]}</TimerText>
+              {timeLeft && <TimerText2>:</TimerText2>}
+              <TimerText>{timeLeft?.split(':')[2]}</TimerText>
             </Timer>
           </TimeDisplay>
           <EnterContent onClickHandler={Handler.enter} />
@@ -95,6 +116,21 @@ const Wrapper = styled.div`
   border-radius: 30px 30px 0 0;
 
   padding: 20px 0;
+  z-index: 500;
+`;
+
+const LoadingWrapper = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  ${({ theme }) => theme.flex.center}
+  flex-direction: column;
+
+  background: ${({ theme }) => theme.gradient.largerEmerald};
+  border-radius: 30px 30px 0 0;
+
+  padding: 100px 0;
   z-index: 500;
 `;
 

@@ -9,17 +9,12 @@ import 'swiper/css/pagination';
 import './slider.css';
 import { Pagination } from 'swiper/modules';
 
+import * as S from '../../../styles/common';
+import { LoadingWithText } from '../../../components';
+
 const ChallengeContent = () => {
   const { userId: myId } = useContext(AccountContext);
   const { challengeData } = useContext(ChallengeContext);
-  const [isDataReady, setIsDataReady] = useState(false);
-
-  useEffect(() => {
-    if (challengeData === undefined) return;
-    setIsDataReady(true);
-  }, [challengeData]);
-
-  if (!isDataReady) return <div>로딩중...</div>;
 
   const remainingDays = calculateRemainingDays(
     challengeData?.startDate,

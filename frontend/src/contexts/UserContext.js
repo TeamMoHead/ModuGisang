@@ -36,6 +36,7 @@ const UserContextProvider = ({ children }) => {
     return response;
   };
 
+  console.log('myData :', myData);
   useEffect(() => {
     if (accessToken && userId) {
       getMyData();

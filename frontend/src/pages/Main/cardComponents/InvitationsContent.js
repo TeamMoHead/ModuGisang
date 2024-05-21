@@ -1,19 +1,40 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { UserContext } from '../../../contexts';
 import styled from 'styled-components';
 
+import { LoadingWithText } from '../../../components';
+
 const InvitationsContent = () => {
   const { myData } = useContext(UserContext);
   const { invitationCounts } = myData;
-  return (
+  const [isInvitationsLoading, setIsInvitationsLoading] = useState(true);
+
+  console.log('invitationCounts:', invitationCounts);
+
+  useEffect(() => {
+    if (invitationCounts !== undefined) {
+      setIsInvitationsLoading(false);
+    }
+  }, [invitationCounts]);
+
+  return isInvitationsLoading ? (
     <Wrapper>
-      <InviteCount>{invitationCounts}</InviteCount>
-      <InvitationTitle>초대받은 챌린지</InvitationTitle>
-      <SmallLetter>
-        미라클 메이트
-        <WaitInviteSpan>{invitationCounts}팀</WaitInviteSpan>이 기다리고 있어요
-      </SmallLetter>
+      <LoadingWrapper>
+        <LoadingWithText />
+      </LoadingWrapper>
+    </Wrapper>
+  ) : (
+    <Wrapper>
+      <>
+        <InviteCount>{invitationCounts}</InviteCount>
+        <InvitationTitle>초대받은 챌린지</InvitationTitle>
+        <SmallLetter>
+          미라클 메이트
+          <WaitInviteSpan>{invitationCounts}팀</WaitInviteSpan>이 기다리고
+          있어요
+        </SmallLetter>
+      </>
     </Wrapper>
   );
 };
@@ -21,6 +42,13 @@ const InvitationsContent = () => {
 export default InvitationsContent;
 
 const Wrapper = styled.div`
+  width: 100%;
+  height: 140px;
+  ${({ theme }) => theme.flex.center}
+  flex-direction: column;
+`;
+
+const LoadingWrapper = styled.div`
   width: 100%;
   height: 140px;
   ${({ theme }) => theme.flex.center}
