@@ -24,7 +24,7 @@ const round2 = [
 ];
 
 let currentStatus; // 현재 고개를 돌린 방향
-let isCentered = false;
+// let isCentered = false;
 let isDirectionCorrect = false; // 화살표 별 측정 결과
 let isMissionFinished = false;
 const timeoutDuration = 27000;
@@ -76,47 +76,52 @@ const Mission3 = () => {
       if (
         nose.x < leftEar.x &&
         nose.x > rightEar.x &&
-        centerSholderY - centerMouthY > (centerMouthY - nose.y) * 4.5 &&
-        isCentered
+        centerSholderY - centerMouthY > (centerMouthY - nose.y) * 4.7
+        // isCentered
       ) {
         currentStatus = 'top';
-        isCentered = false;
+        console.log('----- :', currentStatus);
+        // isCentered = false;
       } else if (
         nose.x < leftEar.x &&
         nose.x > rightEar.x &&
-        centerSholderY - centerMouthY < (centerMouthY - nose.y) * 1.9 &&
-        isCentered
+        centerSholderY - centerMouthY < (centerMouthY - nose.y) * 2.0
+        // isCentered
       ) {
         currentStatus = 'bottom';
-        isCentered = false;
+        console.log('----- :', currentStatus);
+        // isCentered = false;
       } else if (
         nose.x > leftEar.x &&
-        nose.x > rightEar.x &&
-        Math.abs(leftEar.x - nose.x) >= Math.abs(rightEar.x - leftEar.x) &&
-        isCentered
+        nose.x > rightEar.x
+        // Math.abs(leftEar.x - nose.x) >= Math.abs(rightEar.x - leftEar.x) &&
+        // isCentered
       ) {
         currentStatus = 'right';
-        isCentered = false;
+        console.log('----- :', currentStatus);
+        // isCentered = false;
       } else if (
         nose.x < leftEar.x &&
-        nose.x < rightEar.x &&
+        nose.x < rightEar.x
         // Math.abs(rightEar.x - nose.x) <= Math.abs(rightEar.x - leftEar.x) &&
-        isCentered
+        // isCentered
       ) {
         currentStatus = 'left';
-        isCentered = false;
-      } else if (
-        nose.x < leftEar.x &&
-        nose.x > rightEar.x &&
-        centerSholderY - centerMouthY < (centerMouthY - nose.y) * 4 &&
-        centerSholderY - centerMouthY > (centerMouthY - nose.y) * 2.2
-        // && nose.y > leftShoulder.y - rangeShoulderY &&
-        // nose.y < leftShoulder.y + rangeShoulderY
-      ) {
-        // 한 번 고개를 돌린 뒤에는 정면을 봐야 점수를 줌
-        currentStatus = 'front';
-        isCentered = true;
+        console.log('----- :', currentStatus);
+        // isCentered = false;
       }
+      // } else if (
+      //   nose.x < leftEar.x &&
+      //   nose.x > rightEar.x &&
+      //   centerSholderY - centerMouthY < (centerMouthY - nose.y) * 4.3 &&
+      //   centerSholderY - centerMouthY > (centerMouthY - nose.y) * 2.2
+      //   // && nose.y > leftShoulder.y - rangeShoulderY &&
+      //   // nose.y < leftShoulder.y + rangeShoulderY
+      // ) {
+      //   // 한 번 고개를 돌린 뒤에는 정면을 봐야 점수를 줌
+      //   currentStatus = 'front';
+      //   isCentered = true;
+      // }
 
       if (
         // currentStatus === selectedDirection[0]
