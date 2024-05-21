@@ -7,7 +7,7 @@ import {
 import * as pose from '@mediapipe/pose';
 import { MissionStarting, MissionEnding } from '../components';
 import arrow from '../../../assets/arrows/arrow.svg';
-import styled from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 
 const round1 = [
   { id: 0, direction: 'top', active: false },
@@ -24,7 +24,7 @@ const round2 = [
 ];
 
 let currentStatus; // 현재 고개를 돌린 방향
-let isCentered = false;
+// let isCentered = false;
 let isDirectionCorrect = false; // 화살표 별 측정 결과
 let isMissionFinished = false;
 const timeoutDuration = 27000;
@@ -76,47 +76,52 @@ const Mission3 = () => {
       if (
         nose.x < leftEar.x &&
         nose.x > rightEar.x &&
-        centerSholderY - centerMouthY > (centerMouthY - nose.y) * 4.5 &&
-        isCentered
+        centerSholderY - centerMouthY > (centerMouthY - nose.y) * 4.7
+        // isCentered
       ) {
         currentStatus = 'top';
-        isCentered = false;
+        console.log('----- :', currentStatus);
+        // isCentered = false;
       } else if (
         nose.x < leftEar.x &&
         nose.x > rightEar.x &&
-        centerSholderY - centerMouthY < (centerMouthY - nose.y) * 1.9 &&
-        isCentered
+        centerSholderY - centerMouthY < (centerMouthY - nose.y) * 2.0
+        // isCentered
       ) {
         currentStatus = 'bottom';
-        isCentered = false;
+        console.log('----- :', currentStatus);
+        // isCentered = false;
       } else if (
         nose.x > leftEar.x &&
-        nose.x > rightEar.x &&
-        Math.abs(leftEar.x - nose.x) >= Math.abs(rightEar.x - leftEar.x) &&
-        isCentered
+        nose.x > rightEar.x
+        // Math.abs(leftEar.x - nose.x) >= Math.abs(rightEar.x - leftEar.x) &&
+        // isCentered
       ) {
         currentStatus = 'right';
-        isCentered = false;
+        console.log('----- :', currentStatus);
+        // isCentered = false;
       } else if (
         nose.x < leftEar.x &&
-        nose.x < rightEar.x &&
+        nose.x < rightEar.x
         // Math.abs(rightEar.x - nose.x) <= Math.abs(rightEar.x - leftEar.x) &&
-        isCentered
+        // isCentered
       ) {
         currentStatus = 'left';
-        isCentered = false;
-      } else if (
-        nose.x < leftEar.x &&
-        nose.x > rightEar.x &&
-        centerSholderY - centerMouthY < (centerMouthY - nose.y) * 4 &&
-        centerSholderY - centerMouthY > (centerMouthY - nose.y) * 2.2
-        // && nose.y > leftShoulder.y - rangeShoulderY &&
-        // nose.y < leftShoulder.y + rangeShoulderY
-      ) {
-        // 한 번 고개를 돌린 뒤에는 정면을 봐야 점수를 줌
-        currentStatus = 'front';
-        isCentered = true;
+        console.log('----- :', currentStatus);
+        // isCentered = false;
       }
+      // } else if (
+      //   nose.x < leftEar.x &&
+      //   nose.x > rightEar.x &&
+      //   centerSholderY - centerMouthY < (centerMouthY - nose.y) * 4.3 &&
+      //   centerSholderY - centerMouthY > (centerMouthY - nose.y) * 2.2
+      //   // && nose.y > leftShoulder.y - rangeShoulderY &&
+      //   // nose.y < leftShoulder.y + rangeShoulderY
+      // ) {
+      //   // 한 번 고개를 돌린 뒤에는 정면을 봐야 점수를 줌
+      //   currentStatus = 'front';
+      //   isCentered = true;
+      // }
 
       if (
         // currentStatus === selectedDirection[0]
@@ -193,9 +198,9 @@ const Mission3 = () => {
         } else if (currentRoundIdx === 0 && currentArrowIdx === 3) {
           score.current = 10;
           setCurrentArrowIdx(0); // 첫 번째 화살표로 초기화
-          setTimeout(() => {
-            setCurrentRoundIdx(currentRoundIdx + 1); // 다음 라운드로 넘어감
-          }, 1000); // 1초 뒤에 실행되도록 설정
+          // setTimeout(() => {
+          setCurrentRoundIdx(currentRoundIdx + 1); // 다음 라운드로 넘어감
+          // }, 1000); // 1초 뒤에 실행되도록 설정
         } else {
           score.current = currentRoundIdx * 10 + (currentArrowIdx + 1) * 2.5;
           setCurrentArrowIdx(currentArrowIdx + 1); // 다음 화살표로 이동
@@ -224,24 +229,40 @@ const Mission3 = () => {
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
       {isMissionStarting || (
-        <ArrowBox>
-          {arrowRound[currentRoundIdx].map(({ id, direction, active }) => (
-            <Arrows
-              key={`${id}_${active}`}
-              src={arrow}
-              direction={direction}
-              active={active}
-              alt={id}
-            />
-          ))}
-        </ArrowBox>
+        <>
+          <ArrowBox>
+            {arrowRound[currentRoundIdx].map(
+              ({ id, direction, active }, index) => (
+                <Arrows
+                  key={`${id}_${active}`}
+                  src={arrow}
+                  direction={direction}
+                  isCurrent={currentArrowIdx === index}
+                  myMissionStatus={myMissionStatus}
+                  active={active}
+                  alt={id}
+                />
+              ),
+            )}
+          </ArrowBox>
+        </>
       )}
     </>
   );
 };
 
 export default Mission3;
-
+const yellowGlow = keyframes` 
+  0% {
+    box-shadow: 0 0 20px 15px  rgba(189, 189, 189, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 35px 20px rgba(189, 189, 189,  1);
+  }
+  100% {
+    box-shadow:  0 0 20px 15px rgba(189, 189, 189,  0.8);
+  }
+`;
 const ArrowBox = styled.div`
   z-index: 200;
 
@@ -254,11 +275,11 @@ const ArrowBox = styled.div`
 
   ${({ theme }) => theme.flex.between}
 
-  background-color: ${({ theme }) => theme.colors.translucent.lightNavy};
+  background-color: ${({ theme }) => theme.colors.translucent.navy};
 `;
 
 const Arrows = styled.img`
-  width: 80px;
+  width: 50px;
   height: 50px;
   transform: ${({ direction }) =>
     direction === 'top'
@@ -268,6 +289,13 @@ const Arrows = styled.img`
         : direction === 'left'
           ? 'rotate(180deg)'
           : 'rotate(0deg)'};
+  border-radius: 50%;
 
   filter: ${({ active }) => (active ? 'none' : 'grayscale(100%)')};
+  ${({ isCurrent, myMissionStatus }) =>
+    isCurrent &&
+    !myMissionStatus &&
+    css`
+      animation: ${yellowGlow} 2s infinite alternate ease-in-out;
+    `}
 `;
