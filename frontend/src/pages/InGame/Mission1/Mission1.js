@@ -191,12 +191,13 @@ const Mission1 = () => {
 
       {isMissionStarting || (
         <>
-          <ProgressWrapper title="progressWrapper">
+          {/* <ProgressWrapper title="progressWrapper">
             <ProgressIndicator progress={progress} />
-          </ProgressWrapper>
+          </ProgressWrapper> */}
           <Guide
             poseCorrect={stretchSide[currentRound]}
             isFlipTriggered={isFlipTriggered}
+            progress={progress}
           />
         </>
       )}
