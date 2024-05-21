@@ -127,7 +127,7 @@ const Settings = () => {
       <NavBar />
 
       <S.PageWrapper>
-        <p>24/05/20/21시 - 새로고침에 reload() 추가한 버전</p>
+        <p>24/05/21/10시 - 시현 nav 추가</p>
         <OutlineBox
           boxStyle={boxStyle}
           content={
