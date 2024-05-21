@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { UserContext, ChallengeContext } from '../contexts';
+import {
+  UserContext,
+  //  ChallengeContext
+} from '../contexts';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { RoundBtn } from '../components';
 import styled from 'styled-components';
@@ -13,7 +16,7 @@ const PAGE_TYPES = [
 ];
 
 const NavBar = () => {
-  const { getChallengeData } = useContext(ChallengeContext);
+  // const { getChallengeData } = useContext(ChallengeContext);
   const { myData } = useContext(UserContext);
   const { userName } = myData;
   const { pathname } = useLocation();
@@ -32,9 +35,13 @@ const NavBar = () => {
     navigate('/settings');
   };
 
+  const refreshPage = () => {
+    window.location.reload();
+  };
+
   const RIGHT_BTN_FUNCS = {
     main: goToSettings,
-    settings: getChallengeData,
+    settings: refreshPage,
   };
 
   const TITLE_BY_PAGE_TYPE = {

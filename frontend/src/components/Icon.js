@@ -65,7 +65,7 @@ const Icon = ({ icon, iconStyle }) => {
         <img
           src={iconList[icon]}
           alt={icon}
-          style={{ width: `${iconStyle.size}px` }}
+          style={{ width: `${iconStyle.size}px`, fill: `${iconStyle.color}` }}
         />
       ) : (
         <FontAwesomeIcon icon={iconList[icon]} />

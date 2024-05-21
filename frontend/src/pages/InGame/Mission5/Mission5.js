@@ -187,49 +187,47 @@ const Mission5 = () => {
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
       {isMissionStarting || (
-        <>
-          <Wrapper>
-            <FormulaWrapper>
-              <Formula>{tables[roundIdx].question}</Formula>
-            </FormulaWrapper>
-            <AnswerBox>
-              {tables[roundIdx].direction !== 0 && (
-                <Answer alt="left">
-                  <CustomAnswerImg
-                    selected={hand === 1}
-                    color={
-                      hand === 1
-                        ? getColor(tables[roundIdx].direction)
-                        : '#808080'
-                    }
-                  />
-                  <AnswerText>
-                    {tables[roundIdx].direction === 1
-                      ? tables[roundIdx].correct
-                      : tables[roundIdx].wrong}
-                  </AnswerText>
-                </Answer>
-              )}
-              {tables[roundIdx].direction !== 0 && (
-                <Answer alt="right">
-                  <CustomAnswerImg
-                    selected={hand === 2}
-                    color={
-                      hand === 2
-                        ? getColor(tables[roundIdx].direction)
-                        : '#808080'
-                    }
-                  />
-                  <AnswerText>
-                    {tables[roundIdx].direction === 2
-                      ? tables[roundIdx].correct
-                      : tables[roundIdx].wrong}
-                  </AnswerText>
-                </Answer>
-              )}
-            </AnswerBox>
-          </Wrapper>
-        </>
+        <Wrapper>
+          <FormulaWrapper>
+            <Formula>{tables[roundIdx].question}</Formula>
+          </FormulaWrapper>
+          <AnswerBox>
+            {tables[roundIdx].direction !== 0 && (
+              <Answer alt="left">
+                <CustomAnswerImg
+                  color={
+                    hand === 1
+                      ? getColor(tables[roundIdx].direction)
+                      : '#808080'
+                  }
+                  direction="left"
+                />
+                <AnswerText>
+                  {tables[roundIdx].direction === 1
+                    ? tables[roundIdx].correct
+                    : tables[roundIdx].wrong}
+                </AnswerText>
+              </Answer>
+            )}
+            {tables[roundIdx].direction !== 0 && (
+              <Answer alt="right">
+                <CustomAnswerImg
+                  color={
+                    hand === 2
+                      ? getColor(tables[roundIdx].direction)
+                      : '#808080'
+                  }
+                  direction="right"
+                />
+                <AnswerText>
+                  {tables[roundIdx].direction === 2
+                    ? tables[roundIdx].correct
+                    : tables[roundIdx].wrong}
+                </AnswerText>
+              </Answer>
+            )}
+          </AnswerBox>
+        </Wrapper>
       )}
     </>
   );
@@ -290,6 +288,7 @@ const Answer = styled.div`
 `;
 
 const AnswerText = styled.div`
+  z-index: 400;
   position: absolute;
   top: 50%;
   left: 50%;

@@ -115,10 +115,10 @@ const LoadModel = () => {
       const matesWithoutMe = mateList.map(({ userId, userName }) => ({
         userId,
         userName,
-        ready: matesReadyStatus[userId].ready,
+        ready: matesReadyStatus?.[userId]?.ready,
       }));
       setMateList(matesWithoutMe);
-      const readyMates = matesWithoutMe.filter(mate => mate.ready);
+      const readyMates = matesWithoutMe?.filter(mate => mate?.ready);
 
       progressRef.current = (readyMates?.length / mateList?.length) * 100;
 
@@ -172,7 +172,7 @@ const LoadModel = () => {
 export default LoadModel;
 
 const Wrapper = styled.div`
-  z-index: 900;
+  z-index: 1000;
   position: fixed;
   width: 100vw;
   height: 100vh;
