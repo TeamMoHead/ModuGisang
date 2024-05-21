@@ -73,14 +73,17 @@ const Mission2 = () => {
   const [paperImg, setPaperImg] = useState([
     {
       imageUrl: pink1,
+      count: 0,
       shouldFall: false,
     },
     {
       imageUrl: yellow1,
+      count: 0,
       shouldFall: false,
     },
     {
       imageUrl: green1,
+      count: 0,
       shouldFall: false,
     },
   ]); // 상태 UI
@@ -98,6 +101,17 @@ const Mission2 = () => {
     setIsRoundPassed,
   } = useContext(GameContext);
   const { myVideoRef } = useContext(OpenViduContext);
+
+  const updatePaperImg = (index, newImgData) => {
+    setPaperImg(prevPaperImg => {
+      const updatedPaperImg = [...prevPaperImg];
+      updatedPaperImg[index] = {
+        ...updatedPaperImg[index],
+        ...newImgData,
+      };
+      return updatedPaperImg;
+    });
+  };
 
   const postitGame = faceLandmarks => {
     if (!faceLandmarks) return;
@@ -138,36 +152,57 @@ const Mission2 = () => {
               topScore += 1;
 
               if (topScore === 4) {
-                setPaperImg(prevPaperImg => [
-                  ...prevPaperImg.slice(0, 1),
-                  {
-                    imageUrl: yellow2,
-                    shouldFall: false,
-                  },
-                  ...prevPaperImg.slice(2), // 나머지 요소는 유지
-                ]);
+                updatePaperImg(1, {
+                  imageUrl: yellow2,
+                  count: 1,
+                  shouldFall: false,
+                });
+
+                // setPaperImg(prevPaperImg => [
+                //   ...prevPaperImg.slice(0, 1),
+                //   {
+                //     imageUrl: yellow2,
+                //     count: 1,
+                //     shouldFall: false,
+                //   },
+                //   ...prevPaperImg.slice(2), // 나머지 요소는 유지
+                // ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
               } else if (topScore === 6) {
-                setPaperImg(prevPaperImg => [
-                  ...prevPaperImg.slice(0, 1),
-                  {
-                    imageUrl: yellow3,
-                    shouldFall: false,
-                  },
-                  ...prevPaperImg.slice(2),
-                ]);
+                updatePaperImg(1, {
+                  imageUrl: yellow3,
+                  count: 2,
+                  shouldFall: false,
+                });
+
+                // setPaperImg(prevPaperImg => [
+                //   ...prevPaperImg.slice(0, 1),
+                //   {
+                //     imageUrl: yellow3,
+                //     count: 2,
+                //     shouldFall: false,
+                //   },
+                //   ...prevPaperImg.slice(2),
+                // ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
               } else if (topScore >= targetNumber / 2) {
-                setPaperImg(prevPaperImg => [
-                  ...prevPaperImg.slice(0, 1),
-                  {
-                    imageUrl: yellow4,
-                    shouldFall: true,
-                  },
-                  ...prevPaperImg.slice(2),
-                ]);
+                updatePaperImg(1, {
+                  imageUrl: yellow4,
+                  count: 3,
+                  shouldFall: true,
+                });
+
+                // setPaperImg(prevPaperImg => [
+                //   ...prevPaperImg.slice(0, 1),
+                //   {
+                //     imageUrl: yellow4,
+                //     count: 3,
+                //     shouldFall: true,
+                //   },
+                //   ...prevPaperImg.slice(2),
+                // ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
                 myPostitStatus[0] = true;
@@ -187,33 +222,54 @@ const Mission2 = () => {
               // console.log('----- leftScore:', leftScore);
 
               if (leftScore === 6) {
-                setPaperImg(prevPaperImg => [
-                  {
-                    imageUrl: pink2,
-                    shouldFall: false,
-                  },
-                  ...prevPaperImg.slice(1),
-                ]);
+                updatePaperImg(0, {
+                  imageUrl: pink2,
+                  count: 1,
+                  shouldFall: false,
+                });
+
+                // setPaperImg(prevPaperImg => [
+                //   {
+                //     imageUrl: pink2,
+                //     count: 1,
+                //     shouldFall: false,
+                //   },
+                //   ...prevPaperImg.slice(1),
+                // ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
               } else if (leftScore === 10) {
-                setPaperImg(prevPaperImg => [
-                  {
-                    imageUrl: pink3,
-                    shouldFall: false,
-                  },
-                  ...prevPaperImg.slice(1),
-                ]);
+                updatePaperImg(0, {
+                  imageUrl: pink3,
+                  count: 2,
+                  shouldFall: false,
+                });
+
+                // setPaperImg(prevPaperImg => [
+                //   {
+                //     imageUrl: pink3,
+                //     count: 2,
+                //     shouldFall: false,
+                //   },
+                //   ...prevPaperImg.slice(1),
+                // ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
               } else if (leftScore >= targetNumber) {
-                setPaperImg(prevPaperImg => [
-                  {
-                    imageUrl: pink4,
-                    shouldFall: true,
-                  },
-                  ...prevPaperImg.slice(1),
-                ]);
+                updatePaperImg(0, {
+                  imageUrl: pink4,
+                  count: 3,
+                  shouldFall: true,
+                });
+
+                // setPaperImg(prevPaperImg => [
+                //   {
+                //     imageUrl: pink4,
+                //     count: 3,
+                //     shouldFall: true,
+                //   },
+                //   ...prevPaperImg.slice(1),
+                // ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
                 myPostitStatus[1] = true;
@@ -233,33 +289,54 @@ const Mission2 = () => {
               // console.log('----- rightScore:', rightScore);
 
               if (rightScore === 6) {
-                setPaperImg(prevPaperImg => [
-                  ...prevPaperImg.slice(0, 2),
-                  {
-                    imageUrl: green2,
-                    shouldFall: false,
-                  },
-                ]);
+                updatePaperImg(2, {
+                  imageUrl: green2,
+                  count: 1,
+                  shouldFall: false,
+                });
+
+                // setPaperImg(prevPaperImg => [
+                //   ...prevPaperImg.slice(0, 2),
+                //   {
+                //     imageUrl: green2,
+                //     count: 1,
+                //     shouldFall: false,
+                //   },
+                // ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
               } else if (rightScore === 10) {
-                setPaperImg(prevPaperImg => [
-                  ...prevPaperImg.slice(0, 2),
-                  {
-                    imageUrl: green3,
-                    shouldFall: false,
-                  },
-                ]);
+                updatePaperImg(2, {
+                  imageUrl: green3,
+                  count: 2,
+                  shouldFall: false,
+                });
+
+                // setPaperImg(prevPaperImg => [
+                //   ...prevPaperImg.slice(0, 2),
+                //   {
+                //     imageUrl: green3,
+                //     count: 2,
+                //     shouldFall: false,
+                //   },
+                // ]);
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
               } else if (rightScore >= targetNumber) {
-                setPaperImg(prevPaperImg => [
-                  ...prevPaperImg.slice(0, 2),
-                  {
-                    imageUrl: green4,
-                    shouldFall: true,
-                  },
-                ]);
+                updatePaperImg(2, {
+                  imageUrl: green4,
+                  count: 3,
+                  shouldFall: true,
+                });
+
+                // setPaperImg(prevPaperImg => [
+                //   ...prevPaperImg.slice(0, 2),
+                //   {
+                //     imageUrl: green4,
+                //     count: 3,
+                //     shouldFall: true,
+                //   },
+                // ]);
                 myPostitStatus[2] = true;
                 setIsRoundPassed(true);
                 setTimeout(() => setIsRoundPassed(false), 100);
@@ -415,6 +492,7 @@ const Mission2 = () => {
           <Paper
             key={index}
             imageUrl={paper.imageUrl}
+            count={paper.count}
             shouldFall={paper?.shouldFall}
           />
         ))}
@@ -469,6 +547,42 @@ const Paper = styled.div`
   height: 60px;
   background-image: url(${props => props.imageUrl});
   background-size: cover;
-  animation: ${props => (props.shouldFall ? PostitFallAnimation : 'none')} 1s
-    ease-out forwards;
+  animation: ${props => {
+    const fallAnimation = props.shouldFall
+      ? css`
+          ${PostitFallAnimation} 1s ease-out forwards
+        `
+      : 'none';
+    const glowAnimation =
+      props.count > 0
+        ? css`
+            ${glow(getGlowColor(props.count))} 2s infinite alternate
+          `
+        : 'none';
+    return css`
+      ${fallAnimation}, ${glowAnimation}
+    `;
+  }};
 `;
+
+const glow = color => keyframes`
+  from {
+    box-shadow: 0 0 10px #fff, 0 0 20px ${color}, 0 0 30px ${color}, 0 0 40px ${color}, 0 0 50px ${color}, 0 0 60px ${color}, 0 0 70px ${color};
+  }
+  to {
+    box-shadow: 0 0 20px #fff, 0 0 40px ${color}, 0 0 60px ${color}, 0 0 80px ${color}, 0 0 100px ${color}, 0 0 120px ${color}, 0 0 140px ${color};
+  }
+`;
+
+const getGlowColor = count => {
+  switch (count) {
+    case 1:
+      return '#FFC500'; // 노란색
+    case 2:
+      return '#FF008F'; //빨간색
+    case 3:
+      return '#ffffff'; // 흰색
+    default:
+      return 'none';
+  }
+};
