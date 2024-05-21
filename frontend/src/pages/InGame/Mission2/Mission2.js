@@ -5,7 +5,7 @@ import {
   OpenViduContext,
 } from '../../../contexts';
 import { MissionStarting, MissionEnding } from '../components';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import {
   green0,
   green1,

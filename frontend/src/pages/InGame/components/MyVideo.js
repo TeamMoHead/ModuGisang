@@ -83,11 +83,11 @@ const MyVideo = () => {
         ref={myVideoRef}
         autoPlay
         playsInline
-        $isWaitingMode={GAME_MODE[inGameMode] === 'waiting'}
         $myMissionStatus={myMissionStatus}
+        $isWaitingMode={GAME_MODE[inGameMode] === 'waiting'}
+        $isLoadingModelMode={GAME_MODE[inGameMode] === 'loadModel'}
         $isResultMode={GAME_MODE[inGameMode] === 'result'}
         $amTheTopUser={true}
-        $isLoadingModelMode={GAME_MODE[inGameMode] === 'loadModel'}
       />
     </Wrapper>
   );

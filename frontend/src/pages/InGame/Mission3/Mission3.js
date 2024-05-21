@@ -224,19 +224,17 @@ const Mission3 = () => {
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
       {isMissionStarting || (
-        <>
-          <ArrowBox>
-            {arrowRound[currentRoundIdx].map(({ id, direction, active }) => (
-              <Arrows
-                key={`${id}_${active}`}
-                src={arrow}
-                direction={direction}
-                active={active}
-                alt={id}
-              />
-            ))}
-          </ArrowBox>
-        </>
+        <ArrowBox>
+          {arrowRound[currentRoundIdx].map(({ id, direction, active }) => (
+            <Arrows
+              key={`${id}_${active}`}
+              src={arrow}
+              direction={direction}
+              active={active}
+              alt={id}
+            />
+          ))}
+        </ArrowBox>
       )}
     </>
   );

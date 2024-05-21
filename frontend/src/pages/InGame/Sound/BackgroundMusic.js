@@ -22,7 +22,7 @@ const getMusicSrc = gameMode => {
   }
 };
 
-const DEFAULT_VOLUME = 0.05;
+const DEFAULT_VOLUME = 0.02;
 
 const fadeAudio = (audio, type, duration = 3000) => {
   const maxVolume = DEFAULT_VOLUME;
@@ -73,11 +73,7 @@ const BackgroundMusic = () => {
     }
   }, [inGameMode, isMusicMuted]);
 
-  return (
-    <>
-      <audio ref={audioRef} loop autoPlay playsInline />
-    </>
-  );
+  return <audio ref={audioRef} loop autoPlay playsInline />;
 };
 
 export default BackgroundMusic;

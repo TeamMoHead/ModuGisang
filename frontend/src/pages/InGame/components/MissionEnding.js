@@ -2,37 +2,11 @@ import React, { useEffect, useContext } from 'react';
 import { GameContext } from '../../../contexts';
 import { rainEffect } from '../Mission4/effect';
 
-import styled, { keyframes } from 'styled-components';
-
-// const thunderstormSoundEffect = () => {
-//   const volume = 0.5;
-//   const audio = new Audio(thunderstorm);
-//   audio.volume = volume;
-
-//   // 사운드 재생
-//   audio.play();
-
-//   // 2초 후에 페이드 아웃 시작
-//   setTimeout(() => {
-//     const fadeOutInterval = setInterval(() => {
-//       if (audio.volume <= 0.05) {
-//         clearInterval(fadeOutInterval);
-//         audio.pause(); // 오디오 재생 중지
-//       } else {
-//         audio.volume -= volume / 10; // 0.05
-//       }
-//     }, 100);
-//   }, 2000);
-// };
+import styled, { css, keyframes } from 'styled-components';
 
 const MissionEnding = ({ canvasRef }) => {
-  const {
-    isMissionEnding,
-    setIsMissionEnding,
-    myMissionStatus,
-    inGameMode,
-    isMusicMuted,
-  } = useContext(GameContext);
+  const { isMissionEnding, setIsMissionEnding, myMissionStatus, inGameMode } =
+    useContext(GameContext);
 
   useEffect(() => {
     if (!isMissionEnding) return;
@@ -43,26 +17,75 @@ const MissionEnding = ({ canvasRef }) => {
   }, [isMissionEnding, myMissionStatus, setIsMissionEnding]);
 
   if (!isMissionEnding) return null;
-
   return (
-    <Wrapper title="ResultWrapper">
-      {
-        <Result
-          key={inGameMode}
-          myMissionStatus={myMissionStatus}
-          inGameMode={inGameMode}
-        >
-          {myMissionStatus ? 'O' : 'X'}
-        </Result>
-      }
+    <Wrapper inGameMode={inGameMode}>
+      <Result
+        key={inGameMode}
+        $myMissionStatus={myMissionStatus}
+        inGameMode={inGameMode}
+      >
+        <Text $myMissionStatus={myMissionStatus}>
+          {myMissionStatus ? '좋아요!' : '앗..!'}
+        </Text>
+      </Result>
     </Wrapper>
   );
 };
 
 export default MissionEnding;
 
+const shaking = keyframes`
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(-10px, -10px) rotate(-5deg);
+  }
+  75% {
+    transform: translate(-10px, 10px) rotate(-5deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+`;
+
+const sweeping = keyframes`
+0% {
+    background-position: -150% -150%;
+  }
+  100% {
+    background-position: 150% 150%;
+  }
+`;
+
+const emeraldGlow = keyframes`
+  0% {
+    box-shadow: 0 0 10px 0 rgba(21, 245, 186, 0.5);
+  }
+  50% {
+    border-color: rgba(21, 245, 186, 1);
+    box-shadow: 0 0 20px 0 rgba(21, 245, 186, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 10px 0 rgba(21, 245, 186, 0.5);
+  }
+`;
+
+const redGlow = keyframes`
+  0% {
+    box-shadow: 0 0 10px 0 rgba(255, 0, 143, 0.5);
+  }
+  50% {
+    border-color: rgba(255, 0, 143, 1);
+    box-shadow: 0 0 20px 0 rgba(255, 0, 143, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 10px 0 rgba(255, 0, 143, 0.5);
+  }
+`;
+
 const Wrapper = styled.div`
-  z-index: 400;
+  z-index: 800;
 
   position: fixed;
 
@@ -70,28 +93,70 @@ const Wrapper = styled.div`
   height: 100vh;
 
   ${({ theme }) => theme.flex.center};
-
   margin: auto;
-  font: 700 50px 'Jua';
-`;
 
-const fadeInOut = keyframes`
-  0%, 50%, 100% { opacity: 0; }
-  25%, 75% { opacity: 1; }
+  background-color: ${({ theme, inGameMode }) =>
+    inGameMode === 4 ? 'transparent' : theme.colors.translucent.navy};
+  backdrop-filter: blur(3px);
 `;
 
 const Result = styled.span`
-  width: 100%;
-  height: 100%;
-  ${({ theme }) => theme.flex.center};
-  background-color: ${({ theme, inGameMode }) =>
-    inGameMode === 4 ? 'transparent' : theme.colors.translucent.navy};
-  color: ${({ theme }) => theme.colors.white};
-  -webkit-text-stroke: ${({ theme, myMissionStatus }) =>
-      myMissionStatus ? theme.colors.primary.emerald : theme.colors.system.red}
-    4px;
-  animation: ${fadeInOut} 2000ms ease-in-out;
-
-  font: 700 400px 'Jua';
   z-index: 15;
+
+  width: 100%;
+  ${({ theme }) => theme.flex.center};
+  padding: 30px 0;
+
+  background-color: ${({ theme }) => theme.colors.translucent.white};
+  backdrop-filter: blur(2px);
+
+  border-top: 4px solid
+    ${({ theme, $myMissionStatus }) =>
+      $myMissionStatus
+        ? theme.colors.primary.emerald
+        : theme.colors.system.red};
+  border-bottom: 4px solid
+    ${({ theme, $myMissionStatus }) =>
+      $myMissionStatus
+        ? theme.colors.primary.emerald
+        : theme.colors.system.red};
+  box-shadow: 0 0 12px 0
+    ${({ theme, $myMissionStatus }) =>
+      $myMissionStatus
+        ? theme.colors.primary.emerald
+        : theme.colors.system.red};
+
+  animation: ${({ $myMissionStatus }) =>
+      $myMissionStatus ? emeraldGlow : redGlow}
+    2s infinite alternate ease-in-out;
+`;
+
+const Text = styled.span`
+  text-align: center;
+
+  font: 700 60px 'Jua';
+  color: ${({ theme }) => theme.colors.white};
+  -webkit-text-stroke: ${({ theme, $myMissionStatus }) =>
+      $myMissionStatus ? theme.colors.primary.emerald : theme.colors.system.red}
+    2px;
+
+  ${({ $myMissionStatus }) =>
+    $myMissionStatus
+      ? css`
+          color: ${({ theme }) => theme.colors.primary.navy};
+          background: linear-gradient(
+            135deg,
+            #0d0a2d 25%,
+            #fff 50%,
+            #0d0a2d 75%
+          );
+          background-size: 200% 200%;
+          background-clip: text;
+          -webkit-background-clip: text;
+          color: transparent;
+          animation: ${sweeping} 1s infinite alternate;
+        `
+      : css`
+          animation: ${shaking} 0.3s infinite alternate;
+        `};
 `;
