@@ -83,7 +83,7 @@ export class AuthController {
         res.cookie('accessToken', accessToken, {
           httpOnly: true,
           maxAge: process.env.REFRESH_TOKEN_EXP,
-          secure: process.env.IS_Production ? true : false,
+          secure: process.env.IS_Production === 'true' ? true : false,
           // sameSite: 'None', // Cross-site 쿠키를 허용
           domain:
             process.env.IS_Production === 'true'
@@ -93,9 +93,12 @@ export class AuthController {
         res.cookie('refreshToken', refreshToken, {
           httpOnly: true,
           maxAge: process.env.REFRESH_TOKEN_EXP,
-          secure: process.env.IS_Production ? true : false,
+          secure: process.env.IS_Production === 'true' ? true : false,
           // sameSite: 'None', // Cross-site 쿠키를 허용
-          domain: process.env.IS_Production ? process.env.DOMAIN : undefined,
+          domain:
+            process.env.IS_Production === 'true'
+              ? process.env.DOMAIN
+              : undefined,
         });
         res.send({
           accessToken: accessToken,
@@ -175,15 +178,17 @@ export class AuthController {
     if (token == 1) {
       res.clearCookie('accessToken', {
         httpOnly: true,
-        secure: process.env.IS_Production ? true : false,
+        secure: process.env.IS_Production === 'true' ? true : false,
         // sameSite: 'None',
-        domain: process.env.IS_Production ? process.env.DOMAIN : undefined,
+        domain:
+          process.env.IS_Production === 'true' ? process.env.DOMAIN : undefined,
       });
       res.clearCookie('refreshToken', {
         httpOnly: true,
-        secure: process.env.IS_Production ? true : false,
+        secure: process.env.IS_Production === 'true' ? true : false,
         // sameSite: 'None',
-        domain: process.env.IS_Production ? process.env.DOMAIN : undefined,
+        domain:
+          process.env.IS_Production === 'true' ? process.env.DOMAIN : undefined,
       });
       res.send({ status: 'success', message: '로그아웃 성공' });
       // return {};

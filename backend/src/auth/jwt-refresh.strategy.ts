@@ -9,17 +9,18 @@ export class JwtRefreshStrategy extends PassportStrategy(
 ) {
   constructor(private userService: UserService) {
     super({
-      jwtFromRequest: process.env.IS_Production
-        ? ExtractJwt.fromExtractors([
-            (request) => {
-              let token = null;
-              if (request && request.cookies) {
-                token = request.cookies['refreshToken'];
-              }
-              return token;
-            },
-          ])
-        : ExtractJwt.fromAuthHeaderAsBearerToken(), // 토큰 분석,
+      jwtFromRequest:
+        process.env.IS_Production === 'true'
+          ? ExtractJwt.fromExtractors([
+              (request) => {
+                let token = null;
+                if (request && request.cookies) {
+                  token = request.cookies['refreshToken'];
+                }
+                return token;
+              },
+            ])
+          : ExtractJwt.fromAuthHeaderAsBearerToken(), // 토큰 분석,
       // jwtFromRequest: (req: Request) => {
       //   const authHeader = req.headers.authorization;
       //   if (authHeader && authHeader.startsWith('Bearer ')) {
