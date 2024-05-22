@@ -8,9 +8,12 @@ import {
   Param,
   Post,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { OpenviduService } from './openvidu.service';
+import { AuthenticateGuard } from 'src/auth/auth.guard';
 
+@UseGuards(AuthenticateGuard)
 @Controller('api')
 export class OpenviduController {
   constructor(private readonly openviduService: OpenviduService) {}
