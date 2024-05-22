@@ -556,11 +556,17 @@ const Paper = styled.div`
     const glowAnimation =
       props.count > 0
         ? css`
-            ${glow(getGlowColor(props.count))} 2s infinite alternate
+            ${glow(getGlowColor(props.count))} 500ms alternate
+          `
+        : 'none';
+    const shakeAnimation =
+      props.count > 0
+        ? css`
+            ${getShakeAnimation(props.count)} 500ms alternate
           `
         : 'none';
     return css`
-      ${fallAnimation}, ${glowAnimation}
+      ${fallAnimation}, ${glowAnimation}, ${shakeAnimation}
     `;
   }};
 `;
@@ -574,14 +580,75 @@ const glow = color => keyframes`
   }
 `;
 
+const getShakeAnimation = count => {
+  switch (count) {
+    case 1:
+      return shakeOne;
+    case 2:
+      return shakeTwo;
+    case 3:
+      return shakeThree;
+    default:
+      return 'none';
+  }
+};
+
+const shakeOne = keyframes`
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-10px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(10px);
+  }
+`;
+
+const shakeTwo = keyframes`
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-15px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(15px);
+  }
+`;
+
+const shakeThree = keyframes`
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-20px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(20px);
+  }
+`;
+const getShake = count => {
+  switch (count) {
+    case 1:
+      return '10px';
+    case 2:
+      return '20px';
+    case 3:
+      return '30px';
+    default:
+      return '0';
+  }
+};
+
 const getGlowColor = count => {
   switch (count) {
     case 1:
       return '#FFC500'; // 노란색
     case 2:
-      return '#FF008F'; //빨간색
+      return '#FFC501'; //빨간색
     case 3:
-      return '#ffffff'; // 흰색
+      return '#FFC502'; // 흰색
     default:
       return 'none';
   }
