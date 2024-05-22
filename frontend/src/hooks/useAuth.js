@@ -43,7 +43,7 @@ const useAuth = () => {
       const isRefreshed = await refreshAuthorization();
       if (!isRefreshed) {
         alert('로그인이 필요합니다.');
-        navigate('/auth');
+        navigate('/signIn');
       }
       return isRefreshed;
     }
@@ -190,7 +190,7 @@ const useAuth = () => {
     if (!isSignUpLoading && signUpData) {
       setIsSignUpLoading(false);
       alert('회원가입이 완료되었습니다.');
-      navigate('/auth');
+      navigate('/signIn');
     } else if (!isSignUpLoading && signUpError) {
       setIsSignUpLoading(false);
       alert('회원가입에 실패했습니다. 다시 시도해주세요.');
