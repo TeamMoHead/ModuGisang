@@ -38,6 +38,17 @@ export class OpenviduService {
     if (!session) {
       throw new HttpException('Session not found', HttpStatus.NOT_FOUND);
     }
+
+    // 동일한 유저의 기존 연결을 찾는 로직
+    const existingConnection = session.connections.find((conn) => {
+      const data = JSON.parse(conn.serverData);
+      return data.userId === body.userData.userId;
+    });
+
+    if (existingConnection) {
+      // 기존 연결이 존재하는 경우 해당 연결의 토큰을 반환
+      return existingConnection.token;
+    }
     const tokenOptions = {
       data: `{"userId": "${body.userData.userId}", "userName": "${body.userData.userName}"}`,
       role: OpenViduRole.PUBLISHER,
