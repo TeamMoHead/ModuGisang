@@ -15,6 +15,7 @@ import { UserService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthenticateGuard } from 'src/auth/auth.guard';
 
+@UseGuards(AuthenticateGuard)
 @Controller('/api/user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

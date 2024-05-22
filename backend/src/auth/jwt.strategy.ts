@@ -3,12 +3,24 @@ import { ExtractJwt, Strategy, VerifiedCallback } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Payload } from './payload.interface';
 import { AuthService } from './auth.service';
+const is_prod = process.env.IS_Production === 'true';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(private authService: AuthService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // 토큰 분석
+      jwtFromRequest: is_prod
+        ? ExtractJwt.fromExtractors([
+            (request) => {
+              let token = null;
+              if (request && request.cookies) {
+                token = request.cookies['accessToken'];
+                console.log('token:', token);
+              }
+              return token;
+            },
+          ])
+        : ExtractJwt.fromAuthHeaderAsBearerToken(), // 토큰 분석,
       ignoreExpiration: false,
       secretOrKey: process.env.ACCESS_TOKEN_SECRET_KEY, // 생성자에서 바로 접근
     });
