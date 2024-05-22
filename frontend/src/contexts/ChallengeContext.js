@@ -7,6 +7,7 @@ import { AccountContext, UserContext } from './';
 const ChallengeContext = createContext();
 
 const ChallengeContextProvider = ({ children }) => {
+  const { userId } = useContext(AccountContext);
   const { accessToken } = useContext(AccountContext);
   const { challengeId } = useContext(UserContext);
   const { fetchData } = useFetch();
@@ -95,7 +96,7 @@ const ChallengeContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (challengeId !== -1) {
+    if (challengeId !== null && challengeId !== -1 && userId) {
       getChallengeData();
     }
   }, [challengeId]);

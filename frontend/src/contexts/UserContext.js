@@ -17,7 +17,7 @@ const UserContextProvider = ({ children }) => {
     // invitationCounts: 0,
     // affirmation: '',
   });
-  const [challengeId, setChallengeId] = useState(-1);
+  const [challengeId, setChallengeId] = useState(null);
 
   const getMyData = async () => {
     const response = await fetchData(() =>

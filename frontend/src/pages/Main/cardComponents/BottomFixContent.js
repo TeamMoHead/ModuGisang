@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import EnterContent from './EnterContent';
 import CreateContent from './CreateContent';
@@ -6,22 +6,22 @@ import { Icon } from '../../../components';
 // import { Timer } from '../../InGame/components/Nav';
 
 import { LoadingWithText } from '../../../components';
+import { ChallengeContext, UserContext } from '../../../contexts';
 
-const BottomFixContent = ({ challengeData, Handler }) => {
-  const challengeId = challengeData?.challengeId;
-  const wakeTime = challengeData.wakeTime;
+const BottomFixContent = ({ Handler }) => {
+  const challengeData = useContext(ChallengeContext);
+  const challengeId = useContext(UserContext).challengeId;
+  const wakeTime = challengeData?.challengeData?.wakeTime;
   const [timeLeft, setTimeLeft] = useState(null);
   const [isChallengeIdLoading, setIsChallengeIdLoading] = useState(true);
 
   useEffect(() => {
     // challengeData가 로드된 후에 로딩 상태를 해제
-    if (challengeId !== undefined) {
+    if (challengeId !== null) {
       setIsChallengeIdLoading(false);
     }
-    if (challengeId === undefined) {
-      setTimeout(() => {
-        setIsChallengeIdLoading(false);
-      }, 1000);
+    if (challengeId === -1) {
+      setIsChallengeIdLoading(false);
     }
   }, [challengeData, challengeId]);
 
@@ -70,7 +70,7 @@ const BottomFixContent = ({ challengeData, Handler }) => {
     </Wrapper>
   ) : (
     <Wrapper>
-      {challengeId === undefined ? (
+      {challengeId === -1 ? (
         <>
           <ChallengeTitle>참여중인 챌린지가 없어요</ChallengeTitle>
           <SeperateLine />
