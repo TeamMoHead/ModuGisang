@@ -1,9 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { OpenVidu, OpenViduRole } from 'openvidu-node-client';
 import { ConfigService } from '@nestjs/config';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from 'src/users/entities/users.entity';
 import { UserService } from 'src/users/users.service';
 
 @Injectable()
@@ -14,8 +11,6 @@ export class OpenviduService {
 
   constructor(
     private configService: ConfigService,
-    // @InjectRepository(Users)
-    // private userRepository: Repository<Users>,
     private userService: UserService,
   ) {
     this.openvidu = new OpenVidu(this.OPENVIDU_URL, this.OPENVIDU_SECRET);
@@ -23,18 +18,11 @@ export class OpenviduService {
 
   async openviduTotalService(body: any) {
     try {
-      const session = await this.findSession(body.userData.challengeId); // 동일한 세션이 있는지 검사
+      const session = await this.findSession(body.userData.challengeId);
+      console.log(session);
       return session
         ? await this.createToken(session.sessionId, body)
         : await this.handleNoSessionFound(body);
-      // if(session !== undefined){ // 동일한 세션이 존재 O
-      //     // const connection = await session.
-      //     return await this.createToken(body.userData.challengeId, body);
-      // }else{ // 동일한 세션이 존재 X
-      //     const s = await this.openvidu.createSession({customSessionId: body.userData.challengeId});
-      //     return await this.createToken(s.sessionId, body);
-      //     // return connection.token;
-      // }
     } catch (error) {
       console.log('Check existing session: ', error);
       return await this.handleNoSessionFound(body);
@@ -46,6 +34,17 @@ export class OpenviduService {
 
     if (!session) {
       throw new HttpException('Session not found', HttpStatus.NOT_FOUND);
+    }
+
+    // 동일한 유저의 기존 연결을 찾는 로직
+    const existingConnection = session.connections.find((conn) => {
+      const data = JSON.parse(conn.serverData);
+      return data.userId === body.userData.userId;
+    });
+
+    if (existingConnection) {
+      // 기존 연결이 존재하는 경우 해당 연결의 토큰을 반환
+      return existingConnection.token;
     }
     const tokenOptions = {
       data: `{"userId": "${body.userData.userId}", "userName": "${body.userData.userName}"}`,
@@ -67,7 +66,7 @@ export class OpenviduService {
   }
 
   async findSession(challengeId: string) {
-    await this.listActiveSessions();
+    await this.updateActiveSessions();
     return this.openvidu.activeSessions.find(
       (s) => s.sessionId === challengeId,
     );
@@ -83,26 +82,20 @@ export class OpenviduService {
     } catch (error) {
       console.error('Error creating new session : ', error);
       throw new HttpException(
-        'Faild to create session ',
+        'Failed to create session ',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
 
-  async listActiveSessions() {
+  async updateActiveSessions() {
     try {
-      this.openvidu.activeSessions.find((s) =>
+      await this.openvidu.fetch(); // 세션 목록을 업데이트
+      this.openvidu.activeSessions.forEach((s) =>
         console.log('sessionlist : ' + s.sessionId),
       );
     } catch (error) {
       console.error('Error fetching active sessions:', error);
     }
   }
-
-  // 사용자의 세션 id에 대한 토큰을 발행 시 토큰 값만 전달할 수 있도록 반환
-  // extractToken(url){
-  //     const queryParmas = new URLSearchParams(new URL(url).search);
-  //     const token = queryParmas.get('token');
-  //     return token;
-  // }
 }

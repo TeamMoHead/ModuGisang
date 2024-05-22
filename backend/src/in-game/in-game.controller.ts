@@ -13,6 +13,7 @@ import { InGameService } from './in-game.service';
 import { AuthenticateGuard } from 'src/auth/auth.guard';
 import { ScoreDto } from './dto/score.dto';
 
+@UseGuards(AuthenticateGuard)
 @Controller('/api/in-game')
 export class InGameController {
   constructor(private readonly inGameService: InGameService) {}

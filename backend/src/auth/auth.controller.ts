@@ -45,9 +45,8 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() user: UserDto) {
+  async login(@Req() req, @Res() res, @Body() user: UserDto) {
     // 로그인 시 예외처리 더 자세하게 구현 필요 ( DB에 값을 제대로 저장을 못했을 때, 서버 쪽 에러가 있을 때 등 )
-
     if (!user.email || !user.password) {
       throw new HttpException(
         'Missing email or password',
@@ -80,11 +79,37 @@ export class AuthController {
 
       if (accessToken && refreshToken) {
         console.log('로그인 성공');
-        return {
+
+        res.cookie('accessToken', accessToken, {
+          httpOnly: true,
+          maxAge: process.env.REFRESH_TOKEN_EXP,
+          secure: process.env.IS_Production === 'true' ? true : false,
+          // sameSite: 'None', // Cross-site 쿠키를 허용
+          domain:
+            process.env.IS_Production === 'true'
+              ? process.env.DOMAIN
+              : undefined,
+        });
+        res.cookie('refreshToken', refreshToken, {
+          httpOnly: true,
+          maxAge: process.env.REFRESH_TOKEN_EXP,
+          secure: process.env.IS_Production === 'true' ? true : false,
+          // sameSite: 'None', // Cross-site 쿠키를 허용
+          domain:
+            process.env.IS_Production === 'true'
+              ? process.env.DOMAIN
+              : undefined,
+        });
+        res.send({
           accessToken: accessToken,
           refreshToken: refreshToken,
           userId: authUser._id,
-        };
+        });
+        // return {
+        //   accessToken: accessToken,
+        //   refreshToken: refreshToken,
+        //   userId: authUser._id,
+        // };
       } else {
         throw new UnauthorizedException('로그인 실패');
       }
@@ -102,13 +127,6 @@ export class AuthController {
         );
       }
     }
-
-    // res.cookie('accessToken', accessToken, { httpOnly: true, maxAge: 900000, secure: true });
-    // res.cookie('refreshToken', refreshToken, { httpOnly: true, maxAge: 900000, secure: true });
-    // res.send({
-    //     accessToken: accessToken,
-    //     refreshToken: refreshToken
-    // });
   }
 
   @Get('authenticate')
@@ -152,17 +170,28 @@ export class AuthController {
 
   @Get('logout/:userId')
   @UseGuards(AuthenticateGuard)
-  async logout(@Param('userId') userId: string, @Req() req) {
+  async logout(@Param('userId') userId: string, @Req() req, @Res() res) {
     console.log('@@@@AuthenticateGuard/req.user._id@@@@', req.user._id);
     console.log('@@@@AuthenticateGuard/Param/userId@@@@', userId);
     // const token = await this.userService.removeRefreshToken(req.user._id);
     const token = await this.userService.removeRefreshToken(Number(userId));
-    // console.log(token.affected);
     if (token == 1) {
-      return {
-        status: 'success',
-        message: '로그아웃 성공',
-      };
+      res.clearCookie('accessToken', {
+        httpOnly: true,
+        secure: process.env.IS_Production === 'true' ? true : false,
+        // sameSite: 'None',
+        domain:
+          process.env.IS_Production === 'true' ? process.env.DOMAIN : undefined,
+      });
+      res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.IS_Production === 'true' ? true : false,
+        // sameSite: 'None',
+        domain:
+          process.env.IS_Production === 'true' ? process.env.DOMAIN : undefined,
+      });
+      res.send({ status: 'success', message: '로그아웃 성공' });
+      // return {};
     } else {
       throw new UnauthorizedException('Login Fail');
     }

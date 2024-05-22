@@ -2,9 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy, VerifiedCallback } from 'passport-jwt';
 import { UserService } from 'src/users/users.service';
-
-import { Request } from 'express';
-
+const is_prod = process.env.IS_Production === 'true';
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
   Strategy,
@@ -12,7 +10,17 @@ export class JwtRefreshStrategy extends PassportStrategy(
 ) {
   constructor(private userService: UserService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // 토큰 분석
+      jwtFromRequest: is_prod
+        ? ExtractJwt.fromExtractors([
+            (request) => {
+              let token = null;
+              if (request && request.cookies) {
+                token = request.cookies['refreshToken'];
+              }
+              return token;
+            },
+          ])
+        : ExtractJwt.fromAuthHeaderAsBearerToken(), // 토큰 분석,
       // jwtFromRequest: (req: Request) => {
       //   const authHeader = req.headers.authorization;
       //   if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -23,7 +31,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
       //   return 'force-validate'; // 헤더가 없는 경우 "no-token" 반환
       // },
       ignoreExpiration: false,
-      secretOrKey: process.env.ACCESS_TOKEN_SECRET_KEY, // 생성자에서 바로 접근
+      secretOrKey: process.env.REFRESH_TOKEN_SECRET_KEY, // 생성자에서 바로 접근
     });
   }
 
