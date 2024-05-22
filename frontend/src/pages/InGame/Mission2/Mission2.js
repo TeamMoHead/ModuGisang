@@ -364,7 +364,7 @@ const Mission2 = () => {
         if (!status) {
           const newPostitPosition = calculatePostitPosition(
             faceLandmarks,
-            index === 0 ? 107 : index === 1 ? 205 : 425, // 각 포스트잇의 위치 계산(0: 이마, 1: 왼쪽 볼, 2: 오른쪽 볼)
+            index === 0 ? 107 : index === 1 ? 147 : 376, // 각 포스트잇의 위치 계산(0: 이마, 1: 왼쪽 볼, 2: 오른쪽 볼)
           );
           setPostitPositions(prevPositions => {
             const updatedPositions = [...prevPositions];
@@ -451,7 +451,7 @@ const Mission2 = () => {
     const faceWidth =
       Math.abs(landmarks[123].x - landmarks[352].x) * window.innerWidth;
     // 얼굴 너비를 기준으로 포스트잇 크기 조정
-    const resizedSize = faceWidth * 0.33;
+    const resizedSize = faceWidth * 0.4;
 
     // 포스트잇을 붙일 랜드마크의 좌표
     const point = landmarks[index];
