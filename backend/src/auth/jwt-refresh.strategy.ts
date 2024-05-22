@@ -2,7 +2,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy, VerifiedCallback } from 'passport-jwt';
 import { UserService } from 'src/users/users.service';
-const is_prod = process.env.IS_Production === 'true';
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
   Strategy,
@@ -10,7 +9,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
 ) {
   constructor(private userService: UserService) {
     super({
-      jwtFromRequest: is_prod
+      jwtFromRequest: process.env.IS_Production
         ? ExtractJwt.fromExtractors([
             (request) => {
               let token = null;
@@ -36,6 +35,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
   }
 
   async validate(payload: any): Promise<any> {
+    console.log('@@@process.env.IS_Production', process.env.IS_Production);
     if (payload === 'no-token') {
       console.log('Handling invalid or null token.');
       throw new UnauthorizedException('Invalid or no token provided.');

@@ -3,19 +3,18 @@ import { ExtractJwt, Strategy, VerifiedCallback } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Payload } from './payload.interface';
 import { AuthService } from './auth.service';
-const is_prod = process.env.IS_Production === 'true';
-
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(private authService: AuthService) {
     super({
-      jwtFromRequest: is_prod
+      jwtFromRequest: process.env.IS_Production
         ? ExtractJwt.fromExtractors([
             (request) => {
               let token = null;
               if (request && request.cookies) {
                 token = request.cookies['accessToken'];
                 console.log('token:', token);
+                console.log('쿠키로 확인중입니다. \n');
               }
               return token;
             },
@@ -27,6 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: Payload, done: VerifiedCallback): Promise<any> {
+    console.log('@@ process.env.IS_Production', process.env.IS_Production);
     const user = await this.authService.tokenValidateUser(payload);
     if (!user) {
       console.log('user does not exist');
