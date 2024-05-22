@@ -20,6 +20,7 @@ import { AcceptInvitationDto } from './dto/acceptInvitaion.dto';
 import { ChallengeResponseDto } from './dto/challengeResponse.dto';
 import { ChallengeResultDto } from './dto/challengeResult.dto';
 
+@UseGuards(AuthenticateGuard)
 @Controller('api/challenge')
 export class ChallengesController {
   constructor(private readonly challengeService: ChallengesService) {}

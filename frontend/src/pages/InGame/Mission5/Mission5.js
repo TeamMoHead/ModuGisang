@@ -93,10 +93,10 @@ const Mission5 = () => {
     const left = poseLandmarks[pose.POSE_LANDMARKS.LEFT_WRIST];
     const right = poseLandmarks[pose.POSE_LANDMARKS.RIGHT_WRIST];
 
-    if (isHandDownCount > 50 && mouth.y < left.y && mouth.y > right.y) {
+    if (isHandDownCount > 10 && mouth.y < left.y && mouth.y > right.y) {
       setHand(1);
       isHandDownCount = 0;
-    } else if (isHandDownCount > 50 && mouth.y > left.y && mouth.y < right.y) {
+    } else if (isHandDownCount > 10 && mouth.y > left.y && mouth.y < right.y) {
       setHand(2);
       isHandDownCount = 0;
       // } else if (nose.y < left.y && nose.y < right.y) {

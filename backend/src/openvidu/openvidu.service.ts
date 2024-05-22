@@ -1,9 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { OpenVidu, OpenViduRole } from 'openvidu-node-client';
 import { ConfigService } from '@nestjs/config';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from 'src/users/entities/users.entity';
 import { UserService } from 'src/users/users.service';
 
 @Injectable()
