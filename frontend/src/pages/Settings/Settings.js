@@ -42,7 +42,7 @@ const Settings = () => {
       setIsLogoutLoading(false);
       localStorage.removeItem('refreshToken');
       alert('로그아웃 되었습니다.');
-      navigate('/auth');
+      navigate('/signIn');
     } else if (logoutError) {
       setIsLogoutLoading(false);
       alert(logoutError);
@@ -194,7 +194,7 @@ const Settings = () => {
         </>
         {/* )} */}
         <LongBtn btnName="연습 게임 진행하기" onClickHandler={handlePractice} />
-
+        <p>24.05.23 16시 invitation 카드 수정</p>
         <LogoutWrapper onClick={handleLogOut}>
           <Text>로그아웃</Text>
 

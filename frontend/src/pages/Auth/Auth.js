@@ -16,7 +16,7 @@ const Auth = () => {
       localStorage.removeItem('refreshToken');
       setAccessToken(null);
       alert('로그아웃 되었습니다.');
-      navigate('/auth');
+      navigate('/signIn');
     } catch (error) {
       console.error(error);
       alert(error);
@@ -36,7 +36,7 @@ const Auth = () => {
       } = response;
       if (logoutStatus === 200) {
         alert('로그아웃 되었습니다.');
-        navigate('/auth');
+        navigate('/signIn');
       } else if (logoutError) {
         alert(logoutError);
         return;
@@ -47,11 +47,11 @@ const Auth = () => {
     }
   };
   const goToSignIn = () => {
-    navigate('/auth/signIn');
+    navigate('/signIn');
   };
 
   const goToSignUp = () => {
-    navigate('/auth/signUp');
+    navigate('/signUp');
   };
 
   return (
