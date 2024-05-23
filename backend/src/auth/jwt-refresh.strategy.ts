@@ -2,7 +2,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy, VerifiedCallback } from 'passport-jwt';
 import { UserService } from 'src/users/users.service';
-const is_prod = process.env.IS_Production === 'true';
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
   Strategy,
@@ -10,17 +9,18 @@ export class JwtRefreshStrategy extends PassportStrategy(
 ) {
   constructor(private userService: UserService) {
     super({
-      jwtFromRequest: is_prod
-        ? ExtractJwt.fromExtractors([
-            (request) => {
-              let token = null;
-              if (request && request.cookies) {
-                token = request.cookies['refreshToken'];
-              }
-              return token;
-            },
-          ])
-        : ExtractJwt.fromAuthHeaderAsBearerToken(), // 토큰 분석,
+      jwtFromRequest:
+        process.env.IS_Production === 'true'
+          ? ExtractJwt.fromExtractors([
+              (request) => {
+                let token = null;
+                if (request && request.cookies) {
+                  token = request.cookies['refreshToken'];
+                }
+                return token;
+              },
+            ])
+          : ExtractJwt.fromAuthHeaderAsBearerToken(), // 토큰 분석,
       // jwtFromRequest: (req: Request) => {
       //   const authHeader = req.headers.authorization;
       //   if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -36,6 +36,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
   }
 
   async validate(payload: any): Promise<any> {
+    console.log('@@@process.env.IS_Production', process.env.IS_Production);
     if (payload === 'no-token') {
       console.log('Handling invalid or null token.');
       throw new UnauthorizedException('Invalid or no token provided.');

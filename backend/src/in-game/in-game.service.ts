@@ -53,6 +53,7 @@ export class InGameService {
         `${userId}:${userName}`,
       );
       // DB 저장을 비동기적으로 수행
+      this.redisService.del(`userInfo:${userId}`); // 캐시 내 정보 수정시 캐시 삭제
       this.retryOperation(() => this.userService.setStreak(userId))
         .then(() => console.log('Streak Save Success'))
         .catch((e) => {
