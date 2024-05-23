@@ -72,11 +72,13 @@ const BottomFixContent = ({ Handler }) => {
     <Wrapper>
       {challengeId === -1 ? (
         <>
-          <ChallengeTitle>참여중인 챌린지가 없어요</ChallengeTitle>
-          <SeperateLine />
+          <ChallengeTitle>현재 참여중인 챌린지가 없어요 </ChallengeTitle>
+          <BigText>챌린지를 직접 만들어 보세요!</BigText>
+          {/* <SeperateLine /> */}
           <IconWrapper>
-            <Icon icon={'sad'} iconStyle={iconStyleSample} />
+            {/* <Icon icon={'smile'} iconStyle={iconStyleSample} /> */}
           </IconWrapper>
+
           <CreateContent onClickHandler={Handler.create} />
         </>
       ) : (
@@ -156,7 +158,7 @@ const TimeTitle = styled.div`
 `;
 
 const ChallengeTitle = styled.div`
-  ${({ theme }) => theme.fonts.IBMmedium};
+  ${({ theme }) => theme.fonts.IBMsmall};
   color: ${({ theme }) => theme.colors.primary.white};
 
   margin: 20px 10px 0 0;
@@ -164,6 +166,11 @@ const ChallengeTitle = styled.div`
   font-style: normal;
   line-height: 22px; /* 122.222% */
   letter-spacing: -0.45px;
+`;
+
+const BigText = styled.div`
+  ${({ theme }) => theme.fonts.IBMlarge};
+  margin: 20px 10px 0 0;
 `;
 
 const Timer = styled.div`
@@ -200,7 +207,7 @@ const SeperateLine = styled.hr`
 `;
 
 const IconWrapper = styled.div`
-  margin: 30px;
+  margin: 20px;
 `;
 
 const iconStyleSample = {

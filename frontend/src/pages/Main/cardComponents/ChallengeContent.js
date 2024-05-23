@@ -9,12 +9,18 @@ import 'swiper/css/pagination';
 import './slider.css';
 import { Pagination } from 'swiper/modules';
 
-import * as S from '../../../styles/common';
 import { LoadingWithText } from '../../../components';
 
 const ChallengeContent = () => {
   const { userId: myId } = useContext(AccountContext);
   const { challengeData } = useContext(ChallengeContext);
+  const [isChallengeLoading, setIsChallengeLoading] = useState(true);
+
+  useEffect(() => {
+    if (Object.keys(challengeData).length !== 0) {
+      setIsChallengeLoading(false);
+    }
+  }, [challengeData]);
 
   const remainingDays = calculateRemainingDays(
     challengeData?.startDate,
@@ -64,27 +70,33 @@ const ChallengeContent = () => {
 
   return (
     <>
-      <Swiper
-        // autoplay={{ delay: 1000 }} //3초
-        // loop={true} //반복
-        spaceBetween={50}
-        // onSwiper={swiper => console.log(swiper)}
-        pagination={{
-          dynamicBullets: true,
-          bulletClass: 'swiper-pagination-bullet', // bullet의 클래스명
-        }}
-        modules={[Pagination]}
-        className="mySwiper"
-      >
-        {sliderBox.map((challenge, index) => (
-          <SwiperSlide key={index}>
-            <Wrapper>
-              <ChallengeTitle>진행 중 챌린지</ChallengeTitle>
-              {challenge}
-            </Wrapper>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+      {isChallengeLoading ? (
+        <LoadingWrapper>
+          <LoadingWithText />
+        </LoadingWrapper>
+      ) : (
+        <Swiper
+          // autoplay={{ delay: 1000 }} //3초
+          // loop={true} //반복
+          spaceBetween={50}
+          // onSwiper={swiper => console.log(swiper)}
+          pagination={{
+            dynamicBullets: true,
+            bulletClass: 'swiper-pagination-bullet', // bullet의 클래스명
+          }}
+          modules={[Pagination]}
+          className="mySwiper"
+        >
+          {sliderBox.map((challenge, index) => (
+            <SwiperSlide key={index}>
+              <Wrapper>
+                <ChallengeTitle>진행 중 챌린지</ChallengeTitle>
+                {challenge}
+              </Wrapper>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      )}
     </>
   );
 };
@@ -96,6 +108,12 @@ const Wrapper = styled.div`
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
   padding-bottom: 30px;
+`;
+
+const LoadingWrapper = styled.div`
+  width: 100%;
+  height: 140px;
+  ${({ theme }) => theme.flex.center}
 `;
 
 const ChallengeTitle = styled.span`

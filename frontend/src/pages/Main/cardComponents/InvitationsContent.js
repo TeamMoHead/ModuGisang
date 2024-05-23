@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../../contexts';
 import styled from 'styled-components';
 
+import { Icon } from '../../../components';
 import { LoadingWithText } from '../../../components';
 
 const InvitationsContent = () => {
@@ -10,31 +11,36 @@ const InvitationsContent = () => {
   const { invitationCounts } = myData;
   const [isInvitationsLoading, setIsInvitationsLoading] = useState(true);
 
-  console.log('invitationCounts:', invitationCounts);
-
   useEffect(() => {
-    if (invitationCounts !== undefined) {
+    if (Object.keys(myData).length !== 0) {
       setIsInvitationsLoading(false);
     }
   }, [invitationCounts]);
 
-  return isInvitationsLoading ? (
+  return (
     <Wrapper>
-      <LoadingWrapper>
-        <LoadingWithText />
-      </LoadingWrapper>
-    </Wrapper>
-  ) : (
-    <Wrapper>
-      <>
-        <InviteCount>{invitationCounts}</InviteCount>
-        <InvitationTitle>초대받은 챌린지</InvitationTitle>
-        <SmallLetter>
-          미라클 메이트
-          <WaitInviteSpan>{invitationCounts}팀</WaitInviteSpan>이 기다리고
-          있어요
-        </SmallLetter>
-      </>
+      {isInvitationsLoading ? (
+        <>
+          <LoadingWrapper>
+            <LoadingWithText />
+          </LoadingWrapper>
+        </>
+      ) : invitationCounts === 0 ? (
+        <>
+          <BigLetter>초대받은 챌린지가 없어요</BigLetter>
+          <Icon icon={'sad'} iconStyle={iconStyleSample} />
+        </>
+      ) : (
+        <>
+          <InviteCount>{invitationCounts}</InviteCount>
+          <InvitationTitle>초대받은 챌린지</InvitationTitle>
+          <SmallLetter>
+            미라클 메이트
+            <WaitInviteSpan>{invitationCounts}팀</WaitInviteSpan>이 기다리고
+            있어요
+          </SmallLetter>
+        </>
+      )}
     </Wrapper>
   );
 };
@@ -69,6 +75,11 @@ const SmallLetter = styled.span`
   height: 37px;
 `;
 
+const BigLetter = styled.span`
+  ${({ theme }) => theme.fonts.IBMmediumlarge};
+  height: 37px;
+`;
+
 const WaitInviteSpan = styled.span`
   color: ${({ theme }) => theme.colors.primary.emerald};
   ${({ theme }) => theme.fonts.IBMmedium};
@@ -89,3 +100,9 @@ const InviteCount = styled.div`
   justify-content: center;
   font-weight: bold;
 `;
+
+const iconStyleSample = {
+  size: 24,
+  color: 'white',
+  hoverColor: 'white',
+};
