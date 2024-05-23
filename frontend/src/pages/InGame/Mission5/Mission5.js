@@ -15,35 +15,35 @@ const tables = {
     correct: '21',
     wrong: '12',
     direction: 2, // 0 표시 안 함, 1 왼쪽이 정답, 2 오른쪽이 정답
-    score: 1,
+    score: 3,
   },
   1: {
     question: '5 X 5',
     correct: '25',
     wrong: '35',
     direction: 2,
-    score: 1,
+    score: 3,
   },
   2: {
     question: '10 X 11',
     correct: '110',
     wrong: '101',
     direction: 1,
-    score: 2,
+    score: 4,
   },
   3: {
     question: '13 X 13',
     correct: '169',
     wrong: '196',
     direction: 1,
-    score: 2,
+    score: 4,
   },
   4: {
     question: '32 X 28',
     correct: '896',
     wrong: '616',
     direction: 2,
-    score: 4,
+    score: 6,
   },
   5: {
     question: '미션 종료!',
@@ -131,7 +131,7 @@ const Mission5 = () => {
         if (roundIdx >= Object.keys(tables).length - 2) {
           isMissionFinished = true;
           setRoundIdx(Object.keys(tables).length - 1);
-          if (totalScore >= 10) setMyMissionStatus(true);
+          if (totalScore >= 20) setMyMissionStatus(true);
         } else setRoundIdx(prev => prev + 1);
         setHand(0);
         isWaiting = false;
