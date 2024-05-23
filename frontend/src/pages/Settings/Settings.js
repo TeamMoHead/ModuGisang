@@ -194,7 +194,7 @@ const Settings = () => {
         </>
         {/* )} */}
         <LongBtn btnName="연습 게임 진행하기" onClickHandler={handlePractice} />
-        <p>24.05.21 17시 가이드라인 부드럽게 + 도현 경원 머지</p>
+        <p>24.05.23 13시 포스트잇 애니메이션</p>
         <LogoutWrapper onClick={handleLogOut}>
           <Text>로그아웃</Text>
 
