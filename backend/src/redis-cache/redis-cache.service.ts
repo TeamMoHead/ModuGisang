@@ -1,17 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
 
 @Injectable()
 export class RedisCacheService {
+  private readonly logger = new Logger(RedisCacheService.name);
+
   private client;
   constructor(@InjectRedis() private readonly redis: Redis) {}
   async get(key: string): Promise<string> {
-    return await this.redis.get(key);
+    const value = await this.redis.get(key);
+    if (value) {
+      this.logger.log(`Cache hit for key: ${key}`);
+    } else {
+      this.logger.log(`Cache miss for key: ${key}`);
+    }
+    return value;
   }
 
   async set(key: string, value: string, ttl?: number): Promise<string> {
     const result = await this.redis.set(key, value, 'EX', ttl ?? 100000);
+    this.logger.log(`Cache set for key: ${key} with TTL: ${ttl ?? 100000}`);
     return result; // 'OK'가 반환됩니다.
   }
 

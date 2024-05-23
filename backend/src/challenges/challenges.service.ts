@@ -18,6 +18,7 @@ import {
 import { Attendance } from 'src/attendance/attendance.entity';
 import { Invitations } from 'src/invitations/invitations.entity';
 import { ChallengeResultDto } from './dto/challengeResult.dto';
+import RedisCacheService from 'src/redis-cache/redis-cache.service';
 
 @Injectable()
 export class ChallengesService {
@@ -31,6 +32,8 @@ export class ChallengesService {
     private invitationService: InvitationsService,
     @InjectRepository(Invitations)
     private invitaionRepository: Repository<Invitations>,
+
+    private readonly redisCacheService: RedisCacheService,
   ) {
     this.challengeRepository = challengeRepository;
   }
@@ -104,10 +107,20 @@ export class ChallengesService {
   async getChallengeInfo(
     challengeId: number,
   ): Promise<ChallengeResponseDto | null> {
-    // 먼저 챌린지 정보를 가져옵니다.
+    const cacheKey = `challenge_${challengeId}`;
+
+    // 캐시에서 데이터 가져오기 시도
+    const cachedChallenge = await this.redisCacheService.get(cacheKey);
+    console.log(cachedChallenge);
+    if (cachedChallenge) {
+      return JSON.parse(cachedChallenge) as ChallengeResponseDto;
+    }
+
+    // 캐시 미스 시 데이터베이스에서 가져오기
     const challenge = await this.challengeRepository.findOne({
       where: { _id: challengeId },
     });
+
     if (!challenge) {
       return null; // 챌린지가 없으면 null 반환
     }
@@ -122,14 +135,54 @@ export class ChallengesService {
       userId: user._id,
       userName: user.userName,
     }));
-    return {
+
+    const challengeResponse: ChallengeResponseDto = {
       challengeId: challenge._id,
       startDate: challenge.startDate,
       wakeTime: challenge.wakeTime,
       duration: challenge.duration,
       mates: participantDtos,
     };
+
+    // 결과를 캐시에 저장
+    await this.redisCacheService.set(
+      cacheKey,
+      JSON.stringify(challengeResponse),
+      600,
+    ); // 10분 TTL
+
+    return challengeResponse;
   }
+
+  // async getChallengeInfo(
+  //   challengeId: number,
+  // ): Promise<ChallengeResponseDto | null> {
+  //   // 먼저 챌린지 정보를 가져옵니다.
+  //   const challenge = await this.challengeRepository.findOne({
+  //     where: { _id: challengeId },
+  //   });
+  //   if (!challenge) {
+  //     return null; // 챌린지가 없으면 null 반환
+  //   }
+
+  //   // 해당 챌린지 ID를 가진 모든 사용자 검색
+  //   const participants = await this.userRepository.find({
+  //     where: { challengeId: challenge._id },
+  //   });
+
+  //   // 참가자 정보를 DTO 형식으로 변환
+  //   const participantDtos: ParticipantDto[] = participants.map((user) => ({
+  //     userId: user._id,
+  //     userName: user.userName,
+  //   }));
+  //   return {
+  //     challengeId: challenge._id,
+  //     startDate: challenge.startDate,
+  //     wakeTime: challenge.wakeTime,
+  //     duration: challenge.duration,
+  //     mates: participantDtos,
+  //   };
+  // }
   async getChallengeCalendar(userId: number, month: number): Promise<string[]> {
     const currentYear = new Date().getFullYear(); // 현재 연도를 가져옴
     const startDate = new Date(currentYear, month - 1, 1); // 월은 0부터 시작하므로 month - 1
@@ -225,10 +278,13 @@ export class ChallengesService {
         `Challenge with ID ${setChallengeWakeTimeDto.challengeId} not found`,
       );
     }
-    console.log(setChallengeWakeTimeDto);
+    console.log('@@@@@@@@@@@@@@@@@@@@', setChallengeWakeTimeDto);
     challengeValue.wakeTime = new Date(
       `1970-01-01T${setChallengeWakeTimeDto.wakeTime}`,
     );
     await this.challengeRepository.save(challengeValue);
+
+    const cacheKey = `challenge_${setChallengeWakeTimeDto.challengeId}`;
+    await this.redisCacheService.del(cacheKey);
   }
 }
