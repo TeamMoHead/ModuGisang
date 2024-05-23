@@ -20,9 +20,6 @@ const BottomFixContent = ({ Handler }) => {
     if (challengeId !== null) {
       setIsChallengeIdLoading(false);
     }
-    if (challengeId === -1) {
-      setIsChallengeIdLoading(false);
-    }
   }, [challengeData, challengeId]);
 
   useEffect(() => {
