@@ -4,6 +4,7 @@ import { CONFIGS } from '../config';
 const API = axios.create({
   withCredentials: true,
   baseURL: CONFIGS.BASE_URL,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
