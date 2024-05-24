@@ -18,15 +18,10 @@ const Affirmation = () => {
   const user = useContext(UserContext);
   const affirmationText = user.myData.affirmation || '';
   const [highlightedText, setHighlightedText] = useState('');
-  const { transcript, start, stop } = useSpeechToText(7);
+  const { transcript, stop } = useSpeechToText(7);
   const [affirResult, setAffirResult] = useState(false);
   const newTranscriptRef = useRef('');
   const idx = useRef(0);
-  const [zIndex, setZIndex] = useState(900);
-
-  const handleStartSTT = () => {
-    start();
-  };
 
   useEffect(() => {
     if (inGameMode === 6) {
@@ -35,11 +30,6 @@ const Affirmation = () => {
     } else return;
   }, [isGameScoreSent]);
 
-  useEffect(() => {
-    if (isMissionEnding) {
-      setZIndex(1);
-    }
-  }, [isMissionEnding]);
   // 인식된 텍스트와 원본 문구 비교 및 강조
   useEffect(() => {
     if (inGameMode !== 6 || !myVideoRef.current || isMissionStarting) {
@@ -83,7 +73,7 @@ const Affirmation = () => {
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
       {isMissionStarting || (
-        <Wrapper onClick={handleStartSTT} zIndex={zIndex}>
+        <Wrapper>
           <TextArea>{highlightedText}</TextArea>
         </Wrapper>
       )}
@@ -94,7 +84,7 @@ const Affirmation = () => {
 export default Affirmation;
 
 const Wrapper = styled.div`
-  z-index: ${({ zIndex }) => zIndex}; // 동적으로 z-index 값을 받음
+  z-index: 200;
 
   position: absolute;
 
@@ -106,6 +96,7 @@ const TextArea = styled.div`
   position: absolute;
   bottom: 3px;
   left: 3px;
+
   ${({ theme }) => theme.flex.center}
   width: calc(100% - 6px);
   height: 30%;
