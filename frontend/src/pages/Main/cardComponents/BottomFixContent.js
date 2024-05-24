@@ -8,7 +8,7 @@ import { Icon } from '../../../components';
 import { LoadingWithText } from '../../../components';
 import { ChallengeContext, UserContext } from '../../../contexts';
 
-const BottomFixContent = ({ Handler }) => {
+const BottomFixContent = ({ onClickHandler }) => {
   const challengeData = useContext(ChallengeContext);
   const challengeId = useContext(UserContext).challengeId;
   const wakeTime = challengeData?.challengeData?.wakeTime;
@@ -76,7 +76,7 @@ const BottomFixContent = ({ Handler }) => {
             {/* <Icon icon={'smile'} iconStyle={iconStyleSample} /> */}
           </IconWrapper>
 
-          <CreateContent onClickHandler={Handler.create} />
+          <CreateContent onClickHandler={onClickHandler.create} />
         </>
       ) : (
         <>
@@ -94,7 +94,7 @@ const BottomFixContent = ({ Handler }) => {
               <TimerText>{timeLeft?.split(':')[2]}</TimerText>
             </Timer>
           </TimeDisplay>
-          <EnterContent onClickHandler={Handler.enter} />
+          <EnterContent onClickHandler={onClickHandler.enter} />
         </>
       )}
     </Wrapper>

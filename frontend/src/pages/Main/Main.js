@@ -93,7 +93,7 @@ const Main = () => {
             ),
           )}
         </CardsWrapper>
-        <BottomFixContent Handler={CARD_ON_CLICK_HANDLERS} />
+        <BottomFixContent onClickHandler={CARD_ON_CLICK_HANDLERS} />
       </S.PageWrapper>
     </>
   );
