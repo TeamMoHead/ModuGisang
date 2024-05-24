@@ -22,6 +22,7 @@ const Affirmation = () => {
   const [affirResult, setAffirResult] = useState(false);
   const newTranscriptRef = useRef('');
   const idx = useRef(0);
+  const [zIndex, setZIndex] = useState(900);
 
   const handleStartSTT = () => {
     console.log('STT start');
@@ -35,6 +36,13 @@ const Affirmation = () => {
     } else return;
   }, [isGameScoreSent]);
 
+  useEffect(() => {
+    console.log('isMisssionEnding is ', isMissionEnding);
+    if (isMissionEnding) {
+      console.log(isMissionEnding);
+      setZIndex(1);
+    }
+  }, [isMissionEnding]);
   // 인식된 텍스트와 원본 문구 비교 및 강조
   useEffect(() => {
     if (inGameMode !== 6 || !myVideoRef.current || isMissionStarting) {
@@ -79,11 +87,8 @@ const Affirmation = () => {
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
       {isMissionStarting || (
-        <Wrapper onClick={handleStartSTT}>
+        <Wrapper onClick={handleStartSTT} zIndex={zIndex}>
           <TextArea>{highlightedText}</TextArea>
-          {/* <StartButton onClick={handleStartSTT}>
-            <Icon icon={'speak'} iconStyle={iconStyle} />
-          </StartButton> */}
         </Wrapper>
       )}
     </>
@@ -93,7 +98,7 @@ const Affirmation = () => {
 export default Affirmation;
 
 const Wrapper = styled.div`
-  z-index: 900;
+  z-index: ${({ zIndex }) => zIndex}; // 동적으로 z-index 값을 받음
 
   position: absolute;
 
@@ -133,21 +138,3 @@ const Highlighted = styled.b`
 const Unhighlighted = styled.b`
   color: grey;
 `;
-
-// const StartButton = styled.button`
-//   width: 50px;
-//   height: 50px;
-//   background-color: ${({ theme }) => theme.colors.neutral.grey};
-//   position: absolute;
-//   bottom: 30%;
-//   right: 10%;
-//   transform: translate(-50%, -50%);
-//   border-radius: 50%;
-//   z-index: 700;
-// `;
-
-// const iconStyle = {
-//   size: 24,
-//   color: 'white',
-//   hoverColor: 'white',
-// };
