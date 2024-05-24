@@ -27,7 +27,11 @@ const FriendStreak = ({ mateData, isMateDataLoading, setIsMateSelected }) => {
         {isMateDataLoading && <div> 가져오는 중... </div>}
         <UserName>{mateData.userName}</UserName>
         <SeperateLine />
-        <StreakContent userData={mateData} isWaitingRoom={true} />
+        <StyledStreakContent
+          userData={mateData}
+          isWaitingRoom={true}
+          friendStreak
+        />
       </Box>
     </Wrapper>
   );
@@ -96,6 +100,10 @@ const SeperateLine = styled.div`
   width: 100%;
   height: 1px;
   background: ${({ theme }) => theme.colors.neutral.lightGray};
+`;
+
+const StyledStreakContent = styled(StreakContent)`
+  padding: 24px 0px;
 `;
 
 const CLOSE_ICON_STYLE = {
