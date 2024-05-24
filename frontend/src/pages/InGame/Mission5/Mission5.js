@@ -59,7 +59,7 @@ let isWaiting = false;
 let isMissionFinished = false;
 let isGameStart = false;
 let totalScore = 0;
-const timeoutDuration = 22000; // 제한 시간
+const timeoutDuration = 14000; // 제한 시간
 
 const Mission5 = () => {
   const { poseModel, setIsPoseLoaded, setIsPoseInitialized } =
