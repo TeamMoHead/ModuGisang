@@ -102,8 +102,6 @@ const Wrapper = styled.div`
 `;
 
 const TextArea = styled.div`
-  z-index: 900;
-
   position: absolute;
   bottom: 3px;
   left: 3px;
