@@ -29,7 +29,7 @@ const Mission4 = () => {
   const [elapsedTime, setElapsedTime] = useState(0); // 경과 시간 (초 단위)
   const startTimeRef = useRef(null); // 시작 시간 저장
   const [isGameOver, setIsGameOver] = useState(false);
-  const TIME_LIMIT = 24; // 통과 제한 시간 (초 단위)
+  const TIME_LIMIT = 12; // 통과 제한 시간 (초 단위)
   const [remainingTime, setRemainingTime] = useState(0);
 
   useEffect(() => {
@@ -37,8 +37,7 @@ const Mission4 = () => {
       return;
     }
     //const actualStream = myStream.stream.getMediaStream();
-    micSetting(false);
-    // initializeStream();
+    initializeStream();
 
     return () => {
       stopAudioStream();
@@ -97,7 +96,7 @@ const Mission4 = () => {
       const decibels = calculateDecibels(analyser, dataArray, bufferLength);
       setDecibels(decibels); // 데시벨 상태 업데이트
 
-      if (decibels > 60) {
+      if (decibels > 50) {
         setShoutingDuration(prevDuration => prevDuration + 0.2);
       }
       if (shoutingDuration > 5) {
@@ -169,6 +168,7 @@ const Mission4 = () => {
     const audioStream = await getAudioStream();
     if (audioStream) {
       setStream(audioStream);
+      micSetting(false);
     }
   }
   return (
@@ -183,10 +183,7 @@ const Mission4 = () => {
         )}
       </FullScreenCanvas>
       {isGameOver || isMissionStarting || (
-        <CanvasWrapper
-          onClick={initializeStream}
-          $myMissionStatus={myMissionStatus}
-        >
+        <CanvasWrapper $myMissionStatus={myMissionStatus}>
           <Canvas />
           <SoundIndicator
             $soundWidth={shoutingDuration.toFixed(3) < 5 ? decibels : 0}
@@ -214,7 +211,7 @@ const FullScreenCanvas = styled.div`
 
 //전체바
 const CanvasWrapper = styled.div`
-  z-index: 900;
+  z-index: 300;
 
   position: absolute;
   top: 25px;
@@ -235,7 +232,7 @@ const Canvas = styled.canvas`
   bottom: 0;
   left: 0;
 
-  width: 60%;
+  width: 50%;
   height: 100%;
 
   border-right: 4px solid ${({ theme }) => theme.colors.system.red};
