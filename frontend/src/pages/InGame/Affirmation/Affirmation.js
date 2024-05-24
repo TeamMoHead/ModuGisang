@@ -25,7 +25,6 @@ const Affirmation = () => {
   const [zIndex, setZIndex] = useState(900);
 
   const handleStartSTT = () => {
-    console.log('STT start');
     start();
   };
 
@@ -37,9 +36,7 @@ const Affirmation = () => {
   }, [isGameScoreSent]);
 
   useEffect(() => {
-    console.log('isMisssionEnding is ', isMissionEnding);
     if (isMissionEnding) {
-      console.log(isMissionEnding);
       setZIndex(1);
     }
   }, [isMissionEnding]);
@@ -52,7 +49,6 @@ const Affirmation = () => {
     if (affirResult) {
       return;
     }
-    console.log('trnascript is ', transcript);
     // 비교할 값이 있을 때만 동작
     if (transcript) {
       for (let j = 0; j < transcript.length; j++) {
