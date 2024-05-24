@@ -130,11 +130,11 @@ const Mission4 = () => {
 
   function updateGameScore(remainingTime) {
     let scoreToAdd = 0;
-    if (remainingTime >= 10) scoreToAdd = 20;
-    else if (remainingTime >= 8) scoreToAdd = 16;
-    else if (remainingTime >= 6) scoreToAdd = 12;
-    else if (remainingTime >= 4) scoreToAdd = 8;
-    else if (remainingTime >= 2) scoreToAdd = 4;
+    if (remainingTime >= 5) scoreToAdd = 20;
+    else if (remainingTime >= 4) scoreToAdd = 16;
+    else if (remainingTime >= 3) scoreToAdd = 12;
+    else if (remainingTime >= 2) scoreToAdd = 8;
+    else if (remainingTime >= 1) scoreToAdd = 4;
 
     setGameScore(prevScore => prevScore + scoreToAdd);
   }
