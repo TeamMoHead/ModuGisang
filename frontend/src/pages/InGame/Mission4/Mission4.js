@@ -232,7 +232,7 @@ const Canvas = styled.canvas`
   bottom: 0;
   left: 0;
 
-  width: 60%;
+  width: 50%;
   height: 100%;
 
   border-right: 4px solid ${({ theme }) => theme.colors.system.red};

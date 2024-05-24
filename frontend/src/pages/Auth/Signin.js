@@ -29,7 +29,7 @@ const Signin = () => {
   };
 
   const goToSignUp = () => {
-    navigate('/auth/signUp');
+    navigate('/signUp');
   };
 
   if (isLoginLoading) {

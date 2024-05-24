@@ -93,10 +93,7 @@ const Main = () => {
             ),
           )}
         </CardsWrapper>
-        <BottomFixContent
-          challengeData={challengeData}
-          Handler={CARD_ON_CLICK_HANDLERS}
-        />
+        <BottomFixContent Handler={CARD_ON_CLICK_HANDLERS} />
       </S.PageWrapper>
     </>
   );

@@ -9,6 +9,7 @@ import {
 } from '../../../assets/streakLevels';
 import { gold, silver, bronze } from '../../../assets/medals';
 import styled from 'styled-components';
+import { LoadingWithText } from '../../../components';
 
 const MEDAL_ICONS = {
   gold: gold,
@@ -55,7 +56,9 @@ const StreakContent = ({ isWaitingRoom, userData, showMedals = true }) => {
   return (
     <Wrapper>
       {isDataLoading ? (
-        <LoadingWrapper>로딩중...</LoadingWrapper>
+        <LoadingWrapper $showMedals={showMedals}>
+          <LoadingWithText />
+        </LoadingWrapper>
       ) : (
         <>
           <TopWrapper>
@@ -106,7 +109,9 @@ const Wrapper = styled.div`
 const LoadingWrapper = styled.div`
   ${({ theme }) => theme.flex.center};
   width: 100%;
-  padding: 95px 0px;
+
+  ${({ $showMedals }) =>
+    $showMedals ? 'padding: 89px 0px;' : 'padding: 54px 0px;'}
 `;
 
 const TopWrapper = styled.div`

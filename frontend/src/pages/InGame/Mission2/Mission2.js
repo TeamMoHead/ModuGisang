@@ -72,16 +72,19 @@ const Mission2 = () => {
 
   const [paperImg, setPaperImg] = useState([
     {
+      key: 0,
       imageUrl: pink1,
       count: 0,
       shouldFall: false,
     },
     {
+      key: 1,
       imageUrl: yellow1,
       count: 0,
       shouldFall: false,
     },
     {
+      key: 2,
       imageUrl: green1,
       count: 0,
       shouldFall: false,
@@ -108,6 +111,7 @@ const Mission2 = () => {
       updatedPaperImg[index] = {
         ...updatedPaperImg[index],
         ...newImgData,
+        key: updatedPaperImg[index].key + 1,
       };
       return updatedPaperImg;
     });
@@ -490,7 +494,7 @@ const Mission2 = () => {
       <PaperBox>
         {paperImg.map((paper, index) => (
           <Paper
-            key={index}
+            key={`${index}-${paper.key}`}
             imageUrl={paper.imageUrl}
             count={paper.count}
             shouldFall={paper?.shouldFall}
@@ -556,33 +560,51 @@ const Paper = styled.div`
     const glowAnimation =
       props.count > 0
         ? css`
-            ${glow(getGlowColor(props.count))} 2s infinite alternate
+            ${glow} 500ms alternate
+          `
+        : 'none';
+    const shakeAnimation =
+      props.count > 0
+        ? css`
+            ${shake} 500ms alternate
           `
         : 'none';
     return css`
-      ${fallAnimation}, ${glowAnimation}
+      ${fallAnimation}, ${glowAnimation}, ${shakeAnimation}
     `;
   }};
 `;
 
-const glow = color => keyframes`
+const glow = keyframes`
   from {
-    box-shadow: 0 0 10px #fff, 0 0 20px ${color}, 0 0 30px ${color}, 0 0 40px ${color}, 0 0 50px ${color}, 0 0 60px ${color}, 0 0 70px ${color};
+    box-shadow: 0 0 10px #fff, 0 0 20px #FFC500, 0 0 30px #FFC500, 0 0 40px #FFC500, 0 0 50px #FFC500, 0 0 60px #FFC500, 0 0 70px #FFC500;
   }
   to {
-    box-shadow: 0 0 20px #fff, 0 0 40px ${color}, 0 0 60px ${color}, 0 0 80px ${color}, 0 0 100px ${color}, 0 0 120px ${color}, 0 0 140px ${color};
+    box-shadow: 0 0 20px #fff, 0 0 40px #FFC500, 0 0 60px #FFC500, 0 0 80px #FFC500, 0 0 100px #FFC500, 0 0 120px #FFC500, 0 0 140px #FFC500;
   }
 `;
 
-const getGlowColor = count => {
-  switch (count) {
-    case 1:
-      return '#FFC500'; // 노란색
-    case 2:
-      return '#FF008F'; //빨간색
-    case 3:
-      return '#ffffff'; // 흰색
-    default:
-      return 'none';
+const shake = keyframes`
+  0%, 100% {
+    transform: translateX(0);
   }
-};
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-10px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(10px);
+  }
+`;
+
+// const getGlowColor = count => {
+//   switch (count) {
+//     case 1:
+//       return '#FFC500'; // 노란색
+//     case 2:
+//       return '#FFC501'; //빨간색
+//     case 3:
+//       return '#FFC502'; // 흰색
+//     default:
+//       return 'none';
+//   }
+// };

@@ -30,8 +30,7 @@ let isMissionFinished = false;
 const timeoutDuration = 27000;
 
 const Mission3 = () => {
-  const { poseModel, setIsPoseLoaded, setIsPoseInitialized } =
-    useContext(MediaPipeContext);
+  const { poseModel } = useContext(MediaPipeContext);
   const {
     isMissionStarting,
     isMissionEnding,
@@ -80,7 +79,6 @@ const Mission3 = () => {
         // isCentered
       ) {
         currentStatus = 'top';
-        console.log('----- :', currentStatus);
         // isCentered = false;
       } else if (
         nose.x < leftEar.x &&
@@ -89,7 +87,6 @@ const Mission3 = () => {
         // isCentered
       ) {
         currentStatus = 'bottom';
-        console.log('----- :', currentStatus);
         // isCentered = false;
       } else if (
         nose.x > leftEar.x &&
@@ -98,7 +95,6 @@ const Mission3 = () => {
         // isCentered
       ) {
         currentStatus = 'right';
-        console.log('----- :', currentStatus);
         // isCentered = false;
       } else if (
         nose.x < leftEar.x &&
@@ -107,7 +103,6 @@ const Mission3 = () => {
         // isCentered
       ) {
         currentStatus = 'left';
-        console.log('----- :', currentStatus);
         // isCentered = false;
       }
       // } else if (

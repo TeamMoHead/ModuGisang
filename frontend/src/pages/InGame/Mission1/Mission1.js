@@ -107,7 +107,7 @@ const Mission1 = () => {
 
       frameCount++;
       if (isPoseCorrect !== undefined) {
-        if (frameCount % 5 === 0) {
+        if (frameCount % 2 === 0) {
           requestAnimationFrame(() => updateProgress(direction));
         }
         if (isPoseCorrect) {
