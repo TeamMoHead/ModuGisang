@@ -24,7 +24,7 @@ const Signup = () => {
   const [isSignUpLoading, setIsSignUpLoading] = useState(false);
 
   const goBack = () => {
-    navigate('/');
+    navigate('/signIn');
   };
 
   const { handleCheckEmail, handleCheckVerifyCode, handleSubmitSignUp } =

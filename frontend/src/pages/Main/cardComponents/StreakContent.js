@@ -8,7 +8,8 @@ import {
   // level4,
 } from '../../../assets/streakLevels';
 import { gold, silver, bronze } from '../../../assets/medals';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import { LoadingWithText } from '../../../components';
 
 const MEDAL_ICONS = {
   gold: gold,
@@ -16,7 +17,12 @@ const MEDAL_ICONS = {
   bronze: bronze,
 };
 
-const StreakContent = ({ isWaitingRoom, userData, showMedals = true }) => {
+const StreakContent = ({
+  isWaitingRoom,
+  userData,
+  showMedals = true,
+  friendStreak,
+}) => {
   const [level, setLevel] = useState('streak0');
   const { myData } = useContext(UserContext);
   const { streakDays, medals: medalCounts } = isWaitingRoom ? userData : myData;
@@ -55,12 +61,14 @@ const StreakContent = ({ isWaitingRoom, userData, showMedals = true }) => {
   return (
     <Wrapper>
       {isDataLoading ? (
-        <LoadingWrapper>로딩중...</LoadingWrapper>
+        <LoadingWrapper $showMedals={showMedals}>
+          <LoadingWithText />
+        </LoadingWrapper>
       ) : (
         <>
-          <TopWrapper>
+          <TopWrapper $friendStreak={friendStreak}>
             <LevelIcon src={STREAK_LEVEL_ICON[level]} />
-            <RightArea>
+            <RightArea $friendStreak={friendStreak}>
               <MediumLetter>미라클 모닝 성공</MediumLetter>
               <Days>
                 <BigLetter>{streakDays}</BigLetter>
@@ -71,18 +79,23 @@ const StreakContent = ({ isWaitingRoom, userData, showMedals = true }) => {
           <SeperateLine $isWide={isWaitingRoom} />
           {showMedals && (
             <>
-              <BottomWrapper>
+              <BottomWrapper $friendStreak={friendStreak}>
                 <ChallengeRecordTitle>
-                  <MediumLetter>챌린지 달성 기록</MediumLetter>
+                  <MediumLetter $friendStreak={friendStreak}>
+                    챌린지 달성 기록
+                  </MediumLetter>
                 </ChallengeRecordTitle>
                 <Medals>
                   {['gold', 'silver', 'bronze'].map((medal, idx) => (
                     <MedalArea key={idx}>
                       {medalCounts[medal] > 0 && (
-                        <MedalCount>{medalCounts[medal]}</MedalCount>
+                        <MedalCount $friendStreak={friendStreak}>
+                          {medalCounts[medal]}
+                        </MedalCount>
                       )}
                       <Medal
                         src={MEDAL_ICONS[medal]}
+                        $friendStreak={friendStreak}
                         $hasMedal={medalCounts[medal] > 0}
                       />
                     </MedalArea>
@@ -106,14 +119,26 @@ const Wrapper = styled.div`
 const LoadingWrapper = styled.div`
   ${({ theme }) => theme.flex.center};
   width: 100%;
-  padding: 95px 0px;
+
+  ${({ $showMedals }) =>
+    $showMedals ? 'padding: 89px 0px;' : 'padding: 54px 0px;'}
 `;
 
 const TopWrapper = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
+
   padding: 24px 24px 15px 24px;
+
+  ${({ $friendStreak }) =>
+    $friendStreak &&
+    css`
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      padding: 24px 8px 24px 8px;
+    `}
 `;
 
 const SeperateLine = styled.div`
@@ -128,6 +153,12 @@ const BottomWrapper = styled.div`
   height: 30px;
   padding: 24px;
   margin-block: 10px;
+  ${({ $friendStreak }) =>
+    $friendStreak &&
+    css`
+      padding: 0px;
+      height: 100%;
+    `};
 `;
 
 const LevelIcon = styled.img`
@@ -162,6 +193,11 @@ const MediumLetter = styled.span`
   line-height: 22px;
   letter-spacing: -0.45%;
   font-weight: 600;
+  ${({ $friendStreak }) =>
+    $friendStreak &&
+    css`
+      padding-top: 10px;
+    `}
 `;
 
 const SmallLetter = styled.span`
@@ -201,6 +237,11 @@ const MedalCount = styled.span`
   ${({ theme }) => theme.fonts.JuaSmall};
   color: ${({ theme }) => theme.colors.primary.white};
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
+  ${({ $friendStreak }) =>
+    $friendStreak &&
+    css`
+      top: 10px;
+    `}
 `;
 
 const Medal = styled.img`
@@ -212,6 +253,12 @@ const Medal = styled.img`
   width: 30px;
 
   opacity: ${({ $hasMedal }) => (!$hasMedal ? 0.4 : 1)};
+  ${({ $friendStreak }) =>
+    $friendStreak &&
+    css`
+      width: 25px;
+      top: 10px;
+    `}
 `;
 
 const Days = styled.div`

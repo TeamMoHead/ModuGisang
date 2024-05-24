@@ -11,6 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Streak } from './entities/streak.entity';
 import RedisCacheService from 'src/redis-cache/redis-cache.service';
+import { UserInformationDto } from './dto/user-info.dto';
 // import { refreshJwtConstants } from 'src/auth/constants';
 
 @Injectable()
@@ -138,6 +139,7 @@ export class UserService {
 
   async updateAffirm(user: Users, affirmation: string) {
     console.log(user);
+    this.redisService.del(`userInfo:${user._id}`);
     const result = await this.userRepository.update(
       { _id: user._id },
       {
@@ -236,6 +238,29 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
     user.openviduToken = token;
+    await this.redisService.del(`userInfo:${userId}`);
     await this.userRepository.save(user);
+  }
+
+  async redisCheckUser(userId: number) {
+    const user = await this.redisService.get(`userInfo:${userId}`);
+    if (!user) {
+      console.log('redis에 유저 정보가 없습니다.');
+      return null;
+    }
+    console.log('redis에 유저 정보가 있습니다.');
+    return JSON.parse(user);
+  }
+  async redisSetUser(userId: number, userInformation: any) {
+    const state = await this.redisService.set(
+      `userInfo:${userId}`,
+      JSON.stringify(userInformation),
+      parseInt(this.configService.get<string>('REDIS_USER_INFO_EXP')), // 24시간 동안 해당 유저 정보 redis에 저장
+    );
+    if (state !== 'OK') {
+      console.log('redis에 유저 정보 저장 실패');
+    } else {
+      console.log('redis에 유저 정보 저장 성공');
+    }
   }
 }

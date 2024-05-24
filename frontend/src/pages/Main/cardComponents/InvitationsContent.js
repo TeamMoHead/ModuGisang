@@ -1,19 +1,46 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { UserContext } from '../../../contexts';
 import styled from 'styled-components';
 
+import { Icon } from '../../../components';
+import { LoadingWithText } from '../../../components';
+
 const InvitationsContent = () => {
   const { myData } = useContext(UserContext);
   const { invitationCounts } = myData;
+  const [isInvitationsLoading, setIsInvitationsLoading] = useState(true);
+
+  useEffect(() => {
+    if (Object.keys(myData).length !== 0) {
+      setIsInvitationsLoading(false);
+    }
+  }, [invitationCounts]);
+
   return (
     <Wrapper>
-      <InviteCount>{invitationCounts}</InviteCount>
-      <InvitationTitle>초대받은 챌린지</InvitationTitle>
-      <SmallLetter>
-        미라클 메이트
-        <WaitInviteSpan>{invitationCounts}팀</WaitInviteSpan>이 기다리고 있어요
-      </SmallLetter>
+      {isInvitationsLoading ? (
+        <>
+          <LoadingWrapper>
+            <LoadingWithText />
+          </LoadingWrapper>
+        </>
+      ) : invitationCounts === 0 ? (
+        <>
+          <BigLetter>초대받은 챌린지가 없어요</BigLetter>
+          <Icon icon={'sad'} iconStyle={iconStyleSample} />
+        </>
+      ) : (
+        <>
+          <InviteCount>{invitationCounts}</InviteCount>
+          <InvitationTitle>초대받은 챌린지</InvitationTitle>
+          <SmallLetter>
+            미라클 메이트
+            <WaitInviteSpan>{invitationCounts}팀</WaitInviteSpan>이 기다리고
+            있어요
+          </SmallLetter>
+        </>
+      )}
     </Wrapper>
   );
 };
@@ -21,6 +48,13 @@ const InvitationsContent = () => {
 export default InvitationsContent;
 
 const Wrapper = styled.div`
+  width: 100%;
+  height: 140px;
+  ${({ theme }) => theme.flex.center}
+  flex-direction: column;
+`;
+
+const LoadingWrapper = styled.div`
   width: 100%;
   height: 140px;
   ${({ theme }) => theme.flex.center}
@@ -38,6 +72,11 @@ const InvitationTitle = styled.span`
 
 const SmallLetter = styled.span`
   ${({ theme }) => theme.fonts.IBMmedium};
+  height: 37px;
+`;
+
+const BigLetter = styled.span`
+  ${({ theme }) => theme.fonts.IBMmediumlarge};
   height: 37px;
 `;
 
@@ -61,3 +100,9 @@ const InviteCount = styled.div`
   justify-content: center;
   font-weight: bold;
 `;
+
+const iconStyleSample = {
+  size: 24,
+  color: 'white',
+  hoverColor: 'white',
+};

@@ -17,9 +17,9 @@ function Router() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/auth/signIn" element={<Signin />} />
-        <Route path="/auth/signUp" element={<Signup />} />
+        {/* <Route path="/auth" element={<Auth />} /> */}
+        <Route path="/signIn" element={<Signin />} />
+        <Route path="/signUp" element={<Signup />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Main />} />
           <Route path="/main" element={<Main />} />

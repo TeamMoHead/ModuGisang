@@ -10,12 +10,12 @@ import {
   Query,
   Get,
   Req,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthenticateGuard } from 'src/auth/auth.guard';
 
-@UseGuards(AuthenticateGuard)
 @Controller('/api/user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -59,28 +59,38 @@ export class UserController {
 
   @UseGuards(AuthenticateGuard)
   @Get('/:userId')
-  async searchUser(@Req() req, @Param('userId') userId: number) {
-    const result = await this.userService.getInvis(userId);
-    const invitations = result.invitations;
-    const lastActiveDate = result.lastActiveDate;
-    const isCountinue = this.userService.isContinuous(lastActiveDate);
-    return {
-      userId: invitations._id,
-      userName: invitations.userName,
-      streakDays: isCountinue ? result.currentStreak : 0,
-      medals: {
-        gold: invitations.medals.gold,
-        silver: invitations.medals.silver,
-        bronze: invitations.medals.bronze,
-      },
-      invitationCounts: result.count,
-      affirmation: invitations.affirmation,
-      challengeId: invitations.challengeId,
-      profile: invitations.profile,
-      openviduToken: invitations.openviduToken,
-    };
+  async searchUser(@Req() req, @Param('userId', ParseIntPipe) userId: number) {
+    const redisCheckUserInfo = await this.userService.redisCheckUser(userId);
+    if (redisCheckUserInfo) {
+      return redisCheckUserInfo;
+    } else {
+      const result = await this.userService.getInvis(userId);
+      const invitations = result.invitations;
+      const lastActiveDate = result.lastActiveDate;
+      const isCountinue = this.userService.isContinuous(lastActiveDate);
+
+      const userInformation = {
+        userId: invitations._id,
+        userName: invitations.userName,
+        streakDays: isCountinue ? result.currentStreak : 0,
+        medals: {
+          gold: invitations.medals.gold,
+          silver: invitations.medals.silver,
+          bronze: invitations.medals.bronze,
+        },
+        invitationCounts: result.count,
+        affirmation: invitations.affirmation,
+        challengeId: invitations.challengeId,
+        profile: invitations.profile,
+        openviduToken: invitations.openviduToken,
+      };
+
+      await this.userService.redisSetUser(userId, userInformation);
+      return userInformation;
+    }
   }
 
+  @UseGuards(AuthenticateGuard)
   @Post('/:userId/update-affirm')
   async updateAffirm(
     @Param('userId') userId: number,

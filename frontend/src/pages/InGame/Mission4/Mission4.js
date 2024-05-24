@@ -37,7 +37,8 @@ const Mission4 = () => {
       return;
     }
     //const actualStream = myStream.stream.getMediaStream();
-    initializeStream();
+    micSetting(false);
+    // initializeStream();
 
     return () => {
       stopAudioStream();
@@ -96,7 +97,7 @@ const Mission4 = () => {
       const decibels = calculateDecibels(analyser, dataArray, bufferLength);
       setDecibels(decibels); // 데시벨 상태 업데이트
 
-      if (decibels > 80) {
+      if (decibels > 60) {
         setShoutingDuration(prevDuration => prevDuration + 0.2);
       }
       if (shoutingDuration > 5) {
@@ -168,7 +169,6 @@ const Mission4 = () => {
     const audioStream = await getAudioStream();
     if (audioStream) {
       setStream(audioStream);
-      micSetting(false);
     }
   }
   return (
@@ -183,7 +183,10 @@ const Mission4 = () => {
         )}
       </FullScreenCanvas>
       {isGameOver || isMissionStarting || (
-        <CanvasWrapper $myMissionStatus={myMissionStatus}>
+        <CanvasWrapper
+          onClick={initializeStream}
+          $myMissionStatus={myMissionStatus}
+        >
           <Canvas />
           <SoundIndicator
             $soundWidth={shoutingDuration.toFixed(3) < 5 ? decibels : 0}
@@ -211,7 +214,7 @@ const FullScreenCanvas = styled.div`
 
 //전체바
 const CanvasWrapper = styled.div`
-  z-index: 300;
+  z-index: 900;
 
   position: absolute;
   top: 25px;
@@ -232,7 +235,7 @@ const Canvas = styled.canvas`
   bottom: 0;
   left: 0;
 
-  width: 80%;
+  width: 60%;
   height: 100%;
 
   border-right: 4px solid ${({ theme }) => theme.colors.system.red};
