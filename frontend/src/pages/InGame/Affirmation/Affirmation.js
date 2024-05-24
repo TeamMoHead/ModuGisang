@@ -18,10 +18,15 @@ const Affirmation = () => {
   const user = useContext(UserContext);
   const affirmationText = user.myData.affirmation || '';
   const [highlightedText, setHighlightedText] = useState('');
-  const { transcript, stop } = useSpeechToText(24);
+  const { transcript, start, stop } = useSpeechToText(10);
   const [affirResult, setAffirResult] = useState(false);
   const newTranscriptRef = useRef('');
   const idx = useRef(0);
+
+  const handleStartSTT = () => {
+    console.log('STT start');
+    start();
+  };
 
   useEffect(() => {
     if (inGameMode === 6) {
@@ -39,6 +44,7 @@ const Affirmation = () => {
     if (affirResult) {
       return;
     }
+    console.log('trnascript is ', transcript);
     // 비교할 값이 있을 때만 동작
     if (transcript) {
       for (let j = 0; j < transcript.length; j++) {
@@ -73,8 +79,11 @@ const Affirmation = () => {
       <MissionStarting />
       {isMissionEnding && <MissionEnding />}
       {isMissionStarting || (
-        <Wrapper>
+        <Wrapper onClick={handleStartSTT}>
           <TextArea>{highlightedText}</TextArea>
+          {/* <StartButton onClick={handleStartSTT}>
+            <Icon icon={'speak'} iconStyle={iconStyle} />
+          </StartButton> */}
         </Wrapper>
       )}
     </>
@@ -84,7 +93,7 @@ const Affirmation = () => {
 export default Affirmation;
 
 const Wrapper = styled.div`
-  z-index: 200;
+  z-index: 900;
 
   position: absolute;
 
@@ -93,10 +102,11 @@ const Wrapper = styled.div`
 `;
 
 const TextArea = styled.div`
+  z-index: 900;
+
   position: absolute;
   bottom: 3px;
   left: 3px;
-
   ${({ theme }) => theme.flex.center}
   width: calc(100% - 6px);
   height: 30%;
@@ -125,3 +135,21 @@ const Highlighted = styled.b`
 const Unhighlighted = styled.b`
   color: grey;
 `;
+
+// const StartButton = styled.button`
+//   width: 50px;
+//   height: 50px;
+//   background-color: ${({ theme }) => theme.colors.neutral.grey};
+//   position: absolute;
+//   bottom: 30%;
+//   right: 10%;
+//   transform: translate(-50%, -50%);
+//   border-radius: 50%;
+//   z-index: 700;
+// `;
+
+// const iconStyle = {
+//   size: 24,
+//   color: 'white',
+//   hoverColor: 'white',
+// };
