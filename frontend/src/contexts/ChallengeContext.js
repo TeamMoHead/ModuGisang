@@ -26,6 +26,8 @@ const ChallengeContextProvider = ({ children }) => {
     // ],
   });
 
+  const [isAttended, setIsAttended] = useState(false);
+
   const getChallengeData = async () => {
     const response = await fetchData(() =>
       challengeServices.getChallengeInfo({
@@ -95,16 +97,48 @@ const ChallengeContextProvider = ({ children }) => {
     }
   };
 
+  const getTodayChallengeData = async () => {
+    const response = await fetchData(() =>
+      challengeServices.getCalendarInfoByDate({
+        accessToken,
+        userId: userId,
+        date: new Date().toISOString().split('T')[0],
+        // date: '2024-05-23',
+      }),
+    );
+
+    const {
+      isLoading: isTodayChallengeDataLoading,
+      data: todayChallengeData,
+      error: todayChallengeDataError,
+    } = response;
+
+    if (!isTodayChallengeDataLoading && todayChallengeData) {
+      setIsAttended(true);
+    } else if (!isTodayChallengeDataLoading && todayChallengeDataError) {
+      console.error(todayChallengeDataError);
+    }
+  };
+
+  console.log(isAttended);
+
   useEffect(() => {
     if (challengeId !== null && challengeId !== -1 && userId) {
       getChallengeData();
     }
   }, [challengeId]);
 
+  useEffect(() => {
+    if (challengeId !== null && challengeId !== -1 && userId) {
+      getTodayChallengeData();
+    }
+  }, [challengeData]);
+
   return (
     <ChallengeContext.Provider
       value={{
         challengeData,
+        isAttended,
         setChallengeData,
         getChallengeData,
         handleCreateChallenge,
