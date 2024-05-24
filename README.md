@@ -25,7 +25,7 @@
 ## 메인 화면
 **챌린지 진행 상황**과 **참여 중인 챌린지의 정보를** 확인할 수 있으며, 설정해둔 시간에 맞춰 접속 시 버튼을 클릭하여 **챌린지에 입장**할 수 있습니다.
 
-![Screenshot 2024-05-24 at 6 15 46 PM](https://github.com/TeamMoHead/ModuGisang/assets/154266737/b064e62a-c957-4d77-985d-81adaa4376d0)
+<img width="400" alt="Main (Chall O - ver2)" src="https://github.com/TeamMoHead/ModuGisang/assets/154266737/2b6df291-8568-4281-8821-48981e5e67b2">
 
 메인 화면에서 챌린지 진행 상황을 누르면, **나의 기록을 확인**할 수 있는 페이지로 이동합니다. 챌린지에 참여한 날짜가 달력 위에 표시되며 클릭 시 상세한 정보를 확인할 수 있습니다.
 
