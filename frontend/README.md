@@ -1,3 +1,1 @@
-This is Frontend
-
-This is TEST!
+Modu Gisang - Frontend
