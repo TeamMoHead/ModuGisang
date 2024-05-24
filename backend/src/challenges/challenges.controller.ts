@@ -19,11 +19,15 @@ import { AuthenticateGuard } from 'src/auth/auth.guard';
 import { AcceptInvitationDto } from './dto/acceptInvitaion.dto';
 import { ChallengeResponseDto } from './dto/challengeResponse.dto';
 import { ChallengeResultDto } from './dto/challengeResult.dto';
+import RedisCacheService from 'src/redis-cache/redis-cache.service';
 
 @UseGuards(AuthenticateGuard)
 @Controller('api/challenge')
 export class ChallengesController {
-  constructor(private readonly challengeService: ChallengesService) {}
+  constructor(
+    private readonly challengeService: ChallengesService,
+    private readonly redisService: RedisCacheService,
+  ) {}
   @Get()
   async getChallengeInfo(
     @Query('challengeId') challengeId: number,
@@ -51,6 +55,7 @@ export class ChallengesController {
         createChallengeDto.mates[i],
       );
     }
+    this.redisService.del(`userInfo:${createChallengeDto.hostId}`);
     return 'create';
   }
   @Get('search-mate')

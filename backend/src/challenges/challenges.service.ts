@@ -96,6 +96,8 @@ export class ChallengesService {
             challengeId: challengeId,
           },
         ),
+        this.redisCacheService.del(`userInfo:${guestId}`),
+        this.redisCacheService.del(`challenge_${challengeId}`),
       ]); // 여러개의 비동기 함수를 동시에 실행
       return { success: true, message: '승낙 성공' };
     } catch (e) {
@@ -109,11 +111,13 @@ export class ChallengesService {
   ): Promise<ChallengeResponseDto | null> {
     const cacheKey = `challenge_${challengeId}`;
 
-    // 캐시에서 데이터 가져오기 시도
-    const cachedChallenge = await this.redisCacheService.get(cacheKey);
-    console.log(cachedChallenge);
-    if (cachedChallenge) {
-      return JSON.parse(cachedChallenge) as ChallengeResponseDto;
+    if (challengeId > 0) {
+      // 캐시에서 데이터 가져오기 시도
+      const cachedChallenge = await this.redisCacheService.get(cacheKey);
+      console.log(cachedChallenge);
+      if (cachedChallenge) {
+        return JSON.parse(cachedChallenge) as ChallengeResponseDto;
+      }
     }
 
     // 캐시 미스 시 데이터베이스에서 가져오기
@@ -144,12 +148,14 @@ export class ChallengesService {
       mates: participantDtos,
     };
 
-    // 결과를 캐시에 저장
-    await this.redisCacheService.set(
-      cacheKey,
-      JSON.stringify(challengeResponse),
-      600,
-    ); // 10분 TTL
+    if (challengeId > 0) {
+      // 결과를 캐시에 저장
+      await this.redisCacheService.set(
+        cacheKey,
+        JSON.stringify(challengeResponse),
+        parseInt(process.env.REDIS_CHALLENGE_EXP),
+      ); // 10분 TTL
+    }
 
     return challengeResponse;
   }
