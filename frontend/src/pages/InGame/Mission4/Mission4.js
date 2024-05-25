@@ -96,7 +96,7 @@ const Mission4 = () => {
       const decibels = calculateDecibels(analyser, dataArray, bufferLength);
       setDecibels(decibels); // 데시벨 상태 업데이트
 
-      if (decibels > 50) {
+      if (decibels > 55) {
         setShoutingDuration(prevDuration => prevDuration + 0.2);
       }
       if (shoutingDuration > 5) {
@@ -232,7 +232,7 @@ const Canvas = styled.canvas`
   bottom: 0;
   left: 0;
 
-  width: 50%;
+  width: 55%;
   height: 100%;
 
   border-right: 4px solid ${({ theme }) => theme.colors.system.red};
