@@ -39,20 +39,40 @@
 ### 몸 깨우기
 화면에 표시된 자세를 따라하며 상반신 스트레칭을 진행합니다.
 
+![mission1](https://github.com/TeamMoHead/ModuGisang/assets/154266737/865544b4-0e56-477f-a4c9-25fd364b5b1f)
+
+
 ### 안면 근육 풀기
 얼굴에 붙은 포스트잇을 제거하기 위해 양쪽 입꼬리와 눈썹을 움직이며 안면 근육을 풉니다.
+
+![mission2](https://github.com/TeamMoHead/ModuGisang/assets/154266737/3252fc61-bc41-4638-9217-030f9dce0ccf)
+
 
 ### 목 풀기
 표시되는 화살표 방향대로 고개를 돌리며, 굳은 목 근육을 풀며 잠을 깨웁니다.
 
+![mission3](https://github.com/TeamMoHead/ModuGisang/assets/154266737/c9c94d2d-1f10-4555-96ff-a3a353be095c)
+
 ### 성대 풀기
 소리를 질러 일정 데시벨 이상의 소리를 내면 해가 떠오릅니다.
+
+![mission4](https://github.com/TeamMoHead/ModuGisang/assets/154266737/0b59e148-b19b-46b6-b2c5-3d5959b2c399)
 
 ### 두뇌 깨우기
 정답에 맞는 쪽 손을 들어 연속적으로 나오는 문제를 풉니다.
 
+![mission5](https://github.com/TeamMoHead/ModuGisang/assets/154266737/16db073e-5666-4fa4-a593-4db95c070d04)
+
 ### 오늘의 다짐
 회원가입 시 혹은 설정 화면에서 지정해둔 문구를 읽으며 다짐을 되새길 수 있습니다.
+
+![mission6](https://github.com/TeamMoHead/ModuGisang/assets/154266737/1e9f94f3-5ac6-4236-b64b-b44caa86184f)
+
+### 오늘의 미라클 메이커
+챌린지를 얼마나 성공적으로 완수했는지 알려 주는 점수와 등수를 확인할 수 있습니다.
+
+![result](https://github.com/TeamMoHead/ModuGisang/assets/154266737/c5f639b1-fa68-41c3-a86d-d936d07501db)
+
 
 # ⚙️ 아키텍처
 <img width="1000" alt="Screenshot 2024-05-24 at 4 28 31 PM" src="https://github.com/TeamMoHead/ModuGisang/assets/154266737/871fdbcc-e866-4541-b288-bbf0982a6175">
