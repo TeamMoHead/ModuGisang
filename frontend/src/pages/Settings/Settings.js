@@ -78,7 +78,7 @@ const Settings = () => {
   };
 
   const handlePractice = () => {
-    console.log('연습 게임으로 이동~!');
+    navigate('/practice');
     console.log(user.myData);
   };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { GameContextProvider, OpenViduContextProvider } from './contexts';
-import { Auth, Signin, Signup, ProtectedRoute } from './pages/Auth';
+import { Signin, Signup, ProtectedRoute } from './pages/Auth';
 import { PageNotFound } from './components';
 import {
   Main,
@@ -11,13 +11,13 @@ import {
   JoinChallenge,
   Settings,
   Testing,
+  Practice,
 } from './pages';
 
 function Router() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* <Route path="/auth" element={<Auth />} /> */}
         <Route path="/signIn" element={<Signin />} />
         <Route path="/signUp" element={<Signup />} />
         <Route element={<ProtectedRoute />}>
@@ -38,6 +38,7 @@ function Router() {
           />
           <Route path="/settings" element={<Settings />} />
           <Route path="/test" element={<Testing />} />
+          <Route path="/practice" element={<Practice />} />
         </Route>
         <Route path="*" element={<PageNotFound />} />
       </Routes>

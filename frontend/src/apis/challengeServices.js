@@ -90,6 +90,7 @@ const getCalendarInfoByDate = async ({ accessToken, userId, date }) => {
 };
 
 const getConnectionToken = async ({ accessToken, userData }) => {
+  console.log('------OPENVIDU GET CONNECTION TOKEN------');
   const url = '/start-session';
 
   const config = {

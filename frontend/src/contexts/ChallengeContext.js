@@ -120,7 +120,7 @@ const ChallengeContextProvider = ({ children }) => {
     }
   };
 
-  console.log(isAttended);
+  console.log('Is Attended: ', isAttended);
 
   useEffect(() => {
     if (challengeId !== null && challengeId !== -1 && userId) {

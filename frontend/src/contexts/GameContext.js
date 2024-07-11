@@ -188,7 +188,7 @@ const GameContextProvider = ({ children }) => {
     if (challengeData && !isTooEarly && !isTooLate) {
       // ⭐️⭐️⭐️⭐️⭐️⭐️ 개발 편의 용 주석 ⭐️⭐️⭐️⭐️⭐️//
       startModelWarmUp();
-      // ===== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
+      // ============= ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
     }
   }, [challengeData]);
 
