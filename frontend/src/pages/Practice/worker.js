@@ -1,18 +1,17 @@
+importScripts('https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js');
+
 let poseModel;
 
 self.onmessage = async event => {
   console.log('This is Worker!!!!!!!11111111');
   if (event.data.type === 'initialize') {
-    importScripts(event.data.scriptURL);
+    const modelPath = event.data.modelPath;
+    const response = await fetch(modelPath);
+    const modelBlob = await response.blob();
+    const modelURL = URL.createObjectURL(modelBlob);
 
     poseModel = new self.Pose({
-      locateFile: file => {
-        if (file.endsWith('.tflite')) {
-          return file;
-        } else {
-          return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
-        }
-      },
+      locateFile: file => modelURL,
     });
 
     poseModel.setOptions({

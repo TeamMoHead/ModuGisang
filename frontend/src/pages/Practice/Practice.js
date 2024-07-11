@@ -24,7 +24,8 @@ const Practice = () => {
 
     worker.postMessage({
       type: 'initialize',
-      scriptURL: 'https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js',
+      modelPath:
+        'https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose_landmark_full.tflite',
     });
 
     return () => {
