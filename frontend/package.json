@@ -45,10 +45,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "start:local": "env-cmd -f .env.local react-scripts start",
-    "start:dev": "env-cmd -f .env craco start",
     "build:dev": "env-cmd -f .env react-scripts build",
-    "start:prod": "env-cmd -f .env.prod craco start",
-    "build:prod": "PUBLIC_URL='/static' env-cmd -f .env.prod craco build",
+    "build:prod": "PUBLIC_URL='/static' env-cmd -f .env.prod build",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -71,9 +69,9 @@
   },
   "devDependencies": {
     "env-cmd": "^10.1.0",
-    "@craco/craco": "^7.1.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "worker-loader": "^3.0.8"
   }
 }

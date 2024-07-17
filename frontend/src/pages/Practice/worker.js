@@ -1,41 +1,59 @@
-importScripts('https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js');
+import {
+  PoseLandmarker,
+  FilesetResolver,
+} from 'https://cdn.skypack.dev/@mediapipe/tasks-vision@0.10.0';
 
-let poseModel;
+console.log('Worker script started');
 
-self.onmessage = async event => {
-  console.log('This is Worker!!!!!!!11111111');
-  if (event.data.type === 'initialize') {
-    const modelPath = event.data.modelPath;
-    const response = await fetch(modelPath);
-    const modelBlob = await response.blob();
-    const modelURL = URL.createObjectURL(modelBlob);
+let poseLandmarker;
 
-    poseModel = new self.Pose({
-      locateFile: file => modelURL,
+async function initializePoseLandmarker() {
+  console.log('Initializing PoseLandmarker');
+  try {
+    const vision = await FilesetResolver.forVisionTasks(
+      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm',
+    );
+    poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
+      baseOptions: {
+        modelAssetPath:
+          'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task',
+        delegate: 'GPU',
+      },
+      runningMode: 'VIDEO',
+      numPoses: 2,
     });
-
-    poseModel.setOptions({
-      modelComplexity: 1,
-      smoothLandmarks: true,
-      enableSegmentation: true,
-      smoothSegmentation: true,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5,
-    });
-
+    console.log('PoseLandmarker initialized');
     self.postMessage({ type: 'initialized' });
-  } else if (event.data.type === 'inference') {
-    const imageBitmap = event.data.image;
+  } catch (error) {
+    console.error('Error initializing PoseLandmarker:', error);
+    self.postMessage({ type: 'error', error: error.toString() });
+  }
+}
 
-    const canvas = new OffscreenCanvas(imageBitmap.width, imageBitmap.height);
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(imageBitmap, 0, 0, imageBitmap.width, imageBitmap.height);
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+function detectPose(imageBitmap) {
+  if (!poseLandmarker) {
+    console.error('PoseLandmarker not initialized');
+    return;
+  }
+  const startTimeMs = performance.now();
+  const results = poseLandmarker.detectForVideo(imageBitmap, startTimeMs);
+  self.postMessage({ type: 'results', results });
+}
 
-    poseModel.onResults(results => {
-      self.postMessage({ type: 'results', results });
-    });
+self.onmessage = function (event) {
+  console.log('Worker received message:', event.data);
 
-    await poseModel.send({ image: imageData });
+  switch (event.data.type) {
+    case 'initialize':
+      initializePoseLandmarker();
+      break;
+    case 'detect':
+      detectPose(event.data.image);
+      break;
+    default:
+      console.warn('Unknown message type:', event.data.type);
   }
 };
+
+console.log('Worker script loaded');
+self.postMessage({ type: 'ready' });
