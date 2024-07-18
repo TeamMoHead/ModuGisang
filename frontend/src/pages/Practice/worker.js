@@ -37,7 +37,8 @@ function detectPose(imageBitmap) {
   }
   const startTimeMs = performance.now();
   const results = poseLandmarker.detectForVideo(imageBitmap, startTimeMs);
-  self.postMessage({ type: 'results', results });
+  const inferenceTime = performance.now() - startTimeMs;
+  self.postMessage({ type: 'results', results, inferenceTime });
 }
 
 self.onmessage = function (event) {

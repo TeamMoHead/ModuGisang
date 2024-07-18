@@ -3,59 +3,49 @@ import { Camera } from '@mediapipe/camera_utils';
 import styled from 'styled-components';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 import { POSE_CONNECTIONS } from '@mediapipe/pose';
+import { PoseLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 
 const Practice = () => {
   const [isModelInitialized, setIsModelInitialized] = useState(false);
   const [inferenceTime, setInferenceTime] = useState(null);
   const videoElement = useRef(null);
   const canvasElement = useRef(null);
-  const workerRef = useRef(null);
+  const poseLandmarkerRef = useRef(null);
 
   useEffect(() => {
-    console.log('Creating worker');
-    const worker = new Worker(new URL('./worker.js', import.meta.url), {
-      type: 'module',
-    });
-    workerRef.current = worker;
-
-    worker.onmessage = event => {
-      console.log('Message from worker:', event.data);
-      if (event.data.type === 'ready') {
-        console.log('Worker is ready, sending initialize message');
-        worker.postMessage({ type: 'initialize' });
-      } else if (event.data.type === 'initialized') {
+    const initializePoseLandmarker = async () => {
+      console.log('Initializing PoseLandmarker');
+      try {
+        const vision = await FilesetResolver.forVisionTasks(
+          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm',
+        );
+        poseLandmarkerRef.current = await PoseLandmarker.createFromOptions(
+          vision,
+          {
+            baseOptions: {
+              modelAssetPath:
+                'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task',
+              delegate: 'GPU',
+            },
+            runningMode: 'VIDEO',
+            numPoses: 2,
+          },
+        );
+        console.log('PoseLandmarker initialized');
         setIsModelInitialized(true);
-        console.log('======PoseLandmarker initialized');
-      } else if (event.data.type === 'results') {
-        console.log('Results: ', event.data.results);
-        drawResults(event.data.results);
+      } catch (error) {
+        console.error('Error initializing PoseLandmarker:', error);
       }
     };
 
-    worker.onerror = error => {
-      console.error('Worker error:', error);
-    };
-
-    return () => {
-      console.log('Terminating worker');
-      worker.terminate();
-    };
+    initializePoseLandmarker();
   }, []);
 
   useEffect(() => {
     if (isModelInitialized && videoElement.current) {
       const camera = new Camera(videoElement.current, {
         onFrame: async () => {
-          if (!workerRef.current) return;
-
-          const start = performance.now();
-          const imageBitmap = await createImageBitmap(videoElement.current);
-          workerRef.current.postMessage(
-            { type: 'detect', image: imageBitmap },
-            [imageBitmap],
-          );
-          const end = performance.now();
-          setInferenceTime(end - start);
+          await detectPose();
         },
         width: 480,
         height: 640,
@@ -65,9 +55,26 @@ const Practice = () => {
     }
   }, [isModelInitialized]);
 
-  const drawResults = results => {
-    if (!canvasElement.current) return;
+  const detectPose = async () => {
+    if (
+      !poseLandmarkerRef.current ||
+      !videoElement.current ||
+      !canvasElement.current
+    )
+      return;
 
+    const startTimeMs = performance.now();
+    const results = poseLandmarkerRef.current.detectForVideo(
+      videoElement.current,
+      performance.now(),
+    );
+    const inferenceTimeMs = performance.now() - startTimeMs;
+
+    setInferenceTime(inferenceTimeMs);
+    drawResults(results);
+  };
+
+  const drawResults = results => {
     const canvasCtx = canvasElement.current.getContext('2d');
     canvasCtx.save();
     canvasCtx.clearRect(
@@ -76,7 +83,6 @@ const Practice = () => {
       canvasElement.current.width,
       canvasElement.current.height,
     );
-
     canvasCtx.drawImage(
       videoElement.current,
       0,
