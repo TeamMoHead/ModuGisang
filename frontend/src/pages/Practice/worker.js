@@ -49,7 +49,26 @@ self.onmessage = function (event) {
       initializePoseLandmarker();
       break;
     case 'detect':
-      detectPose(event.data.image);
+      if (!poseLandmarker) {
+        console.error('PoseLandmarker not initialized');
+        return;
+      }
+      const startTime = performance.now();
+      const results = poseLandmarker.detectForVideo(
+        event.data.image,
+        startTime,
+      );
+      const inferenceTime = performance.now() - startTime;
+      self.postMessage({
+        type: 'results',
+        results: results,
+        inferenceTime: inferenceTime, // inferenceTime 추가
+      });
+      break;
+    case 'stop':
+      console.log('Stopping worker');
+      self.postMessage({ type: 'stopped' });
+      // self.close(); // worker 종료
       break;
     default:
       console.warn('Unknown message type:', event.data.type);

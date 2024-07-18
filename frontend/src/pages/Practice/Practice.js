@@ -1,78 +1,113 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera } from '@mediapipe/camera_utils';
 import styled from 'styled-components';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 import { POSE_CONNECTIONS } from '@mediapipe/pose';
-import { PoseLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
+import createPerformanceMonitor from './Performance';
 
 const Practice = () => {
   const [isModelInitialized, setIsModelInitialized] = useState(false);
   const [inferenceTime, setInferenceTime] = useState(null);
   const videoElement = useRef(null);
   const canvasElement = useRef(null);
-  const poseLandmarkerRef = useRef(null);
+  const workerRef = useRef(null);
+  const performanceMonitor = useRef(createPerformanceMonitor());
+  const [performanceResult, setPerformanceResult] = useState(null);
 
   useEffect(() => {
-    const initializePoseLandmarker = async () => {
-      console.log('Initializing PoseLandmarker');
-      try {
-        const vision = await FilesetResolver.forVisionTasks(
-          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm',
-        );
-        poseLandmarkerRef.current = await PoseLandmarker.createFromOptions(
-          vision,
-          {
-            baseOptions: {
-              modelAssetPath:
-                'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task',
-              delegate: 'GPU',
-            },
-            runningMode: 'VIDEO',
-            numPoses: 2,
-          },
-        );
-        console.log('PoseLandmarker initialized');
+    console.log('Creating worker');
+    const worker = new Worker(new URL('./worker.js', import.meta.url), {
+      type: 'module',
+    });
+    workerRef.current = worker;
+
+    worker.onmessage = event => {
+      console.log('Message from worker:', event.data);
+      if (event.data.type === 'ready') {
+        console.log('Worker is ready, sending initialize message');
+        worker.postMessage({ type: 'initialize' });
+      } else if (event.data.type === 'initialized') {
         setIsModelInitialized(true);
-      } catch (error) {
-        console.error('Error initializing PoseLandmarker:', error);
+        console.log('======PoseLandmarker initialized');
+      } else if (event.data.type === 'results') {
+        drawResults(event.data.results);
+        setInferenceTime(event.data.inferenceTime);
+        performanceMonitor.current.collectData(event.data.inferenceTime);
+      } else if (event.data.type === 'stopped') {
+        console.log('Worker stopped, video ended');
+        const result = performanceMonitor.current.analyzePerformance();
+        setPerformanceResult(result);
+        console.log('==========Performance Analysis=========');
+        console.log(result);
+        performanceMonitor.current.reset();
       }
     };
 
-    initializePoseLandmarker();
+    worker.onerror = error => {
+      console.error('Worker error:', error);
+    };
+
+    return () => {
+      console.log('Terminating worker');
+      worker.terminate();
+    };
   }, []);
 
   useEffect(() => {
+    console.log('Effect triggered, isModelInitialized:', isModelInitialized);
     if (isModelInitialized && videoElement.current) {
-      const camera = new Camera(videoElement.current, {
-        onFrame: async () => {
-          await detectPose();
-        },
-        width: 480,
-        height: 640,
-      });
+      console.log('Setting up video');
+      videoElement.current.src =
+        process.env.PUBLIC_URL + '/sample_stretching.mp4';
 
-      camera.start();
+      videoElement.current.onloadeddata = () => {
+        console.log('Video loaded, trying to play');
+        videoElement.current
+          .play()
+          .then(() => {
+            console.log('Video playing, requesting animation frame');
+            requestAnimationFrame(detectPose);
+          })
+          .catch(error => {
+            console.error('Error playing video:', error);
+          });
+      };
+
+      videoElement.current.onended = () => {
+        console.log('Video ended');
+        // 비디오가 끝났을 때 worker에게 정지 메시지 전송
+        workerRef.current.postMessage({ type: 'stop' });
+      };
     }
   }, [isModelInitialized]);
 
-  const detectPose = async () => {
-    if (
-      !poseLandmarkerRef.current ||
-      !videoElement.current ||
-      !canvasElement.current
-    )
+  const detectPose = () => {
+    if (videoElement.current.paused || videoElement.current.ended) {
       return;
+    }
 
-    const startTimeMs = performance.now();
-    const results = poseLandmarkerRef.current.detectForVideo(
-      videoElement.current,
-      performance.now(),
-    );
-    const inferenceTimeMs = performance.now() - startTimeMs;
+    const startTime = performance.now();
+    createImageBitmap(videoElement.current).then(imageBitmap => {
+      workerRef.current.postMessage({ type: 'detect', image: imageBitmap }, [
+        imageBitmap,
+      ]);
+    });
 
-    setInferenceTime(inferenceTimeMs);
-    drawResults(results);
+    requestAnimationFrame(detectPose);
   };
+
+  // const handleWorkerMessage = async event => {
+  //   if (event.data.type === 'results') {
+  //     const inferenceTime = event.data.inferenceTime;
+  //     // ...
+  //     const performanceData =
+  //       await performanceMonitor.current.collectData(inferenceTime);
+  //     if (performanceData) {
+  //       console.log('==========Performance Analysis=========');
+  //       console.log(performanceData);
+  //       performanceMonitor.current.reset();
+  //     }
+  //   }
+  // };
 
   const drawResults = results => {
     const canvasCtx = canvasElement.current.getContext('2d');
@@ -91,14 +126,15 @@ const Practice = () => {
       canvasElement.current.height,
     );
 
-    if (results.landmarks) {
-      for (const landmarks of results.landmarks) {
-        drawConnectors(canvasCtx, landmarks, POSE_CONNECTIONS, {
-          color: '#00FF00',
-          lineWidth: 4,
-        });
-        drawLandmarks(canvasCtx, landmarks, { color: '#FF0000', lineWidth: 2 });
-      }
+    if (results.poseLandmarks) {
+      drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
+        color: '#00FF00',
+        lineWidth: 4,
+      });
+      drawLandmarks(canvasCtx, results.poseLandmarks, {
+        color: '#FF0000',
+        lineWidth: 2,
+      });
     }
     canvasCtx.restore();
   };
@@ -107,12 +143,33 @@ const Practice = () => {
     <Wrapper>
       practice
       <VideoCanvas>
-        <Video ref={videoElement} />
-        <Canvas ref={canvasElement} width="480" height="640" />
+        <Video ref={videoElement} playsInline muted />
+
+        <Canvas ref={canvasElement} width="360" height="640" />
       </VideoCanvas>
       <div>
         {inferenceTime && <p>Inference Time: {inferenceTime.toFixed(2)} ms</p>}
       </div>
+      {performanceResult && (
+        <div>
+          <h3>Performance Analysis:</h3>
+          <p>
+            Average Inference Time:{' '}
+            {performanceResult.avgInferenceTime.toFixed(2)} ms
+          </p>
+          <p>
+            Max Inference Time: {performanceResult.maxInferenceTime.toFixed(2)}{' '}
+            ms
+          </p>
+          <p>
+            Min Inference Time: {performanceResult.minInferenceTime.toFixed(2)}{' '}
+            ms
+          </p>
+          <p>FPS: {performanceResult.fps.toFixed(2)}</p>
+          <p>Total Frames: {performanceResult.totalFrames}</p>
+          <p>Total Time: {(performanceResult.totalTime / 1000).toFixed(2)} s</p>
+        </div>
+      )}
     </Wrapper>
   );
 };
@@ -129,7 +186,7 @@ const Wrapper = styled.div`
 
 const VideoCanvas = styled.div`
   position: relative;
-  width: 480px;
+  width: 360px;
   height: 640px;
 `;
 
