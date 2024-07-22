@@ -78,7 +78,7 @@ const Settings = () => {
   };
 
   const handlePractice = () => {
-    navigate('/practice');
+    navigate('/worker-test');
     console.log(user.myData);
   };
 

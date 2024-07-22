@@ -11,7 +11,7 @@ import {
   JoinChallenge,
   Settings,
   Testing,
-  Practice,
+  WorkerTest,
 } from './pages';
 
 function Router() {
@@ -38,7 +38,7 @@ function Router() {
           />
           <Route path="/settings" element={<Settings />} />
           <Route path="/test" element={<Testing />} />
-          <Route path="/practice" element={<Practice />} />
+          <Route path="/worker-test" element={<WorkerTest />} />
         </Route>
         <Route path="*" element={<PageNotFound />} />
       </Routes>

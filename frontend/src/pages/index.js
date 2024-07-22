@@ -6,7 +6,8 @@ import JoinChallenge from './JoinChallenge/JoinChallenge';
 import CreateChallenge from './CreateChallenge/CreateChallenge';
 import Settings from './Settings/Settings';
 import Testing from './Testing/Testing';
-import Practice from './Practice/Practice';
+import WorkerTest from './WorkerTest/test_main';
+// import WorkerTest from './WorkerTest/test_worker';
 
 export {
   Main,
@@ -17,5 +18,5 @@ export {
   CreateChallenge,
   Settings,
   Testing,
-  Practice,
+  WorkerTest,
 };

@@ -1,71 +1,83 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
-import { PoseLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 import { POSE_CONNECTIONS } from '@mediapipe/pose';
 import createPerformanceMonitor from './Performance';
 
-const Practice = () => {
+const WorkerTest = () => {
   const [isModelInitialized, setIsModelInitialized] = useState(false);
   const [inferenceTime, setInferenceTime] = useState(null);
   const videoElement = useRef(null);
   const canvasElement = useRef(null);
-  const poseLandmarkerRef = useRef(null);
+  const workerRef = useRef(null);
 
   const performanceMonitor = useRef(createPerformanceMonitor());
   const [performanceResult, setPerformanceResult] = useState(null);
 
   useEffect(() => {
-    const initializePoseLandmarker = async () => {
-      const vision = await FilesetResolver.forVisionTasks(
-        'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm',
-      );
-      poseLandmarkerRef.current = await PoseLandmarker.createFromOptions(
-        vision,
-        {
-          baseOptions: {
-            modelAssetPath:
-              'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task',
-            delegate: 'GPU',
-          },
-          runningMode: 'VIDEO',
-          numPoses: 1,
-        },
-      );
-      setIsModelInitialized(true);
-      console.log('======PoseLandmarker initialized');
-    };
+    const worker = new Worker(new URL('./worker.js', import.meta.url), {
+      type: 'module',
+    });
+    workerRef.current = worker;
 
-    initializePoseLandmarker();
-  }, []);
-
-  useEffect(() => {
-    console.log('Effect triggered, isModelInitialized:', isModelInitialized);
-    if (isModelInitialized && videoElement.current) {
-      console.log('Setting up video');
-      videoElement.current.src =
-        process.env.PUBLIC_URL + '/sample_stretching.mp4';
-
-      videoElement.current.onloadeddata = () => {
-        console.log('Video loaded, trying to play');
-        videoElement.current
-          .play()
-          .then(() => {
-            console.log('Video playing, requesting animation frame');
-            requestAnimationFrame(detectPose);
-          })
-          .catch(error => {
-            console.error('Error playing video:', error);
-          });
-      };
-
-      videoElement.current.onended = () => {
-        console.log('Video ended');
+    worker.onmessage = event => {
+      if (event.data.type === 'ready') {
+        worker.postMessage({ type: 'initialize' });
+      } else if (event.data.type === 'initialized') {
+        setIsModelInitialized(true);
+      } else if (event.data.type === 'results') {
+        drawResults(event.data.results);
+        setInferenceTime(event.data.inferenceTime);
+        performanceMonitor.current.collectData(event.data.inferenceTime);
+      } else if (event.data.type === 'stopped') {
         const result = performanceMonitor.current.analyzePerformance();
         setPerformanceResult(result);
         console.log('==========Performance Analysis=========');
         console.log(result);
         performanceMonitor.current.reset();
+      }
+    };
+
+    worker.onerror = error => {
+      console.error('Worker error:', error);
+    };
+
+    return () => {
+      console.log('Terminating worker');
+      worker.terminate();
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log(
+      '<Main Thread> Effect triggered, isModelInitialized:',
+      isModelInitialized,
+    );
+
+    if (isModelInitialized && videoElement.current) {
+      console.log('<Main Thread> Setting up video');
+      videoElement.current.src =
+        process.env.PUBLIC_URL + '/sample_stretching.mp4';
+
+      videoElement.current.onloadeddata = () => {
+        console.log('<Main Thread> Video loaded, trying to play');
+        videoElement.current
+          .play()
+          .then(() => {
+            console.log(
+              '<Main Thread> Video playing, requesting animation frame',
+            );
+            requestAnimationFrame(detectPose);
+          })
+          .catch(error => {
+            console.error('<Main Thread> Error playing video:', error);
+          });
+      };
+
+      videoElement.current.onended = () => {
+        console.log('<Main Thread> Video ended');
+        // 비디오가 끝났을 때 worker에게 정지 메시지 전송
+        workerRef.current.postMessage({ type: 'stop' });
       };
     }
   }, [isModelInitialized]);
@@ -76,16 +88,11 @@ const Practice = () => {
     }
 
     const startTime = performance.now();
-    const results = poseLandmarkerRef.current.detectForVideo(
-      videoElement.current,
-      performance.now(),
-    );
-    const inferenceTime = performance.now() - startTime;
-
-    setInferenceTime(inferenceTime);
-    performanceMonitor.current.collectData(inferenceTime);
-
-    drawResults(results);
+    createImageBitmap(videoElement.current).then(imageBitmap => {
+      workerRef.current.postMessage({ type: 'detect', image: imageBitmap }, [
+        imageBitmap,
+      ]);
+    });
 
     requestAnimationFrame(detectPose);
   };
@@ -107,31 +114,18 @@ const Practice = () => {
       canvasElement.current.height,
     );
 
-    if (results.landmarks) {
-      for (const landmarks of results.landmarks) {
-        drawConnectors(canvasCtx, landmarks, POSE_CONNECTIONS, {
-          color: '#00FF00',
-          lineWidth: 4,
-        });
-        drawLandmarks(canvasCtx, landmarks, { color: '#FF0000', lineWidth: 2 });
-      }
+    if (results.poseLandmarks) {
+      drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
+        color: '#00FF00',
+        lineWidth: 4,
+      });
+      drawLandmarks(canvasCtx, results.poseLandmarks, {
+        color: '#FF0000',
+        lineWidth: 2,
+      });
     }
     canvasCtx.restore();
   };
-
-  // const handleWorkerMessage = async event => {
-  //   if (event.data.type === 'results') {
-  //     const inferenceTime = event.data.inferenceTime;
-  //     // ...
-  //     const performanceData =
-  //       await performanceMonitor.current.collectData(inferenceTime);
-  //     if (performanceData) {
-  //       console.log('==========Performance Analysis=========');
-  //       console.log(performanceData);
-  //       performanceMonitor.current.reset();
-  //     }
-  //   }
-  // };
 
   return (
     <Wrapper>
@@ -168,7 +162,7 @@ const Practice = () => {
   );
 };
 
-export default Practice;
+export default WorkerTest;
 
 const Wrapper = styled.div`
   width: 100vw;

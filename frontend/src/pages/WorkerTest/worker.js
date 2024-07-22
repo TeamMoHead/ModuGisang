@@ -3,12 +3,9 @@ import {
   FilesetResolver,
 } from 'https://cdn.skypack.dev/@mediapipe/tasks-vision@0.10.0';
 
-console.log('Worker script started');
-
 let poseLandmarker;
 
 async function initializePoseLandmarker() {
-  console.log('Initializing PoseLandmarker');
   try {
     const vision = await FilesetResolver.forVisionTasks(
       'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm',
@@ -22,35 +19,21 @@ async function initializePoseLandmarker() {
       runningMode: 'VIDEO',
       numPoses: 2,
     });
-    console.log('PoseLandmarker initialized');
     self.postMessage({ type: 'initialized' });
   } catch (error) {
-    console.error('Error initializing PoseLandmarker:', error);
+    console.error('<Worker> Error initializing PoseLandmarker:', error);
     self.postMessage({ type: 'error', error: error.toString() });
   }
 }
 
-function detectPose(imageBitmap) {
-  if (!poseLandmarker) {
-    console.error('PoseLandmarker not initialized');
-    return;
-  }
-  const startTimeMs = performance.now();
-  const results = poseLandmarker.detectForVideo(imageBitmap, startTimeMs);
-  const inferenceTime = performance.now() - startTimeMs;
-  self.postMessage({ type: 'results', results, inferenceTime });
-}
-
 self.onmessage = function (event) {
-  console.log('Worker received message:', event.data);
-
   switch (event.data.type) {
     case 'initialize':
       initializePoseLandmarker();
       break;
     case 'detect':
       if (!poseLandmarker) {
-        console.error('PoseLandmarker not initialized');
+        console.error('<Worker> PoseLandmarker not initialized');
         return;
       }
       const startTime = performance.now();
@@ -66,14 +49,12 @@ self.onmessage = function (event) {
       });
       break;
     case 'stop':
-      console.log('Stopping worker');
+      console.log('<Worker> Stopping worker');
       self.postMessage({ type: 'stopped' });
-      // self.close(); // worker 종료
       break;
     default:
-      console.warn('Unknown message type:', event.data.type);
+      console.warn('<Worker> Unknown message type:', event.data.type);
   }
 };
 
-console.log('Worker script loaded');
 self.postMessage({ type: 'ready' });
