@@ -22,3 +22,8 @@ export const Text = styled.p`
     }
   }
 `;
+
+export const ContentWrapper = styled.div`
+  width: 100%;
+  text-align: left;
+`;
