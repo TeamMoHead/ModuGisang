@@ -10,6 +10,8 @@ import {
   CreateChallenge,
   JoinChallenge,
   Settings,
+  PrivacyPolicy,
+  TermsOfService,
   Testing,
 } from './pages';
 
@@ -37,6 +39,8 @@ function Router() {
             }
           />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
+          <Route path="/termsOfService" element={<TermsOfService />} />
           <Route path="/test" element={<Testing />} />
         </Route>
         <Route path="*" element={<PageNotFound />} />

@@ -13,6 +13,8 @@ const PAGE_TYPES = [
   'joinChallenge',
   'createChallenge',
   'settings',
+  'privacyPolicy',
+  'termsOfService',
 ];
 
 const NavBar = () => {
@@ -55,6 +57,8 @@ const NavBar = () => {
     joinChallenge: '챌린지 참여',
     createChallenge: '챌린지 만들기',
     settings: '설정',
+    privacyPolicy: '개인정보보호방침',
+    termsOfService: '이용약관',
   };
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AccountContext, ChallengeContext, UserContext } from '../../contexts';
 import { authServices, userServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
@@ -194,7 +194,6 @@ const Settings = () => {
         </>
         {/* )} */}
         <LongBtn btnName="연습 게임 진행하기" onClickHandler={handlePractice} />
-        <p>24.05.23 16시 invitation 카드 수정</p>
         <LogoutWrapper onClick={handleLogOut}>
           <Text>로그아웃</Text>
 
@@ -203,6 +202,13 @@ const Settings = () => {
             iconStyle={{ size: 24, color: 'white', disable: true }}
           />
         </LogoutWrapper>
+        <p>24.07.18 앱 버전 개발 중</p>
+
+        <FooterLinks>
+          <Link to="/privacyPolicy">개인정보보호방침</Link>
+          <p> | </p>
+          <Link to="/termsOfService">이용약관</Link>
+        </FooterLinks>
       </S.PageWrapper>
     </>
   );
@@ -285,6 +291,22 @@ const InputDiv = styled.div`
 const UpdateBtnBox = styled.div`
   ${({ theme }) => theme.flex.center};
   width: 100%;
+`;
+
+const FooterLinks = styled.div`
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+
+  a {
+    color: ${({ theme }) => theme.colors.primary.purple};
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 
 const boxStyle = {
