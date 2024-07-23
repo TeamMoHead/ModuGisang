@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { NavBar } from '../../components';
 import * as S from '../../styles/common';
-import styled from 'styled-components';
+import { Section, SectionTitle, Text } from './components/Sections';
 
 const PrivacyPolicy = () => {
   useEffect(() => {
@@ -86,26 +86,3 @@ const PrivacyPolicy = () => {
 };
 
 export default PrivacyPolicy;
-
-const Section = styled.div`
-  margin-bottom: 20px;
-`;
-
-const SectionTitle = styled.h2`
-  /* font-size: 1.0em; */
-  margin-bottom: 10px;
-`;
-
-const Text = styled.p`
-  font-size: 0.9em;
-  line-height: 1.6;
-
-  ul {
-    margin-top: 10px;
-    padding-left: 20px;
-
-    li {
-      list-style-type: disc;
-    }
-  }
-`;

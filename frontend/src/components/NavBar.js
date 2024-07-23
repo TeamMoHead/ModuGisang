@@ -30,7 +30,11 @@ const NavBar = () => {
   const [scrolled, setScrolled] = useState(false);
 
   const goBack = () => {
-    navigate('/');
+    if (pageType === 'privacyPolicy' || pageType === 'termsOfService') {
+      navigate('/settings');
+    } else {
+      navigate('/');
+    }
   };
 
   const goToSettings = () => {
