@@ -84,7 +84,7 @@ const Settings = () => {
 
   const handleIsAbleInput = () => {
     if (isAbleInput) {
-      setIsAbleInput(false);
+      handleChangeAffirmation();
     } else {
       setIsAbleInput(true);
     }
@@ -125,7 +125,6 @@ const Settings = () => {
   return (
     <>
       <NavBar />
-
       <S.PageWrapper>
         <OutlineBox
           boxStyle={boxStyle}
@@ -140,13 +139,16 @@ const Settings = () => {
         <OutlineBox
           boxStyle={boxStyle}
           content={
-            <AffirmationWrapper>
-              <AffiramtionBox>
+            <AffirmationWrapper isAbleInput={isAbleInput}>
+              <AffirmationBox>
                 <Text isColor={true}>오늘의 다짐 문구</Text>
                 <EditButton onClick={handleIsAbleInput}>
-                  <Icon icon="edit" iconStyle={iconStyle} />
+                  <Icon
+                    icon={isAbleInput ? 'save' : 'edit'}
+                    iconStyle={iconStyle}
+                  />
                 </EditButton>
-              </AffiramtionBox>
+              </AffirmationBox>
               <InputDiv>
                 <InputBox
                   value={affirmation}
@@ -154,23 +156,10 @@ const Settings = () => {
                   disabled={!isAbleInput}
                 />
               </InputDiv>
-
-              {isAbleInput ? (
-                <UpdateBtnBox>
-                  <UpdateBtn
-                    onClick={() => {
-                      handleChangeAffirmation({ accessToken, affirmation });
-                    }}
-                  >
-                    수정하기
-                  </UpdateBtn>
-                </UpdateBtnBox>
-              ) : null}
             </AffirmationWrapper>
           }
         />
 
-        {/* {userId === 34 && ( */}
         <>
           <Text>챌린지 ID</Text>
           <InputLine
@@ -192,18 +181,15 @@ const Settings = () => {
             onClickHandler={handleChangeWakeTime}
           />
         </>
-        {/* )} */}
         <LongBtn btnName="연습 게임 진행하기" onClickHandler={handlePractice} />
         <LogoutWrapper onClick={handleLogOut}>
           <Text>로그아웃</Text>
-
           <Icon
             icon="logout"
             iconStyle={{ size: 24, color: 'white', disable: true }}
           />
         </LogoutWrapper>
         <p>24.07.18 앱 버전 개발 중</p>
-
         <FooterLinks>
           <Link to="/privacyPolicy">개인정보보호방침</Link>
           <p> | </p>
@@ -228,6 +214,8 @@ const AffirmationWrapper = styled.div`
   z-index: 50;
   width: 100%;
   height: 281px;
+  background-color: ${({ isAbleInput, theme }) =>
+    isAbleInput ? theme.colors.translucent.white : 'initial'};
 `;
 
 const LogoutWrapper = styled.div`
@@ -244,12 +232,13 @@ const LogoutWrapper = styled.div`
   cursor: pointer;
 `;
 
-const AffiramtionBox = styled.div`
+const AffirmationBox = styled.div`
   ${({ theme }) => theme.flex.center};
   text-align: center;
   width: 100%;
   height: 55px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.primary.purple};
+  background-color: initial; // 이게 적용되어야
 `;
 
 const Profile = styled.img`
@@ -272,25 +261,12 @@ const EditButton = styled.button`
   right: 5px;
 `;
 
-const UpdateBtn = styled.button`
-  width: 100px;
-  height: 50px;
-  background-color: ${({ theme }) => theme.colors.primary.purple};
-  color: ${({ theme }) => theme.colors.primary.white};
-  border-radius: 10px;
-`;
-
 const InputDiv = styled.div`
   margin-top: 40px;
   height: 130px;
 
   ${({ theme }) => theme.flex.center};
   vertical-align: middle;
-`;
-
-const UpdateBtnBox = styled.div`
-  ${({ theme }) => theme.flex.center};
-  width: 100%;
 `;
 
 const FooterLinks = styled.div`
@@ -318,11 +294,4 @@ const iconStyle = {
   size: 24,
   color: 'purple',
   hoverColor: 'white',
-};
-
-const logoutStyle = {
-  isBold: false,
-  lineColor: 'red', // 특정 컬러이름 || 그라데이션 => 'gradient'
-  // 각 박스의 background-color는 content 각 컴포넌트에서 설정
-  // border-radius도 각 content에서 설정 필요
 };
