@@ -8,6 +8,7 @@ import { RoundBtn } from '../components';
 import styled from 'styled-components';
 
 const PAGE_TYPES = [
+  'signUp',
   'main',
   'myStreak',
   'joinChallenge',
@@ -19,8 +20,8 @@ const PAGE_TYPES = [
 
 const NavBar = () => {
   // const { getChallengeData } = useContext(ChallengeContext);
-  const { myData } = useContext(UserContext);
-  const { userName } = myData;
+  const { myData } = useContext(UserContext) || {};
+  const { userName } = myData || {};
   const { pathname } = useLocation();
   const params = useParams();
   const navigate = useNavigate();
@@ -32,6 +33,8 @@ const NavBar = () => {
   const goBack = () => {
     if (pageType === 'privacyPolicy' || pageType === 'termsOfService') {
       navigate('/settings');
+    } else if (pageType === 'signUp') {
+      navigate('/signIn');
     } else {
       navigate('/');
     }
@@ -57,6 +60,7 @@ const NavBar = () => {
         <p>안녕하세요 {userName}님 :)</p>
       </>
     ),
+    signUp: '회원가입',
     myStreak: '나의 기록',
     joinChallenge: '챌린지 참여',
     createChallenge: '챌린지 만들기',
