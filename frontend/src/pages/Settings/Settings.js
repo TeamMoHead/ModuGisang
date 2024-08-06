@@ -139,8 +139,8 @@ const Settings = () => {
         <OutlineBox
           boxStyle={boxStyle}
           content={
-            <AffirmationWrapper isAbleInput={isAbleInput}>
-              <AffirmationBox>
+            <AffirmationWrapper>
+              <AffirmationTitle>
                 <Text isColor={true}>오늘의 다짐 문구</Text>
                 <EditButton onClick={handleIsAbleInput}>
                   <Icon
@@ -148,14 +148,16 @@ const Settings = () => {
                     iconStyle={iconStyle}
                   />
                 </EditButton>
-              </AffirmationBox>
-              <InputDiv>
-                <InputBox
-                  value={affirmation}
-                  onChange={handleAffirmationChange}
-                  disabled={!isAbleInput}
-                />
-              </InputDiv>
+              </AffirmationTitle>
+              <AffirmationContent isAbleInput={isAbleInput}>
+                <InputDiv>
+                  <InputBox
+                    value={affirmation}
+                    onChange={handleAffirmationChange}
+                    disabled={!isAbleInput}
+                  />
+                </InputDiv>
+              </AffirmationContent>
             </AffirmationWrapper>
           }
         />
@@ -214,8 +216,22 @@ const AffirmationWrapper = styled.div`
   z-index: 50;
   width: 100%;
   height: 281px;
+`;
+
+const AffirmationTitle = styled.div`
+  ${({ theme }) => theme.flex.center};
+  text-align: center;
+  width: 100%;
+  height: 55px;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.primary.purple};
+`;
+
+const AffirmationContent = styled.div`
+  ${({ theme }) => theme.flex.center};
+  height: calc(100% - 55px);
   background-color: ${({ isAbleInput, theme }) =>
     isAbleInput ? theme.colors.translucent.white : 'initial'};
+  border-radius: 0 0 30px 30px;
 `;
 
 const LogoutWrapper = styled.div`
@@ -230,15 +246,6 @@ const LogoutWrapper = styled.div`
   color: ${({ theme }) => theme.colors.primary.white};
 
   cursor: pointer;
-`;
-
-const AffirmationBox = styled.div`
-  ${({ theme }) => theme.flex.center};
-  text-align: center;
-  width: 100%;
-  height: 55px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.primary.purple};
-  background-color: initial; // 이게 적용되어야
 `;
 
 const Profile = styled.img`
@@ -262,7 +269,8 @@ const EditButton = styled.button`
 `;
 
 const InputDiv = styled.div`
-  margin-top: 40px;
+  flex-grow: 1;
+  max-width: 90%;
   height: 130px;
 
   ${({ theme }) => theme.flex.center};
