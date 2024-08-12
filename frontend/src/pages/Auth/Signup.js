@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { InputLine, LongBtn, NavBar } from '../../components';
 import useAuth from '../../hooks/useAuth';
 import * as S from '../../styles/common';
@@ -11,6 +12,7 @@ const Signup = () => {
   const [checkPassword, setCheckPassword] = useState('');
   const [isSamePassword, setIsSamePassword] = useState(false);
   const [showPasswordError, setShowPasswordError] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [nameError, setNameError] = useState('');
   const [isEmailChecked, setIsEmailChecked] = useState(false);
@@ -21,14 +23,22 @@ const Signup = () => {
     useState(false);
   const [isSignUpLoading, setIsSignUpLoading] = useState(false);
 
+  const [isOver14Checked, setIsOver14Checked] = useState(false);
+  const [isTermsChecked, setIsTermsChecked] = useState(false);
+
   const { handleCheckEmail, handleCheckVerifyCode, handleSubmitSignUp } =
     useAuth();
 
-  // 이메일 형식 검증 함수
   const isValidEmail = email => {
     // 간단한 이메일 형식 검증 정규식
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  };
+
+  const isValidPassword = password => {
+    // 최소 8자, 숫자와 영문 혼합 검증 정규식
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    return passwordRegex.test(password);
   };
 
   const handleEmailChange = e => {
@@ -57,11 +67,22 @@ const Signup = () => {
   };
 
   const handlePasswordChange = e => {
-    setPassword(e.target.value);
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+
+    // 비밀번호 유효성 검사 및 오류 메시지 설정
+    if (newPassword && !isValidPassword(newPassword)) {
+      setPasswordError(
+        '비밀번호는 최소 8자이며, 숫자와 영문자를 포함해야 합니다.',
+      );
+    } else {
+      setPasswordError('');
+    }
   };
 
   const handleCheckPasswordChange = e => {
-    setCheckPassword(e.target.value);
+    const newCheckPassword = e.target.value;
+    setCheckPassword(newCheckPassword);
   };
 
   useEffect(() => {
@@ -86,6 +107,19 @@ const Signup = () => {
   if (isSignUpLoading || isEmailCheckLoading || isVerifyCodeCheckLoading) {
     return <div>회원가입 중...</div>;
   }
+
+  const isFormValid = () => {
+    return (
+      isSamePassword &&
+      isVerifyCodeChecked &&
+      isEmailChecked &&
+      isOver14Checked &&
+      isTermsChecked &&
+      !emailError &&
+      !nameError &&
+      !passwordError
+    );
+  };
 
   return (
     <>
@@ -150,6 +184,7 @@ const Signup = () => {
             value={password}
             onChange={handlePasswordChange}
           />
+          {passwordError && <ErrorText>{passwordError}</ErrorText>}
         </FormSection>
         <FormSection>
           <Title>비밀번호 확인</Title>
@@ -172,6 +207,36 @@ const Signup = () => {
           />
           {nameError && <ErrorText>{nameError}</ErrorText>}
         </FormSection>
+
+        <CheckboxWrapper>
+          <CheckboxLabel>
+            <input
+              type="checkbox"
+              checked={isOver14Checked}
+              onChange={e => setIsOver14Checked(e.target.checked)}
+            />
+            만 14세 이상입니다.
+          </CheckboxLabel>
+
+          <CheckboxLabel>
+            <input
+              type="checkbox"
+              checked={isTermsChecked}
+              onChange={e => setIsTermsChecked(e.target.checked)}
+            />
+            <span>
+              <Link to="/termsOfService" state={{ from: 'signup' }}>
+                이용약관
+              </Link>{' '}
+              및{' '}
+              <Link to="/privacyPolicy" state={{ from: 'signup' }}>
+                개인정보보호방침
+              </Link>
+              을 확인했습니다.
+            </span>
+          </CheckboxLabel>
+        </CheckboxWrapper>
+
         <LongBtn
           type="submit"
           btnName="회원가입"
@@ -186,9 +251,7 @@ const Signup = () => {
               setIsSignUpLoading,
             })
           }
-          disabled={
-            emailError || !isVerifyCodeChecked || !isSamePassword || nameError
-          }
+          disabled={!isFormValid()}
         />
       </S.PageWrapper>
     </>
@@ -244,4 +307,34 @@ const FormSection = styled.div`
   ${({ theme }) => theme.flex.left}
   flex-direction: column;
   gap: 5px;
+`;
+
+const CheckboxWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: left;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+`;
+
+const CheckboxLabel = styled.label`
+  ${({ theme }) => theme.fonts.IBMsamll};
+  color: ${({ theme }) => theme.colors.neutral.black};
+  cursor: pointer;
+
+  input {
+    margin-right: 8px;
+  }
+
+  a {
+    color: ${({ theme }) => theme.colors.primary.purple};
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+      color: ${({ theme }) => theme.colors.primary.emerald};
+    }
+  }
 `;

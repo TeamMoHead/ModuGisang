@@ -191,11 +191,14 @@ const Settings = () => {
             iconStyle={{ size: 24, color: 'white', disable: true }}
           />
         </LogoutWrapper>
-        <p>24.07.18 앱 버전 개발 중</p>
         <FooterLinks>
-          <Link to="/privacyPolicy">개인정보보호방침</Link>
+          <Link to="/termsOfService" state={{ from: 'settings' }}>
+            이용약관
+          </Link>
           <p> | </p>
-          <Link to="/termsOfService">이용약관</Link>
+          <Link to="/privacyPolicy" state={{ from: 'settings' }}>
+            개인정보보호방침
+          </Link>
         </FooterLinks>
       </S.PageWrapper>
     </>

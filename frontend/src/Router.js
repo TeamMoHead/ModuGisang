@@ -22,6 +22,8 @@ function Router() {
         {/* <Route path="/auth" element={<Auth />} /> */}
         <Route path="/signIn" element={<Signin />} />
         <Route path="/signUp" element={<Signup />} />
+        <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
+        <Route path="/termsOfService" element={<TermsOfService />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Main />} />
           <Route path="/main" element={<Main />} />
@@ -39,8 +41,6 @@ function Router() {
             }
           />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
-          <Route path="/termsOfService" element={<TermsOfService />} />
           <Route path="/test" element={<Testing />} />
         </Route>
         <Route path="*" element={<PageNotFound />} />

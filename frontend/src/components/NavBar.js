@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import {
-  UserContext,
-  //  ChallengeContext
-} from '../contexts';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { RoundBtn } from '../components';
+import { UserContext } from '../contexts';
 import styled from 'styled-components';
 
 const PAGE_TYPES = [
@@ -19,11 +16,9 @@ const PAGE_TYPES = [
 ];
 
 const NavBar = () => {
-  // const { getChallengeData } = useContext(ChallengeContext);
   const { myData } = useContext(UserContext) || {};
   const { userName } = myData || {};
-  const { pathname } = useLocation();
-  const params = useParams();
+  const { pathname, state } = useLocation();
   const navigate = useNavigate();
   const [hasLeftBtn, setHasLeftBtn] = useState(false);
   const [hasRightBtn, setHasRightBtn] = useState(true);
@@ -32,7 +27,13 @@ const NavBar = () => {
 
   const goBack = () => {
     if (pageType === 'privacyPolicy' || pageType === 'termsOfService') {
-      navigate('/settings');
+      if (state?.from === 'settings') {
+        navigate('/settings');
+      } else if (state?.from === 'signup') {
+        navigate('/signUp');
+      } else {
+        navigate('/');
+      }
     } else if (pageType === 'signUp') {
       navigate('/signIn');
     } else {
@@ -92,7 +93,7 @@ const NavBar = () => {
       setHasLeftBtn(false);
       setHasRightBtn(false);
     }
-  }, [params]);
+  }, [pathname, state]);
 
   useEffect(() => {
     const handleScroll = () => {
