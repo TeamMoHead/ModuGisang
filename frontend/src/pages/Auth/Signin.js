@@ -7,13 +7,13 @@ import { useNavigate } from 'react-router-dom';
 
 import * as S from '../../styles/common';
 
-import { CONFIGS } from '../../config';
+// import { CONFIGS } from '../../config';
 import styled from 'styled-components';
 
 import { onlysun } from '../../assets/icons';
 
 const Signin = () => {
-  const { TEST_EMAIL, TEST_PASSWORD } = CONFIGS;
+  // const { TEST_EMAIL, TEST_PASSWORD } = CONFIGS;
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [isLoginLoading, setIsLoginLoading] = useState(false);
@@ -79,7 +79,7 @@ const Signin = () => {
           type="submit"
           btnName="로그인"
         />
-        <LongBtn
+        {/* <LongBtn
           onClickHandler={async e => {
             e.preventDefault();
             await handleSubmitLogIn({
@@ -91,7 +91,7 @@ const Signin = () => {
           }}
           type="submit"
           btnName="개발용 로그인"
-        />
+        /> */}
       </>
       <SignUp href="#" onClick={goToSignUp}>
         회원가입
