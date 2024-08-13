@@ -11,7 +11,7 @@ const LongBtn = ({ btnName, onClickHandler, disabled = false }) => {
           onClickHandler(e);
         }
       }}
-      disabled={disabled} // disabled 속성 추가
+      disabled={disabled}
     >
       {btnName}
     </Wrapper>

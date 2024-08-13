@@ -63,7 +63,7 @@ const Settings = () => {
     } = response;
     if (!isChangeAffirmationLoading) {
       alert('변경되었습니다.');
-      setIsAbleInput(false); // 수정 완료 후 비활성화
+      setIsAbleInput(false);
     } else if (changeAffirmationError) {
       alert(changeAffirmationError);
     }
@@ -96,7 +96,7 @@ const Settings = () => {
         accessToken,
         wakeTime,
         userId,
-        challengeId, // challengeId 추가
+        challengeId,
       }),
     );
     const { isLoading: isChangeWakeTimeLoading, error: changeWakeTimeError } =
