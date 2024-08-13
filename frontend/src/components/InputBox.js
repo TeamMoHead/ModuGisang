@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 
 const InputBox = ({ value, onChange, disabled }) => {
   const [error, setError] = useState('');
+  const textareaRef = useRef(null);
 
   const handleChange = e => {
     const newValue = e.target.value;
-    if (newValue.length <= 20) {
+    if (newValue.length <= 30) {
       setError('');
       onChange(e);
     } else {
-      setError('20자를 넘길 수 없습니다.');
+      setError('30자를 넘길 수 없습니다.');
+    }
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   };
 
@@ -24,12 +30,13 @@ const InputBox = ({ value, onChange, disabled }) => {
   return (
     <Wrapper>
       <InputText
+        ref={textareaRef}
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         disabled={disabled}
         cols="10"
-        rows="5"
+        rows="1"
       />
       {error && <ErrorText>{error}</ErrorText>}
     </Wrapper>
@@ -48,7 +55,6 @@ const Wrapper = styled.div`
 
 const InputText = styled.textarea`
   width: 100%;
-  height: 100%;
   ${({ theme }) => theme.flex.center};
   color: ${({ theme }) => theme.colors.primary.white};
   z-index: 100;
