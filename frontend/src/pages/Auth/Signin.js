@@ -9,7 +9,6 @@ import * as S from '../../styles/common';
 
 // import { CONFIGS } from '../../config';
 import styled from 'styled-components';
-
 import { onlysun } from '../../assets/icons';
 
 const Signin = () => {
@@ -30,6 +29,10 @@ const Signin = () => {
 
   const goToSignUp = () => {
     navigate('/signUp');
+  };
+
+  const goToForgotPassword = () => {
+    navigate('/forgotPassword');
   };
 
   if (isLoginLoading) {
@@ -93,9 +96,15 @@ const Signin = () => {
           btnName="개발용 로그인"
         /> */}
       </>
-      <SignUp href="#" onClick={goToSignUp}>
-        회원가입
-      </SignUp>
+      <AuthOptions>
+        <ForgotPassword href="#" onClick={goToForgotPassword}>
+          비밀번호 찾기
+        </ForgotPassword>
+        <Divider>|</Divider>
+        <SignUp href="#" onClick={goToSignUp}>
+          회원가입
+        </SignUp>
+      </AuthOptions>
     </S.PageWrapper>
   );
 };
@@ -119,7 +128,6 @@ const Title = styled.div`
   font-size: 40px;
   font-weight: 400;
   line-height: normal;
-
   background: ${({ theme }) => theme.gradient.largerEmerald};
   background-clip: text;
   color: transparent;
@@ -133,12 +141,29 @@ const Subtitle = styled.div`
   letter-spacing: -0.4px;
 `;
 
-const SignUp = styled.a`
+const AuthOptions = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
   position: fixed;
   bottom: 43px;
+  padding: 0 20px;
+`;
+
+const AuthLink = styled.a`
   ${({ theme }) => theme.fonts.JuaSmall};
   color: ${({ theme }) => theme.colors.neutral.lightGray};
   text-decoration: underline;
+`;
+
+const ForgotPassword = props => <AuthLink {...props} />;
+const SignUp = props => <AuthLink {...props} />;
+
+const Divider = styled.span`
+  margin: 0 15px;
+  color: ${({ theme }) => theme.colors.neutral.lightGray};
+  font-size: 16px;
 `;
 
 const iconStyle = {

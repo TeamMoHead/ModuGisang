@@ -1,7 +1,13 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { GameContextProvider, OpenViduContextProvider } from './contexts';
-import { Auth, Signin, Signup, ProtectedRoute } from './pages/Auth';
+import {
+  Auth,
+  Signin,
+  Signup,
+  ForgotPassword,
+  ProtectedRoute,
+} from './pages/Auth';
 import { PageNotFound } from './components';
 import {
   Main,
@@ -22,6 +28,7 @@ function Router() {
         {/* <Route path="/auth" element={<Auth />} /> */}
         <Route path="/signIn" element={<Signin />} />
         <Route path="/signUp" element={<Signup />} />
+        <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
         <Route path="/termsOfService" element={<TermsOfService />} />
         <Route element={<ProtectedRoute />}>

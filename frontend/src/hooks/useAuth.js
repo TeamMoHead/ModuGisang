@@ -12,6 +12,11 @@ const useAuth = () => {
 
   const refreshToken = localStorage.getItem('refreshToken');
 
+  const isValidEmail = email => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const refreshAuthorization = async () => {
     try {
       if (!refreshToken) {
@@ -91,11 +96,10 @@ const useAuth = () => {
     loginPassword,
     setIsLoginLoading,
   }) => {
-    // ============= ⭐️⭐️개발 끝나고 나서 풀어주기⭐️⭐️ ============
-    // if (loginEmail === '' || loginPassword === '') {
-    //   alert('이메일과 비밀번호를 입력해주세요.');
-    //   return;
-    // }
+    if (loginEmail === '' || loginPassword === '') {
+      alert('이메일과 비밀번호를 입력해주세요.');
+      return;
+    }
     setIsLoginLoading(true);
     const response = await fetchData(() =>
       authServices.logInUser({
@@ -197,6 +201,35 @@ const useAuth = () => {
     }
   };
 
+  const handleSendTemporaryPassword = async ({ email }) => {
+    // 임시로 넣은 코드
+    if (email === '' || !isValidEmail(email)) {
+      alert('올바른 이메일 주소를 입력해 주세요.');
+      return;
+    }
+
+    try {
+      const response = await fetchData(() =>
+        authServices.sendTemporaryPassword({ email }),
+      );
+
+      const {
+        isLoading: isSending,
+        data: sendPasswordData,
+        error: sendPasswordError,
+      } = response;
+
+      if (!isSending && sendPasswordData) {
+        alert('임시 비밀번호가 이메일로 발송되었습니다.');
+      } else if (!isSending && sendPasswordError) {
+        alert('임시 비밀번호 발송에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error sending temporary password:', error);
+      alert('임시 비밀번호 발송 중 오류가 발생했습니다.');
+    }
+  };
+
   return {
     refreshAuthorization,
     checkAuth,
@@ -204,6 +237,7 @@ const useAuth = () => {
     handleSubmitLogIn,
     handleCheckVerifyCode,
     handleSubmitSignUp,
+    handleSendTemporaryPassword,
   };
 };
 
