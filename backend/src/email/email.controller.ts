@@ -1,4 +1,12 @@
-import { Controller, Get, HttpStatus, Query, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Query,
+  Res,
+  Post,
+  Body,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { EmailService } from './email.service';
 
@@ -8,6 +16,17 @@ export class EmailController {
   @Get('check')
   async emailCheck(@Res() res: Response, @Query('email') email: string) {
     const result = await this.emailService.checkAndSendEmail(email);
+    if (result.success) {
+      res.status(HttpStatus.OK).send(result.message);
+    } else {
+      res.status(HttpStatus.BAD_REQUEST).send(result.message);
+    }
+  }
+
+  // 이메일 유효성 체크 API (성공 시 이메일에 비밀번호 전송 실패 시 실패 문구 반환)
+  @Post('change-tmp-password')
+  async checkEmail(@Res() res: Response, @Body('email') email: string) {
+    const result = await this.emailService.changeTmpPassword(email);
     if (result.success) {
       res.status(HttpStatus.OK).send(result.message);
     } else {

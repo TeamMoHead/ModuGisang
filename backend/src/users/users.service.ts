@@ -6,11 +6,11 @@ import {
 import { Users } from './entities/users.entity';
 import * as argon2 from 'argon2';
 import { Repository } from 'typeorm';
-import { UserDto } from 'src/auth/dto/user.dto';
+import { UserDto } from '../auth/dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Streak } from './entities/streak.entity';
-import RedisCacheService from 'src/redis-cache/redis-cache.service';
+import RedisCacheService from '../redis-cache/redis-cache.service';
 import { UserInformationDto } from './dto/user-info.dto';
 // import { refreshJwtConstants } from 'src/auth/constants';
 
@@ -262,5 +262,46 @@ export class UserService {
     } else {
       console.log('redis에 유저 정보 저장 성공');
     }
+  }
+
+  async deleteUser(userId: number) {
+    console.log('USERSERVICE');
+    const reuslt = await this.userRepository.softRemove({ _id: userId });
+    console.log(reuslt);
+    return reuslt;
+  }
+
+  async searchEmail(name: string) {
+    console.log(name);
+    const result = await this.userRepository.find({
+      where: { userName: name },
+      select: ['email'],
+    });
+
+    return result;
+  }
+
+  async changeTmpPassword(email: string) {
+    const user = await this.userRepository.findOne({ where: { email: email } });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const tmpPassword = Math.random().toString(36).slice(2);
+
+    user.password = await argon2.hash(tmpPassword);
+    await this.userRepository.save(user);
+
+    console.log('tmpPW : ', tmpPassword);
+    return tmpPassword;
+  }
+
+  async changePassword(userId: number, newPassword: string) {
+    const hashedPassword = await argon2.hash(newPassword);
+
+    return await this.userRepository.update(userId, {
+      password: hashedPassword,
+    });
   }
 }
