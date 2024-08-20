@@ -244,6 +244,7 @@ export class ChallengesService {
     const challengeResponse: ChallengeResponseDto = {
       challengeId: challenge._id,
       startDate: challenge.startDate,
+      hostId: challenge.hostId,
       wakeTime: challenge.wakeTime,
       duration: challenge.duration,
       mates: participantDtos,
