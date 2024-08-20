@@ -6,7 +6,13 @@ import {
 } from '@nestjs/common';
 import { Challenges } from './challenges.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, IsNull, Repository, createQueryBuilder } from 'typeorm';
+import {
+  Between,
+  IsNull,
+  MoreThan,
+  Repository,
+  createQueryBuilder,
+} from 'typeorm';
 import { CreateChallengeDto } from './dto/createChallenge.dto';
 import { InvitationsService } from 'src/invitations/invitations.service';
 import { Users } from 'src/users/entities/users.entity';
@@ -19,6 +25,7 @@ import { Attendance } from 'src/attendance/attendance.entity';
 import { Invitations } from 'src/invitations/invitations.entity';
 import { ChallengeResultDto } from './dto/challengeResult.dto';
 import RedisCacheService from 'src/redis-cache/redis-cache.service';
+import { UserService } from 'src/users/users.service';
 
 @Injectable()
 export class ChallengesService {
@@ -34,17 +41,111 @@ export class ChallengesService {
     private invitaionRepository: Repository<Invitations>,
 
     private readonly redisCacheService: RedisCacheService,
+    private readonly userService: UserService,
   ) {
     this.challengeRepository = challengeRepository;
   }
 
   async createChallenge(challenge: CreateChallengeDto): Promise<Challenges> {
     const newChallenge = new Challenges();
+    const endDate = new Date(challenge.startDate);
+    endDate.setDate(endDate.getDate() + challenge.duration - 1); // durationDays가 10일이라면 10일째 되는 날로 설정
     newChallenge.hostId = challenge.hostId;
     newChallenge.startDate = challenge.startDate;
     newChallenge.wakeTime = challenge.wakeTime;
     newChallenge.duration = challenge.duration;
-    return await this.challengeRepository.save(challenge);
+    newChallenge.endDate = endDate;
+    newChallenge.expired = false;
+    newChallenge.deleted = false;
+    // 챌린지 생성시 new가 아닌 인자 그대로 save하는 에러가 있었음
+    return await this.challengeRepository.save(newChallenge);
+  }
+
+  /// 하다가 맘 -> DTO 추가하고 수정 2024-08-09
+  // controller 필요
+  // expired, deleted 추가???
+  async editChallenge(challenge: CreateChallengeDto): Promise<Challenges> {
+    const editChall = await this.challengeRepository.findOne({
+      where: { hostId: challenge.hostId },
+    });
+    if (!editChall) {
+      //host 권한이 없는 챌린지 수정 시 에러처리
+      throw new NotFoundException(
+        `Challenge with ID ${challenge.hostId} not found`,
+      );
+    }
+
+    const endDate = new Date(challenge.startDate);
+    endDate.setDate(endDate.getDate() + challenge.duration - 1); // durationDays가 10일이라면 10일째 되는 날로 설정
+
+    editChall.startDate = challenge.startDate;
+    editChall.wakeTime = challenge.wakeTime;
+    editChall.duration = challenge.duration;
+    editChall.endDate = endDate;
+    editChall.expired = false;
+    editChall.deleted = false;
+
+    return await this.challengeRepository.save(editChall);
+  }
+
+  async endChallenge(challengeId: number): Promise<boolean> {
+    // 시간까지 비교 필요
+    //캐시에 챌린지 정보 있나?
+    // 캐시여부에 따라 코딩
+    // id로 챌린지 정보 가져온다음 현재 시간과 비교
+    // const result = await this.redisService.del(`challengeId:${challengeId}`);
+    // if (result) {
+    //   return true;
+    // }
+    // return false;
+    const challenge = await this.challengeRepository.findOne({
+      where: { _id: challengeId },
+    });
+    if (!challenge) {
+      throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
+    }
+    const currentDate = new Date();
+    return currentDate > challenge.endDate;
+  }
+
+  // 챌린지 ID 랑 userID 둘다 받아서 호스트인지 확인하고 삭제로 수정
+  // 호스트ID 하나로만 조회 ?? -> 챌린지ID랑 호스트 ID 말고 ?
+  // 모두가 호출가능 ?? -> 프론트 또는 백에서 host인지 아닌지 확인 후 그에따른 결과값 송출 ???
+  async deleteChallenge(
+    challengeId: number,
+    hostId: number,
+  ): Promise<Challenges> {
+    const challenge = await this.challengeRepository.findOne({
+      where: { _id: challengeId, hostId: hostId },
+    });
+    if (!challenge) {
+      throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
+    }
+    await this.challengeRepository.delete(challengeId);
+    return challenge;
+  }
+
+  async challengeGiveUp(challengeId: number, userId: number): Promise<void> {
+    const challenge = await this.challengeRepository.findOne({
+      where: { _id: challengeId },
+    });
+    const users = await this.userRepository.findBy({
+      challengeId: challengeId,
+    });
+    if (users.length === 1) {
+      // 혼자인경우 당연히 호스트인데 예외처리 해줘야하나?
+      challenge.deleted = true;
+    } else if (users.length > 1) {
+      if (challenge.hostId === userId) {
+        // host가 아닌 다른 유저에게 챌린지를 넘기는 경우
+        const newHost = users.find((user) => user._id !== challenge.hostId);
+        challenge.hostId = newHost._id;
+      }
+    }
+    // if 문 변경 필요
+
+    await this.challengeRepository.save(challenge);
+    await this.userService.resetChallenge(userId);
   }
 
   async searchAvailableMate(email: string): Promise<boolean> {
@@ -292,5 +393,41 @@ export class ChallengesService {
 
     const cacheKey = `challenge_${setChallengeWakeTimeDto.challengeId}`;
     await this.redisCacheService.del(cacheKey);
+  }
+
+  // 날짜 비교해서 챌린지 끝난경우 호출되는 메소드
+  async completeChallenge(challengeId: number, userId: number): Promise<void> {
+    if (!this.endChallenge(challengeId)) {
+      // 챌린지 시간 비교해서 아직 끝나지 않았다면 return 처리 해야함
+      // -> error를 발생시켜야 하나?
+      return;
+    }
+    await this.userService.resetChallenge(userId); // 2.user 챌린지 정보를 -1로 변경
+    const challenge = await this.challengeRepository.findOne({
+      where: { _id: challengeId },
+    });
+    if (!challenge) {
+      throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
+    }
+    // 1. 호스트인지 체크 후 호스트 인경우 챌린지 expired로 변경 -> 챌린지 정보를 가져와야 알 수 있음 userID 랑 비교
+    if (challenge.hostId === userId) {
+      challenge.expired = true;
+      await this.challengeRepository.save(challenge);
+    }
+
+    // 3. 메달처리
+    // 기간별로 90%이상 80점 이상 달성시 메달 획득 금 100 은 30 동 7
+    const cutLine = await this.attendanceRepository.find({
+      where: { challengeId, userId, score: MoreThan(80) },
+    });
+    const total = challenge.duration;
+
+    if (cutLine.length >= total * 0.9) {
+      // cutLine/total >= 0.9
+      await this.userService.updateUserMedals(
+        userId,
+        this.userService.decideMedalType(total),
+      );
+    }
   }
 }

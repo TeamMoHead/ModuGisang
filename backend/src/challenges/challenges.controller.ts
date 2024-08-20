@@ -58,6 +58,41 @@ export class ChallengesController {
     this.redisService.del(`userInfo:${createChallengeDto.hostId}`);
     return 'create';
   }
+  @Post('delete/:challengeId/:hostId') // 챌린지 생성하고 시작하지 않고 삭제하는 경우
+  async deleteChallenge(
+    @Param('challengeId') challengeId: number,
+    @Param('hostId') hostId: number,
+  ) {
+    console.log(challengeId);
+    const challenge = await this.challengeService.deleteChallenge(
+      challengeId,
+      hostId,
+    );
+    return 'delete';
+  }
+
+  // 메인 화면 갈때마다 api 호출해서 챌린지 상태 확인???
+  // 아니면 쿠키로 저장해놔서 현재 날짜랑 챌린지 날짜 비교해서 넘은 경우만 호출
+  // UserID도 같이 받아서
+  // 이게 호출된것은 챌린지가 끝났으니까
+  // 여기서는 user에 챌린지 정보를 -1로 변경하고 메1
+  // host인경우 챌린지테이블의 챌린지를 expired로 변경 메2
+  // 메달 처리
+  // 기간별로 90%이상 80점 이상 달성시 메달 획득 금 100 은 30 동 7
+  @Post('complete/:challengeId/:userId') // 챌린지가 끝났는지 확인하는 경우
+  async checkChallenge(
+    @Param('challengeId') challengeId: number,
+    @Param('userId') userId: number,
+  ) {
+    const challenge = await this.challengeService.completeChallenge(
+      challengeId,
+      userId,
+    );
+    return 'check';
+  }
+
+  // delete 및 complete 반환 값 수정 필요
+
   @Get('search-mate')
   async searchMate(@Query('email') email: string) {
     const result = await this.challengeService.searchAvailableMate(email);
