@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { InputLine, LongBtn, NavBar } from '../../components';
 import useAuth from '../../hooks/useAuth';
+import useValidation from '../../hooks/useValidation';
 import * as S from '../../styles/common';
 import styled from 'styled-components';
 
 const Signup = () => {
+  const { isValidEmail, isValidPassword } = useValidation();
   const [email, setEmail] = useState('');
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
@@ -28,18 +30,6 @@ const Signup = () => {
 
   const { handleCheckEmail, handleCheckVerifyCode, handleSubmitSignUp } =
     useAuth();
-
-  const isValidEmail = email => {
-    // 간단한 이메일 형식 검증 정규식
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const isValidPassword = password => {
-    // 최소 8자, 숫자와 영문 혼합 검증 정규식
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-    return passwordRegex.test(password);
-  };
 
   const handleEmailChange = e => {
     const newEmail = e.target.value;
