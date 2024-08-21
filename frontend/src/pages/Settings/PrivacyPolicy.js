@@ -1,12 +1,7 @@
 import React, { useEffect } from 'react';
 import { NavBar } from '../../components';
 import * as S from '../../styles/common';
-import {
-  Section,
-  SectionTitle,
-  Text,
-  ContentWrapper,
-} from './components/Sections';
+import { Section, SectionTitle, Text, ContentWrapper } from './components';
 
 const PrivacyPolicy = () => {
   useEffect(() => {

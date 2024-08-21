@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 
-const InputBox = ({ value, onChange, disabled }) => {
+const AffirmationBox = ({ value, onChange, disabled }) => {
   const [error, setError] = useState('');
   const textareaRef = useRef(null);
 
@@ -43,7 +43,7 @@ const InputBox = ({ value, onChange, disabled }) => {
   );
 };
 
-export default InputBox;
+export default AffirmationBox;
 
 const Wrapper = styled.div`
   width: 100%;

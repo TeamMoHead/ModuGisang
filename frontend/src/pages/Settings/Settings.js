@@ -3,14 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { AccountContext, ChallengeContext, UserContext } from '../../contexts';
 import { authServices, userServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
-import {
-  NavBar,
-  Icon,
-  OutlineBox,
-  // LongBtn,
-  // InputLine,
-  InputBox,
-} from '../../components';
+import { NavBar, Icon, OutlineBox } from '../../components';
+import { AffirmationBox } from './components';
 import * as S from '../../styles/common';
 import styled from 'styled-components';
 
@@ -151,7 +145,7 @@ const Settings = () => {
               </AffirmationTitle>
               <AffirmationContent isAbleInput={isAbleInput}>
                 <InputDiv>
-                  <InputBox
+                  <AffirmationBox
                     value={affirmation}
                     onChange={handleAffirmationChange}
                     disabled={!isAbleInput}
