@@ -1,15 +1,17 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AccountContext, ChallengeContext, UserContext } from '../../contexts';
 import { authServices, userServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
-import { NavBar, Icon, OutlineBox } from '../../components';
+import useNavigateWithState from '../../hooks/useNavigateWithState';
+import { NavBar, Icon, OutlineBox, StyledLink } from '../../components';
 import { AffirmationBox } from './components';
 import * as S from '../../styles/common';
 import styled from 'styled-components';
 
 const Settings = () => {
   const { fetchData } = useFetch();
+  const navigateWithState = useNavigateWithState();
   const navigate = useNavigate();
 
   const { getMyData } = useContext(UserContext);
@@ -186,13 +188,17 @@ const Settings = () => {
           />
         </LogoutWrapper>
         <FooterLinks>
-          <Link to="/termsOfService" state={{ from: 'settings' }}>
+          <StyledLink
+            onClick={() => navigateWithState('/termsOfService', 'settings')}
+          >
             이용약관
-          </Link>
+          </StyledLink>
           <p> | </p>
-          <Link to="/privacyPolicy" state={{ from: 'settings' }}>
+          <StyledLink
+            onClick={() => navigateWithState('/privacyPolicy', 'settings')}
+          >
             개인정보보호방침
-          </Link>
+          </StyledLink>
         </FooterLinks>
       </S.PageWrapper>
     </>
@@ -279,15 +285,6 @@ const FooterLinks = styled.div`
   display: flex;
   justify-content: center;
   gap: 20px;
-
-  a {
-    color: ${({ theme }) => theme.colors.primary.purple};
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
 `;
 
 const boxStyle = {

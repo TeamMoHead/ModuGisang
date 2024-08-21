@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { InputLine, LongBtn, NavBar } from '../../components';
+import { InputLine, LongBtn, NavBar, StyledLink } from '../../components';
 import useAuth from '../../hooks/useAuth';
+import useNavigateWithState from '../../hooks/useNavigateWithState';
 import useValidation from '../../hooks/useValidation';
 import * as S from '../../styles/common';
 import styled from 'styled-components';
 
 const Signup = () => {
+  const navigateWithState = useNavigateWithState();
   const { isValidEmail, isValidPassword } = useValidation();
   const [email, setEmail] = useState('');
   const [userName, setUserName] = useState('');
@@ -215,13 +216,17 @@ const Signup = () => {
               onChange={e => setIsTermsChecked(e.target.checked)}
             />
             <span>
-              <Link to="/termsOfService" state={{ from: 'signup' }}>
+              <StyledLink
+                onClick={() => navigateWithState('/termsOfService', 'signup')}
+              >
                 이용약관
-              </Link>{' '}
+              </StyledLink>{' '}
               및{' '}
-              <Link to="/privacyPolicy" state={{ from: 'signup' }}>
+              <StyledLink
+                onClick={() => navigateWithState('/privacyPolicy', 'signup')}
+              >
                 개인정보보호방침
-              </Link>
+              </StyledLink>
               을 확인했습니다.
             </span>
           </CheckboxLabel>
@@ -316,15 +321,5 @@ const CheckboxLabel = styled.label`
 
   input {
     margin-right: 8px;
-  }
-
-  a {
-    color: ${({ theme }) => theme.colors.primary.purple};
-    text-decoration: underline;
-    cursor: pointer;
-
-    &:hover {
-      color: ${({ theme }) => theme.colors.primary.emerald};
-    }
   }
 `;
