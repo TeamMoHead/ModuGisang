@@ -1,30 +1,30 @@
 import React, { useState } from 'react';
 import { InputLine, LongBtn, NavBar } from '../../components';
 import useAuth from '../../hooks/useAuth';
+import useValidation from '../../hooks/useValidation';
 import * as S from '../../styles/common';
 import styled from 'styled-components';
 
 const ForgotPassword = () => {
+  const { isValidEmail } = useValidation();
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
   const { handleSendTemporaryPassword } = useAuth();
-
-  const isValidEmail = email => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
 
   const handleEmailChange = e => {
     const newEmail = e.target.value;
     setEmail(newEmail);
-    setEmailError(''); // 입력 중에는 에러 메시지를 초기화
-    setSuccessMessage(''); // 성공 메시지도 초기화
+
+    setEmailError('');
+    setSuccessMessage('');
   };
 
   const handleForgotPassword = async e => {
     e.preventDefault();
+
     if (!isValidEmail(email)) {
       setEmailError('올바른 이메일 주소를 입력해 주세요.');
       return;
@@ -33,10 +33,10 @@ const ForgotPassword = () => {
     try {
       await handleSendTemporaryPassword({ email });
       setSuccessMessage('임시 비밀번호가 이메일로 발송되었습니다.');
-      setEmailError(''); // 성공 시 에러 메시지를 초기화
+      setEmailError('');
     } catch (error) {
-      setSuccessMessage(''); // 실패 시 성공 메시지를 초기화
-      setEmailError('존재하지 않는 이메일 주소입니다.'); // 오류 메시지 설정
+      setSuccessMessage('');
+      setEmailError('존재하지 않는 이메일 주소입니다.');
     }
   };
 
@@ -57,7 +57,7 @@ const ForgotPassword = () => {
           type="submit"
           btnName="임시 비밀번호 발송"
           onClickHandler={handleForgotPassword}
-          disabled={!email || !!emailError}
+          disabled={!isValidEmail(email)}
         />
         {emailError && <ErrorText>{emailError}</ErrorText>}
         {successMessage && <SuccessText>{successMessage}</SuccessText>}
