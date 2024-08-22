@@ -202,31 +202,29 @@ const useAuth = () => {
   };
 
   const handleSendTemporaryPassword = async ({ email }) => {
-    // 임시로 넣은 코드
     if (email === '' || !isValidEmail(email)) {
-      alert('올바른 이메일 주소를 입력해 주세요.');
-      return;
+      throw new Error('올바른 이메일 주소를 입력해 주세요.');
     }
 
-    try {
-      const response = await fetchData(() =>
-        authServices.sendTemporaryPassword({ email }),
-      );
+    // 임시
+    const response = await fetchData(() =>
+      authServices.sendTemporaryPassword({ email }),
+    );
 
-      const {
-        isLoading: isSending,
-        data: sendPasswordData,
-        error: sendPasswordError,
-      } = response;
+    const {
+      isLoading: isSending,
+      data: sendPasswordData,
+      error: sendPasswordError,
+    } = response;
 
-      if (!isSending && sendPasswordData) {
-        alert('임시 비밀번호가 이메일로 발송되었습니다.');
-      } else if (!isSending && sendPasswordError) {
-        alert('임시 비밀번호 발송에 실패했습니다.');
-      }
-    } catch (error) {
-      console.error('Error sending temporary password:', error);
-      alert('임시 비밀번호 발송 중 오류가 발생했습니다.');
+    if (sendPasswordError) {
+      throw new Error('존재하지 않는 이메일 주소입니다.');
+    }
+
+    if (sendPasswordData) {
+      return '임시 비밀번호가 이메일로 발송되었습니다.';
+    } else {
+      throw new Error('임시 비밀번호 발송 중 오류가 발생했습니다.');
     }
   };
 

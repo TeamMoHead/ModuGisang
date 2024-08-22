@@ -30,13 +30,15 @@ const ForgotPassword = () => {
       return;
     }
 
+    setEmailError('');
+    setSuccessMessage('');
+
     try {
-      await handleSendTemporaryPassword({ email });
-      setSuccessMessage('임시 비밀번호가 이메일로 발송되었습니다.');
-      setEmailError('');
+      const successMessage = await handleSendTemporaryPassword({ email });
+      setSuccessMessage(successMessage);
     } catch (error) {
+      setEmailError(error.message);
       setSuccessMessage('');
-      setEmailError('존재하지 않는 이메일 주소입니다.');
     }
   };
 
