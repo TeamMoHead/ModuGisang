@@ -117,6 +117,7 @@ export class UserController {
   }
 
   // 비밀번호 변경 API
+  @UseGuards(AuthenticateGuard)
   @Post('reset-password')
   async resetPassword(@Body() body: { email: string; newPassword: string }) {
     const { email, newPassword } = body;

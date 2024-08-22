@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -298,10 +299,39 @@ export class UserService {
   }
 
   async changePassword(userId: number, newPassword: string) {
-    const hashedPassword = await argon2.hash(newPassword);
+    if (checkPW(newPassword)) {
+      const hashedPassword = await argon2.hash(newPassword);
 
-    return await this.userRepository.update(userId, {
-      password: hashedPassword,
-    });
+      return await this.userRepository.update(userId, {
+        password: hashedPassword,
+      });
+    } else {
+      throw new BadRequestException('비밀번호 양식이 틀렸습니다');
+    }
   }
+}
+
+function checkPW(pw: string): boolean {
+  // 최소 8자 이상
+  if (pw.length < 8) {
+    return false;
+  }
+
+  // 영문 포함
+  if (!/[a-zA-Z]/.test(pw)) {
+    return false;
+  }
+
+  // 숫자 포함
+  if (!/\d/.test(pw)) {
+    return false;
+  }
+
+  // 특수문자 포함
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pw)) {
+    return false;
+  }
+
+  // 모든 조건을 만족하면 true 반환
+  return true;
 }

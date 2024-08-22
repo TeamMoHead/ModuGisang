@@ -15,14 +15,14 @@ async function bootstrap() {
   const port = configService.get<number>('NEST_PORT');
 
   app.enableCors({
-    // origin: (origin, callback) => {
-    //   if (!origin || allowedOrigins.includes(origin)) {
-    //     callback(null, true);
-    //   } else {
-    //     callback(new Error('Not allowed by CORS'));
-    //   }
-    // },
-    origin: '*',
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    // origin: '*',
     methods: 'GET,HEAD,PATCH,POST',
     credentials: true,
   });

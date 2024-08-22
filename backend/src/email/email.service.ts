@@ -31,8 +31,8 @@ export class EmailService {
       from: '"MM Team" <info@yourdomain.com>',
       to: to, //수신자
       subject: this.configService.get<string>('EMAIL_WELCOME_SUBJECT'), //제목
-      text: '<b>Welcome to our service!</b>', //내용
-      html: `<b>Welcome to our service!</b> <br> 인증 번호는 ${randomNumber} 입니다.`, //html 내용
+      text: '<b>모두기상에 오신 것을 환영합니다.</b>', //내용
+      html: `<b>반갑습니다! 모두기상에 오신 것을 환영합니다. 앞으로 기상 미션을 열심히 참여해주세요.</b> <br> 인증 번호는 ${randomNumber} 입니다.`, //html 내용
     };
 
     await this.transporter.sendMail(mailOptions, (error, info) => {
@@ -49,8 +49,8 @@ export class EmailService {
       from: '"MM Team" <info@yourdomain.com>',
       to: to, //수신자
       subject: this.configService.get<string>('ISSUANCE_TMP_PW'), //제목
-      text: '<b>Issuance of a temporary password for a password change request!</b>', //내용
-      html: `<b>Issuance of a temporary password for a password change request!</b> <br> 임시 비밀번호는 ${pw} 입니다.`, //html 내용
+      text: '<b>임시 비밀번호가 발급되었습니다.</b>', //내용
+      html: `<b>임시 비밀번호가 발급되었습니다. 모두기상에 접속하셔서 새로운 비밀번호로 바꿔주세요.</b> <br> 임시 비밀번호는 ${pw} 입니다.`, //html 내용
     };
 
     await this.transporter.sendMail(mailOptions, (error, info) => {
