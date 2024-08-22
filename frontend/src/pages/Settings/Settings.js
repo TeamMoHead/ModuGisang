@@ -82,7 +82,6 @@ const Settings = () => {
     if (isAbleInput) {
       handleChangeAffirmation();
     } else {
-      // 확인 창을 띄워 사용자가 확인을 누른 경우에만 수정 모드로 전환
       const isConfirmed = window.confirm('오늘의 다짐을 수정하시겠습니까?');
       if (isConfirmed) {
         setIsAbleInput(true);
