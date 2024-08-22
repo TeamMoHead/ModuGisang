@@ -82,7 +82,11 @@ const Settings = () => {
     if (isAbleInput) {
       handleChangeAffirmation();
     } else {
-      setIsAbleInput(true);
+      // 확인 창을 띄워 사용자가 확인을 누른 경우에만 수정 모드로 전환
+      const isConfirmed = window.confirm('오늘의 다짐을 수정하시겠습니까?');
+      if (isConfirmed) {
+        setIsAbleInput(true);
+      }
     }
   };
 
@@ -141,7 +145,11 @@ const Settings = () => {
                 <EditButton onClick={handleIsAbleInput}>
                   <Icon
                     icon={isAbleInput ? 'save' : 'edit'}
-                    iconStyle={iconStyle}
+                    iconStyle={{
+                      size: 24,
+                      color: isAbleInput ? 'white' : 'purple',
+                      hoverColor: isAbleInput ? 'white' : 'purple',
+                    }}
                   />
                 </EditButton>
               </AffirmationTitle>
@@ -184,7 +192,12 @@ const Settings = () => {
           <Text>로그아웃</Text>
           <Icon
             icon="logout"
-            iconStyle={{ size: 24, color: 'white', disable: true }}
+            iconStyle={{
+              size: 24,
+              color: 'white',
+              hoverColor: 'white',
+              disable: true,
+            }}
           />
         </LogoutWrapper>
         <FooterLinks>
@@ -290,10 +303,4 @@ const FooterLinks = styled.div`
 const boxStyle = {
   isBold: false,
   lineColor: 'gradient',
-};
-
-const iconStyle = {
-  size: 24,
-  color: 'purple',
-  hoverColor: 'white',
 };
