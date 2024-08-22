@@ -1,21 +1,17 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AccountContext, ChallengeContext, UserContext } from '../../contexts';
 import { authServices, userServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
-import {
-  NavBar,
-  Icon,
-  OutlineBox,
-  // LongBtn,
-  // InputLine,
-  InputBox,
-} from '../../components';
+import useNavigateWithState from '../../hooks/useNavigateWithState';
+import { NavBar, Icon, OutlineBox, StyledLink } from '../../components';
+import { AffirmationBox } from './components';
 import * as S from '../../styles/common';
 import styled from 'styled-components';
 
 const Settings = () => {
   const { fetchData } = useFetch();
+  const navigateWithState = useNavigateWithState();
   const navigate = useNavigate();
 
   const { getMyData } = useContext(UserContext);
@@ -86,7 +82,10 @@ const Settings = () => {
     if (isAbleInput) {
       handleChangeAffirmation();
     } else {
-      setIsAbleInput(true);
+      const isConfirmed = window.confirm('오늘의 다짐을 수정하시겠습니까?');
+      if (isConfirmed) {
+        setIsAbleInput(true);
+      }
     }
   };
 
@@ -145,13 +144,17 @@ const Settings = () => {
                 <EditButton onClick={handleIsAbleInput}>
                   <Icon
                     icon={isAbleInput ? 'save' : 'edit'}
-                    iconStyle={iconStyle}
+                    iconStyle={{
+                      size: 24,
+                      color: isAbleInput ? 'white' : 'purple',
+                      hoverColor: isAbleInput ? 'white' : 'purple',
+                    }}
                   />
                 </EditButton>
               </AffirmationTitle>
               <AffirmationContent isAbleInput={isAbleInput}>
                 <InputDiv>
-                  <InputBox
+                  <AffirmationBox
                     value={affirmation}
                     onChange={handleAffirmationChange}
                     disabled={!isAbleInput}
@@ -188,17 +191,26 @@ const Settings = () => {
           <Text>로그아웃</Text>
           <Icon
             icon="logout"
-            iconStyle={{ size: 24, color: 'white', disable: true }}
+            iconStyle={{
+              size: 24,
+              color: 'white',
+              hoverColor: 'white',
+              disable: true,
+            }}
           />
         </LogoutWrapper>
         <FooterLinks>
-          <Link to="/termsOfService" state={{ from: 'settings' }}>
+          <StyledLink
+            onClick={() => navigateWithState('/termsOfService', 'settings')}
+          >
             이용약관
-          </Link>
+          </StyledLink>
           <p> | </p>
-          <Link to="/privacyPolicy" state={{ from: 'settings' }}>
+          <StyledLink
+            onClick={() => navigateWithState('/privacyPolicy', 'settings')}
+          >
             개인정보보호방침
-          </Link>
+          </StyledLink>
         </FooterLinks>
       </S.PageWrapper>
     </>
@@ -285,24 +297,9 @@ const FooterLinks = styled.div`
   display: flex;
   justify-content: center;
   gap: 20px;
-
-  a {
-    color: ${({ theme }) => theme.colors.primary.purple};
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
 `;
 
 const boxStyle = {
   isBold: false,
   lineColor: 'gradient',
-};
-
-const iconStyle = {
-  size: 24,
-  color: 'purple',
-  hoverColor: 'white',
 };
