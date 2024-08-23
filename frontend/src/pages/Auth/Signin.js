@@ -7,13 +7,13 @@ import { useNavigate } from 'react-router-dom';
 
 import * as S from '../../styles/common';
 
-import { CONFIGS } from '../../config';
+// import { CONFIGS } from '../../config';
 import styled from 'styled-components';
 
 import { onlysun } from '../../assets/icons';
 
 const Signin = () => {
-  const { TEST_EMAIL, TEST_PASSWORD } = CONFIGS;
+  // const { TEST_EMAIL, TEST_PASSWORD } = CONFIGS;
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [isLoginLoading, setIsLoginLoading] = useState(false);

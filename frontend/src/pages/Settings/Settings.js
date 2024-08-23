@@ -3,19 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { AccountContext, ChallengeContext, UserContext } from '../../contexts';
 import { authServices, userServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
-import {
-  NavBar,
-  Icon,
-  OutlineBox,
-  LongBtn,
-  InputLine,
-  InputBox,
-} from '../../components';
+import useNavigateWithState from '../../hooks/useNavigateWithState';
+import { NavBar, Icon, OutlineBox, StyledLink } from '../../components';
+import { AffirmationBox } from './components';
 import * as S from '../../styles/common';
 import styled from 'styled-components';
 
 const Settings = () => {
   const { fetchData } = useFetch();
+  const navigateWithState = useNavigateWithState();
   const navigate = useNavigate();
 
   const { getMyData } = useContext(UserContext);
@@ -26,8 +22,8 @@ const Settings = () => {
 
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
   const [affirmation, setAffirmation] = useState('');
-  const [wakeTime, setWakeTime] = useState('');
-  const [challengeId, setChallengeId] = useState('');
+  // const [wakeTime, setWakeTime] = useState('');
+  // const [challengeId, setChallengeId] = useState('');
   const [isAbleInput, setIsAbleInput] = useState(false);
 
   const handleLogOut = async () => {
@@ -63,52 +59,55 @@ const Settings = () => {
     } = response;
     if (!isChangeAffirmationLoading) {
       alert('변경되었습니다.');
-      setIsAbleInput(false); // 수정 완료 후 비활성화
+      setIsAbleInput(false);
     } else if (changeAffirmationError) {
       alert(changeAffirmationError);
     }
   };
 
-  const handleWakeTimeChange = e => {
-    setWakeTime(e.target.value);
-  };
+  // const handleWakeTimeChange = e => {
+  //   setWakeTime(e.target.value);
+  // };
 
-  const handleChallengeIdChange = e => {
-    setChallengeId(e.target.value);
-  };
+  // const handleChallengeIdChange = e => {
+  //   setChallengeId(e.target.value);
+  // };
 
-  const handlePractice = () => {
-    console.log('연습 게임으로 이동~!');
-    console.log(user.myData);
-  };
+  // const handlePractice = () => {
+  //   console.log('연습 게임으로 이동~!');
+  //   console.log(user.myData);
+  // };
 
   const handleIsAbleInput = () => {
     if (isAbleInput) {
-      setIsAbleInput(false);
+      handleChangeAffirmation();
     } else {
-      setIsAbleInput(true);
+      const isConfirmed = window.confirm('오늘의 다짐을 수정하시겠습니까?');
+      if (isConfirmed) {
+        setIsAbleInput(true);
+      }
     }
   };
 
-  const handleChangeWakeTime = async () => {
-    const response = await fetchData(() =>
-      userServices.changeWakeTime({
-        accessToken,
-        wakeTime,
-        userId,
-        challengeId, // challengeId 추가
-      }),
-    );
-    const { isLoading: isChangeWakeTimeLoading, error: changeWakeTimeError } =
-      response;
-    if (!isChangeWakeTimeLoading) {
-      alert('기상 시간이 변경되었습니다.');
-      // updateWakeTime(wakeTime);
-      setWakeTime('');
-    } else if (changeWakeTimeError) {
-      alert(changeWakeTimeError);
-    }
-  };
+  // const handleChangeWakeTime = async () => {
+  //   const response = await fetchData(() =>
+  //     userServices.changeWakeTime({
+  //       accessToken,
+  //       wakeTime,
+  //       userId,
+  //       challengeId,
+  //     }),
+  //   );
+  //   const { isLoading: isChangeWakeTimeLoading, error: changeWakeTimeError } =
+  //     response;
+  //   if (!isChangeWakeTimeLoading) {
+  //     alert('기상 시간이 변경되었습니다.');
+  //     // updateWakeTime(wakeTime);
+  //     setWakeTime('');
+  //   } else if (changeWakeTimeError) {
+  //     alert(changeWakeTimeError);
+  //   }
+  // };
 
   useEffect(() => {
     if (accessToken && userId) {
@@ -125,7 +124,6 @@ const Settings = () => {
   return (
     <>
       <NavBar />
-
       <S.PageWrapper>
         <OutlineBox
           boxStyle={boxStyle}
@@ -141,37 +139,33 @@ const Settings = () => {
           boxStyle={boxStyle}
           content={
             <AffirmationWrapper>
-              <AffiramtionBox>
+              <AffirmationTitle>
                 <Text isColor={true}>오늘의 다짐 문구</Text>
                 <EditButton onClick={handleIsAbleInput}>
-                  <Icon icon="edit" iconStyle={iconStyle} />
-                </EditButton>
-              </AffiramtionBox>
-              <InputDiv>
-                <InputBox
-                  value={affirmation}
-                  onChange={handleAffirmationChange}
-                  disabled={!isAbleInput}
-                />
-              </InputDiv>
-
-              {isAbleInput ? (
-                <UpdateBtnBox>
-                  <UpdateBtn
-                    onClick={() => {
-                      handleChangeAffirmation({ accessToken, affirmation });
+                  <Icon
+                    icon={isAbleInput ? 'save' : 'edit'}
+                    iconStyle={{
+                      size: 24,
+                      color: isAbleInput ? 'white' : 'purple',
+                      hoverColor: isAbleInput ? 'white' : 'purple',
                     }}
-                  >
-                    수정하기
-                  </UpdateBtn>
-                </UpdateBtnBox>
-              ) : null}
+                  />
+                </EditButton>
+              </AffirmationTitle>
+              <AffirmationContent isAbleInput={isAbleInput}>
+                <InputDiv>
+                  <AffirmationBox
+                    value={affirmation}
+                    onChange={handleAffirmationChange}
+                    disabled={!isAbleInput}
+                  />
+                </InputDiv>
+              </AffirmationContent>
             </AffirmationWrapper>
           }
         />
 
-        {/* {userId === 34 && ( */}
-        <>
+        {/* <>
           <Text>챌린지 ID</Text>
           <InputLine
             label="챌린지 ID"
@@ -191,18 +185,33 @@ const Settings = () => {
             btnName="기상 시간 수정하기"
             onClickHandler={handleChangeWakeTime}
           />
-        </>
-        {/* )} */}
-        <LongBtn btnName="연습 게임 진행하기" onClickHandler={handlePractice} />
-        <p>24.08.05 ver 1 </p>
+        </> */}
+        {/* <LongBtn btnName="연습 게임 진행하기" onClickHandler={handlePractice} /> */}
         <LogoutWrapper onClick={handleLogOut}>
           <Text>로그아웃</Text>
-
           <Icon
             icon="logout"
-            iconStyle={{ size: 24, color: 'white', disable: true }}
+            iconStyle={{
+              size: 24,
+              color: 'white',
+              hoverColor: 'white',
+              disable: true,
+            }}
           />
         </LogoutWrapper>
+        <FooterLinks>
+          <StyledLink
+            onClick={() => navigateWithState('/termsOfService', 'settings')}
+          >
+            이용약관
+          </StyledLink>
+          <p> | </p>
+          <StyledLink
+            onClick={() => navigateWithState('/privacyPolicy', 'settings')}
+          >
+            개인정보보호방침
+          </StyledLink>
+        </FooterLinks>
       </S.PageWrapper>
     </>
   );
@@ -224,6 +233,22 @@ const AffirmationWrapper = styled.div`
   height: 281px;
 `;
 
+const AffirmationTitle = styled.div`
+  ${({ theme }) => theme.flex.center};
+  text-align: center;
+  width: 100%;
+  height: 55px;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.primary.purple};
+`;
+
+const AffirmationContent = styled.div`
+  ${({ theme }) => theme.flex.center};
+  height: calc(100% - 55px);
+  background-color: ${({ isAbleInput, theme }) =>
+    isAbleInput ? theme.colors.translucent.white : 'initial'};
+  border-radius: 0 0 30px 30px;
+`;
+
 const LogoutWrapper = styled.div`
   ${({ theme }) => theme.flex.center};
   font-weight: 500;
@@ -236,14 +261,6 @@ const LogoutWrapper = styled.div`
   color: ${({ theme }) => theme.colors.primary.white};
 
   cursor: pointer;
-`;
-
-const AffiramtionBox = styled.div`
-  ${({ theme }) => theme.flex.center};
-  text-align: center;
-  width: 100%;
-  height: 55px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.primary.purple};
 `;
 
 const Profile = styled.img`
@@ -266,41 +283,23 @@ const EditButton = styled.button`
   right: 5px;
 `;
 
-const UpdateBtn = styled.button`
-  width: 100px;
-  height: 50px;
-  background-color: ${({ theme }) => theme.colors.primary.purple};
-  color: ${({ theme }) => theme.colors.primary.white};
-  border-radius: 10px;
-`;
-
 const InputDiv = styled.div`
-  margin-top: 40px;
+  flex-grow: 1;
+  max-width: 90%;
   height: 130px;
 
   ${({ theme }) => theme.flex.center};
   vertical-align: middle;
 `;
 
-const UpdateBtnBox = styled.div`
-  ${({ theme }) => theme.flex.center};
-  width: 100%;
+const FooterLinks = styled.div`
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
 `;
 
 const boxStyle = {
   isBold: false,
   lineColor: 'gradient',
-};
-
-const iconStyle = {
-  size: 24,
-  color: 'purple',
-  hoverColor: 'white',
-};
-
-const logoutStyle = {
-  isBold: false,
-  lineColor: 'red', // 특정 컬러이름 || 그라데이션 => 'gradient'
-  // 각 박스의 background-color는 content 각 컴포넌트에서 설정
-  // border-radius도 각 content에서 설정 필요
 };

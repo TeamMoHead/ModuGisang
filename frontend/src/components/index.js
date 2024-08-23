@@ -2,7 +2,6 @@ import Icon from './Icon';
 import OutlineBox from './OutlineBox';
 import LongBtn from './LongBtn';
 import RoundBtn from './RoundBtn';
-import InputBox from './InputBox';
 import InputLine from './InputLine';
 import Modal from './Modal';
 import NavBar from './NavBar';
@@ -15,13 +14,13 @@ import CustomRadio from './CustomRadio';
 import CustomCalendar from './CustomCalendar';
 import SearchBox from './SearchBox';
 import InvitationCard from './InvitationCard';
+import StyledLink from './StyledLink';
 
 export {
   Icon,
   OutlineBox,
   LongBtn,
   RoundBtn,
-  InputBox,
   InputLine,
   Modal,
   NavBar,
@@ -34,4 +33,5 @@ export {
   CustomCalendar,
   SearchBox,
   InvitationCard,
+  StyledLink,
 };

@@ -1,26 +1,24 @@
 import React, { useState, useEffect, useContext } from 'react';
-import {
-  UserContext,
-  //  ChallengeContext
-} from '../contexts';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { RoundBtn } from '../components';
+import { UserContext } from '../contexts';
 import styled from 'styled-components';
 
 const PAGE_TYPES = [
+  'signUp',
   'main',
   'myStreak',
   'joinChallenge',
   'createChallenge',
   'settings',
+  'privacyPolicy',
+  'termsOfService',
 ];
 
 const NavBar = () => {
-  // const { getChallengeData } = useContext(ChallengeContext);
-  const { myData } = useContext(UserContext);
-  const { userName } = myData;
-  const { pathname } = useLocation();
-  const params = useParams();
+  const { myData } = useContext(UserContext) || {};
+  const { userName } = myData || {};
+  const { pathname, state } = useLocation();
   const navigate = useNavigate();
   const [hasLeftBtn, setHasLeftBtn] = useState(false);
   const [hasRightBtn, setHasRightBtn] = useState(true);
@@ -28,7 +26,19 @@ const NavBar = () => {
   const [scrolled, setScrolled] = useState(false);
 
   const goBack = () => {
-    navigate('/');
+    if (pageType === 'privacyPolicy' || pageType === 'termsOfService') {
+      if (state?.from === 'settings') {
+        navigate('/settings');
+      } else if (state?.from === 'signup') {
+        navigate('/signUp');
+      } else {
+        navigate('/');
+      }
+    } else if (pageType === 'signUp') {
+      navigate('/signIn');
+    } else {
+      navigate('/');
+    }
   };
 
   const goToSettings = () => {
@@ -51,10 +61,13 @@ const NavBar = () => {
         <p>안녕하세요 {userName}님 :)</p>
       </>
     ),
+    signUp: '회원가입',
     myStreak: '나의 기록',
     joinChallenge: '챌린지 참여',
     createChallenge: '챌린지 만들기',
     settings: '설정',
+    privacyPolicy: '개인정보보호방침',
+    termsOfService: '이용약관',
   };
 
   useEffect(() => {
@@ -80,7 +93,7 @@ const NavBar = () => {
       setHasLeftBtn(false);
       setHasRightBtn(false);
     }
-  }, [params]);
+  }, [pathname, state]);
 
   useEffect(() => {
     const handleScroll = () => {
