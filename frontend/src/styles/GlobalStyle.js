@@ -11,16 +11,16 @@ ${reset}
     text-decoration: none;    
   }
 
-  body{
+  html, body {
     font-family: 'IBM Plex Sans KR', 'Noto Sans KR', 'Jua', sans-serif;
     background-image: url(${backgroundImage});
     background-size: cover;
-    background-position: center;    
-    
+    background-position: center;
     color: ${theme.colors.primary.white};
+    overscroll-behavior: none;
 
     &::-webkit-scrollbar {
-    display: none;
+      display: none;
     }
   }
 
