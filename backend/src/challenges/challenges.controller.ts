@@ -7,7 +7,6 @@ import {
   HttpStatus,
   InternalServerErrorException,
   NotFoundException,
-  NotImplementedException,
   Param,
   Post,
   Query,
@@ -85,11 +84,22 @@ export class ChallengesController {
     @Param('challengeId') challengeId: number,
     @Param('userId') userId: number,
   ) {
-    const challenge = await this.challengeService.completeChallenge(
+    const result = await this.challengeService.completeChallenge(
       challengeId,
       userId,
     );
-    return challenge;
+    if (result === true) {
+      return {
+        expired: true,
+        message:
+          'This challenge has expired and user data has been successfully updated.',
+      };
+    } else {
+      return {
+        expired: false,
+        message: 'This challenge is not expired yet.',
+      };
+    }
   }
 
   @Get('search-mate')

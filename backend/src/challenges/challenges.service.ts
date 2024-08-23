@@ -408,11 +408,13 @@ export class ChallengesService {
   }
 
   // 날짜 비교해서 챌린지 끝난경우 호출되는 메소드
-  async completeChallenge(challengeId: number, userId: number): Promise<void> {
+  async completeChallenge(
+    challengeId: number,
+    userId: number,
+  ): Promise<boolean> {
     if (!this.endChallenge(challengeId)) {
-      // 챌린지 시간 비교해서 아직 끝나지 않았다면 return 처리 해야함
       // -> error를 발생시켜야 하나?
-      return;
+      return false;
     }
     await this.userService.resetChallenge(userId); // 2.user 챌린지 정보를 -1로 변경
     const challenge = await this.challengeRepository.findOne({
@@ -442,6 +444,7 @@ export class ChallengesService {
         this.userService.decideMedalType(total),
       );
     }
+    return true;
   }
   // 현재 시간보다 이후인지 확인하는 함수
   validateStartAndWakeTime(startDate: Date, wakeTime: Date): void {
