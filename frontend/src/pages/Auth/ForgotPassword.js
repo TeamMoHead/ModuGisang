@@ -20,6 +20,7 @@ const ForgotPassword = () => {
 
     setEmailError('');
     setSuccessMessage('');
+    setIsButtonDisabled(false);
   };
 
   const handleForgotPassword = async e => {
@@ -36,9 +37,12 @@ const ForgotPassword = () => {
     try {
       const successMessage = await handleSendTemporaryPassword({ email });
       setSuccessMessage(successMessage);
+      alert(successMessage);
+      setIsButtonDisabled(true);
     } catch (error) {
       setEmailError(error.message);
       setSuccessMessage('');
+      alert(error.message);
     }
   };
 
@@ -59,7 +63,7 @@ const ForgotPassword = () => {
           type="submit"
           btnName="임시 비밀번호 발송"
           onClickHandler={handleForgotPassword}
-          disabled={!isValidEmail(email)}
+          disabled={!isValidEmail(email) || isButtonDisabled}
         />
         {emailError && <ErrorText>{emailError}</ErrorText>}
         {successMessage && <SuccessText>{successMessage}</SuccessText>}
