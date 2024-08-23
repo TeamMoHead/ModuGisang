@@ -151,6 +151,9 @@ export class ChallengesService {
       challenge.hostId = newHost._id;
     }
 
+    // 챌린지 캐시 삭제
+    this.redisCacheService.del(`challenge_${challengeId}`);
+
     await this.challengeRepository.save(challenge);
     await this.userService.resetChallenge(userId);
   }
@@ -174,6 +177,7 @@ export class ChallengesService {
     if (user && challengeId) {
       user.challengeId = challengeId._id;
       await this.userRepository.save(user);
+      await this.redisCacheService.del(`userInfo:${hostId}`);
       return challengeId._id;
     }
     return null;
