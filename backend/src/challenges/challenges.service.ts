@@ -26,6 +26,7 @@ import { Invitations } from 'src/invitations/invitations.entity';
 import { ChallengeResultDto } from './dto/challengeResult.dto';
 import RedisCacheService from 'src/redis-cache/redis-cache.service';
 import { UserService } from 'src/users/users.service';
+import { EditChallengeDto } from './dto/editChallenge.dto';
 
 @Injectable()
 export class ChallengesService {
@@ -61,10 +62,7 @@ export class ChallengesService {
     return await this.challengeRepository.save(newChallenge);
   }
 
-  /// 하다가 맘 -> DTO 추가하고 수정 2024-08-09
-  // controller 필요
-  // expired, deleted 추가???
-  async editChallenge(challenge: CreateChallengeDto): Promise<Challenges> {
+  async editChallenge(challenge: EditChallengeDto): Promise<Challenges> {
     const editChall = await this.challengeRepository.findOne({
       where: { hostId: challenge.hostId },
     });
@@ -135,12 +133,10 @@ export class ChallengesService {
     if (users.length === 1) {
       // 혼자인경우 당연히 호스트인데 예외처리 해줘야하나?
       challenge.deleted = true;
-    } else if (users.length > 1) {
-      if (challenge.hostId === userId) {
-        // host가 아닌 다른 유저에게 챌린지를 넘기는 경우
-        const newHost = users.find((user) => user._id !== challenge.hostId);
-        challenge.hostId = newHost._id;
-      }
+    } else if (users.length > 1 && challenge.hostId === userId) {
+      // host가 포기하고 다른 유저가 남아있을 때 host가 아닌 다른 유저에게 챌린지를 넘기는 경우
+      const newHost = users.find((user) => user._id !== challenge.hostId);
+      challenge.hostId = newHost._id;
     }
     // if 문 변경 필요
 

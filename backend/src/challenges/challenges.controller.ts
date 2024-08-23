@@ -20,6 +20,7 @@ import { AcceptInvitationDto } from './dto/acceptInvitaion.dto';
 import { ChallengeResponseDto } from './dto/challengeResponse.dto';
 import { ChallengeResultDto } from './dto/challengeResult.dto';
 import RedisCacheService from 'src/redis-cache/redis-cache.service';
+import { EditChallengeDto } from './dto/editChallenge.dto';
 
 @UseGuards(AuthenticateGuard)
 @Controller('api/challenge')
@@ -57,6 +58,13 @@ export class ChallengesController {
     }
     this.redisService.del(`userInfo:${createChallengeDto.hostId}`);
     return 'create';
+  }
+  @Post('edit')
+  async editChallenge(@Body() editChallengeDto: EditChallengeDto) {
+    console.log('edit');
+    const challenge =
+      await this.challengeService.editChallenge(editChallengeDto);
+    return challenge;
   }
   @Post('delete/:challengeId/:hostId') // 챌린지 생성하고 시작하지 않고 삭제하는 경우
   async deleteChallenge(
