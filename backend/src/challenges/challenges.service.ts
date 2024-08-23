@@ -3,6 +3,7 @@ import {
   NotFoundException,
   HttpException,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { Challenges } from './challenges.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -26,7 +27,7 @@ import { Invitations } from 'src/invitations/invitations.entity';
 import { ChallengeResultDto } from './dto/challengeResult.dto';
 import RedisCacheService from 'src/redis-cache/redis-cache.service';
 import { UserService } from 'src/users/users.service';
-import { EditChallengeDto } from './dto/editChallenge.dto';
+import { EditChallengeDto, Duration } from './dto/editChallenge.dto';
 
 @Injectable()
 export class ChallengesService {
@@ -48,9 +49,13 @@ export class ChallengesService {
   }
 
   async createChallenge(challenge: CreateChallengeDto): Promise<Challenges> {
+    this.validateStartAndWakeTime(challenge.startDate, challenge.wakeTime);
+    this.validateDuration(challenge.duration);
+
     const newChallenge = new Challenges();
     const endDate = new Date(challenge.startDate);
     endDate.setDate(endDate.getDate() + challenge.duration - 1); // durationDays가 10일이라면 10일째 되는 날로 설정
+
     newChallenge.hostId = challenge.hostId;
     newChallenge.startDate = challenge.startDate;
     newChallenge.wakeTime = challenge.wakeTime;
@@ -58,14 +63,18 @@ export class ChallengesService {
     newChallenge.endDate = endDate;
     newChallenge.expired = false;
     newChallenge.deleted = false;
-    // 챌린지 생성시 new가 아닌 인자 그대로 save하는 에러가 있었음
+
     return await this.challengeRepository.save(newChallenge);
   }
 
   async editChallenge(challenge: EditChallengeDto): Promise<Challenges> {
+    this.validateStartAndWakeTime(challenge.startDate, challenge.wakeTime);
+    this.validateDuration(challenge.duration);
+
     const editChall = await this.challengeRepository.findOne({
       where: { hostId: challenge.hostId },
     });
+
     if (!editChall) {
       //host 권한이 없는 챌린지 수정 시 에러처리
       throw new NotFoundException(
@@ -83,6 +92,8 @@ export class ChallengesService {
     editChall.expired = false;
     editChall.deleted = false;
 
+    // 수정 후 캐시 삭제
+    this.redisCacheService.del(`challenge_${editChall._id}`);
     return await this.challengeRepository.save(editChall);
   }
 
@@ -425,6 +436,35 @@ export class ChallengesService {
       await this.userService.updateUserMedals(
         userId,
         this.userService.decideMedalType(total),
+      );
+    }
+  }
+  // 현재 시간보다 이후인지 확인하는 함수
+  validateStartAndWakeTime(startDate: Date, wakeTime: Date): void {
+    const currentDate = new Date();
+
+    // startDate에 wakeTime을 적용한 실제 시작 시간을 계산
+    const startDateTime = new Date(startDate);
+    startDateTime.setHours(wakeTime.getHours());
+    startDateTime.setMinutes(wakeTime.getMinutes());
+    startDateTime.setSeconds(wakeTime.getSeconds());
+
+    if (startDateTime <= currentDate) {
+      throw new BadRequestException(
+        'The start date and wake time must be in the future.',
+      );
+    }
+  }
+
+  // duration이 7, 30, 100 중 하나인지 확인하는 함수
+  validateDuration(duration: number): void {
+    if (
+      ![Duration.ONE_WEEK, Duration.ONE_MONTH, Duration.THREE_MONTHS].includes(
+        duration,
+      )
+    ) {
+      throw new BadRequestException(
+        'Duration must be one of 7, 30, or 100 days.',
       );
     }
   }
