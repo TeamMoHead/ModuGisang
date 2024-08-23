@@ -87,23 +87,24 @@ export class ChallengesService {
   }
 
   async endChallenge(challengeId: number): Promise<boolean> {
-    // 시간까지 비교 필요
-    //캐시에 챌린지 정보 있나?
-    // 캐시여부에 따라 코딩
-    // id로 챌린지 정보 가져온다음 현재 시간과 비교
-    // const result = await this.redisService.del(`challengeId:${challengeId}`);
-    // if (result) {
-    //   return true;
-    // }
-    // return false;
     const challenge = await this.challengeRepository.findOne({
       where: { _id: challengeId },
     });
     if (!challenge) {
       throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
     }
+    // 현재 시간을 가져옴
     const currentDate = new Date();
-    return currentDate > challenge.endDate;
+
+    // 챌린지 종료 날짜와 기상시간을 결합하여 종료 시간 생성
+    const challengeEndDateTime = new Date(challenge.endDate);
+    challengeEndDateTime.setHours(challenge.wakeTime.getHours());
+    challengeEndDateTime.setMinutes(challenge.wakeTime.getMinutes());
+    challengeEndDateTime.setSeconds(challenge.wakeTime.getSeconds());
+
+    // 캐시 삭제할 필요는 없는것 같음 -> 다른 팀원들도 남아있을 수 있음
+
+    return currentDate >= challengeEndDateTime;
   }
 
   // 챌린지 ID 랑 userID 둘다 받아서 호스트인지 확인하고 삭제로 수정
@@ -138,7 +139,6 @@ export class ChallengesService {
       const newHost = users.find((user) => user._id !== challenge.hostId);
       challenge.hostId = newHost._id;
     }
-    // if 문 변경 필요
 
     await this.challengeRepository.save(challenge);
     await this.userService.resetChallenge(userId);
@@ -409,6 +409,7 @@ export class ChallengesService {
     // 1. 호스트인지 체크 후 호스트 인경우 챌린지 expired로 변경 -> 챌린지 정보를 가져와야 알 수 있음 userID 랑 비교
     if (challenge.hostId === userId) {
       challenge.expired = true;
+      await this.redisCacheService.del(`challenge_${challengeId}`);
       await this.challengeRepository.save(challenge);
     }
 
