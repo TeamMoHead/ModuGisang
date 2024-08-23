@@ -5,6 +5,8 @@ import MyStreak from './MyStreak/MyStreak';
 import JoinChallenge from './JoinChallenge/JoinChallenge';
 import CreateChallenge from './CreateChallenge/CreateChallenge';
 import Settings from './Settings/Settings';
+import PrivacyPolicy from './Settings/PrivacyPolicy';
+import TermsOfService from './Settings/TermsOfService';
 import Testing from './Testing/Testing';
 
 export {
@@ -15,5 +17,7 @@ export {
   JoinChallenge,
   CreateChallenge,
   Settings,
+  PrivacyPolicy,
+  TermsOfService,
   Testing,
 };

@@ -10,6 +10,8 @@ import {
   CreateChallenge,
   JoinChallenge,
   Settings,
+  PrivacyPolicy,
+  TermsOfService,
   Testing,
 } from './pages';
 
@@ -20,6 +22,8 @@ function Router() {
         {/* <Route path="/auth" element={<Auth />} /> */}
         <Route path="/signIn" element={<Signin />} />
         <Route path="/signUp" element={<Signup />} />
+        <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
+        <Route path="/termsOfService" element={<TermsOfService />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Main />} />
           <Route path="/main" element={<Main />} />
