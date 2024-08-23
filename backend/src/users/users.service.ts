@@ -288,6 +288,8 @@ export class UserService {
     user.medals[medalType] += 1;
 
     // 업데이트된 유저 정보를 저장합니다.
+    // redis에 저장된 user 정보 삭제
+    await this.redisService.del(`userInfo:${userId}`);
     return await this.userRepository.save(user);
   }
   decideMedalType(duration: number): 'gold' | 'silver' | 'bronze' {
