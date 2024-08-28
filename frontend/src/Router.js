@@ -18,6 +18,7 @@ import {
   Settings,
   PrivacyPolicy,
   TermsOfService,
+  ChangePassword,
   Testing,
 } from './pages';
 
@@ -48,6 +49,7 @@ function Router() {
             }
           />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/changePassword" element={<ChangePassword />} />
           <Route path="/test" element={<Testing />} />
         </Route>
         <Route path="*" element={<PageNotFound />} />
