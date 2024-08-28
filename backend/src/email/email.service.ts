@@ -28,7 +28,7 @@ export class EmailService {
   async sendMail(to: string): Promise<string> {
     const randomNumber = this.generateRandomNumber(6);
     const mailOptions = {
-      from: '"MM Team" <info@yourdomain.com>',
+      from: '"Team MoHead" <info@yourdomain.com>',
       to: to, //수신자
       subject: this.configService.get<string>('EMAIL_WELCOME_SUBJECT'), //제목
       text: '<b>모두기상에 오신 것을 환영합니다.</b>', //내용
@@ -46,11 +46,11 @@ export class EmailService {
 
   async sendPW(to: string, pw: string): Promise<string> {
     const mailOptions = {
-      from: '"MM Team" <info@yourdomain.com>',
+      from: '"Team MoHead" <info@yourdomain.com>',
       to: to, //수신자
       subject: this.configService.get<string>('ISSUANCE_TMP_PW'), //제목
       text: '<b>임시 비밀번호가 발급되었습니다.</b>', //내용
-      html: `<b>임시 비밀번호가 발급되었습니다. 모두기상에 접속하셔서 새로운 비밀번호로 바꿔주세요.</b> <br> 임시 비밀번호는 ${pw} 입니다.`, //html 내용
+      html: `<b>임시 비밀번호가 발급되었습니다. 모두기상에 접속해서 새로운 비밀번호로 바꿔주세요.</b> <br> 임시 비밀번호는 ${pw} 입니다.`, //html 내용
     };
 
     await this.transporter.sendMail(mailOptions, (error, info) => {
