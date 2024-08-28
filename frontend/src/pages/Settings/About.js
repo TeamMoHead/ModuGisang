@@ -1,50 +1,23 @@
 import React from 'react';
-import { useState } from 'react';
-import { LoadingWithText, StyledLink } from '../../components';
+import { StyledLink } from '../../components';
 import { ContentWrapper } from './components';
-
-import useAuth from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-
 import * as S from '../../styles/common';
-
 import styled from 'styled-components';
-
 import { onlysun } from '../../assets/icons';
 
 const Signin = () => {
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  const [isLoginLoading, setIsLoginLoading] = useState(false);
-  const { handleSubmitLogIn } = useAuth();
   const navigate = useNavigate();
 
-  const handleLoginEmailChange = e => {
-    setLoginEmail(e.target.value);
+  const goToMainPage = () => {
+    navigate('/');
   };
-
-  const handleLoginPasswordChange = e => {
-    setLoginPassword(e.target.value);
-  };
-
-  const goToSignUp = () => {
-    navigate('/signUp');
-  };
-
-  if (isLoginLoading) {
-    return (
-      <S.LoadingWrapper>
-        <LoadingWithText loadingMSG="로그인 중입니다 :)" />
-      </S.LoadingWrapper>
-    );
-  }
 
   return (
     <S.PageWrapper>
       <TitleBox>
-        <Logo src={onlysun} />
+        <Logo src={onlysun} onClick={goToMainPage} />
         <Title>모두기상</Title>
-        {/* <Subtitle>친구와 함께 미라클 모닝 챌린지</Subtitle> */}
       </TitleBox>
       <ContentWrapper>
         <AboutText>
@@ -70,6 +43,7 @@ const Logo = styled.img`
   width: 109px;
   height: 108px;
   margin-bottom: 15px;
+  cursor: pointer;
 `;
 
 const TitleBox = styled.div`
@@ -89,7 +63,7 @@ const Title = styled.div`
   color: transparent;
 `;
 
-const AboutText = styled.p`
+const AboutText = styled.div`
   line-height: 1.6;
 
   margin-bottom: 30px;
