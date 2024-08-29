@@ -22,10 +22,11 @@ const Settings = () => {
 
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
   const [affirmation, setAffirmation] = useState('');
-  // const [wakeTime, setWakeTime] = useState('');
-  // const [challengeId, setChallengeId] = useState('');
   const [isAbleInput, setIsAbleInput] = useState(false);
   const [isExceeded30, setIsExceeded30] = useState(false);
+
+  // const [wakeTime, setWakeTime] = useState('');
+  // const [challengeId, setChallengeId] = useState('');
 
   const handleLogOut = async () => {
     setIsLogoutLoading(true);
@@ -58,15 +59,12 @@ const Settings = () => {
     setIsAbleInput(true);
   };
 
-  const handleAffirmationChange = e => {
-    setAffirmation(e.target.value);
-  };
-
   const checkIsReadyToSave = () => {
     if (!isExceeded30) {
       const isConfirmed = window.confirm('수정한 내용을 저장하시겠습니까?');
       if (isConfirmed) {
         saveNewAffirmation();
+        setIsAbleInput(false);
       }
     } else {
       alert('30자를 넘길 수 없습니다.');
@@ -166,14 +164,12 @@ const Settings = () => {
                   />
                 </EditButton>
               </AffirmationTitle>
-              <AffirmationContent isAbleInput={isAbleInput}>
-                <AffirmationBox
-                  value={affirmation}
-                  onChange={handleAffirmationChange}
-                  disabled={!isAbleInput}
-                  setIsExceeded30={setIsExceeded30}
-                />
-              </AffirmationContent>
+              <AffirmationBox
+                affirmation={affirmation}
+                setAffirmation={setAffirmation}
+                isAbleInput={isAbleInput}
+                setIsExceeded30={setIsExceeded30}
+              />
             </AffirmationWrapper>
           }
         />
@@ -252,17 +248,6 @@ const AffirmationTitle = styled.div`
   width: 100%;
   height: 55px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.primary.purple};
-`;
-
-const AffirmationContent = styled.div`
-  height: 226px;
-  ${({ theme }) => theme.flex.center};
-
-  padding: 15px;
-
-  background-color: ${({ isAbleInput, theme }) =>
-    isAbleInput ? theme.colors.translucent.white : 'initial'};
-  border-radius: 0 0 30px 30px;
 `;
 
 const LogoutWrapper = styled.div`

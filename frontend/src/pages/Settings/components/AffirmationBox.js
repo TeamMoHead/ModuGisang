@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
-const AffirmationBox = ({ value, onChange, disabled, setIsExceeded30 }) => {
+const AffirmationBox = ({
+  affirmation,
+  setAffirmation,
+  isAbleInput,
+  setIsExceeded30,
+}) => {
   const textAreaRef = useRef(null);
   const [error, setError] = useState('');
 
@@ -15,13 +20,14 @@ const AffirmationBox = ({ value, onChange, disabled, setIsExceeded30 }) => {
 
   const handleChange = e => {
     const newValue = e.target.value;
+    setAffirmation(newValue);
+
     if (newValue.length > 30) {
       setIsExceeded30(true);
       setError('30자를 넘길 수 없습니다.');
     } else {
       setIsExceeded30(false);
       setError('');
-      onChange(e);
     }
   };
 
@@ -33,17 +39,30 @@ const AffirmationBox = ({ value, onChange, disabled, setIsExceeded30 }) => {
   };
 
   useEffect(() => {
+    if (isAbleInput && textAreaRef.current) {
+      const textArea = textAreaRef.current;
+      textArea.focus();
+      textArea.setSelectionRange(0, textArea.value.length);
+
+      setTimeout(() => {
+        textArea.setSelectionRange(0, textArea.value.length);
+      }, 0);
+    }
+  }, [isAbleInput]);
+
+  useEffect(() => {
     adjustHeight();
-  }, [value]);
+  }, [affirmation]);
 
   return (
     <Wrapper>
       <InputText
         ref={textAreaRef}
-        value={value}
+        value={affirmation}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        disabled={disabled}
+        $isAbleInput={isAbleInput}
+        disabled={!isAbleInput}
       />
       {error && <ErrorText>{error}</ErrorText>}
     </Wrapper>
@@ -54,9 +73,15 @@ export default AffirmationBox;
 
 const Wrapper = styled.div`
   width: 100%;
-  height: 100%;
+  height: 226px;
   ${({ theme }) => theme.flex.center};
   flex-direction: column;
+
+  padding: 15px;
+
+  background-color: ${({ $isAbleInput, theme }) =>
+    $isAbleInput ? theme.colors.translucent.white : 'transparent'};
+  border-radius: 0 0 30px 30px;
 `;
 
 const InputText = styled.textarea`
@@ -67,6 +92,9 @@ const InputText = styled.textarea`
   color: ${({ theme }) => theme.colors.primary.white};
   ${({ theme }) => theme.fonts.IBMlarge};
   text-align: center;
+
+  caret-color: ${({ theme, $isAbleInput }) =>
+    $isAbleInput ? theme.colors.primary.emerald : 'transparent'};
 `;
 
 const ErrorText = styled.div`
