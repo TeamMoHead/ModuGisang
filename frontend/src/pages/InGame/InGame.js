@@ -77,7 +77,6 @@ const InGame = () => {
         navigate('/main');
       }
     }
-    console.log('inGameMode:', inGameMode);
   }, [inGameMode, isTooEarly, isTooLate, redirected]);
 
   useEffect(() => {
