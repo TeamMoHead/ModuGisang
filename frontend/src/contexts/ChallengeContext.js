@@ -62,7 +62,6 @@ const ChallengeContextProvider = ({ children }) => {
       error: createChallengeError,
     } = response;
     if (!isCreateChallengeLoading && createChallengeData) {
-      console.log('createChallengeData:', createChallengeData);
     } else if (!isCreateChallengeLoading && createChallengeError) {
       console.error(createChallengeError);
     }
@@ -89,7 +88,6 @@ const ChallengeContextProvider = ({ children }) => {
       error: acceptInviError,
     } = response;
     if (!isAcceptInviLoading && acceptInviData) {
-      console.log('acceptInviData:', acceptInviData);
       setIsAcceptInviLoading(false);
     } else if (!isAcceptInviLoading && acceptInviError) {
       console.error(acceptInviError);
@@ -119,9 +117,6 @@ const ChallengeContextProvider = ({ children }) => {
       console.error(todayChallengeDataError);
     }
   };
-
-  console.log(isAttended);
-
   useEffect(() => {
     if (challengeId !== null && challengeId !== -1 && userId) {
       getChallengeData();

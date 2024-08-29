@@ -36,7 +36,8 @@ const GameContextProvider = ({ children }) => {
   const { accessToken, userId } = useContext(AccountContext);
   const { myData, challengeId } = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
-  const { remainingTime, isTooLate, isTooEarly } = useCheckTime(
+  const { checkTime } = useCheckTime();
+  const { remainingTime, isTooLate, isTooEarly } = checkTime(
     challengeData?.wakeTime,
   );
 
