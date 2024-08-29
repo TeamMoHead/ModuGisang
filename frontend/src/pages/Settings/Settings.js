@@ -25,6 +25,7 @@ const Settings = () => {
   // const [wakeTime, setWakeTime] = useState('');
   // const [challengeId, setChallengeId] = useState('');
   const [isAbleInput, setIsAbleInput] = useState(false);
+  const [isExceeded30, setIsExceeded30] = useState(false);
 
   const handleLogOut = async () => {
     setIsLogoutLoading(true);
@@ -45,21 +46,45 @@ const Settings = () => {
     }
   };
 
+  const handleEditBtn = () => {
+    if (!isAbleInput) {
+      enableInput();
+    } else {
+      checkIsReadyToSave();
+    }
+  };
+
+  const enableInput = () => {
+    setIsAbleInput(true);
+  };
+
   const handleAffirmationChange = e => {
     setAffirmation(e.target.value);
   };
 
-  const handleChangeAffirmation = async () => {
+  const checkIsReadyToSave = () => {
+    if (!isExceeded30) {
+      const isConfirmed = window.confirm('수정한 내용을 저장하시겠습니까?');
+      if (isConfirmed) {
+        saveNewAffirmation();
+      }
+    } else {
+      alert('30자를 넘길 수 없습니다.');
+    }
+  };
+
+  const saveNewAffirmation = async () => {
     const response = await fetchData(() =>
       userServices.changeAffirmation({ accessToken, affirmation, userId }),
     );
+
     const {
       isLoading: isChangeAffirmationLoading,
       error: changeAffirmationError,
     } = response;
     if (!isChangeAffirmationLoading) {
-      alert('변경되었습니다.');
-      setIsAbleInput(false);
+      alert('성공적으로 변경되었습니다.');
+      window.location.reload();
     } else if (changeAffirmationError) {
       alert(changeAffirmationError);
     }
@@ -77,17 +102,6 @@ const Settings = () => {
   //   console.log('연습 게임으로 이동~!');
   //   console.log(user.myData);
   // };
-
-  const handleIsAbleInput = () => {
-    if (isAbleInput) {
-      handleChangeAffirmation();
-    } else {
-      const isConfirmed = window.confirm('오늘의 다짐을 수정하시겠습니까?');
-      if (isConfirmed) {
-        setIsAbleInput(true);
-      }
-    }
-  };
 
   // const handleChangeWakeTime = async () => {
   //   const response = await fetchData(() =>
@@ -141,7 +155,7 @@ const Settings = () => {
             <AffirmationWrapper>
               <AffirmationTitle>
                 <Text isColor={true}>오늘의 다짐 문구</Text>
-                <EditButton onClick={handleIsAbleInput}>
+                <EditButton onClick={handleEditBtn}>
                   <Icon
                     icon={isAbleInput ? 'save' : 'edit'}
                     iconStyle={{
@@ -153,13 +167,12 @@ const Settings = () => {
                 </EditButton>
               </AffirmationTitle>
               <AffirmationContent isAbleInput={isAbleInput}>
-                <InputDiv>
-                  <AffirmationBox
-                    value={affirmation}
-                    onChange={handleAffirmationChange}
-                    disabled={!isAbleInput}
-                  />
-                </InputDiv>
+                <AffirmationBox
+                  value={affirmation}
+                  onChange={handleAffirmationChange}
+                  disabled={!isAbleInput}
+                  setIsExceeded30={setIsExceeded30}
+                />
               </AffirmationContent>
             </AffirmationWrapper>
           }
@@ -242,8 +255,11 @@ const AffirmationTitle = styled.div`
 `;
 
 const AffirmationContent = styled.div`
+  height: 226px;
   ${({ theme }) => theme.flex.center};
-  height: calc(100% - 55px);
+
+  padding: 15px;
+
   background-color: ${({ isAbleInput, theme }) =>
     isAbleInput ? theme.colors.translucent.white : 'initial'};
   border-radius: 0 0 30px 30px;
@@ -281,15 +297,6 @@ const EditButton = styled.button`
   position: absolute;
   top: 8px;
   right: 5px;
-`;
-
-const InputDiv = styled.div`
-  flex-grow: 1;
-  max-width: 90%;
-  height: 130px;
-
-  ${({ theme }) => theme.flex.center};
-  vertical-align: middle;
 `;
 
 const FooterLinks = styled.div`
