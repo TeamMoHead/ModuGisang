@@ -88,6 +88,8 @@ const Wrapper = styled.div`
   z-index: 800;
 
   position: fixed;
+  left: 0;
+  top: 0;
 
   width: 100vw;
   height: 100vh;

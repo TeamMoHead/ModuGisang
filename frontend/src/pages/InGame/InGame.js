@@ -183,7 +183,6 @@ const Wrapper = styled.div`
   width: 100vw;
   height: 100vh;
 
-  overflow: hidden;
   padding: 104px 24px 30px 24px;
 
   ${({ $hasMate }) =>

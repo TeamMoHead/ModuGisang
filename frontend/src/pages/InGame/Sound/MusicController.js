@@ -58,7 +58,7 @@ const MusicController = () => {
 export default MusicController;
 
 const BtnWrapper = styled.div`
-  z-index: 800;
+  z-index: 400;
   position: fixed;
   top: 125px;
   right: 40px;

@@ -4,7 +4,14 @@ import { AccountContext, ChallengeContext, UserContext } from '../../contexts';
 import { authServices, userServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
 import useNavigateWithState from '../../hooks/useNavigateWithState';
-import { NavBar, Icon, OutlineBox, StyledLink } from '../../components';
+import {
+  NavBar,
+  Icon,
+  OutlineBox,
+  StyledLink,
+  // InputLine,
+  // LongBtn,
+} from '../../components';
 import { AffirmationBox } from './components';
 import * as S from '../../styles/common';
 import styled from 'styled-components';
@@ -25,8 +32,10 @@ const Settings = () => {
   const [isAbleInput, setIsAbleInput] = useState(false);
   const [isExceeded30, setIsExceeded30] = useState(false);
 
+  //////////////////////////////////////////
   // const [wakeTime, setWakeTime] = useState('');
   // const [challengeId, setChallengeId] = useState('');
+  //////////////////////////////////////////
 
   const handleLogOut = async () => {
     setIsLogoutLoading(true);
@@ -88,6 +97,8 @@ const Settings = () => {
     }
   };
 
+  //////////////////////////////////////////
+
   // const handleWakeTimeChange = e => {
   //   setWakeTime(e.target.value);
   // };
@@ -120,6 +131,8 @@ const Settings = () => {
   //     alert(changeWakeTimeError);
   //   }
   // };
+
+  //////////////////////////////////////////
 
   useEffect(() => {
     if (accessToken && userId) {
@@ -195,6 +208,7 @@ const Settings = () => {
             onClickHandler={handleChangeWakeTime}
           />
         </> */}
+
         {/* <LongBtn btnName="연습 게임 진행하기" onClickHandler={handlePractice} /> */}
         <LogoutWrapper onClick={handleLogOut}>
           <Text>로그아웃</Text>
@@ -285,7 +299,7 @@ const EditButton = styled.button`
 `;
 
 const FooterLinks = styled.div`
-  margin-top: 20px;
+  margin-top: 10px;
   display: flex;
   justify-content: center;
   gap: 20px;

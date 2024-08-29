@@ -33,7 +33,7 @@
     "start:dev": "env-cmd -f .env react-scripts start",
     "build:dev": "env-cmd -f .env react-scripts build",
     "start:prod": "env-cmd -f .env.prod react-scripts start",
-    "build:prod": "PUBLIC_URL='/static' env-cmd -f .env.prod build",
+    "build:prod": "env-cmd -f .env.prod react-scripts build",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

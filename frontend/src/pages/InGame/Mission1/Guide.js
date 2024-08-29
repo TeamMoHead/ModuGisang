@@ -26,18 +26,7 @@ const Guide = ({ poseCorrect, isFlipTriggered, progress }) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // if (
-      //   latestPoseCorrect.current.direction === 'left' &&
-      //   !latestPoseCorrect.current.active
-      // ) {
-      //   setColor('#FF008F');
-      // }
-      // setTimeout(() => {
       setIsFlipped(isFlipTriggered);
-      // }, time.afterCheckCorrect);
-      // setTimeout(() => {
-      //   setColor('#F0F3FF');
-      // }, time.afterFlip);
     }, time.afterCheckCorrect);
     return () => clearTimeout(timer);
   }, [isFlipTriggered]);
