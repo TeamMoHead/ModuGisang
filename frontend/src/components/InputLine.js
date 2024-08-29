@@ -14,7 +14,7 @@ const InputLine = ({
 }) => {
   return (
     <Wrapper>
-      <InviteBox
+      <InputBox
         type={type}
         value={value}
         onChange={onChange}
@@ -36,7 +36,7 @@ const Wrapper = styled.label`
   width: 100%;
 `;
 
-const InviteBox = styled.input`
+const InputBox = styled.input`
   width: 100%;
   background-color: ${({ theme }) => theme.colors.translucent.lightNavy};
   border-radius: 20px;
@@ -55,7 +55,7 @@ const InviteBox = styled.input`
   }
 `;
 
-const IconBox = styled.button`
+const IconBox = styled.div`
   color: white;
   position: absolute;
   top: 8px;
