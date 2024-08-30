@@ -19,6 +19,7 @@ import {
   PrivacyPolicy,
   TermsOfService,
   ChangePassword,
+  About,
   Testing,
 } from './pages';
 
@@ -32,6 +33,7 @@ function Router() {
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
         <Route path="/termsOfService" element={<TermsOfService />} />
+        <Route path="/about" element={<About />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Main />} />
           <Route path="/main" element={<Main />} />
