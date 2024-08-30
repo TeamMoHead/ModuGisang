@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { GameContextProvider, OpenViduContextProvider } from './contexts';
-import { Auth, Signin, Signup, ProtectedRoute } from './pages/Auth';
+import { Signin, Signup, ProtectedRoute } from './pages/Auth';
 import { PageNotFound } from './components';
 import {
   Main,
@@ -13,7 +13,6 @@ import {
   PrivacyPolicy,
   TermsOfService,
   About,
-  Testing,
 } from './pages';
 
 import { SafeAreaProvider } from './contexts/SafeAreaContext'; // SafeAreaProvider 추가

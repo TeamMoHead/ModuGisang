@@ -54,11 +54,11 @@ const iconList = {
   save: faFloppyDisk,
 };
 
-const iconStyleSample = {
-  size: 24,
-  color: 'purple',
-  hoverColor: 'white',
-};
+// const iconStyleSample = {
+//   size: 24,
+//   color: 'purple',
+//   hoverColor: 'white',
+// };
 
 const Icon = ({ icon, iconStyle }) => {
   return (

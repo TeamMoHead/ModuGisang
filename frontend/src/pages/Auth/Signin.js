@@ -60,7 +60,7 @@ const Signin = () => {
       <InputLine
         hasIcon={true}
         type="password"
-        icon={'key'}
+        icon="key"
         iconStyle={iconStyle}
         value={loginPassword}
         onChange={handleLoginPasswordChange}
@@ -129,7 +129,7 @@ const Subtitle = styled.div`
   ${({ theme }) => theme.fonts.IBMsmall};
   font-size: 16px;
   font-weight: 400;
-  line-height: 22px; /* 137.5% */
+  line-height: 22px;
   letter-spacing: -0.4px;
 `;
 
