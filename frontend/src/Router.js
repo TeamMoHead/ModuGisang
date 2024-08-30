@@ -12,6 +12,7 @@ import {
   Settings,
   PrivacyPolicy,
   TermsOfService,
+  About,
   Testing,
 } from './pages';
 
@@ -27,6 +28,7 @@ function Router() {
           <Route path="/signUp" element={<Signup />} />
           <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
           <Route path="/termsOfService" element={<TermsOfService />} />
+          <Route path="/about" element={<About />} />
           <Route element={<ProtectedRoute />}>
             <Route
               path="/"
