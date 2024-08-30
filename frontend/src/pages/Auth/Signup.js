@@ -261,7 +261,7 @@ const Title = styled.div`
 `;
 
 const SmallBtn = styled.button`
-  width: 120px;
+  width: 130px;
   height: 50px;
   border-radius: 20px;
   border: 1px solid
@@ -273,7 +273,7 @@ const SmallBtn = styled.button`
     disabled ? theme.colors.neutral.gray : theme.colors.primary.white};
   ${({ theme }) => theme.fonts.JuaSmall}
   font-size: 20px;
-  margin-left: 14px;
+  margin-left: 8px;
 `;
 
 const EmailBox = styled.div`

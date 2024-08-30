@@ -191,7 +191,7 @@ const Settings = () => {
         <ChangePasswordWrapper onClick={() => navigate('/changePassword')}>
           <Text>비밀번호 변경</Text>
           <Icon
-            icon="logout"
+            icon="logout" // 아이콘 변경 필요
             iconStyle={{
               size: 24,
               color: 'white',
@@ -277,6 +277,7 @@ const LogoutWrapper = styled.div`
 `;
 
 const ChangePasswordWrapper = styled(LogoutWrapper)`
+  // 색상 확인 필요
   border: 2px solid ${({ theme }) => theme.colors.primary.emerald};
 `;
 
