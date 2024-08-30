@@ -6,7 +6,6 @@ import {
   OpenViduContext,
 } from '../../../contexts';
 import { LoadingWithText, WarmUpModel } from '../../../components';
-import { CONFIGS } from '../../../config';
 
 import { faceIcon, stretchingIcon } from '../../../assets/icons';
 import backgroundImage from '../../../assets/backgroundImage.png';
@@ -27,7 +26,6 @@ const MODEL_ICONS = [stretchingIcon, faceIcon];
 const INSTRUCTIONS = ['모션인식 AI', '안면인식 AI'];
 
 const LoadModel = () => {
-  const workerRef = useRef(null);
   const { userId: myId } = useContext(AccountContext);
   const {
     isPoseLoaded,
@@ -135,37 +133,34 @@ const LoadModel = () => {
   }, [matesReadyStatus]);
 
   return (
-    <>
-      <Wrapper>
-        <LoadingWithText loadingMSG={LOADING_STATUS[loadingMode]} />
-        <ProgressBar>
-          <ProgressWrapper>
-            <ProgressIndicator $progress={progressRef.current} />
-          </ProgressWrapper>
-        </ProgressBar>
-        {loadingMode === 'loadMyModel' &&
-          INSTRUCTIONS.map((instructions, idx) => (
-            <Introduction key={idx}>
-              <StatusIcon $isLoaded={loadedModel[idx]} />
-              <Instruction $isLoaded={loadedModel[idx]}>
-                <Image src={MODEL_ICONS[idx]} $isLoaded={loadedModel[idx]} />
-                {instructions}
-              </Instruction>
-            </Introduction>
-          ))}
-        {loadingMode === 'waitingMates' &&
-          mateList.map(({ userId, userName }, idx) => (
-            <Introduction key={idx}>
-              <StatusIcon $isLoaded={matesReadyStatus[userId]?.ready} />
-              <Instruction $isLoaded={matesReadyStatus[userId]?.ready}>
-                {userName}
-              </Instruction>
-            </Introduction>
-          ))}
-      </Wrapper>
-
+    <Wrapper>
+      <LoadingWithText loadingMSG={LOADING_STATUS[loadingMode]} />
+      <ProgressBar>
+        <ProgressWrapper>
+          <ProgressIndicator $progress={progressRef.current} />
+        </ProgressWrapper>
+      </ProgressBar>
+      {loadingMode === 'loadMyModel' &&
+        INSTRUCTIONS.map((instructions, idx) => (
+          <Introduction key={idx}>
+            <StatusIcon $isLoaded={loadedModel[idx]} />
+            <Instruction $isLoaded={loadedModel[idx]}>
+              <Image src={MODEL_ICONS[idx]} $isLoaded={loadedModel[idx]} />
+              {instructions}
+            </Instruction>
+          </Introduction>
+        ))}
+      {loadingMode === 'waitingMates' &&
+        mateList.map(({ userId, userName }, idx) => (
+          <Introduction key={idx}>
+            <StatusIcon $isLoaded={matesReadyStatus[userId]?.ready} />
+            <Instruction $isLoaded={matesReadyStatus[userId]?.ready}>
+              {userName}
+            </Instruction>
+          </Introduction>
+        ))}
       <WarmUpModel />
-    </>
+    </Wrapper>
   );
 };
 
@@ -174,6 +169,8 @@ export default LoadModel;
 const Wrapper = styled.div`
   z-index: 1000;
   position: fixed;
+  left: 0;
+  top: 0;
   width: 100vw;
   height: 100vh;
 
@@ -184,7 +181,6 @@ const Wrapper = styled.div`
 
   background-image: url(${backgroundImage});
   background-size: cover;
-  background-position: center;
 `;
 
 const ProgressBar = styled.div`
@@ -250,48 +246,3 @@ const Instruction = styled.p`
   text-align: center;
   margin-bottom: 2px;
 `;
-
-// useEffect(() => {
-//   const worker = new Worker(
-//     new URL(`${CONFIGS.BASE_URL}/socketWorker.bundle.js`, import.meta.url),
-//   );
-//   workerRef.current = worker;
-//   console.log('workerRef.current', workerRef);
-//   worker.onmessage = event => {
-//     const { type, message, data } = event.data;
-//     console.log(
-//       '=============Data from Worker:: ============',
-//       'TYPE: ',
-//       type,
-//       'MSG: ',
-//       message,
-//       'DATA: ',
-//       data,
-//     );
-
-//     switch (type) {
-//       case 'STATUS':
-//         console.log('STATUS', message);
-//         break;
-//       case 'GAME_STATE':
-//         console.log('GAME_STATE', data);
-//         break;
-
-//       case 'ERROR':
-//         console.error('ERROR', message);
-//         break;
-//       default:
-//         console.error('Unknown message type');
-//     }
-//   };
-
-//   // worker.postMessage({
-//   //   action: 'CONNECT',
-//   //   payload: { url: `${CONFIGS.BASE_URL}:5001`, userId: 1 },
-//   // });
-
-//   return () => {
-//     worker.postMessage({ action: 'DISCONNECT' });
-//     worker.terminate();
-//   };
-// }, [isWarmUpDone]);

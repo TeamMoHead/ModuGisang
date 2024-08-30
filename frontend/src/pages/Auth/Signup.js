@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { InputLine, LongBtn, NavBar, StyledLink } from '../../components';
+import {
+  InputLine,
+  LongBtn,
+  NavBar,
+  StyledLink,
+  LoadingWithText,
+} from '../../components';
 import useAuth from '../../hooks/useAuth';
 import useNavigateWithState from '../../hooks/useNavigateWithState';
 import useValidation from '../../hooks/useValidation';
@@ -96,7 +102,11 @@ const Signup = () => {
   };
 
   if (isSignUpLoading || isEmailCheckLoading || isVerifyCodeCheckLoading) {
-    return <div>회원가입 중...</div>;
+    return (
+      <S.LoadingWrapper>
+        <LoadingWithText loadingMSG="데이터 확인 중..." />
+      </S.LoadingWrapper>
+    );
   }
 
   const isFormValid = () => {

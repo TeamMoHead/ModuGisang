@@ -7,7 +7,6 @@ import {
 import { POSES } from './POSE_DATA';
 import { MissionStarting, MissionEnding } from '../components';
 import Guide from './Guide';
-import styled from 'styled-components';
 
 const round = [
   {
@@ -190,47 +189,14 @@ const Mission1 = () => {
       {isMissionEnding && <MissionEnding />}
 
       {isMissionStarting || (
-        <>
-          {/* <ProgressWrapper title="progressWrapper">
-            <ProgressIndicator progress={progress} />
-          </ProgressWrapper> */}
-          <Guide
-            poseCorrect={stretchSide[currentRound]}
-            isFlipTriggered={isFlipTriggered}
-            progress={progress}
-          />
-        </>
+        <Guide
+          poseCorrect={stretchSide[currentRound]}
+          isFlipTriggered={isFlipTriggered}
+          progress={progress}
+        />
       )}
     </>
   );
 };
 
 export default Mission1;
-
-const ProgressWrapper = styled.div`
-  z-index: 200;
-
-  position: absolute;
-  bottom: 25px;
-
-  width: 80%;
-  height: 30px;
-
-  border-radius: ${({ theme }) => theme.radius.small};
-  border: 2px solid ${({ theme }) => theme.colors.primary.white};
-  background-color: ${({ theme }) => theme.colors.translucent.navy};
-`;
-
-const ProgressIndicator = styled.div`
-  z-index: 300;
-
-  position: absolute;
-
-  width: ${({ progress }) => progress}%;
-  height: 100%;
-
-  border-radius: ${({ theme }) => theme.radius.small};
-
-  background-color: ${({ theme }) => theme.colors.primary.emerald};
-  transition: width 0.2s ease;
-`;

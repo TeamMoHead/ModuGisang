@@ -25,7 +25,7 @@ const useSpeechToText = duration => {
 
   const stop = () => {
     setListening(false);
-    console.log('WEB SPEECH API STOP');
+
     SpeechRecognition.stopListening();
   };
 
