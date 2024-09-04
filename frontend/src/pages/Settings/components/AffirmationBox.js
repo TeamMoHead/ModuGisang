@@ -51,7 +51,7 @@ const AffirmationBox = ({
   }, [affirmation]);
 
   return (
-    <Wrapper>
+    <Wrapper $isAbleInput={isAbleInput}>
       <InputText
         ref={textAreaRef}
         value={affirmation}
@@ -81,7 +81,7 @@ const Wrapper = styled.div`
 `;
 
 const InputText = styled.textarea`
-  z-index: 100;
+  z-index: 200;
 
   width: 100%;
 
