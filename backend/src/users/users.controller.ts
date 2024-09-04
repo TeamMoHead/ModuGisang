@@ -113,7 +113,17 @@ export class UserController {
   @Post('delete-user')
   async deleteUser(@Body('userId') userId: number) {
     const result = await this.userService.deleteUser(userId);
-    console.log('delete ', result);
+    if (result === 1) {
+      return { status: 201, message: '회원 삭제 성공' };
+    } else {
+      return { status: 401, message: '회원 삭제 실패' };
+    }
+  }
+
+  // 계정 복구 API
+  @Get('restore/:id')
+  async restoreUser(@Param('id') id: number): Promise<void> {
+    return this.userService.restoreUser(id);
   }
 
   // 비밀번호 변경 API

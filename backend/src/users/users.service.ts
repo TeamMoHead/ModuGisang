@@ -50,12 +50,16 @@ export class UserService {
   }
 
   async findUser(email: string): Promise<Users> {
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOne({
+      where: { email, deletedAt: null },
+    });
     return user;
   }
 
   async findOneByID(_id: number): Promise<Users> {
-    return await this.userRepository.findOne({ where: { _id } });
+    return await this.userRepository.findOne({
+      where: { _id, deletedAt: null },
+    });
   }
 
   // refreshToken db에 저장
@@ -105,7 +109,9 @@ export class UserService {
     refreshToken: string,
     userId: number,
   ): Promise<UserDto> {
-    const user = await this.userRepository.findOne({ where: { _id: userId } });
+    const user = await this.userRepository.findOne({
+      where: { _id: userId, deletedAt: null },
+    });
     const refresh = await this.redisService.get(`refreshToken:${userId}`);
 
     if (!refresh) {
@@ -153,7 +159,7 @@ export class UserService {
 
   async getInvis(userId: number) {
     const invitations = await this.userRepository.findOne({
-      where: { _id: userId },
+      where: { _id: userId, deletedAt: null },
       relations: ['invitations', 'streak'],
     });
 
@@ -201,7 +207,8 @@ export class UserService {
   async getStreak(userId: number) {
     try {
       const getStreak = await this.streakRepository.findOne({
-        where: { userId: userId },
+        where: { userId: userId, user: { deletedAt: null } },
+        relations: ['user'],
       });
 
       return getStreak;
@@ -234,7 +241,9 @@ export class UserService {
   }
 
   async saveOpenviduToken(userId: number, token: string) {
-    const user = await this.userRepository.findOne({ where: { _id: userId } });
+    const user = await this.userRepository.findOne({
+      where: { _id: userId, deletedAt: null },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -266,16 +275,38 @@ export class UserService {
   }
 
   async deleteUser(userId: number) {
-    console.log('USERSERVICE');
-    const reuslt = await this.userRepository.softRemove({ _id: userId });
-    console.log(reuslt);
-    return reuslt;
+    const user = await this.userRepository.findOne({ where: { _id: userId } });
+
+    const reuslt = await this.userRepository.softDelete({ _id: userId });
+    console.log('USER IS', user);
+    const cacheKey = `challenge_${user.challengeId}`;
+
+    await this.redisService.del(cacheKey);
+
+    if (reuslt.affected === 0) {
+      throw new NotFoundException('해당 유저는 없는 유저입니다.');
+    }
+    return reuslt.affected;
+  }
+
+  // 유저 복구하는 함수 (혹시 몰라서 만듦)
+  async restoreUser(userId: number): Promise<void> {
+    const result = await this.userRepository.restore(userId);
+    const user = await this.userRepository.findOne({ where: { _id: userId } });
+    console.log('USER IS', user);
+    const cacheKey = `challenge_${user.challengeId}`;
+
+    await this.redisService.del(cacheKey);
+
+    if (result.affected == 0) {
+      throw new NotFoundException('유저 아이디에 해당하는 유저는 없습니다.');
+    }
   }
 
   async searchEmail(name: string) {
     console.log(name);
     const result = await this.userRepository.find({
-      where: { userName: name },
+      where: { userName: name, deletedAt: null },
       select: ['email'],
     });
 
@@ -283,7 +314,9 @@ export class UserService {
   }
 
   async changeTmpPassword(email: string) {
-    const user = await this.userRepository.findOne({ where: { email: email } });
+    const user = await this.userRepository.findOne({
+      where: { email: email, deletedAt: null },
+    });
 
     if (!user) {
       throw new Error('User not found');

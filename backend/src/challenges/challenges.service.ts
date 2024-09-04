@@ -49,7 +49,7 @@ export class ChallengesService {
 
   async searchAvailableMate(email: string): Promise<boolean> {
     const availUser = await this.userRepository.findOne({
-      where: { email: email },
+      where: { email: email, deletedAt: null },
     });
     if (availUser.challengeId > 0) {
       return true;
@@ -59,10 +59,17 @@ export class ChallengesService {
   }
 
   async hostChallengeStatus(hostId: number): Promise<number> {
-    const challengeId = await this.challengeRepository.findOne({
-      where: { hostId },
+    const challengeId = await this.challengeRepository
+      .createQueryBuilder('challenges')
+      .innerJoin('challenges.host', 'users')
+      .where('challenges.hostId = :hostId', { hostId })
+      .andWhere('users.deletedAt IS NULL') // 소프트 삭제된 유저 제외
+      .getOne();
+
+    const user = await this.userRepository.findOneBy({
+      _id: hostId,
+      deletedAt: null,
     });
-    const user = await this.userRepository.findOneBy({ _id: hostId });
     if (user && challengeId) {
       user.challengeId = challengeId._id;
       await this.userRepository.save(user);
@@ -72,7 +79,9 @@ export class ChallengesService {
   }
   async sendInvitation(challengeId: number, email: string): Promise<void> {
     console.log('sendInvitation', email);
-    const user = await this.userRepository.findOne({ where: { email: email } });
+    const user = await this.userRepository.findOne({
+      where: { email: email, deletedAt: null },
+    });
     await this.invitationService.createInvitation(challengeId, user._id);
   }
 
@@ -131,9 +140,9 @@ export class ChallengesService {
 
     // 해당 챌린지 ID를 가진 모든 사용자 검색
     const participants = await this.userRepository.find({
-      where: { challengeId: challenge._id },
+      where: { challengeId: challenge._id, deletedAt: null },
     });
-
+    console.log('PARTICIPANTS LIST IS ', participants);
     // 참가자 정보를 DTO 형식으로 변환
     const participantDtos: ParticipantDto[] = participants.map((user) => ({
       userId: user._id,
@@ -216,8 +225,9 @@ export class ChallengesService {
         guestId: guestId,
         isExpired: false,
         responseDate: IsNull(),
+        guest: { deletedAt: null },
       },
-      relations: ['challenge', 'challenge.host'],
+      relations: ['challenge', 'challenge.host', 'user'],
     });
     console.log('invi', invitations);
     return invitations.map((inv) => ({
@@ -237,7 +247,12 @@ export class ChallengesService {
     date: Date,
   ): Promise<ChallengeResultDto[]> {
     const nowAttendance = await this.attendanceRepository.findOne({
-      where: { userId: userId, date: date },
+      where: {
+        userId: userId,
+        date: date,
+        user: { deletedAt: null },
+      },
+      relations: ['user'],
     });
 
     if (!nowAttendance) {
@@ -249,29 +264,36 @@ export class ChallengesService {
 
     const challengeId = nowAttendance.challengeId;
 
-    // 해당 챌린지 ID와 일치하는 날짜에 모든 참석 기록을 조회
     const attendances = await this.attendanceRepository
       .createQueryBuilder('attendance')
       .leftJoinAndSelect('attendance.user', 'user')
       .leftJoinAndSelect('attendance.challenge', 'challenge')
+      .withDeleted()
       .select([
         'attendance.score',
         'user.userName',
         'user._id',
+        'user.deletedAt',
         'challenge.wakeTime',
-      ]) // 필요한 필드만 선택
+      ])
       .where(
         'attendance.challengeId = :challengeId AND attendance.date = :date',
         { challengeId, date },
       )
-      .orderBy('attendance.score', 'DESC') // 점수 내림차순 정렬
+      .orderBy('attendance.score', 'DESC')
       .getMany();
 
-    // 결과 데이터 매핑
+    console.log(attendances);
+
     return attendances.map((attendance) => ({
-      userName: attendance.user.userName,
+      userName: attendance.user ? attendance.user.userName : null,
       score: attendance.score,
       wakeTime: attendance.challenge.wakeTime,
+      delete: attendance.user
+        ? attendance.user.deletedAt
+          ? true
+          : false
+        : true,
     }));
   }
 
