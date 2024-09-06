@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 const AffirmationBox = ({
@@ -38,15 +38,11 @@ const AffirmationBox = ({
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isAbleInput && textAreaRef.current) {
       const textArea = textAreaRef.current;
       textArea.focus();
-      textArea.setSelectionRange(0, textArea.value.length);
-
-      setTimeout(() => {
-        textArea.setSelectionRange(0, textArea.value.length);
-      }, 0);
+      textArea.setSelectionRange(textArea.value.length, textArea.value.length);
     }
   }, [isAbleInput]);
 
@@ -55,7 +51,7 @@ const AffirmationBox = ({
   }, [affirmation]);
 
   return (
-    <Wrapper>
+    <Wrapper $isAbleInput={isAbleInput}>
       <InputText
         ref={textAreaRef}
         value={affirmation}
@@ -85,8 +81,6 @@ const Wrapper = styled.div`
 `;
 
 const InputText = styled.textarea`
-  z-index: 100;
-
   width: 100%;
 
   color: ${({ theme }) => theme.colors.primary.white};
