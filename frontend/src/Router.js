@@ -89,7 +89,6 @@ function Router() {
                 </SafeArea>
               }
             />
-            <Route path="/test" element={<Testing />} />
           </Route>
           <Route path="*" element={<PageNotFound />} />
         </Routes>
