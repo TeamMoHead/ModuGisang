@@ -81,8 +81,6 @@ const Wrapper = styled.div`
 `;
 
 const InputText = styled.textarea`
-  z-index: 200;
-
   width: 100%;
 
   color: ${({ theme }) => theme.colors.primary.white};
