@@ -12,6 +12,7 @@ const PAGE_TYPES = [
   'joinChallenge',
   'createChallenge',
   'settings',
+  'changePassword',
   'privacyPolicy',
   'termsOfService',
 ];
@@ -27,7 +28,11 @@ const NavBar = () => {
   const [scrolled, setScrolled] = useState(false);
 
   const goBack = () => {
-    if (pageType === 'privacyPolicy' || pageType === 'termsOfService') {
+    if (
+      pageType === 'changePassword' ||
+      pageType === 'privacyPolicy' ||
+      pageType === 'termsOfService'
+    ) {
       if (state?.from === 'settings') {
         navigate('/settings');
       } else if (state?.from === 'signup') {
@@ -68,6 +73,7 @@ const NavBar = () => {
     joinChallenge: '챌린지 참여',
     createChallenge: '챌린지 만들기',
     settings: '설정',
+    changePassword: '비밀번호 변경',
     privacyPolicy: '개인정보보호방침',
     termsOfService: '이용약관',
   };
