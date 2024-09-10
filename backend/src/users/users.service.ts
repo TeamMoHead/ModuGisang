@@ -13,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { Streak } from './entities/streak.entity';
 import RedisCacheService from '../redis-cache/redis-cache.service';
 import { UserInformationDto } from './dto/user-info.dto';
+import { Challenges } from 'src/challenges/challenges.entity';
 // import { refreshJwtConstants } from 'src/auth/constants';
 
 @Injectable()
@@ -22,11 +23,14 @@ export class UserService {
     private userRepository: Repository<Users>,
     @InjectRepository(Streak)
     private streakRepository: Repository<Streak>,
+    @InjectRepository(Challenges)
+    private challengeRepository: Repository<Challenges>,
     private configService: ConfigService,
     private readonly redisService: RedisCacheService,
   ) {
     this.userRepository = userRepository;
     this.streakRepository = streakRepository;
+    this.challengeRepository = challengeRepository;
   }
 
   async createUser(
@@ -51,14 +55,14 @@ export class UserService {
 
   async findUser(email: string): Promise<Users> {
     const user = await this.userRepository.findOne({
-      where: { email, deletedAt: null },
+      where: { email },
     });
     return user;
   }
 
   async findOneByID(_id: number): Promise<Users> {
     return await this.userRepository.findOne({
-      where: { _id, deletedAt: null },
+      where: { _id },
     });
   }
 
@@ -110,7 +114,7 @@ export class UserService {
     userId: number,
   ): Promise<UserDto> {
     const user = await this.userRepository.findOne({
-      where: { _id: userId, deletedAt: null },
+      where: { _id: userId },
     });
     const refresh = await this.redisService.get(`refreshToken:${userId}`);
 
@@ -159,7 +163,7 @@ export class UserService {
 
   async getInvis(userId: number) {
     const invitations = await this.userRepository.findOne({
-      where: { _id: userId, deletedAt: null },
+      where: { _id: userId },
       relations: ['invitations', 'streak'],
     });
 
@@ -242,7 +246,7 @@ export class UserService {
 
   async saveOpenviduToken(userId: number, token: string) {
     const user = await this.userRepository.findOne({
-      where: { _id: userId, deletedAt: null },
+      where: { _id: userId },
     });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -276,17 +280,40 @@ export class UserService {
 
   async deleteUser(userId: number) {
     const user = await this.userRepository.findOne({ where: { _id: userId } });
+    const challengeId = user.challengeId;
 
-    const reuslt = await this.userRepository.softDelete({ _id: userId });
-    console.log('USER IS', user);
-    const cacheKey = `challenge_${user.challengeId}`;
+    // 현재 챌린지의 호스트일 때 다른 사용자에게 위임
+    const inChallengeUsers = await this.userRepository.find({
+      where: { challengeId: challengeId },
+    });
+    console.log(
+      'inChallengeUsers is ',
+      inChallengeUsers,
+      ' ',
+      inChallengeUsers.length,
+    );
 
+    // 현재 챌린지에 참여 중인 유저가 있을 경우 위임 진행
+    if (inChallengeUsers.length > 0) {
+      const randomIndex = Math.floor(Math.random() * inChallengeUsers.length);
+      const challenge = await this.challengeRepository.findOne({
+        where: { _id: challengeId },
+      });
+      challenge.hostId = inChallengeUsers[randomIndex]._id;
+      await this.challengeRepository.save(challenge);
+    }
+
+    // 유저 소프트 삭제
+    const result = await this.userRepository.softDelete({ _id: userId });
+
+    // 챌린지 정보 캐시 삭제
+    const cacheKey = `challenge_${challengeId}`;
     await this.redisService.del(cacheKey);
 
-    if (reuslt.affected === 0) {
+    if (result.affected === 0) {
       throw new NotFoundException('해당 유저는 없는 유저입니다.');
     }
-    return reuslt.affected;
+    return result.affected;
   }
 
   // 유저 복구하는 함수 (혹시 몰라서 만듦)
@@ -306,7 +333,7 @@ export class UserService {
   async searchEmail(name: string) {
     console.log(name);
     const result = await this.userRepository.find({
-      where: { userName: name, deletedAt: null },
+      where: { userName: name },
       select: ['email'],
     });
 
@@ -315,7 +342,7 @@ export class UserService {
 
   async changeTmpPassword(email: string) {
     const user = await this.userRepository.findOne({
-      where: { email: email, deletedAt: null },
+      where: { email: email },
     });
 
     if (!user) {

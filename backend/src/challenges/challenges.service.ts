@@ -44,12 +44,12 @@ export class ChallengesService {
     newChallenge.startDate = challenge.startDate;
     newChallenge.wakeTime = challenge.wakeTime;
     newChallenge.duration = challenge.duration;
-    return await this.challengeRepository.save(challenge);
+    return await this.challengeRepository.save(newChallenge);
   }
 
   async searchAvailableMate(email: string): Promise<boolean> {
     const availUser = await this.userRepository.findOne({
-      where: { email: email, deletedAt: null },
+      where: { email: email },
     });
     if (availUser.challengeId > 0) {
       return true;
@@ -68,7 +68,6 @@ export class ChallengesService {
 
     const user = await this.userRepository.findOneBy({
       _id: hostId,
-      deletedAt: null,
     });
     if (user && challengeId) {
       user.challengeId = challengeId._id;
@@ -80,7 +79,7 @@ export class ChallengesService {
   async sendInvitation(challengeId: number, email: string): Promise<void> {
     console.log('sendInvitation', email);
     const user = await this.userRepository.findOne({
-      where: { email: email, deletedAt: null },
+      where: { email: email },
     });
     await this.invitationService.createInvitation(challengeId, user._id);
   }
@@ -140,7 +139,7 @@ export class ChallengesService {
 
     // 해당 챌린지 ID를 가진 모든 사용자 검색
     const participants = await this.userRepository.find({
-      where: { challengeId: challenge._id, deletedAt: null },
+      where: { challengeId: challenge._id },
     });
     console.log('PARTICIPANTS LIST IS ', participants);
     // 참가자 정보를 DTO 형식으로 변환
@@ -227,7 +226,7 @@ export class ChallengesService {
         responseDate: IsNull(),
         guest: { deletedAt: null },
       },
-      relations: ['challenge', 'challenge.host', 'user'],
+      relations: ['challenge', 'challenge.host', 'guest'],
     });
     console.log('invi', invitations);
     return invitations.map((inv) => ({
@@ -289,7 +288,7 @@ export class ChallengesService {
       userName: attendance.user ? attendance.user.userName : null,
       score: attendance.score,
       wakeTime: attendance.challenge.wakeTime,
-      delete: attendance.user
+      deleted: attendance.user
         ? attendance.user.deletedAt
           ? true
           : false
