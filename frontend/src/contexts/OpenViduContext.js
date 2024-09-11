@@ -193,12 +193,12 @@ const OpenViduContextProvider = ({ children }) => {
 
     return () => {
       if (videoSession) {
-        videoSession.off('streamCreated');
-        videoSession.disconnect();
+        videoSession?.off('streamCreated');
+        videoSession?.disconnect();
       }
       if (myStream) {
-        myStream.dispose();
-        mateStreams.forEach(stream => stream.dispose());
+        myStream?.dispose();
+        mateStreams?.forEach(stream => stream.dispose());
       }
     };
   }, [videoSession]);

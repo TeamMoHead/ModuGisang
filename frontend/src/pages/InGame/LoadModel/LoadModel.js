@@ -36,6 +36,14 @@ const LoadModel = () => {
     isHolisticLoaded,
     isHolisticInitialized,
     isWarmUpDone,
+
+    poseModel,
+    holisticModel,
+    setIsPoseLoaded,
+    setIsPoseInitialized,
+    setIsHolisticLoaded,
+    setIsHolisticInitialized,
+    setIsWarmUpDone,
   } = useContext(MediaPipeContext);
   const {
     sendModelLoadingStart,
@@ -43,6 +51,9 @@ const LoadModel = () => {
     mateStreams,
     micOn,
     turnMicOnOff,
+    videoSession,
+    myStream,
+    myVideoRef,
   } = useContext(OpenViduContext);
   const { matesReadyStatus, startFirstMission } = useContext(GameContext);
   const [loadingMode, setLoadingMode] = useState('loadMyModel');
@@ -56,6 +67,7 @@ const LoadModel = () => {
     holisticLoaded: false,
     holisticInitialized: false,
   });
+  const [isLoadingModel, setIsLoadingModel] = useState(true);
   const [mateList, setMateList] = useState([]);
   const progressRef = useRef(0);
 
@@ -93,6 +105,34 @@ const LoadModel = () => {
     errorMSG: 'Model Loading Timeout',
   });
 
+  const exitFromGame = () => {
+    if (myVideoRef.current) {
+      if (myStream instanceof MediaStream) {
+        myStream?.getTracks()?.forEach(track => track?.stop());
+        myVideoRef.current.srcObject = null;
+      }
+    }
+
+    if (videoSession) {
+      videoSession?.off('streamCreated');
+      videoSession?.disconnect();
+    }
+
+    poseModel.current = null;
+    holisticModel.current = null;
+    setIsPoseLoaded(false);
+    setIsPoseInitialized(false);
+    setIsHolisticLoaded(false);
+    setIsHolisticInitialized(false);
+    setIsWarmUpDone(false);
+
+    alert(
+      '네트워크 또는 기기 사양의 문제로 AI 모델 로딩에 실패했습니다. 게임을 종료합니다.',
+    );
+
+    navigate('/main');
+  };
+
   useEffect(() => {
     if (micOn) {
       turnMicOnOff();
@@ -100,17 +140,16 @@ const LoadModel = () => {
     sendModelLoadingStart();
   }, []);
 
-  if (loadModelWithTimeLimit.timeout) {
-    console.log(`loadedStates: ${JSON.stringify(loadedStates)}`);
-    console.error(
-      `====ERROR occurred during load model: ${loadModelWithTimeLimit.error}====`,
-    );
-    alert(
-      '네트워크 또는 기기 사양의 문제로 모델 로딩에 실패했습니다. 게임을 종료합니다.',
-    );
-    // navigate하기 전에 openVidu 종료 및 load된 model들 모두 초기화
-    // navigate('/main');
-  }
+  useEffect(() => {
+    if (loadModelWithTimeLimit.timeout && isLoadingModel) {
+      exitFromGame();
+      setIsLoadingModel(false);
+      console.log(`loadedStates: ${JSON.stringify(loadedStates)}`);
+      console.error(
+        `====ERROR occurred during load model: ${loadModelWithTimeLimit.error}====`,
+      );
+    }
+  }, [loadModelWithTimeLimit]);
 
   useEffect(() => {
     if (isWarmUpDone) {
@@ -131,22 +170,26 @@ const LoadModel = () => {
 
   useEffect(() => {
     if (isWarmUpDone && matesReadyStatus) {
-      const matesWithoutMe = mateList.map(({ userId, userName }) => ({
+      const updatedMateList = mateList.map(({ userId, userName }) => ({
         userId,
         userName,
         ready: matesReadyStatus?.[userId]?.ready,
       }));
-      setMateList(matesWithoutMe);
-      const readyMates = matesWithoutMe?.filter(mate => mate?.ready);
+      setMateList(updatedMateList);
+      const readyMates = mateList?.filter(mate => mate?.ready);
 
       progressRef.current = (readyMates?.length / mateList?.length) * 100;
 
+      const startGame = () => {
+        startFirstMission();
+        if (!micOn) {
+          turnMicOnOff();
+        }
+      };
+
       if (readyMates?.length === mateList?.length) {
         setTimeout(() => {
-          startFirstMission();
-          if (!micOn) {
-            turnMicOnOff();
-          }
+          startGame();
         }, 2000);
       }
     }

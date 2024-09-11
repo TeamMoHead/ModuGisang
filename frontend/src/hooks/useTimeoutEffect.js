@@ -22,6 +22,7 @@ function useTimeoutEffect({ effect, dependencies, timeout, errorMSG }) {
 
         if (elapsedTime > timeout) {
           setResult({ timeout: true, error: new Error(errorMSG) });
+          clearTimeout(timeoutRef.current);
         }
       } catch (err) {
         setResult({ timeout: true, error: err });
