@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   AccountContext,
   GameContext,
@@ -6,6 +7,7 @@ import {
   OpenViduContext,
 } from '../../../contexts';
 import { LoadingWithText, WarmUpModel } from '../../../components';
+import useTimeoutEffect from '../../../hooks/useTimeoutEffect';
 
 import { faceIcon, stretchingIcon } from '../../../assets/icons';
 import backgroundImage from '../../../assets/backgroundImage.png';
@@ -26,6 +28,7 @@ const MODEL_ICONS = [stretchingIcon, faceIcon];
 const INSTRUCTIONS = ['모션인식 AI', '안면인식 AI'];
 
 const LoadModel = () => {
+  const navigate = useNavigate();
   const { userId: myId } = useContext(AccountContext);
   const {
     isPoseLoaded,
@@ -56,6 +59,40 @@ const LoadModel = () => {
   const [mateList, setMateList] = useState([]);
   const progressRef = useRef(0);
 
+  const loadModelWithTimeLimit = useTimeoutEffect({
+    effect: async () => {
+      if (isPoseLoaded && !loadedStates.poseLoaded) {
+        progressRef.current += 25;
+        setLoadedStates(prev => ({ ...prev, poseLoaded: true }));
+      }
+      if (isPoseInitialized && !loadedStates.poseInitialized) {
+        progressRef.current += 25;
+        setLoadedStates(prev => ({ ...prev, poseInitialized: true }));
+        setLoadedModel(prev => ({ ...prev, 0: true }));
+      }
+      if (isHolisticLoaded && !loadedStates.holisticLoaded) {
+        progressRef.current += 25;
+        setLoadedStates(prev => ({ ...prev, holisticLoaded: true }));
+      }
+      if (isHolisticInitialized && !loadedStates.holisticInitialized) {
+        setLoadedModel(prev => ({ ...prev, 1: true }));
+        progressRef.current += 25;
+        setLoadedStates(prev => ({ ...prev, holisticInitialized: true }));
+
+        setLoadingMode('waitingMates');
+      }
+    },
+    dependencies: [
+      isPoseLoaded,
+      isPoseInitialized,
+      isHolisticLoaded,
+      isHolisticInitialized,
+      loadedStates,
+    ],
+    timeout: 17000,
+    errorMSG: 'Model Loading Timeout',
+  });
+
   useEffect(() => {
     if (micOn) {
       turnMicOnOff();
@@ -63,40 +100,24 @@ const LoadModel = () => {
     sendModelLoadingStart();
   }, []);
 
-  useEffect(() => {
-    if (isPoseLoaded && !loadedStates.poseLoaded) {
-      progressRef.current += 25;
-      setLoadedStates(prev => ({ ...prev, poseLoaded: true }));
-    }
-    if (isPoseInitialized && !loadedStates.poseInitialized) {
-      progressRef.current += 25;
-      setLoadedStates(prev => ({ ...prev, poseInitialized: true }));
-      setLoadedModel(prev => ({ ...prev, 0: true }));
-    }
-    if (isHolisticLoaded && !loadedStates.holisticLoaded) {
-      progressRef.current += 25;
-      setLoadedStates(prev => ({ ...prev, holisticLoaded: true }));
-    }
-    if (isHolisticInitialized && !loadedStates.holisticInitialized) {
-      setLoadedModel(prev => ({ ...prev, 1: true }));
-      progressRef.current += 25;
-      setLoadedStates(prev => ({ ...prev, holisticInitialized: true }));
-
-      setLoadingMode('waitingMates');
-      setTimeout(() => {
-        progressRef.current = 0;
-      }, 2000);
-    }
-  }, [
-    isPoseLoaded,
-    isPoseInitialized,
-    isHolisticLoaded,
-    isHolisticInitialized,
-    loadedStates,
-  ]);
+  if (loadModelWithTimeLimit.timeout) {
+    console.log(`loadedStates: ${JSON.stringify(loadedStates)}`);
+    console.error(
+      `====ERROR occurred during load model: ${loadModelWithTimeLimit.error}====`,
+    );
+    alert(
+      '네트워크 또는 기기 사양의 문제로 모델 로딩에 실패했습니다. 게임을 종료합니다.',
+    );
+    // navigate하기 전에 openVidu 종료 및 load된 model들 모두 초기화
+    // navigate('/main');
+  }
 
   useEffect(() => {
     if (isWarmUpDone) {
+      setTimeout(() => {
+        progressRef.current = 0;
+      }, 2000);
+
       sendMyReadyStatus();
       let mates = mateStreams.map(mate => ({
         userId: parseInt(JSON.parse(mate.stream.connection.data).userId),
@@ -121,12 +142,11 @@ const LoadModel = () => {
       progressRef.current = (readyMates?.length / mateList?.length) * 100;
 
       if (readyMates?.length === mateList?.length) {
-        if (!micOn) {
-          turnMicOnOff();
-        }
-
         setTimeout(() => {
           startFirstMission();
+          if (!micOn) {
+            turnMicOnOff();
+          }
         }, 2000);
       }
     }
@@ -246,3 +266,35 @@ const Instruction = styled.p`
   text-align: center;
   margin-bottom: 2px;
 `;
+
+// useEffect(() => {
+//   if (isPoseLoaded && !loadedStates.poseLoaded) {
+//     progressRef.current += 25;
+//     setLoadedStates(prev => ({ ...prev, poseLoaded: true }));
+//   }
+//   if (isPoseInitialized && !loadedStates.poseInitialized) {
+//     progressRef.current += 25;
+//     setLoadedStates(prev => ({ ...prev, poseInitialized: true }));
+//     setLoadedModel(prev => ({ ...prev, 0: true }));
+//   }
+//   if (isHolisticLoaded && !loadedStates.holisticLoaded) {
+//     progressRef.current += 25;
+//     setLoadedStates(prev => ({ ...prev, holisticLoaded: true }));
+//   }
+//   if (isHolisticInitialized && !loadedStates.holisticInitialized) {
+//     setLoadedModel(prev => ({ ...prev, 1: true }));
+//     progressRef.current += 25;
+//     setLoadedStates(prev => ({ ...prev, holisticInitialized: true }));
+
+//     setLoadingMode('waitingMates');
+//     setTimeout(() => {
+//       progressRef.current = 0;
+//     }, 2000);
+//   }
+// }, [
+//   isPoseLoaded,
+//   isPoseInitialized,
+//   isHolisticLoaded,
+//   isHolisticInitialized,
+//   loadedStates,
+// ]);
