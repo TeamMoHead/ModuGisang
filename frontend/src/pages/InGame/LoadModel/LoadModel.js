@@ -12,7 +12,6 @@ import useTimeoutEffect from '../../../hooks/useTimeoutEffect';
 import { faceIcon, stretchingIcon } from '../../../assets/icons';
 import backgroundImage from '../../../assets/backgroundImage.png';
 import styled from 'styled-components';
-import * as S from '../../../styles/common';
 
 const LOADING_STATUS = {
   loadMyModel: (
@@ -26,6 +25,7 @@ const LOADING_STATUS = {
 
 const MODEL_ICONS = [stretchingIcon, faceIcon];
 const INSTRUCTIONS = ['모션인식 AI', '안면인식 AI'];
+const TIME_LIMIT = 17000;
 
 const LoadModel = () => {
   const navigate = useNavigate();
@@ -36,7 +36,6 @@ const LoadModel = () => {
     isHolisticLoaded,
     isHolisticInitialized,
     isWarmUpDone,
-
     poseModel,
     holisticModel,
     setIsPoseLoaded,
@@ -52,6 +51,7 @@ const LoadModel = () => {
     micOn,
     turnMicOnOff,
     videoSession,
+
     myStream,
     myVideoRef,
   } = useContext(OpenViduContext);
@@ -67,7 +67,6 @@ const LoadModel = () => {
     holisticLoaded: false,
     holisticInitialized: false,
   });
-  const [isLoadingModel, setIsLoadingModel] = useState(true);
   const [mateList, setMateList] = useState([]);
   const progressRef = useRef(0);
 
@@ -101,7 +100,7 @@ const LoadModel = () => {
       isHolisticInitialized,
       loadedStates,
     ],
-    timeout: 17000,
+    timeout: TIME_LIMIT,
     errorMSG: 'Model Loading Timeout',
   });
 
@@ -114,6 +113,7 @@ const LoadModel = () => {
     }
 
     if (videoSession) {
+      console.log('===DISCONNECTING FROM VIDEO SESSION===');
       videoSession?.off('streamCreated');
       videoSession?.disconnect();
     }
@@ -141,9 +141,9 @@ const LoadModel = () => {
   }, []);
 
   useEffect(() => {
-    if (loadModelWithTimeLimit.timeout && isLoadingModel) {
+    if (loadModelWithTimeLimit.timeout) {
       exitFromGame();
-      setIsLoadingModel(false);
+
       console.log(`loadedStates: ${JSON.stringify(loadedStates)}`);
       console.error(
         `====ERROR occurred during load model: ${loadModelWithTimeLimit.error}====`,

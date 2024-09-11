@@ -97,14 +97,14 @@ export class UserController {
     @Body('affirmation') affirmation: string,
   ) {
     if (affirmation === '') {
-      throw new BadRequestException('격언 값이 없습니다.');
+      throw new BadRequestException('확언 값이 없습니다.');
     }
     const user = await this.userService.findOneByID(userId);
     const result = await this.userService.updateAffirm(user, affirmation);
     if (result.affected > 0) {
       return 'success';
     } else {
-      throw new BadRequestException('격언 업로드 실패!');
+      throw new BadRequestException('확언 업로드 실패!');
     }
   }
 }
