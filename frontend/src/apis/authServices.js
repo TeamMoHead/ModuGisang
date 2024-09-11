@@ -69,6 +69,23 @@ const refreshAccessToken = async ({ accessToken, refreshToken }) => {
   return await API.post(url, payload, config);
 };
 
+const sendTmpPassword = async ({ email }) => {
+  try {
+    const url = '/email/change-tmp-password';
+    const payload = { email };
+    const response = await API.post(url, payload);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(
+        error.response.data.message || '서버에서 문제가 발생했습니다.',
+      );
+    } else {
+      throw new Error('요청이 실패했습니다. 다시 시도해주세요.');
+    }
+  }
+};
+
 export const authServices = {
   signUpUser,
   logInUser,
@@ -76,4 +93,5 @@ export const authServices = {
   checkEmailAvailability,
   verifyAuthCode,
   refreshAccessToken,
+  sendTmpPassword,
 };

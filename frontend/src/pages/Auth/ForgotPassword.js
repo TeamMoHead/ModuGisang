@@ -11,8 +11,9 @@ const ForgotPassword = () => {
   const [emailError, setEmailError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [isPasswordResetLoading, setIsPasswordResetLoading] = useState(false);
 
-  const { handleSendTemporaryPassword } = useAuth();
+  const { handleSendTmpPassword } = useAuth();
 
   const handleEmailChange = e => {
     const newEmail = e.target.value;
@@ -35,7 +36,11 @@ const ForgotPassword = () => {
     setSuccessMessage('');
 
     try {
-      const successMessage = await handleSendTemporaryPassword({ email });
+      const successMessage = await handleSendTmpPassword({
+        email,
+        setIsPasswordResetLoading,
+      });
+
       setSuccessMessage(successMessage);
       alert(successMessage);
       setIsButtonDisabled(true);
@@ -63,7 +68,9 @@ const ForgotPassword = () => {
           type="submit"
           btnName="임시 비밀번호 발송"
           onClickHandler={handleForgotPassword}
-          disabled={!isValidEmail(email) || isButtonDisabled}
+          disabled={
+            !isValidEmail(email) || isButtonDisabled || isPasswordResetLoading
+          }
         />
         {emailError && <ErrorText>{emailError}</ErrorText>}
         {successMessage && <SuccessText>{successMessage}</SuccessText>}

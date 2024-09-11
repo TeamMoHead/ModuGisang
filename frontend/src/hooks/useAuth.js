@@ -12,11 +12,6 @@ const useAuth = () => {
 
   const refreshToken = localStorage.getItem('refreshToken');
 
-  const isValidEmail = email => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
   const refreshAuthorization = async () => {
     try {
       if (!refreshToken) {
@@ -201,30 +196,36 @@ const useAuth = () => {
     }
   };
 
-  const handleSendTemporaryPassword = async ({ email }) => {
-    if (email === '' || !isValidEmail(email)) {
-      throw new Error('올바른 이메일 주소를 입력해 주세요.');
+  const handleSendTmpPassword = async ({
+    email,
+    setIsPasswordResetLoading,
+  }) => {
+    if (email === '') {
+      throw new Error('이메일을 입력해주세요.');
     }
 
-    // 임시
-    const response = await fetchData(() =>
-      authServices.sendTemporaryPassword({ email }),
-    );
+    setIsPasswordResetLoading(true);
 
-    const {
-      isLoading: isSending,
-      data: sendPasswordData,
-      error: sendPasswordError,
-    } = response;
+    try {
+      const response = await fetchData(() =>
+        authServices.sendTmpPassword({ email }),
+      );
 
-    if (sendPasswordError) {
-      throw new Error('존재하지 않는 이메일 주소입니다.');
-    }
+      console.log('-------- ', response);
+      const { data: passwordResetData, error: passwordResetError } = response;
 
-    if (sendPasswordData) {
-      return '임시 비밀번호가 이메일로 발송되었습니다.';
-    } else {
-      throw new Error('임시 비밀번호 발송 중 오류가 발생했습니다.');
+      if (passwordResetData) {
+        // 성공해도 여기로 안 들어옴. data가 null -> undefine이 됨.
+        return '임시 비밀번호가 이메일로 전송되었습니다.';
+      } else if (passwordResetError) {
+        throw new Error(
+          `임시 비밀번호 발송에 실패했습니다: ${passwordResetError}`,
+        );
+      }
+    } catch (error) {
+      throw new Error(error.message);
+    } finally {
+      setIsPasswordResetLoading(false);
     }
   };
 
@@ -235,7 +236,7 @@ const useAuth = () => {
     handleSubmitLogIn,
     handleCheckVerifyCode,
     handleSubmitSignUp,
-    handleSendTemporaryPassword,
+    handleSendTmpPassword,
   };
 };
 
