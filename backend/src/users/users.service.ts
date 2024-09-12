@@ -283,7 +283,7 @@ export class UserService {
     const challengeId = user.challengeId;
 
     // 현재 챌린지의 호스트일 때 다른 사용자에게 위임
-    const inChallengeUsers = await this.userRepository.find({
+    let inChallengeUsers = await this.userRepository.find({
       where: { challengeId: challengeId },
     });
     console.log(
@@ -291,6 +291,10 @@ export class UserService {
       inChallengeUsers,
       ' ',
       inChallengeUsers.length,
+    );
+    // 삭제될 사용자 제외 후 새로운 유저에서 뽑기
+    inChallengeUsers = inChallengeUsers.filter(
+      (challengeUser) => challengeUser._id !== userId,
     );
 
     // 현재 챌린지에 참여 중인 유저가 있을 경우 위임 진행
