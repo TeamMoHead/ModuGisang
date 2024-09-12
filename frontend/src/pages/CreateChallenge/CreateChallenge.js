@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   NavBar,
@@ -183,13 +183,6 @@ const CreateChallenge = () => {
       navigate('/main');
     }
   };
-
-  useEffect(() => {
-    console.log(range[0]);
-    console.log(range[1]);
-    console.log(range[0].getMonth());
-    console.log(range[1].getMonth());
-  });
 
   return (
     <>
