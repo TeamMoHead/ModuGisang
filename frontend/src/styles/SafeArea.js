@@ -13,7 +13,7 @@ const SafeArea = ({ children }) => {
     }
   }, [insets]);
 
-  console.log('final insets:', insets);
+  // console.log('final insets:', insets);
 
   return (
     <SafeAreaWrapper insets={insets} key={renderKey}>
