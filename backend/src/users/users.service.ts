@@ -292,13 +292,16 @@ export class UserService {
       ' ',
       inChallengeUsers.length,
     );
-    // 삭제될 사용자 제외 후 새로운 유저에서 뽑기
-    inChallengeUsers = inChallengeUsers.filter(
-      (challengeUser) => challengeUser._id !== userId,
-    );
+    if (inChallengeUsers.length === 1) {
+      user.challengeId = -1;
+      await this.userRepository.save(user);
+    } else if (inChallengeUsers.length > 0) {
+      // 현재 챌린지에 참여 중인 유저가 있을 경우 위임 진행
 
-    // 현재 챌린지에 참여 중인 유저가 있을 경우 위임 진행
-    if (inChallengeUsers.length > 0) {
+      // 삭제될 사용자 제외 후 새로운 유저에서 뽑기
+      inChallengeUsers = inChallengeUsers.filter(
+        (challengeUser) => challengeUser._id !== userId,
+      );
       const randomIndex = Math.floor(Math.random() * inChallengeUsers.length);
       const challenge = await this.challengeRepository.findOne({
         where: { _id: challengeId },
