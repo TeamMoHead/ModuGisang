@@ -30,7 +30,7 @@ export class EmailController {
     if (result.success) {
       res.status(HttpStatus.OK).send(result.message);
     } else {
-      res.status(HttpStatus.BAD_REQUEST).send(result.message);
+      res.status(HttpStatus.NOT_FOUND).send(result.message);
     }
   }
 }
