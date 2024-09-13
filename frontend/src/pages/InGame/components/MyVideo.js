@@ -124,4 +124,6 @@ const Video = styled.video`
           : `solid 3px ${theme.colors.system.red}`};
 
   object-fit: cover;
+
+  transform: scaleX(-1);
 `;
