@@ -181,9 +181,10 @@ export default InGame;
 
 const Wrapper = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: 93vh;
 
-  padding: 104px 24px 30px 24px;
+  overflow: hidden;
+  padding: 75px 24px 30px 24px;
 
   ${({ $hasMate }) =>
     $hasMate &&
@@ -191,7 +192,7 @@ const Wrapper = styled.div`
       display: grid;
       grid-template-rows: auto 150px;
       gap: 10px;
-      padding: 104px 24px 0px 24px;
+      padding: 75px 24px 0px 24px;
     `};
 `;
 
