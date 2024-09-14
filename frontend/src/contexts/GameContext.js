@@ -86,7 +86,7 @@ const GameContextProvider = ({ children }) => {
   //
   // ====================================================
 
-  // =================== GET & POSE GAME INFO ===================
+  // =================== GET & POST GAME INFO ===================
   const sendEnteredTime = async () => {
     const response = await fetchData(() =>
       inGameServices.sendEnteredTime({ accessToken, userId }),
