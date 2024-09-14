@@ -284,29 +284,29 @@ export class UserService {
     const challenge = await this.challengeRepository.findOne({
       where: { _id: challengeId },
     });
+
     // 삭제될 유저가 호스트일 때만 진행
     if (userId === challenge.hostId) {
-      console.log('!@#!$');
       // 현재 챌린지의 호스트일 때 다른 사용자에게 위임
       let inChallengeUsers = await this.userRepository.find({
         where: { challengeId: challengeId },
       });
 
-      if (inChallengeUsers.length === 1) {
-        user.challengeId = -1;
-        await this.userRepository.save(user);
-      } else if (inChallengeUsers.length > 0) {
-        // 현재 챌린지에 참여 중인 유저가 있을 경우 위임 진행
-
-        // 삭제될 사용자 제외 후 새로운 유저에서 뽑기
-        inChallengeUsers = inChallengeUsers.filter(
-          (challengeUser) => challengeUser._id !== userId,
-        );
+      // 삭제될 사용자 제외 후 새로운 유저에서 뽑기
+      inChallengeUsers = inChallengeUsers.filter(
+        (challengeUser) => challengeUser._id !== userId,
+      );
+      // 삭제될 유저가 챌린지를 혼자 참여할 경우에는 진행 X
+      if (inChallengeUsers.length > 0) {
         const randomIndex = Math.floor(Math.random() * inChallengeUsers.length);
         challenge.hostId = inChallengeUsers[randomIndex]._id;
         await this.challengeRepository.save(challenge);
       }
     }
+
+    // 삭제될 사용자는 챌린지에서 빠짐
+    user.challengeId = -1;
+    await this.userRepository.save(user);
 
     // 유저 소프트 삭제
     const result = await this.userRepository.softDelete({ _id: userId });
