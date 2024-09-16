@@ -6,9 +6,10 @@ import { Users } from './entities/users.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { AuthService } from 'src/auth/auth.service';
 import { Streak } from './entities/streak.entity';
+import { Challenges } from 'src/challenges/challenges.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Users, Streak])],
+  imports: [TypeOrmModule.forFeature([Users, Streak, Challenges])],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService, TypeOrmModule],
