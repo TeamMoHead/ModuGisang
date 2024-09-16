@@ -351,7 +351,7 @@ export class UserService {
     });
 
     if (!user) {
-      throw new NotFoundException('해당 이메일을 가진 유저는 없습니다.');
+      return null;
     }
 
     const tmpPassword = Math.random().toString(36).slice(2);
