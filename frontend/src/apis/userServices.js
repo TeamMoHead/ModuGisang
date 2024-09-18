@@ -59,9 +59,19 @@ const changeWakeTime = async ({
   return API.post(url, payload, config);
 };
 
+const changePassword = async ({ email, newPassword }) => {
+  const url = '/user/reset-password';
+  const payload = { email, newPassword };
+  // const config = {
+  //   headers: { Authorization: `Bearer ${accessToken}` },
+  // };
+  return await API.post(url, payload);
+};
+
 export const userServices = {
   getMyInfo,
   getUserInfo,
   changeAffirmation,
   changeWakeTime,
+  changePassword,
 };

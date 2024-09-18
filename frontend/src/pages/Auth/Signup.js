@@ -62,7 +62,7 @@ const Signup = () => {
 
     if (newPassword && !isValidPassword(newPassword)) {
       setPasswordError(
-        '비밀번호는 최소 8자이며, 숫자와 영문자를 포함해야 합니다.',
+        '비밀번호는 최소 8자이며 숫자와 영문자, 특수문자를 하나씩 포함해야 합니다.',
       );
     } else {
       setPasswordError('');
