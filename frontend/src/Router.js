@@ -12,6 +12,8 @@ import {
   Settings,
   PrivacyPolicy,
   TermsOfService,
+  CustomerService,
+  DeleteUser,
   About,
 } from './pages';
 
@@ -23,6 +25,8 @@ function Router() {
         <Route path="/signUp" element={<Signup />} />
         <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
         <Route path="/termsOfService" element={<TermsOfService />} />
+        <Route path="/customerService" element={<CustomerService />} />
+        <Route path="/deleteUser" element={<DeleteUser />} />
         <Route path="/about" element={<About />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Main />} />

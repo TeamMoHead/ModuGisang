@@ -67,7 +67,6 @@ const Signup = () => {
     const newPassword = e.target.value;
     setPassword(newPassword);
 
-    // 비밀번호 유효성 검사 및 오류 메시지 설정
     if (newPassword && !isValidPassword(newPassword)) {
       setPasswordError(
         '비밀번호는 최소 8자이며, 숫자와 영문자를 포함해야 합니다.',

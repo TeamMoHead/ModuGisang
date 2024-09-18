@@ -55,6 +55,14 @@ const signUpUser = async ({ email, password, userName }) => {
   return await API.post(url, payload);
 };
 
+const deleteUser = async ({ userId }) => {
+  const url = `/user/delete-user`;
+  const payload = {
+    userId: userId,
+  };
+  return API.get(url, payload);
+};
+
 const refreshAccessToken = async ({ accessToken, refreshToken }) => {
   if (!accessToken) {
     accessToken = null;
@@ -71,6 +79,7 @@ const refreshAccessToken = async ({ accessToken, refreshToken }) => {
 
 export const authServices = {
   signUpUser,
+  deleteUser,
   logInUser,
   logOutUser,
   checkEmailAvailability,

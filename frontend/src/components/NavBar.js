@@ -13,6 +13,8 @@ const PAGE_TYPES = [
   'settings',
   'privacyPolicy',
   'termsOfService',
+  'customerService',
+  'deleteUser',
 ];
 
 const NavBar = () => {
@@ -31,11 +33,17 @@ const NavBar = () => {
         navigate('/settings');
       } else if (state?.from === 'signup') {
         navigate('/signUp');
+      } else if (state?.from === 'deleteUser') {
+        navigate('/deleteUser');
       } else {
         navigate('/');
       }
     } else if (pageType === 'signUp') {
       navigate('/signIn');
+    } else if (pageType === 'customerService') {
+      navigate('/settings');
+    } else if (pageType === 'deleteUser') {
+      navigate('/customerService');
     } else {
       navigate('/');
     }
@@ -68,6 +76,8 @@ const NavBar = () => {
     settings: '설정',
     privacyPolicy: '개인정보보호방침',
     termsOfService: '이용약관',
+    customerService: '고객센터',
+    deleteUser: '회원 탈퇴',
   };
 
   useEffect(() => {

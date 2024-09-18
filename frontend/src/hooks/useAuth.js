@@ -196,6 +196,34 @@ const useAuth = () => {
     }
   };
 
+  const handleDeleteAccount = async ({ e, userId, setIsDeleteUserLoading }) => {
+    e.preventDefault();
+    setIsDeleteUserLoading(true);
+    const response = await fetchData(() =>
+      authServices.deleteUser({
+        userId,
+      }),
+    );
+    const {
+      isLoading: isDeleteUserLoading,
+      status: deleteUserStatus,
+      data: deleteUserData,
+      error: deleteUserError,
+    } = response;
+
+    if (!isDeleteUserLoading && deleteUserData) {
+      alert('회원 탈퇴가 성공적으로 완료되었습니다.');
+      setIsDeleteUserLoading(false);
+    } else if (!isDeleteUserLoading && deleteUserError) {
+      if (deleteUserStatus === 401)
+        alert(
+          '회원 탈퇴에 실패했습니다. 이메일과 비밀번호를 다시 확인해 주세요.',
+        );
+      else alert();
+      setIsDeleteUserLoading(false);
+    }
+  };
+
   return {
     refreshAuthorization,
     checkAuth,
@@ -203,6 +231,7 @@ const useAuth = () => {
     handleSubmitLogIn,
     handleCheckVerifyCode,
     handleSubmitSignUp,
+    handleDeleteAccount,
   };
 };
 
