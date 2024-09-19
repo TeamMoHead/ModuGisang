@@ -1,14 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const LongBtn = ({ btnName, onClickHandler }) => {
+const LongBtn = ({ btnName, onClickHandler, disabled = false }) => {
   return (
     <Wrapper
       onClick={e => {
         e.preventDefault();
         e.stopPropagation();
-        onClickHandler(e);
+        if (!disabled) {
+          onClickHandler(e);
+        }
       }}
+      disabled={disabled}
     >
       {btnName}
     </Wrapper>
@@ -21,11 +24,13 @@ const Wrapper = styled.button`
   width: 100%;
   height: 50px;
   padding: 10px;
-  /* background-color: ${({ theme }) => theme.colors.primary.emerald}; */
-  background: ${({ theme }) => theme.gradient.largerEmerald};
+  background: ${({ theme, disabled }) =>
+    disabled ? theme.colors.neutral.lightGray : theme.gradient.largerEmerald};
   border-radius: 20px;
   ${({ theme }) => theme.fonts.JuaSmall};
-  color: ${({ theme }) => theme.colors.primary.white};
+  color: ${({ theme, disabled }) =>
+    disabled ? theme.colors.neutral.gray : theme.colors.primary.white};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 
-  cursor: pointer;
+  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
 `;

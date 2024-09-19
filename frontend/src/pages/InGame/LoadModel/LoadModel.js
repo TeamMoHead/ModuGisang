@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   AccountContext,
   GameContext,
@@ -6,12 +7,11 @@ import {
   OpenViduContext,
 } from '../../../contexts';
 import { LoadingWithText, WarmUpModel } from '../../../components';
-import { CONFIGS } from '../../../config';
+import useTimeoutEffect from '../../../hooks/useTimeoutEffect';
 
 import { faceIcon, stretchingIcon } from '../../../assets/icons';
 import backgroundImage from '../../../assets/backgroundImage.png';
 import styled from 'styled-components';
-import * as S from '../../../styles/common';
 
 const LOADING_STATUS = {
   loadMyModel: (
@@ -25,9 +25,10 @@ const LOADING_STATUS = {
 
 const MODEL_ICONS = [stretchingIcon, faceIcon];
 const INSTRUCTIONS = ['모션인식 AI', '안면인식 AI'];
+const TIME_LIMIT = 17000;
 
 const LoadModel = () => {
-  const workerRef = useRef(null);
+  const navigate = useNavigate();
   const { userId: myId } = useContext(AccountContext);
   const {
     isPoseLoaded,
@@ -35,6 +36,13 @@ const LoadModel = () => {
     isHolisticLoaded,
     isHolisticInitialized,
     isWarmUpDone,
+    poseModel,
+    holisticModel,
+    setIsPoseLoaded,
+    setIsPoseInitialized,
+    setIsHolisticLoaded,
+    setIsHolisticInitialized,
+    setIsWarmUpDone,
   } = useContext(MediaPipeContext);
   const {
     sendModelLoadingStart,
@@ -42,6 +50,10 @@ const LoadModel = () => {
     mateStreams,
     micOn,
     turnMicOnOff,
+    videoSession,
+
+    myStream,
+    myVideoRef,
   } = useContext(OpenViduContext);
   const { matesReadyStatus, startFirstMission } = useContext(GameContext);
   const [loadingMode, setLoadingMode] = useState('loadMyModel');
@@ -58,6 +70,69 @@ const LoadModel = () => {
   const [mateList, setMateList] = useState([]);
   const progressRef = useRef(0);
 
+  const loadModelWithTimeLimit = useTimeoutEffect({
+    effect: async () => {
+      if (isPoseLoaded && !loadedStates.poseLoaded) {
+        progressRef.current += 25;
+        setLoadedStates(prev => ({ ...prev, poseLoaded: true }));
+      }
+      if (isPoseInitialized && !loadedStates.poseInitialized) {
+        progressRef.current += 25;
+        setLoadedStates(prev => ({ ...prev, poseInitialized: true }));
+        setLoadedModel(prev => ({ ...prev, 0: true }));
+      }
+      if (isHolisticLoaded && !loadedStates.holisticLoaded) {
+        progressRef.current += 25;
+        setLoadedStates(prev => ({ ...prev, holisticLoaded: true }));
+      }
+      if (isHolisticInitialized && !loadedStates.holisticInitialized) {
+        setLoadedModel(prev => ({ ...prev, 1: true }));
+        progressRef.current += 25;
+        setLoadedStates(prev => ({ ...prev, holisticInitialized: true }));
+
+        setLoadingMode('waitingMates');
+      }
+    },
+    dependencies: [
+      isPoseLoaded,
+      isPoseInitialized,
+      isHolisticLoaded,
+      isHolisticInitialized,
+      loadedStates,
+    ],
+    timeout: TIME_LIMIT,
+    errorMSG: 'Model Loading Timeout',
+  });
+
+  const exitFromGame = () => {
+    if (myVideoRef.current) {
+      if (myStream instanceof MediaStream) {
+        myStream?.getTracks()?.forEach(track => track?.stop());
+        myVideoRef.current.srcObject = null;
+      }
+    }
+
+    if (videoSession) {
+      console.log('===DISCONNECTING FROM VIDEO SESSION===');
+      videoSession?.off('streamCreated');
+      videoSession?.disconnect();
+    }
+
+    poseModel.current = null;
+    holisticModel.current = null;
+    setIsPoseLoaded(false);
+    setIsPoseInitialized(false);
+    setIsHolisticLoaded(false);
+    setIsHolisticInitialized(false);
+    setIsWarmUpDone(false);
+
+    alert(
+      '네트워크 또는 기기 사양의 문제로 AI 모델 로딩에 실패했습니다. 게임을 종료합니다.',
+    );
+
+    navigate('/main');
+  };
+
   useEffect(() => {
     if (micOn) {
       turnMicOnOff();
@@ -66,39 +141,22 @@ const LoadModel = () => {
   }, []);
 
   useEffect(() => {
-    if (isPoseLoaded && !loadedStates.poseLoaded) {
-      progressRef.current += 25;
-      setLoadedStates(prev => ({ ...prev, poseLoaded: true }));
-    }
-    if (isPoseInitialized && !loadedStates.poseInitialized) {
-      progressRef.current += 25;
-      setLoadedStates(prev => ({ ...prev, poseInitialized: true }));
-      setLoadedModel(prev => ({ ...prev, 0: true }));
-    }
-    if (isHolisticLoaded && !loadedStates.holisticLoaded) {
-      progressRef.current += 25;
-      setLoadedStates(prev => ({ ...prev, holisticLoaded: true }));
-    }
-    if (isHolisticInitialized && !loadedStates.holisticInitialized) {
-      setLoadedModel(prev => ({ ...prev, 1: true }));
-      progressRef.current += 25;
-      setLoadedStates(prev => ({ ...prev, holisticInitialized: true }));
+    if (loadModelWithTimeLimit.timeout) {
+      exitFromGame();
 
-      setLoadingMode('waitingMates');
-      setTimeout(() => {
-        progressRef.current = 0;
-      }, 2000);
+      console.log(`loadedStates: ${JSON.stringify(loadedStates)}`);
+      console.error(
+        `====ERROR occurred during load model: ${loadModelWithTimeLimit.error}====`,
+      );
     }
-  }, [
-    isPoseLoaded,
-    isPoseInitialized,
-    isHolisticLoaded,
-    isHolisticInitialized,
-    loadedStates,
-  ]);
+  }, [loadModelWithTimeLimit]);
 
   useEffect(() => {
     if (isWarmUpDone) {
+      setTimeout(() => {
+        progressRef.current = 0;
+      }, 2000);
+
       sendMyReadyStatus();
       let mates = mateStreams.map(mate => ({
         userId: parseInt(JSON.parse(mate.stream.connection.data).userId),
@@ -112,60 +170,60 @@ const LoadModel = () => {
 
   useEffect(() => {
     if (isWarmUpDone && matesReadyStatus) {
-      const matesWithoutMe = mateList.map(({ userId, userName }) => ({
+      const updatedMateList = mateList.map(({ userId, userName }) => ({
         userId,
         userName,
         ready: matesReadyStatus?.[userId]?.ready,
       }));
-      setMateList(matesWithoutMe);
-      const readyMates = matesWithoutMe?.filter(mate => mate?.ready);
+      setMateList(updatedMateList);
+      const readyMates = mateList?.filter(mate => mate?.ready);
 
       progressRef.current = (readyMates?.length / mateList?.length) * 100;
 
-      if (readyMates?.length === mateList?.length) {
+      const startGame = () => {
+        startFirstMission();
         if (!micOn) {
           turnMicOnOff();
         }
+      };
 
+      if (readyMates?.length === mateList?.length) {
         setTimeout(() => {
-          startFirstMission();
+          startGame();
         }, 2000);
       }
     }
   }, [matesReadyStatus]);
 
   return (
-    <>
-      <Wrapper>
-        <LoadingWithText loadingMSG={LOADING_STATUS[loadingMode]} />
-        <ProgressBar>
-          <ProgressWrapper>
-            <ProgressIndicator $progress={progressRef.current} />
-          </ProgressWrapper>
-        </ProgressBar>
-        {loadingMode === 'loadMyModel' &&
-          INSTRUCTIONS.map((instructions, idx) => (
-            <Introduction key={idx}>
-              <StatusIcon $isLoaded={loadedModel[idx]} />
-              <Instruction $isLoaded={loadedModel[idx]}>
-                <Image src={MODEL_ICONS[idx]} $isLoaded={loadedModel[idx]} />
-                {instructions}
-              </Instruction>
-            </Introduction>
-          ))}
-        {loadingMode === 'waitingMates' &&
-          mateList.map(({ userId, userName }, idx) => (
-            <Introduction key={idx}>
-              <StatusIcon $isLoaded={matesReadyStatus[userId]?.ready} />
-              <Instruction $isLoaded={matesReadyStatus[userId]?.ready}>
-                {userName}
-              </Instruction>
-            </Introduction>
-          ))}
-      </Wrapper>
-
+    <Wrapper>
+      <LoadingWithText loadingMSG={LOADING_STATUS[loadingMode]} />
+      <ProgressBar>
+        <ProgressWrapper>
+          <ProgressIndicator $progress={progressRef.current} />
+        </ProgressWrapper>
+      </ProgressBar>
+      {loadingMode === 'loadMyModel' &&
+        INSTRUCTIONS.map((instructions, idx) => (
+          <Introduction key={idx}>
+            <StatusIcon $isLoaded={loadedModel[idx]} />
+            <Instruction $isLoaded={loadedModel[idx]}>
+              <Image src={MODEL_ICONS[idx]} $isLoaded={loadedModel[idx]} />
+              {instructions}
+            </Instruction>
+          </Introduction>
+        ))}
+      {loadingMode === 'waitingMates' &&
+        mateList.map(({ userId, userName }, idx) => (
+          <Introduction key={idx}>
+            <StatusIcon $isLoaded={matesReadyStatus[userId]?.ready} />
+            <Instruction $isLoaded={matesReadyStatus[userId]?.ready}>
+              {userName}
+            </Instruction>
+          </Introduction>
+        ))}
       <WarmUpModel />
-    </>
+    </Wrapper>
   );
 };
 
@@ -174,6 +232,8 @@ export default LoadModel;
 const Wrapper = styled.div`
   z-index: 1000;
   position: fixed;
+  left: 0;
+  top: 0;
   width: 100vw;
   height: 100vh;
 
@@ -184,7 +244,6 @@ const Wrapper = styled.div`
 
   background-image: url(${backgroundImage});
   background-size: cover;
-  background-position: center;
 `;
 
 const ProgressBar = styled.div`
@@ -252,46 +311,33 @@ const Instruction = styled.p`
 `;
 
 // useEffect(() => {
-//   const worker = new Worker(
-//     new URL(`${CONFIGS.BASE_URL}/socketWorker.bundle.js`, import.meta.url),
-//   );
-//   workerRef.current = worker;
-//   console.log('workerRef.current', workerRef);
-//   worker.onmessage = event => {
-//     const { type, message, data } = event.data;
-//     console.log(
-//       '=============Data from Worker:: ============',
-//       'TYPE: ',
-//       type,
-//       'MSG: ',
-//       message,
-//       'DATA: ',
-//       data,
-//     );
+//   if (isPoseLoaded && !loadedStates.poseLoaded) {
+//     progressRef.current += 25;
+//     setLoadedStates(prev => ({ ...prev, poseLoaded: true }));
+//   }
+//   if (isPoseInitialized && !loadedStates.poseInitialized) {
+//     progressRef.current += 25;
+//     setLoadedStates(prev => ({ ...prev, poseInitialized: true }));
+//     setLoadedModel(prev => ({ ...prev, 0: true }));
+//   }
+//   if (isHolisticLoaded && !loadedStates.holisticLoaded) {
+//     progressRef.current += 25;
+//     setLoadedStates(prev => ({ ...prev, holisticLoaded: true }));
+//   }
+//   if (isHolisticInitialized && !loadedStates.holisticInitialized) {
+//     setLoadedModel(prev => ({ ...prev, 1: true }));
+//     progressRef.current += 25;
+//     setLoadedStates(prev => ({ ...prev, holisticInitialized: true }));
 
-//     switch (type) {
-//       case 'STATUS':
-//         console.log('STATUS', message);
-//         break;
-//       case 'GAME_STATE':
-//         console.log('GAME_STATE', data);
-//         break;
-
-//       case 'ERROR':
-//         console.error('ERROR', message);
-//         break;
-//       default:
-//         console.error('Unknown message type');
-//     }
-//   };
-
-//   // worker.postMessage({
-//   //   action: 'CONNECT',
-//   //   payload: { url: `${CONFIGS.BASE_URL}:5001`, userId: 1 },
-//   // });
-
-//   return () => {
-//     worker.postMessage({ action: 'DISCONNECT' });
-//     worker.terminate();
-//   };
-// }, [isWarmUpDone]);
+//     setLoadingMode('waitingMates');
+//     setTimeout(() => {
+//       progressRef.current = 0;
+//     }, 2000);
+//   }
+// }, [
+//   isPoseLoaded,
+//   isPoseInitialized,
+//   isHolisticLoaded,
+//   isHolisticInitialized,
+//   loadedStates,
+// ]);

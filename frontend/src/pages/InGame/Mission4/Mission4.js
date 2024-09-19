@@ -29,7 +29,7 @@ const Mission4 = () => {
   const [elapsedTime, setElapsedTime] = useState(0); // 경과 시간 (초 단위)
   const startTimeRef = useRef(null); // 시작 시간 저장
   const [isGameOver, setIsGameOver] = useState(false);
-  const TIME_LIMIT = 24; // 통과 제한 시간 (초 단위)
+  const TIME_LIMIT = 12; // 통과 제한 시간 (초 단위)
   const [remainingTime, setRemainingTime] = useState(0);
 
   useEffect(() => {
@@ -37,8 +37,7 @@ const Mission4 = () => {
       return;
     }
     //const actualStream = myStream.stream.getMediaStream();
-    micSetting(false);
-    // initializeStream();
+    initializeStream();
 
     return () => {
       stopAudioStream();
@@ -131,11 +130,11 @@ const Mission4 = () => {
 
   function updateGameScore(remainingTime) {
     let scoreToAdd = 0;
-    if (remainingTime >= 10) scoreToAdd = 20;
-    else if (remainingTime >= 8) scoreToAdd = 16;
-    else if (remainingTime >= 6) scoreToAdd = 12;
-    else if (remainingTime >= 4) scoreToAdd = 8;
-    else if (remainingTime >= 2) scoreToAdd = 4;
+    if (remainingTime >= 5) scoreToAdd = 20;
+    else if (remainingTime >= 4) scoreToAdd = 16;
+    else if (remainingTime >= 3) scoreToAdd = 12;
+    else if (remainingTime >= 2) scoreToAdd = 8;
+    else if (remainingTime >= 1) scoreToAdd = 4;
 
     setGameScore(prevScore => prevScore + scoreToAdd);
   }
@@ -169,6 +168,7 @@ const Mission4 = () => {
     const audioStream = await getAudioStream();
     if (audioStream) {
       setStream(audioStream);
+      micSetting(false);
     }
   }
   return (
@@ -183,10 +183,7 @@ const Mission4 = () => {
         )}
       </FullScreenCanvas>
       {isGameOver || isMissionStarting || (
-        <CanvasWrapper
-          onClick={initializeStream}
-          $myMissionStatus={myMissionStatus}
-        >
+        <CanvasWrapper $myMissionStatus={myMissionStatus}>
           <Canvas />
           <SoundIndicator
             $soundWidth={shoutingDuration.toFixed(3) < 5 ? decibels : 0}
@@ -214,7 +211,7 @@ const FullScreenCanvas = styled.div`
 
 //전체바
 const CanvasWrapper = styled.div`
-  z-index: 900;
+  z-index: 300;
 
   position: absolute;
   top: 25px;

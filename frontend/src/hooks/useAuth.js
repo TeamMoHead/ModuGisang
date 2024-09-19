@@ -15,7 +15,6 @@ const useAuth = () => {
   const refreshAuthorization = async () => {
     try {
       if (!refreshToken) {
-        console.log('No refresh token');
         return false;
       }
 

@@ -7,13 +7,13 @@ import { useNavigate } from 'react-router-dom';
 
 import * as S from '../../styles/common';
 
-import { CONFIGS } from '../../config';
+// import { CONFIGS } from '../../config';
 import styled from 'styled-components';
 
 import { onlysun } from '../../assets/icons';
 
 const Signin = () => {
-  const { TEST_EMAIL, TEST_PASSWORD } = CONFIGS;
+  // const { TEST_EMAIL, TEST_PASSWORD } = CONFIGS;
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [isLoginLoading, setIsLoginLoading] = useState(false);
@@ -60,7 +60,7 @@ const Signin = () => {
       <InputLine
         hasIcon={true}
         type="password"
-        icon={'key'}
+        icon="key"
         iconStyle={iconStyle}
         value={loginPassword}
         onChange={handleLoginPasswordChange}
@@ -79,7 +79,7 @@ const Signin = () => {
           type="submit"
           btnName="로그인"
         />
-        <LongBtn
+        {/* <LongBtn
           onClickHandler={async e => {
             e.preventDefault();
             await handleSubmitLogIn({
@@ -91,7 +91,7 @@ const Signin = () => {
           }}
           type="submit"
           btnName="개발용 로그인"
-        />
+        /> */}
       </>
       <SignUp href="#" onClick={goToSignUp}>
         회원가입
@@ -105,13 +105,13 @@ export default Signin;
 const Logo = styled.img`
   width: 109px;
   height: 108px;
-  margin-bottom: 15px;
+  margin-bottom: 30px;
 `;
 
 const TitleBox = styled.div`
   ${({ theme }) => theme.flex.center};
   flex-direction: column;
-  margin-bottom: 60px;
+  margin-bottom: 30px;
 `;
 
 const Title = styled.div`
@@ -129,12 +129,12 @@ const Subtitle = styled.div`
   ${({ theme }) => theme.fonts.IBMsmall};
   font-size: 16px;
   font-weight: 400;
-  line-height: 22px; /* 137.5% */
+  line-height: 22px;
   letter-spacing: -0.4px;
 `;
 
 const SignUp = styled.a`
-  position: fixed;
+  /* position: fixed; */
   bottom: 43px;
   ${({ theme }) => theme.fonts.JuaSmall};
   color: ${({ theme }) => theme.colors.neutral.lightGray};

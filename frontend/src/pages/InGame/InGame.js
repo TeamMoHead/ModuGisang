@@ -36,7 +36,8 @@ const InGame = () => {
   const navigate = useNavigate();
   const { userId: myId } = useContext(AccountContext);
   const { challengeData } = useContext(ChallengeContext);
-  const { isTooEarly, isTooLate } = useCheckTime(challengeData?.wakeTime);
+  const { checkTime } = useCheckTime();
+  const { isTooLate, isTooEarly } = checkTime(challengeData?.wakeTime);
   const { inGameMode, isEnteredTimeSent, sendEnteredTime } =
     useContext(GameContext);
   const { myStream, myVideoRef } = useContext(OpenViduContext);
@@ -65,21 +66,17 @@ const InGame = () => {
   }, [challengeData]);
 
   useEffect(() => {
-    // ================== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
-    // -------------⭐️ 개발 완료 후 주석 해제 필요 ⭐️ -------------
-    // ================== ⭐️⭐️⭐️⭐️⭐️⭐️⭐️⭐️ ==================
-    // if (GAME_MODE[inGameMode] === 'waiting') {
-    //   if (isTooLate) {
-    //     alert('챌린지 참여 시간이 지났습니다.');
-    //     setRedirected(true);
-    //     navigate('/main');
-    //   } else if (isTooEarly) {
-    //     alert('챌린지 시작 시간이 아닙니다.');
-    //     setRedirected(true);
-    //     navigate('/main');
-    //   }
-    // }
-    // console.log('inGameMode:', inGameMode);
+    if (GAME_MODE[inGameMode] === 'waiting') {
+      if (isTooLate) {
+        alert('챌린지 참여 시간이 지났습니다.');
+        setRedirected(true);
+        navigate('/main');
+      } else if (isTooEarly) {
+        alert('챌린지 시작 시간이 아닙니다.');
+        setRedirected(true);
+        navigate('/main');
+      }
+    }
   }, [inGameMode, isTooEarly, isTooLate, redirected]);
 
   useEffect(() => {
@@ -184,10 +181,10 @@ export default InGame;
 
 const Wrapper = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: 93vh;
 
   overflow: hidden;
-  padding: 104px 24px 30px 24px;
+  padding: 75px 24px 30px 24px;
 
   ${({ $hasMate }) =>
     $hasMate &&
@@ -195,7 +192,7 @@ const Wrapper = styled.div`
       display: grid;
       grid-template-rows: auto 150px;
       gap: 10px;
-      padding: 104px 24px 0px 24px;
+      padding: 75px 24px 0px 24px;
     `};
 `;
 

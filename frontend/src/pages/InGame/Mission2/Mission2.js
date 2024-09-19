@@ -35,7 +35,7 @@ let prevforehead = null;
 let isMovingScore = 0;
 let isMovingStatus = true; // 움직이는 중인지 여부
 let myPostitStatus = [false, false, false]; // 측정 결과
-const timeoutDuration = 27000; // 제한 시간
+const timeoutDuration = 16000; // 제한 시간
 let isTimeOut = false; // 타임 아웃 여부
 let isGameStart = false;
 

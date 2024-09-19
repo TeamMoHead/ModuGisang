@@ -23,6 +23,7 @@ import {
   faSadTear,
   faTrashCan,
   faPenToSquare,
+  faFloppyDisk,
 } from '@fortawesome/free-solid-svg-icons';
 
 import noMusic from '../assets/icons/musicOff.svg';
@@ -50,13 +51,14 @@ const iconList = {
   close: faXmark,
   refresh: faArrowsRotate,
   edit: faPenToSquare,
+  save: faFloppyDisk,
 };
 
-const iconStyleSample = {
-  size: 24,
-  color: 'purple',
-  hoverColor: 'white',
-};
+// const iconStyleSample = {
+//   size: 24,
+//   color: 'purple',
+//   hoverColor: 'white',
+// };
 
 const Icon = ({ icon, iconStyle }) => {
   return (

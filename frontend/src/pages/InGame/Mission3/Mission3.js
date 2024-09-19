@@ -27,7 +27,7 @@ let currentStatus; // 현재 고개를 돌린 방향
 // let isCentered = false;
 let isDirectionCorrect = false; // 화살표 별 측정 결과
 let isMissionFinished = false;
-const timeoutDuration = 27000;
+const timeoutDuration = 14000;
 
 const Mission3 = () => {
   const { poseModel } = useContext(MediaPipeContext);

@@ -7,7 +7,6 @@ import {
 import { POSES } from './POSE_DATA';
 import { MissionStarting, MissionEnding } from '../components';
 import Guide from './Guide';
-import styled from 'styled-components';
 
 const round = [
   {
@@ -32,7 +31,7 @@ let frameCount = 0; // 현재 프레임 카운트
 
 let isPoseCorrect = false; // 자세 측정 결과
 const keypoints = {}; // 측정에 사용할 각 포인트의 위치 저장
-const timeoutDuration = 27000; // 제한 시간
+const timeoutDuration = 18500; // 제한 시간
 
 const Mission1 = () => {
   const { poseModel } = useContext(MediaPipeContext);
@@ -190,47 +189,14 @@ const Mission1 = () => {
       {isMissionEnding && <MissionEnding />}
 
       {isMissionStarting || (
-        <>
-          {/* <ProgressWrapper title="progressWrapper">
-            <ProgressIndicator progress={progress} />
-          </ProgressWrapper> */}
-          <Guide
-            poseCorrect={stretchSide[currentRound]}
-            isFlipTriggered={isFlipTriggered}
-            progress={progress}
-          />
-        </>
+        <Guide
+          poseCorrect={stretchSide[currentRound]}
+          isFlipTriggered={isFlipTriggered}
+          progress={progress}
+        />
       )}
     </>
   );
 };
 
 export default Mission1;
-
-const ProgressWrapper = styled.div`
-  z-index: 200;
-
-  position: absolute;
-  bottom: 25px;
-
-  width: 80%;
-  height: 30px;
-
-  border-radius: ${({ theme }) => theme.radius.small};
-  border: 2px solid ${({ theme }) => theme.colors.primary.white};
-  background-color: ${({ theme }) => theme.colors.translucent.navy};
-`;
-
-const ProgressIndicator = styled.div`
-  z-index: 300;
-
-  position: absolute;
-
-  width: ${({ progress }) => progress}%;
-  height: 100%;
-
-  border-radius: ${({ theme }) => theme.radius.small};
-
-  background-color: ${({ theme }) => theme.colors.primary.emerald};
-  transition: width 0.2s ease;
-`;

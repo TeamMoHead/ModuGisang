@@ -82,14 +82,11 @@ const MyStreak = () => {
 
   const formatDate = date => {
     const [year, month, day] = date.split('-');
-    return `${year.slice(2)}년 ${parseInt(month, 10)}월 ${parseInt(day, 10)}일 기록`;
+    return `${year}년 ${parseInt(month, 10)}월 ${parseInt(day, 10)}일 기록`;
   };
-
-  console.log('myData', myData);
 
   useEffect(() => {
     getCalendar();
-    console.log('선택한 월', viewMonth);
   }, [viewMonth]);
 
   useEffect(() => {

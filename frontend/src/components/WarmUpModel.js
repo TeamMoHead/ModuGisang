@@ -40,13 +40,13 @@ const WarmUpModel = () => {
 
       if (poseModel.current) {
         poseModel.current.onResults(results => {
-          console.log('###### MEDIA_PIPE CONTEXT : POSE #######', results);
+          // console.log('###### MEDIA_PIPE CONTEXT : POSE #######', results);
         });
 
         poseModel.current
           .send({ image: imageData })
           .then(results => {
-            console.log('======> POSE Inference results:', results);
+            // console.log('======> POSE Inference results:', results);
             setIsPoseInitialized(true);
           })
           .catch(error => {
@@ -77,13 +77,13 @@ const WarmUpModel = () => {
 
       if (holisticModel.current) {
         holisticModel.current.onResults(results => {
-          console.log('###### MEDIA_PIPE CONTEXT : POSE #######', results);
+          // console.log('###### MEDIA_PIPE CONTEXT : POSE #######', results);
         });
 
         holisticModel.current
           .send({ image: imageData })
           .then(results => {
-            console.log('=========> HOLISTIC Inference results:', results);
+            // console.log('=========> HOLISTIC Inference results:', results);
             setIsHolisticInitialized(true);
           })
           .catch(error => {
@@ -100,7 +100,7 @@ const WarmUpModel = () => {
 
   useEffect(() => {
     if (isPoseInitialized && isHolisticInitialized) {
-      console.log('=========Warm up is done!===========');
+      // console.log('=========Warm up is done!===========');
       setIsWarmUpDone(true);
     }
   }, [isPoseInitialized, isHolisticInitialized]);

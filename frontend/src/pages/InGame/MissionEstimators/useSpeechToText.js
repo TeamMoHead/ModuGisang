@@ -13,29 +13,23 @@ const useSpeechToText = duration => {
       console.warn('Browser dose not support speech recognition.');
       return;
     }
-  }, []);
+    SpeechRecognition.startListening({ continuous: true });
+    setListening(true);
 
-  const start = () => {
-    console.log(listening);
-    if (!listening) {
-      SpeechRecognition.startListening({ continuous: true });
-      setListening(true);
-
-      const timer = setTimeout(() => {
-        SpeechRecognition.stopListening();
-        setListening(false);
-      }, duration * 1000);
-      return () => clearTimeout(timer);
-    }
-  };
+    const timer = setTimeout(() => {
+      SpeechRecognition.stopListening();
+      setListening(false);
+    }, duration * 1000);
+    return () => clearTimeout(timer);
+  }, [duration]);
 
   const stop = () => {
     setListening(false);
-    console.log('WEB SPEECH API STOP');
+
     SpeechRecognition.stopListening();
   };
 
-  return { transcript, listening, start, stop, resetTranscript };
+  return { transcript, listening, stop, resetTranscript };
 };
 
 export default useSpeechToText;
