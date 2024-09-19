@@ -22,6 +22,7 @@ async function bootstrap() {
         callback(new Error('Not allowed by CORS'));
       }
     },
+    // origin: '*',
     methods: 'GET,HEAD,PATCH,POST',
     credentials: true,
   });

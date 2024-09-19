@@ -11,6 +11,7 @@ import {
   Get,
   Req,
   ParseIntPipe,
+  NotFoundException,
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -97,14 +98,52 @@ export class UserController {
     @Body('affirmation') affirmation: string,
   ) {
     if (affirmation === '') {
-      throw new BadRequestException('격언 값이 없습니다.');
+      throw new BadRequestException('확언 값이 없습니다.');
     }
     const user = await this.userService.findOneByID(userId);
     const result = await this.userService.updateAffirm(user, affirmation);
     if (result.affected > 0) {
       return 'success';
     } else {
-      throw new BadRequestException('격언 업로드 실패!');
+      throw new BadRequestException('확언 업로드 실패!');
+    }
+  }
+
+  // 계정 삭제 API
+  @Post('delete-user')
+  async deleteUser(@Body('userId') userId: number) {
+    const result = await this.userService.deleteUser(userId);
+    if (result === 1) {
+      return { status: 201, message: '회원 삭제 성공' };
+    } else {
+      return { status: 401, message: '회원 삭제 실패' };
+    }
+  }
+
+  // 계정 복구 API
+  @Get('restore/:id')
+  async restoreUser(@Param('id') id: number): Promise<void> {
+    return this.userService.restoreUser(id);
+  }
+
+  // 비밀번호 변경 API
+  @UseGuards(AuthenticateGuard)
+  @Post('reset-password')
+  async resetPassword(@Body() body: { email: string; newPassword: string }) {
+    const { email, newPassword } = body;
+    const user = await this.userService.findUser(email);
+    console.log('user ', user);
+    if (!user) {
+      throw new NotFoundException('해당 이메일을 가진 유저는 없습니다.');
+    }
+    const hashedPassword = await this.userService.changePassword(
+      user._id,
+      newPassword,
+    );
+    if (hashedPassword.affected === 1) {
+      return { status: 201, message: '비밀번호 변경 성공' };
+    } else {
+      return { status: 401, message: '비밀번호 변경 실패' };
     }
   }
 }

@@ -184,10 +184,6 @@ const CreateChallenge = () => {
     }
   };
 
-  // useEffect(() => {
-  //   handleDateChange();
-  // });
-
   return (
     <>
       <NavBar />
@@ -216,13 +212,22 @@ const CreateChallenge = () => {
                 <StartDay>
                   시작 일자
                   <Day>
-                    {range[0].getMonth() + ' 월 ' + range[0].getDate() + '일'}
+                    {range[0].getMonth() +
+                      1 +
+                      ' 월 ' +
+                      range[0].getDate() +
+                      '일'}
                   </Day>
                 </StartDay>
+                <Divider />
                 <EndDay>
                   완료 일자
                   <Day>
-                    {range[1].getMonth() + ' 월 ' + range[1].getDate() + '일'}
+                    {range[1].getMonth() +
+                      1 +
+                      ' 월 ' +
+                      range[1].getDate() +
+                      '일'}
                   </Day>
                 </EndDay>
               </StardEndDay>
@@ -350,17 +355,24 @@ const MiniCircle = styled.div`
 
 const StardEndDay = styled.div`
   border-top: 1px solid ${({ theme }) => theme.colors.primary.white};
-  ${({ theme }) => theme.flex.center} /* padding:10px; */
-  /* justify-content: space-around */
+  ${({ theme }) => theme.flex.center}
+
+  /* padding:0 20px 0 20px; */
+  justify-content: space-evenly;
   ${({ theme }) => theme.fonts.JuaSmall}
   text-align: center;
 `;
 
+const Divider = styled.div`
+  width: 1px;
+  height: 86px;
+  border: 0.5px solid ${({ theme }) => theme.colors.primary.white};
+`;
+
 const StartDay = styled.div`
   color: ${({ theme }) => theme.colors.primary.emerald};
-  border-right: 1px solid ${({ theme }) => theme.colors.primary.white};
   ${({ theme }) => theme.flex.left}
-  padding:10px;
+  padding: 10px 0 10px 0;
   flex-direction: column;
   text-align: center;
 `;
@@ -368,7 +380,7 @@ const StartDay = styled.div`
 const EndDay = styled.div`
   color: ${({ theme }) => theme.colors.primary.purple};
   ${({ theme }) => theme.flex.left}
-  padding:10px;
+  padding: 10px 0 10px 0;
   flex-direction: column;
   text-align: center;
 `;
