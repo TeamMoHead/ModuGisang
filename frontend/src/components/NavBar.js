@@ -28,11 +28,7 @@ const NavBar = () => {
   const [scrolled, setScrolled] = useState(false);
 
   const goBack = () => {
-    if (
-      pageType === 'changePassword' ||
-      pageType === 'privacyPolicy' ||
-      pageType === 'termsOfService'
-    ) {
+    if (pageType === 'privacyPolicy' || pageType === 'termsOfService') {
       if (state?.from === 'settings') {
         navigate('/settings');
       } else if (state?.from === 'signup') {
@@ -40,6 +36,8 @@ const NavBar = () => {
       } else {
         navigate('/');
       }
+    } else if (pageType === 'changePassword') {
+      navigate('/settings');
     } else if (pageType === 'signUp' || pageType === 'forgotPassword') {
       navigate('/signIn');
     } else {
