@@ -63,7 +63,7 @@ const Signin = () => {
       <InputLine
         hasIcon={true}
         type="password"
-        icon={'key'}
+        icon="key"
         iconStyle={iconStyle}
         value={loginPassword}
         onChange={handleLoginPasswordChange}
@@ -114,13 +114,13 @@ export default Signin;
 const Logo = styled.img`
   width: 109px;
   height: 108px;
-  margin-bottom: 15px;
+  margin-bottom: 30px;
 `;
 
 const TitleBox = styled.div`
   ${({ theme }) => theme.flex.center};
   flex-direction: column;
-  margin-bottom: 60px;
+  margin-bottom: 30px;
 `;
 
 const Title = styled.div`
@@ -137,7 +137,7 @@ const Subtitle = styled.div`
   ${({ theme }) => theme.fonts.IBMsmall};
   font-size: 16px;
   font-weight: 400;
-  line-height: 22px; /* 137.5% */
+  line-height: 22px;
   letter-spacing: -0.4px;
 `;
 

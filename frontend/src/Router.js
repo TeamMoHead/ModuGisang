@@ -20,8 +20,10 @@ import {
   TermsOfService,
   ChangePassword,
   About,
-  Testing,
 } from './pages';
+
+import { SafeAreaProvider } from './contexts/SafeAreaContext'; // SafeAreaProvider 추가
+import SafeArea from './styles/SafeArea'; // SafeAreaWrapper를 가져옴
 
 function Router() {
   return (

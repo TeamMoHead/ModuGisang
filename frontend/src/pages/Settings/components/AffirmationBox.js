@@ -1,22 +1,33 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import styled from 'styled-components';
 
-const AffirmationBox = ({ value, onChange, disabled }) => {
+const AffirmationBox = ({
+  affirmation,
+  setAffirmation,
+  isAbleInput,
+  setIsExceeded30,
+}) => {
+  const textAreaRef = useRef(null);
   const [error, setError] = useState('');
-  const textareaRef = useRef(null);
+
+  const adjustHeight = () => {
+    const textArea = textAreaRef.current;
+    if (textArea) {
+      textArea.style.height = 'auto';
+      textArea.style.height = `${textArea.scrollHeight}px`;
+    }
+  };
 
   const handleChange = e => {
     const newValue = e.target.value;
-    if (newValue.length <= 30) {
-      setError('');
-      onChange(e);
-    } else {
-      setError('30자를 넘길 수 없습니다.');
-    }
+    setAffirmation(newValue);
 
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    if (newValue.length > 30) {
+      setIsExceeded30(true);
+      setError('30자를 넘길 수 없습니다.');
+    } else {
+      setIsExceeded30(false);
+      setError('');
     }
   };
 
@@ -27,16 +38,27 @@ const AffirmationBox = ({ value, onChange, disabled }) => {
     }
   };
 
+  useLayoutEffect(() => {
+    if (isAbleInput && textAreaRef.current) {
+      const textArea = textAreaRef.current;
+      textArea.focus();
+      textArea.setSelectionRange(textArea.value.length, textArea.value.length);
+    }
+  }, [isAbleInput]);
+
+  useEffect(() => {
+    adjustHeight();
+  }, [affirmation]);
+
   return (
-    <Wrapper>
+    <Wrapper $isAbleInput={isAbleInput}>
       <InputText
-        ref={textareaRef}
-        value={value}
+        ref={textAreaRef}
+        value={affirmation}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        disabled={disabled}
-        cols="10"
-        rows="1"
+        $isAbleInput={isAbleInput}
+        disabled={!isAbleInput}
       />
       {error && <ErrorText>{error}</ErrorText>}
     </Wrapper>
@@ -47,24 +69,26 @@ export default AffirmationBox;
 
 const Wrapper = styled.div`
   width: 100%;
-  box-sizing: border-box;
-  display: flex;
+  height: 226px;
+  ${({ theme }) => theme.flex.center};
   flex-direction: column;
-  align-items: center;
+
+  padding: 15px;
+
+  background-color: ${({ $isAbleInput, theme }) =>
+    $isAbleInput ? theme.colors.translucent.white : 'transparent'};
+  border-radius: 0 0 30px 30px;
 `;
 
 const InputText = styled.textarea`
   width: 100%;
-  ${({ theme }) => theme.flex.center};
+
   color: ${({ theme }) => theme.colors.primary.white};
-  z-index: 100;
   ${({ theme }) => theme.fonts.IBMlarge};
   text-align: center;
-  vertical-align: middle;
-  overflow: hidden;
-  resize: none;
-  box-sizing: border-box;
-  line-height: 1.5;
+
+  caret-color: ${({ theme, $isAbleInput }) =>
+    $isAbleInput ? theme.colors.primary.emerald : 'transparent'};
 `;
 
 const ErrorText = styled.div`

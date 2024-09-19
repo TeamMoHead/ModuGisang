@@ -1,5 +1,4 @@
 import Main from './Main/Main';
-import Auth from './Auth/Auth';
 import InGame from './InGame/InGame';
 import MyStreak from './MyStreak/MyStreak';
 import JoinChallenge from './JoinChallenge/JoinChallenge';
@@ -9,11 +8,9 @@ import PrivacyPolicy from './Settings/PrivacyPolicy';
 import TermsOfService from './Settings/TermsOfService';
 import ChangePassword from './Settings/ChangePassword';
 import About from './Settings/About';
-import Testing from './Testing/Testing';
 
 export {
   Main,
-  Auth,
   InGame,
   MyStreak,
   JoinChallenge,
@@ -23,5 +20,4 @@ export {
   TermsOfService,
   ChangePassword,
   About,
-  Testing,
 };

@@ -256,10 +256,10 @@ export default Result;
 
 const Wrapper = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: 93vh;
 
   overflow: hidden;
-  padding: 104px 24px 30px 24px;
+  padding: 75px 24px 30px 24px;
 
   ${({ $hasRest }) =>
     $hasRest &&
@@ -267,7 +267,7 @@ const Wrapper = styled.div`
       display: grid;
       grid-template-rows: auto 150px;
       gap: 10px;
-      padding: 104px 24px 0px 24px;
+      padding: 75px 24px 0px 24px;
     `};
 `;
 

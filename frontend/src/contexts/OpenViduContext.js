@@ -176,8 +176,9 @@ const OpenViduContextProvider = ({ children }) => {
         publishVideo: true,
         resolution: '340x480',
         frameRate: 30,
-        mirror: true,
+        mirror: false,
       });
+
       videoSession.publish(publisher);
       setMyStream(publisher);
     };
@@ -193,12 +194,12 @@ const OpenViduContextProvider = ({ children }) => {
 
     return () => {
       if (videoSession) {
-        videoSession.off('streamCreated');
-        videoSession.disconnect();
+        videoSession?.off('streamCreated');
+        videoSession?.disconnect();
       }
       if (myStream) {
-        myStream.dispose();
-        mateStreams.forEach(stream => stream.dispose());
+        myStream?.dispose();
+        mateStreams?.forEach(stream => stream.dispose());
       }
     };
   }, [videoSession]);

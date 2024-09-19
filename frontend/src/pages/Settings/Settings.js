@@ -4,7 +4,14 @@ import { AccountContext, ChallengeContext, UserContext } from '../../contexts';
 import { authServices, userServices } from '../../apis';
 import useFetch from '../../hooks/useFetch';
 import useNavigateWithState from '../../hooks/useNavigateWithState';
-import { NavBar, Icon, OutlineBox, StyledLink } from '../../components';
+import {
+  NavBar,
+  Icon,
+  OutlineBox,
+  StyledLink,
+  // InputLine,
+  // LongBtn,
+} from '../../components';
 import { AffirmationBox } from './components';
 import * as S from '../../styles/common';
 import styled from 'styled-components';
@@ -22,9 +29,13 @@ const Settings = () => {
 
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
   const [affirmation, setAffirmation] = useState('');
+  const [isAbleInput, setIsAbleInput] = useState(false);
+  const [isExceeded30, setIsExceeded30] = useState(false);
+
+  //////////////////////////////////////////
   // const [wakeTime, setWakeTime] = useState('');
   // const [challengeId, setChallengeId] = useState('');
-  const [isAbleInput, setIsAbleInput] = useState(false);
+  //////////////////////////////////////////
 
   const handleLogOut = async () => {
     setIsLogoutLoading(true);
@@ -45,25 +56,48 @@ const Settings = () => {
     }
   };
 
-  const handleAffirmationChange = e => {
-    setAffirmation(e.target.value);
+  const handleEditBtn = () => {
+    if (!isAbleInput) {
+      enableInput();
+    } else {
+      checkIsReadyToSave();
+    }
   };
 
-  const handleChangeAffirmation = async () => {
+  const enableInput = () => {
+    setIsAbleInput(true);
+  };
+
+  const checkIsReadyToSave = () => {
+    if (!isExceeded30) {
+      const isConfirmed = window.confirm('수정한 내용을 저장하시겠습니까?');
+      if (isConfirmed) {
+        saveNewAffirmation();
+        setIsAbleInput(false);
+      }
+    } else {
+      alert('30자를 넘길 수 없습니다.');
+    }
+  };
+
+  const saveNewAffirmation = async () => {
     const response = await fetchData(() =>
       userServices.changeAffirmation({ accessToken, affirmation, userId }),
     );
+
     const {
       isLoading: isChangeAffirmationLoading,
       error: changeAffirmationError,
     } = response;
     if (!isChangeAffirmationLoading) {
-      alert('변경되었습니다.');
-      setIsAbleInput(false);
+      alert('성공적으로 변경되었습니다.');
+      window.location.reload();
     } else if (changeAffirmationError) {
       alert(changeAffirmationError);
     }
   };
+
+  //////////////////////////////////////////
 
   // const handleWakeTimeChange = e => {
   //   setWakeTime(e.target.value);
@@ -77,17 +111,6 @@ const Settings = () => {
   //   console.log('연습 게임으로 이동~!');
   //   console.log(user.myData);
   // };
-
-  const handleIsAbleInput = () => {
-    if (isAbleInput) {
-      handleChangeAffirmation();
-    } else {
-      const isConfirmed = window.confirm('오늘의 다짐을 수정하시겠습니까?');
-      if (isConfirmed) {
-        setIsAbleInput(true);
-      }
-    }
-  };
 
   // const handleChangeWakeTime = async () => {
   //   const response = await fetchData(() =>
@@ -108,6 +131,8 @@ const Settings = () => {
   //     alert(changeWakeTimeError);
   //   }
   // };
+
+  //////////////////////////////////////////
 
   useEffect(() => {
     if (accessToken && userId) {
@@ -141,7 +166,7 @@ const Settings = () => {
             <AffirmationWrapper>
               <AffirmationTitle>
                 <Text isColor={true}>오늘의 다짐 문구</Text>
-                <EditButton onClick={handleIsAbleInput}>
+                <EditButton onClick={handleEditBtn}>
                   <Icon
                     icon={isAbleInput ? 'save' : 'edit'}
                     iconStyle={{
@@ -152,15 +177,12 @@ const Settings = () => {
                   />
                 </EditButton>
               </AffirmationTitle>
-              <AffirmationContent isAbleInput={isAbleInput}>
-                <InputDiv>
-                  <AffirmationBox
-                    value={affirmation}
-                    onChange={handleAffirmationChange}
-                    disabled={!isAbleInput}
-                  />
-                </InputDiv>
-              </AffirmationContent>
+              <AffirmationBox
+                affirmation={affirmation}
+                setAffirmation={setAffirmation}
+                isAbleInput={isAbleInput}
+                setIsExceeded30={setIsExceeded30}
+              />
             </AffirmationWrapper>
           }
         />
@@ -186,6 +208,7 @@ const Settings = () => {
             onClickHandler={handleChangeWakeTime}
           />
         </> */}
+
         {/* <LongBtn btnName="연습 게임 진행하기" onClickHandler={handlePractice} /> */}
 
         <ChangePasswordWrapper onClick={() => navigate('/changePassword')}>
@@ -241,7 +264,6 @@ const UserWrapper = styled.div`
 
 const AffirmationWrapper = styled.div`
   position: relative;
-  z-index: 50;
   width: 100%;
   height: 281px;
 `;
@@ -252,14 +274,6 @@ const AffirmationTitle = styled.div`
   width: 100%;
   height: 55px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.primary.purple};
-`;
-
-const AffirmationContent = styled.div`
-  ${({ theme }) => theme.flex.center};
-  height: calc(100% - 55px);
-  background-color: ${({ isAbleInput, theme }) =>
-    isAbleInput ? theme.colors.translucent.white : 'initial'};
-  border-radius: 0 0 30px 30px;
 `;
 
 const LogoutWrapper = styled.div`
@@ -301,17 +315,8 @@ const EditButton = styled.button`
   right: 5px;
 `;
 
-const InputDiv = styled.div`
-  flex-grow: 1;
-  max-width: 90%;
-  height: 130px;
-
-  ${({ theme }) => theme.flex.center};
-  vertical-align: middle;
-`;
-
 const FooterLinks = styled.div`
-  margin-top: 20px;
+  margin-top: 10px;
   display: flex;
   justify-content: center;
   gap: 20px;
