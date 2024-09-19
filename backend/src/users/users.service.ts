@@ -316,7 +316,7 @@ export class UserService {
     await this.redisService.del(cacheKey);
 
     if (result.affected === 0) {
-      throw new NotFoundException('해당 유저는 없는 유저입니다.');
+      throw new NotFoundException('해당 이메일을 가진 유저는 없습니다.');
     }
     return result.affected;
   }
@@ -331,7 +331,7 @@ export class UserService {
     await this.redisService.del(cacheKey);
 
     if (result.affected == 0) {
-      throw new NotFoundException('유저 아이디에 해당하는 유저는 없습니다.');
+      throw new NotFoundException('해당 이메일을 가진 유저는 없습니다.');
     }
   }
 
@@ -351,7 +351,7 @@ export class UserService {
     });
 
     if (!user) {
-      throw new Error('User not found');
+      return null;
     }
 
     const tmpPassword = Math.random().toString(36).slice(2);
