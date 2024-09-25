@@ -37,7 +37,8 @@ export class EmailService {
 
     await this.transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        return console.log(`error: ${error}`);
+        console.log(`error: ${error}`);
+        return null;
       }
       console.log(`Message Sent: ${info.response}`);
     });
@@ -55,7 +56,8 @@ export class EmailService {
 
     await this.transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        return console.log(`error: ${error}`);
+        console.log(`error: ${error}`);
+        return null;
       }
       console.log(`Message Sent: ${info.response}`);
     });
@@ -83,6 +85,9 @@ export class EmailService {
       return { success: false, message: '이미 존재하는 이메일입니다.' };
     } else {
       const random = await this.sendMail(email);
+      if (random === null) {
+        return { success: false, message: '이메일이 발송되지 않았습니다.' };
+      }
       await this.setRandom(email, random);
       return { success: true, message: '인증번호 전송완료' };
     }
@@ -94,6 +99,9 @@ export class EmailService {
     const tmpPW = await this.userService.changeTmpPassword(email);
     if (tmpPW) {
       const result = await this.sendPW(email, tmpPW);
+      if (result === null) {
+        return { success: false, message: '이메일이 발송되지 않았습니다.' };
+      }
       return { success: true, message: '임시 비밀번호 전송완료' };
     } else {
       return { success: false, message: '이메일이 존재하지 않습니다.' };

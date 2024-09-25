@@ -23,14 +23,16 @@ export class UserController {
 
   @Post('sign-up')
   async createUser(@Body() createUserDto: CreateUserDto) {
-    console.log('come here');
-    console.log(createUserDto);
     const user = await this.userService.createUser(
       createUserDto.email,
       createUserDto.password,
       createUserDto.userName,
     );
-    return user;
+    if (user) {
+      return user;
+    } else {
+      throw new BadRequestException('회원가입 실패');
+    }
   }
 
   @UseGuards(AuthenticateGuard)
@@ -39,41 +41,12 @@ export class UserController {
     console.log(req.user);
     console.log('typeof req.user._id', typeof req.user._id);
     const result = await this.userService.getInvis(req.user._id);
-    console.log(req.user._id);
-    const invitations = result.invitations;
-    return {
-      userId: invitations._id,
-      userName: invitations.userName,
-      streakDays: 0, // streak 구현 후 처리 예정
-      medals: {
-        gold: invitations.medals.gold,
-        silver: invitations.medals.silver,
-        bronze: invitations.medals.bronze,
-      },
-      invitationCounts: result.count,
-      affirmation: invitations.affirmation,
-      challengeId: invitations.challengeId,
-      profile: invitations.profile,
-      openviduToken: invitations.openviduToken,
-    };
-  }
-
-  @UseGuards(AuthenticateGuard)
-  @Get('/:userId')
-  async searchUser(@Req() req, @Param('userId', ParseIntPipe) userId: number) {
-    const redisCheckUserInfo = await this.userService.redisCheckUser(userId);
-    if (redisCheckUserInfo) {
-      return redisCheckUserInfo;
-    } else {
-      const result = await this.userService.getInvis(userId);
+    if (result) {
       const invitations = result.invitations;
-      const lastActiveDate = result.lastActiveDate;
-      const isCountinue = this.userService.isContinuous(lastActiveDate);
-
-      const userInformation = {
+      return {
         userId: invitations._id,
         userName: invitations.userName,
-        streakDays: isCountinue ? result.currentStreak : 0,
+        streakDays: 0, // streak 구현 후 처리 예정
         medals: {
           gold: invitations.medals.gold,
           silver: invitations.medals.silver,
@@ -85,9 +58,45 @@ export class UserController {
         profile: invitations.profile,
         openviduToken: invitations.openviduToken,
       };
+    } else {
+      throw new BadRequestException('회원 정보 찾기 실패');
+    }
+  }
 
-      await this.userService.redisSetUser(userId, userInformation);
-      return userInformation;
+  @UseGuards(AuthenticateGuard)
+  @Get('/:userId')
+  async searchUser(@Req() req, @Param('userId', ParseIntPipe) userId: number) {
+    const redisCheckUserInfo = await this.userService.redisCheckUser(userId);
+    if (redisCheckUserInfo) {
+      return redisCheckUserInfo;
+    } else {
+      const result = await this.userService.getInvis(userId);
+      if (result) {
+        const invitations = result.invitations;
+        const lastActiveDate = result.lastActiveDate;
+        const isCountinue = this.userService.isContinuous(lastActiveDate);
+
+        const userInformation = {
+          userId: invitations._id,
+          userName: invitations.userName,
+          streakDays: isCountinue ? result.currentStreak : 0,
+          medals: {
+            gold: invitations.medals.gold,
+            silver: invitations.medals.silver,
+            bronze: invitations.medals.bronze,
+          },
+          invitationCounts: result.count,
+          affirmation: invitations.affirmation,
+          challengeId: invitations.challengeId,
+          profile: invitations.profile,
+          openviduToken: invitations.openviduToken,
+        };
+
+        await this.userService.redisSetUser(userId, userInformation);
+        return userInformation;
+      } else {
+        throw new BadRequestException('유저 정보 찾기 실패');
+      }
     }
   }
 
@@ -110,9 +119,13 @@ export class UserController {
   }
 
   // 계정 삭제 API
+  @UseGuards(AuthenticateGuard)
   @Post('delete-user')
-  async deleteUser(@Body('userId') userId: number) {
-    const result = await this.userService.deleteUser(userId);
+  async deleteUser(@Body('password') password: string, @Req() req) {
+    // 유저 확인
+    const user = await this.userService.checkUser(req.user.email, password);
+    // 삭제 진행
+    const result = await this.userService.deleteUser(user._id);
     if (result === 1) {
       return { status: 201, message: '회원 삭제 성공' };
     } else {
@@ -129,10 +142,14 @@ export class UserController {
   // 비밀번호 변경 API
   @UseGuards(AuthenticateGuard)
   @Post('reset-password')
-  async resetPassword(@Body() body: { email: string; newPassword: string }) {
-    const { email, newPassword } = body;
-    const user = await this.userService.findUser(email);
-    console.log('user ', user);
+  async resetPassword(
+    @Body() body: { newPassword: string; oldPassword: string },
+    @Req() req,
+  ) {
+    const { newPassword, oldPassword } = body;
+    const email = req.user.email;
+    // 유저 이메일과 비밀번호로 유저 2차 검증 후 유저 정보 가져오기
+    const user = await this.userService.checkUser(email, oldPassword);
     if (!user) {
       throw new NotFoundException('해당 이메일을 가진 유저는 없습니다.');
     }
