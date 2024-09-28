@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { InputLine, LongBtn, NavBar } from '../../components';
+import { InputLine, LongBtn, NavBar, LoadingWithText } from '../../components';
 import useAuth from '../../hooks/useAuth';
 import useValidation from '../../hooks/useValidation';
 import * as S from '../../styles/common';
@@ -55,7 +55,11 @@ const ChangePassword = () => {
   }, [newPassword, checkNewPassword]);
 
   if (isChangeLoading) {
-    return <div>비밀번호 변경 중...</div>;
+    return (
+      <S.LoadingWrapper>
+        <LoadingWithText loadingMSG="탈퇴 처리 중..." />
+      </S.LoadingWrapper>
+    );
   }
 
   const isFormValid = () => {
