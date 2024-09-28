@@ -1,6 +1,7 @@
 import {
   BeforeInsert,
   Column,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   OneToMany,
@@ -68,6 +69,9 @@ export class Users {
 
   @OneToMany(() => Challenges, (challenge) => challenge.host, { cascade: true })
   hostedChallenges: Challenges[];
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }
 
 interface Medals {

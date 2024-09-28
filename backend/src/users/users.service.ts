@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -6,12 +7,13 @@ import {
 import { Users } from './entities/users.entity';
 import * as argon2 from 'argon2';
 import { Repository } from 'typeorm';
-import { UserDto } from 'src/auth/dto/user.dto';
+import { UserDto } from '../auth/dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Streak } from './entities/streak.entity';
-import RedisCacheService from 'src/redis-cache/redis-cache.service';
+import RedisCacheService from '../redis-cache/redis-cache.service';
 import { UserInformationDto } from './dto/user-info.dto';
+import { Challenges } from 'src/challenges/challenges.entity';
 // import { refreshJwtConstants } from 'src/auth/constants';
 
 @Injectable()
@@ -21,11 +23,14 @@ export class UserService {
     private userRepository: Repository<Users>,
     @InjectRepository(Streak)
     private streakRepository: Repository<Streak>,
+    @InjectRepository(Challenges)
+    private challengeRepository: Repository<Challenges>,
     private configService: ConfigService,
     private readonly redisService: RedisCacheService,
   ) {
     this.userRepository = userRepository;
     this.streakRepository = streakRepository;
+    this.challengeRepository = challengeRepository;
   }
 
   async createUser(
@@ -49,12 +54,16 @@ export class UserService {
   }
 
   async findUser(email: string): Promise<Users> {
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
     return user;
   }
 
   async findOneByID(_id: number): Promise<Users> {
-    return await this.userRepository.findOne({ where: { _id } });
+    return await this.userRepository.findOne({
+      where: { _id },
+    });
   }
 
   // refreshToken db에 저장
@@ -104,7 +113,9 @@ export class UserService {
     refreshToken: string,
     userId: number,
   ): Promise<UserDto> {
-    const user = await this.userRepository.findOne({ where: { _id: userId } });
+    const user = await this.userRepository.findOne({
+      where: { _id: userId },
+    });
     const refresh = await this.redisService.get(`refreshToken:${userId}`);
 
     if (!refresh) {
@@ -200,7 +211,8 @@ export class UserService {
   async getStreak(userId: number) {
     try {
       const getStreak = await this.streakRepository.findOne({
-        where: { userId: userId },
+        where: { userId: userId, user: { deletedAt: null } },
+        relations: ['user'],
       });
 
       return getStreak;
@@ -233,7 +245,9 @@ export class UserService {
   }
 
   async saveOpenviduToken(userId: number, token: string) {
-    const user = await this.userRepository.findOne({ where: { _id: userId } });
+    const user = await this.userRepository.findOne({
+      where: { _id: userId },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -263,4 +277,126 @@ export class UserService {
       console.log('redis에 유저 정보 저장 성공');
     }
   }
+
+  async deleteUser(userId: number) {
+    const user = await this.userRepository.findOne({ where: { _id: userId } });
+    const challengeId = user.challengeId;
+    const challenge = await this.challengeRepository.findOne({
+      where: { _id: challengeId },
+    });
+
+    // 삭제될 유저가 호스트일 때만 진행
+    if (userId === challenge.hostId) {
+      // 현재 챌린지의 호스트일 때 다른 사용자에게 위임
+      let inChallengeUsers = await this.userRepository.find({
+        where: { challengeId: challengeId },
+      });
+
+      // 삭제될 사용자 제외 후 새로운 유저에서 뽑기
+      inChallengeUsers = inChallengeUsers.filter(
+        (challengeUser) => challengeUser._id !== userId,
+      );
+      // 삭제될 유저가 챌린지를 혼자 참여할 경우에는 진행 X
+      if (inChallengeUsers.length > 0) {
+        const randomIndex = Math.floor(Math.random() * inChallengeUsers.length);
+        challenge.hostId = inChallengeUsers[randomIndex]._id;
+        await this.challengeRepository.save(challenge);
+      }
+    }
+
+    // 삭제될 사용자는 챌린지에서 빠짐
+    user.challengeId = -1;
+    await this.userRepository.save(user);
+
+    // 유저 소프트 삭제
+    const result = await this.userRepository.softDelete({ _id: userId });
+
+    // 챌린지 정보 캐시 삭제
+    const cacheKey = `challenge_${challengeId}`;
+    await this.redisService.del(cacheKey);
+
+    if (result.affected === 0) {
+      throw new NotFoundException('해당 이메일을 가진 유저는 없습니다.');
+    }
+    return result.affected;
+  }
+
+  // 유저 복구하는 함수 (혹시 몰라서 만듦)
+  async restoreUser(userId: number): Promise<void> {
+    const result = await this.userRepository.restore(userId);
+    const user = await this.userRepository.findOne({ where: { _id: userId } });
+    console.log('USER IS', user);
+    const cacheKey = `challenge_${user.challengeId}`;
+
+    await this.redisService.del(cacheKey);
+
+    if (result.affected == 0) {
+      throw new NotFoundException('해당 이메일을 가진 유저는 없습니다.');
+    }
+  }
+
+  async searchEmail(name: string) {
+    console.log(name);
+    const result = await this.userRepository.find({
+      where: { userName: name },
+      select: ['email'],
+    });
+
+    return result;
+  }
+
+  async changeTmpPassword(email: string) {
+    const user = await this.userRepository.findOne({
+      where: { email: email },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    const tmpPassword = Math.random().toString(36).slice(2);
+
+    user.password = await argon2.hash(tmpPassword);
+    await this.userRepository.save(user);
+
+    console.log('tmpPW : ', tmpPassword);
+    return tmpPassword;
+  }
+
+  async changePassword(userId: number, newPassword: string) {
+    if (checkPW(newPassword)) {
+      const hashedPassword = await argon2.hash(newPassword);
+
+      return await this.userRepository.update(userId, {
+        password: hashedPassword,
+      });
+    } else {
+      throw new BadRequestException('비밀번호 양식이 틀렸습니다');
+    }
+  }
+}
+
+function checkPW(pw: string): boolean {
+  // 최소 8자 이상
+  if (pw.length < 8) {
+    return false;
+  }
+
+  // 영문 포함
+  if (!/[a-zA-Z]/.test(pw)) {
+    return false;
+  }
+
+  // 숫자 포함
+  if (!/\d/.test(pw)) {
+    return false;
+  }
+
+  // 특수문자 포함
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pw)) {
+    return false;
+  }
+
+  // 모든 조건을 만족하면 true 반환
+  return true;
 }

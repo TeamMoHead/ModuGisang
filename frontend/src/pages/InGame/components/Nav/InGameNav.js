@@ -110,7 +110,7 @@ const Wrapper = styled.nav`
 
   width: 100vw;
   height: 100px;
-  padding: 0 24px;
+  padding: 59px 24px;
 `;
 
 const TextArea = styled.div`

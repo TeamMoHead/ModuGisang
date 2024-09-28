@@ -257,7 +257,6 @@ const UserWrapper = styled.div`
 
 const AffirmationWrapper = styled.div`
   position: relative;
-  z-index: 50;
   width: 100%;
   height: 281px;
 `;

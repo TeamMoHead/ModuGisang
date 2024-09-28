@@ -105,13 +105,13 @@ export default Signin;
 const Logo = styled.img`
   width: 109px;
   height: 108px;
-  margin-bottom: 15px;
+  margin-bottom: 30px;
 `;
 
 const TitleBox = styled.div`
   ${({ theme }) => theme.flex.center};
   flex-direction: column;
-  margin-bottom: 60px;
+  margin-bottom: 30px;
 `;
 
 const Title = styled.div`
@@ -134,7 +134,7 @@ const Subtitle = styled.div`
 `;
 
 const SignUp = styled.a`
-  position: fixed;
+  /* position: fixed; */
   bottom: 43px;
   ${({ theme }) => theme.fonts.JuaSmall};
   color: ${({ theme }) => theme.colors.neutral.lightGray};

@@ -5,6 +5,37 @@
   margin: auto;
   line-height: 1.125em;
   z-index: 10;
+  padding: 0 24px 24px 24px;
+}
+
+/* 타일 컨테이너 스타일 조정 */
+.react-calendar__month-view__days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 4px;
+}
+
+/* day 타일 한개 한개 모양 디자인 */
+.react-calendar__tile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  font-family: 'IBM Plex Sans KR';
+  font-style: normal;
+  font-weight: 500;
+  color: var(--Light, #f0f3ff);
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 타일 내부 텍스트 스타일 */
+.react-calendar__tile abbr {
+  position: absolute;
+  font-size: clamp(14px, 3vw, 24px);
+  line-height: 1;
 }
 
 /* 달력 년/월 표시 글씨 커스텀 */
@@ -12,96 +43,129 @@
   display: flex;
   padding-top: 28px;
   padding-bottom: 25px;
-  span {
-    color: var(--Light, #f0f3ff);
-    /* IBM Large */
-    font-family: 'IBM Plex Sans KR';
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 34px; /* 141.667% */
-    letter-spacing: -0.6px;
-  }
 }
-/* 연도 클릭 제한 */
-.react-calendar__navigation__label {
-  pointer-events: none;
+
+.react-calendar__navigation span {
+  color: var(--Light, #f0f3ff);
+  font-family: 'IBM Plex Sans KR';
+  font-size: clamp(18px, 4vw, 24px);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.6px;
+}
+
+/* active, highlight 클래스에 대한 스타일 */
+.challenge-day::before,
+.active::before,
+.react-calendar__tile--active::before,
+.react-calendar__tile--now::before,
+.react-calendar__tile.highlight::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 33px;
+  height: 33px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+}
+
+.react-calendar__tile--now::before {
+  background-color: #ffc500;
+}
+
+.react-calendar__tile--now {
+  color: #0d0a2d;
+}
+
+.react-calendar__tile--active::before {
+  background-color: #15f5ba !important;
+}
+
+.react-calendar__tile--active {
+  color: #0d0a2d;
+}
+
+/* highlight 클래스에 대한 스타일 수정 */
+.react-calendar__tile.highlight::before {
+  background-color: #836fff;
+}
+
+.react-calendar__tile.highlight {
+  color: #0d0a2d;
+}
+
+/* 주말 디자인 변경 */
+/* .react-calendar__month-view__days__day--weekend {
+  color: white;
+} */
+
+/* 이전 달, 다음 달 디자인 변경 */
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #757575;
+  opacity: 0.5;
+}
+
+.react-calendar__decade-view__years__year {
+  color: #f0f3ff;
+}
+
+.react-calendar__century-view__decades__decade {
+  color: #f0f3ff;
+}
+
+/* 버튼 스타일 초기화 */
+button.react-calendar__tile {
+  border: none;
+  background: none;
+  cursor: pointer;
 }
 
 /* 일 월 화 수 목 금 토 글꼴 디자인 */
 .react-calendar__month-view__weekdays {
-  /* display: flex; */
   text-align: center;
-  abbr {
-    /*월,화,수... 글자 부분*/
-    color: var(--Light, #f0f3ff);
-    font-family: 'IBM Plex Sans KR';
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 22px; /* 137.5% */
-    letter-spacing: -0.4px;
-  }
+  height: 37px;
 }
 
-/* day 타일 한개 한개 모양 디자인 */
-.react-calendar__tile {
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  height: 50px;
-  color: white;
+.react-calendar__month-view__weekdays abbr {
   color: var(--Light, #f0f3ff);
-  /* IBM Large */
   font-family: 'IBM Plex Sans KR';
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 34px; /* 141.667% */
-  letter-spacing: -0.6px;
+  font-size: clamp(12px, 2vw, 16px);
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.4px;
 }
 
-/* 현재 요일 디자인 */
-.react-calendar__tile--now {
+/* myStreakCalendar custom */
+/* challenge-day 커스텀 */
+.challenge-day::before {
+  background-color: #836fff;
+}
+
+.active::before {
   background-color: #15f5ba;
-  backdrop-filter: blur(2px);
-  color: white;
-  width: 10px;
-}
-.react-calendar__tile--now:enabled:hover,
-.react-calendar__tile--now:enabled:focus {
-  color: white;
-  width: 10px;
+  color: #0d0a2d;
 }
 
-/* day 타일 hover, focus 시 모양 커스텀 */
-.react-calendar__tile--now:enabled:hover,
-.react-calendar__tile--now:enabled:focus,
-.react-calendar__tile--active {
-  background-color: #836fff;
-  backdrop-filter: blur(2px);
-  color: #fafafa;
-  width: 10px;
+.today::before {
+  background-color: #ffc500 !important;
 }
 
-/* 주말 디자인 변경 */
-.react-calendar__month-view__days__day--weekend {
-  color: white;
+.challenge-day,
+.active,
+.today {
+  color: #0d0a2d;
 }
 
-/* 이전 달, 다음 달 디자인 변경 */
-.react-calendar__month-view__days__day--neighboringMonth,
-.react-calendar__decade-view__years__year--neighboringDecade,
-.react-calendar__century-view__decades__decade--neighboringCentury {
-  color: #757575;
-}
+/* 반응형 디자인을 위한 미디어 쿼리 */
+@media (max-width: 768px) {
+  .react-calendar {
+    padding: 0 12px 12px 12px;
+  }
 
-.react-calendar__tile:enabled:hover .react-calendar__tile:enabled:focus {
-  background-color: white;
-}
-
-.react-calendar__tile.highlight {
-  border-radius: 1px;
-  background-color: #836fff;
+  .react-calendar__navigation {
+    padding-top: 36px;
+    padding-bottom: 36px;
+  }
 }

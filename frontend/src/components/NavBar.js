@@ -161,7 +161,7 @@ const Wrapper = styled.nav`
 
   width: 100vw;
   height: 100px;
-  padding: 0 24px;
+  padding: 59px 24px;
   z-index: 100;
   background: ${({ $scrolled, theme }) =>
     $scrolled ? theme.colors.translucent.white : 'transparent'};
