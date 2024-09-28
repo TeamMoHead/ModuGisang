@@ -291,7 +291,6 @@ const LogoutWrapper = styled.div`
 `;
 
 const ChangePasswordWrapper = styled(LogoutWrapper)`
-  // 색상 확인 필요
   border: 2px solid ${({ theme }) => theme.colors.primary.emerald};
 `;
 

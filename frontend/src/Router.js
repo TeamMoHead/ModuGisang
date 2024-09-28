@@ -1,13 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { GameContextProvider, OpenViduContextProvider } from './contexts';
-import {
-  Auth,
-  Signin,
-  Signup,
-  ForgotPassword,
-  ProtectedRoute,
-} from './pages/Auth';
+import { Signin, Signup, ForgotPassword, ProtectedRoute } from './pages/Auth';
 import { PageNotFound } from './components';
 import {
   Main,
