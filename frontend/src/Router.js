@@ -26,10 +26,47 @@ function Router() {
       <SafeAreaProvider>
         <Routes>
           <Route path="/signIn" element={<Signin />} />
-          <Route path="/signUp" element={<Signup />} />
-          <Route path="/deleteUser" element={<DeleteUser />} />
-          <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
-          <Route path="/termsOfService" element={<TermsOfService />} />
+          <Route
+            path="/signUp"
+            element={
+              <SafeArea>
+                <Signup />
+              </SafeArea>
+            }
+          />
+          <Route
+            path="/privacyPolicy"
+            element={
+              <SafeArea>
+                <PrivacyPolicy />
+              </SafeArea>
+            }
+          />
+          <Route
+            path="/termsOfService"
+            element={
+              <SafeArea>
+                <TermsOfService />
+              </SafeArea>
+            }
+          />
+          <Route
+            path="/customerService"
+            element={
+              <SafeArea>
+                <CustomerService />
+              </SafeArea>
+            }
+          />
+
+          <Route
+            path="/deleteUser"
+            element={
+              <SafeArea>
+                <DeleteUser />
+              </SafeArea>
+            }
+          />
           <Route path="/about" element={<About />} />
           <Route element={<ProtectedRoute />}>
             <Route

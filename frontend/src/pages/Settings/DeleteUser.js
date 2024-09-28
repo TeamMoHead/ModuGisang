@@ -11,6 +11,7 @@ import useAuth from '../../hooks/useAuth';
 import useNavigateWithState from '../../hooks/useNavigateWithState';
 import useValidation from '../../hooks/useValidation';
 import * as S from '../../styles/common';
+import { Section, SectionTitle, Text } from './components';
 import styled from 'styled-components';
 
 const DeleteAccount = () => {
@@ -29,13 +30,13 @@ const DeleteAccount = () => {
     const newPassword = e.target.value;
     setPassword(newPassword);
 
-    if (newPassword && !isValidPassword(newPassword)) {
-      setPasswordError(
-        '비밀번호는 최소 8자이며 숫자와 영문자, 특수문자를 하나씩 포함해야 합니다.',
-      );
-    } else {
-      setPasswordError('');
-    }
+    // if (newPassword && !isValidPassword(newPassword)) {
+    //   setPasswordError(
+    //     '비밀번호는 8자~16자로 숫자와 영문자, 특수문자를 하나씩 포함해야 합니다.',
+    //   );
+    // } else {
+    //   setPasswordError('');
+    // }
   };
 
   if (isDeleteUserLoading) {
@@ -50,18 +51,26 @@ const DeleteAccount = () => {
     <>
       <NavBar />
       <S.PageWrapper>
-        <NoticeWrapper>
-          <span>
-            회원 탈퇴 시 현재 참여 중인 챌린지에서 제외(첼린지 관련 안내 첨부
-            예정)됩니다. 모두기상의 개인정보보호방침은{' '}
+        <Section>
+          <SectionTitle>탈퇴 전 유의사항을 확인해주세요.</SectionTitle>
+          <Text style={{ marginBottom: '0px' }}>
+            - 회원 탈퇴 시 참여 중인 챌린지에서 제외되며 챌린지의 호스트라면
+            호스트 권한이 다른 사용자에게 위임됩니다.
+            <br />
+            - 탈퇴 후 회원 정보와 서비스 이용 기록이 삭제되며 복구가
+            불가능합니다.
+            <br />
+            - 동일한 이메일로 30일 이내 재가입이 불가능하며, 재가입하더라도 탈퇴
+            전 회원 정보 및 서비스 이용 기록은 복구되지 않습니다.
+            <br />- 모두기상의 개인정보보호방침은{' '}
             <StyledLink
               onClick={() => navigateWithState('/privacyPolicy', 'deleteUser')}
             >
               여기
             </StyledLink>
             를 통해 확인해주세요.
-          </span>
-        </NoticeWrapper>
+          </Text>
+        </Section>
         <FormSection>
           <Title>현재 비밀번호</Title>
           <InputLine
@@ -71,7 +80,7 @@ const DeleteAccount = () => {
             value={password}
             onChange={handlePasswordChange}
           />
-          {passwordError && <ErrorText>{passwordError}</ErrorText>}
+          {/* {passwordError && <ErrorText>{passwordError}</ErrorText>} */}
         </FormSection>
         <CheckboxWrapper>
           <CheckboxLabel>
@@ -80,7 +89,7 @@ const DeleteAccount = () => {
               checked={isNoticeChecked}
               onChange={e => setIsNoticeChecked(e.target.checked)}
             />
-            <span>안내를 모두 확인했으며 동의합니다.</span>
+            <span>유의사항을 모두 확인했으며 동의합니다.</span>
           </CheckboxLabel>
         </CheckboxWrapper>
         <FormSection>
@@ -90,11 +99,11 @@ const DeleteAccount = () => {
             onClickHandler={async e =>
               await handleDeleteAccount({
                 e,
-                userId,
+                password,
                 setIsDeleteUserLoading,
               })
             }
-            disabled={!password || passwordError || !isNoticeChecked}
+            disabled={!password || !isNoticeChecked}
           />
         </FormSection>
       </S.PageWrapper>
@@ -103,12 +112,6 @@ const DeleteAccount = () => {
 };
 
 export default DeleteAccount;
-
-const NoticeWrapper = styled.div`
-  ${({ theme }) => theme.flex.left}
-  width: 100%;
-  margin-bottom: 10px;
-`;
 
 const Title = styled.div`
   ${({ theme }) => theme.fonts.JuaSmall}

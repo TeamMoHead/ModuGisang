@@ -55,12 +55,15 @@ const signUpUser = async ({ email, password, userName }) => {
   return await API.post(url, payload);
 };
 
-const deleteUser = async ({ userId }) => {
+const deleteUser = async ({ accessToken, password }) => {
   const url = `/user/delete-user`;
   const payload = {
-    userId: userId,
+    password,
   };
-  return API.get(url, payload);
+  const config = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  };
+  return await API.post(url, payload, config);
 };
 
 const refreshAccessToken = async ({ accessToken, refreshToken }) => {
