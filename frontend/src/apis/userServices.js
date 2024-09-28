@@ -58,13 +58,19 @@ const changeWakeTime = async ({
   return API.post(url, payload, config);
 };
 
-const changePassword = async ({ email, newPassword }) => {
+const changePassword = async ({
+  accessToken,
+  newPassword,
+  currentPassword,
+}) => {
   const url = '/user/reset-password';
-  const payload = { email, newPassword };
-  // const config = {
-  //   headers: { Authorization: `Bearer ${accessToken}` },
-  // };
-  return await API.post(url, payload);
+  const payload = { newPassword: newPassword, oldPassword: currentPassword };
+  const config = {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  };
+  return await API.post(url, payload, config);
 };
 
 export const userServices = {

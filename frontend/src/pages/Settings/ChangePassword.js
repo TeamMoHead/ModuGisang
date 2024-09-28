@@ -93,10 +93,10 @@ const ChangePassword = () => {
             value={checkNewPassword}
             onChange={handleCheckNewPasswordChange}
           />
+          {showPasswordError && (
+            <WrongPassword>비밀번호가 일치하지 않습니다.</WrongPassword>
+          )}
         </FormSection>
-        {showPasswordError && (
-          <WrongPassword>비밀번호가 일치하지 않습니다.</WrongPassword>
-        )}
 
         <LongBtn
           type="submit"
