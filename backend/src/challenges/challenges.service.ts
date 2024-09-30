@@ -61,7 +61,7 @@ export class ChallengesService {
     newChallenge.wakeTime = challenge.wakeTime;
     newChallenge.duration = challenge.duration;
     newChallenge.endDate = endDate;
-    newChallenge.expired = false;
+    newChallenge.completed = false;
     newChallenge.deleted = false;
 
     return await this.challengeRepository.save(newChallenge);
@@ -89,7 +89,7 @@ export class ChallengesService {
     editChall.wakeTime = challenge.wakeTime;
     editChall.duration = challenge.duration;
     editChall.endDate = endDate;
-    editChall.expired = false;
+    editChall.completed = false;
     editChall.deleted = false;
 
     // 수정 후 캐시 삭제
@@ -446,7 +446,7 @@ export class ChallengesService {
     }
     // 1. 호스트인지 체크 후 호스트 인경우 챌린지 expired로 변경 -> 챌린지 정보를 가져와야 알 수 있음 userID 랑 비교
     if (challenge.hostId === userId) {
-      challenge.expired = true;
+      challenge.completed = true;
       await this.redisCacheService.del(`challenge_${challengeId}`);
       await this.challengeRepository.save(challenge);
     }

@@ -35,8 +35,8 @@ export class Challenges {
   @Column({ name: 'end_date' })
   endDate: Date;
 
-  @Column({ name: 'expired' })
-  expired: boolean;
+  @Column({ name: 'completed' })
+  completed: boolean;
 
   @Column({ name: 'deleted' })
   deleted: boolean;
