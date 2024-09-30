@@ -7,7 +7,6 @@ import {
   HttpStatus,
   InternalServerErrorException,
   NotFoundException,
-  NotImplementedException,
   Param,
   Post,
   Query,
@@ -20,6 +19,7 @@ import { AcceptInvitationDto } from './dto/acceptInvitaion.dto';
 import { ChallengeResponseDto } from './dto/challengeResponse.dto';
 import { ChallengeResultDto } from './dto/challengeResult.dto';
 import RedisCacheService from 'src/redis-cache/redis-cache.service';
+import { EditChallengeDto } from './dto/editChallenge.dto';
 
 @UseGuards(AuthenticateGuard)
 @Controller('api/challenge')
@@ -58,6 +58,50 @@ export class ChallengesController {
     this.redisService.del(`userInfo:${createChallengeDto.hostId}`);
     return 'create';
   }
+  @Post('edit')
+  async editChallenge(@Body() editChallengeDto: EditChallengeDto) {
+    console.log('edit');
+    const challenge =
+      await this.challengeService.editChallenge(editChallengeDto);
+    return challenge;
+  }
+  @Post('delete/:challengeId/:hostId') // 챌린지 생성하고 시작하지 않고 삭제하는 경우
+  async deleteChallenge(
+    @Param('challengeId') challengeId: number,
+    @Param('hostId') hostId: number,
+  ) {
+    console.log(challengeId);
+    const challenge = await this.challengeService.deleteChallenge(
+      challengeId,
+      hostId,
+    );
+    return challenge;
+  }
+
+  // 로컬에 저장한 챌린지 값으로 현재 날짜랑 챌린지 날짜 비교해서 넘은 경우만 호출
+  @Post('complete/:challengeId/:userId') // 챌린지가 끝났는지 확인하는 경우
+  async checkChallenge(
+    @Param('challengeId') challengeId: number,
+    @Param('userId') userId: number,
+  ) {
+    const result = await this.challengeService.completeChallenge(
+      challengeId,
+      userId,
+    );
+    if (result === true) {
+      return {
+        expired: true,
+        message:
+          'This challenge has expired and user data has been successfully updated.',
+      };
+    } else {
+      return {
+        expired: false,
+        message: 'This challenge is not expired yet.',
+      };
+    }
+  }
+
   @Get('search-mate')
   async searchMate(@Query('email') email: string) {
     const result = await this.challengeService.searchAvailableMate(email);

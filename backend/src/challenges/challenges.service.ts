@@ -3,10 +3,17 @@ import {
   NotFoundException,
   HttpException,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { Challenges } from './challenges.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, IsNull, Repository, createQueryBuilder } from 'typeorm';
+import {
+  Between,
+  IsNull,
+  MoreThan,
+  Repository,
+  createQueryBuilder,
+} from 'typeorm';
 import { CreateChallengeDto } from './dto/createChallenge.dto';
 import { InvitationsService } from 'src/invitations/invitations.service';
 import { Users } from 'src/users/entities/users.entity';
@@ -19,6 +26,8 @@ import { Attendance } from 'src/attendance/attendance.entity';
 import { Invitations } from 'src/invitations/invitations.entity';
 import { ChallengeResultDto } from './dto/challengeResult.dto';
 import RedisCacheService from 'src/redis-cache/redis-cache.service';
+import { UserService } from 'src/users/users.service';
+import { EditChallengeDto, Duration } from './dto/editChallenge.dto';
 
 @Injectable()
 export class ChallengesService {
@@ -34,17 +43,119 @@ export class ChallengesService {
     private invitaionRepository: Repository<Invitations>,
 
     private readonly redisCacheService: RedisCacheService,
+    private readonly userService: UserService,
   ) {
     this.challengeRepository = challengeRepository;
   }
 
   async createChallenge(challenge: CreateChallengeDto): Promise<Challenges> {
+    this.validateStartAndWakeTime(challenge.startDate, challenge.wakeTime);
+    this.validateDuration(challenge.duration);
+
     const newChallenge = new Challenges();
+    const endDate = new Date(challenge.startDate);
+    endDate.setDate(endDate.getDate() + challenge.duration - 1); // durationDays가 10일이라면 10일째 되는 날로 설정
+
     newChallenge.hostId = challenge.hostId;
     newChallenge.startDate = challenge.startDate;
     newChallenge.wakeTime = challenge.wakeTime;
     newChallenge.duration = challenge.duration;
+    newChallenge.endDate = endDate;
+    newChallenge.expired = false;
+    newChallenge.deleted = false;
+
     return await this.challengeRepository.save(newChallenge);
+  }
+
+  async editChallenge(challenge: EditChallengeDto): Promise<Challenges> {
+    this.validateStartAndWakeTime(challenge.startDate, challenge.wakeTime);
+    this.validateDuration(challenge.duration);
+
+    const editChall = await this.challengeRepository.findOne({
+      where: { hostId: challenge.hostId },
+    });
+
+    if (!editChall) {
+      //host 권한이 없는 챌린지 수정 시 에러처리
+      throw new NotFoundException(
+        `Challenge with ID ${challenge.hostId} not found`,
+      );
+    }
+
+    const endDate = new Date(challenge.startDate);
+    endDate.setDate(endDate.getDate() + challenge.duration - 1); // durationDays가 10일이라면 10일째 되는 날로 설정
+
+    editChall.startDate = challenge.startDate;
+    editChall.wakeTime = challenge.wakeTime;
+    editChall.duration = challenge.duration;
+    editChall.endDate = endDate;
+    editChall.expired = false;
+    editChall.deleted = false;
+
+    // 수정 후 캐시 삭제
+    this.redisCacheService.del(`challenge_${editChall._id}`);
+    return await this.challengeRepository.save(editChall);
+  }
+
+  async endChallenge(challengeId: number): Promise<boolean> {
+    const challenge = await this.challengeRepository.findOne({
+      where: { _id: challengeId },
+    });
+    if (!challenge) {
+      throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
+    }
+    // 현재 시간을 가져옴
+    const currentDate = new Date();
+
+    // 챌린지 종료 날짜와 기상시간을 결합하여 종료 시간 생성
+    const challengeEndDateTime = new Date(challenge.endDate);
+    challengeEndDateTime.setHours(challenge.wakeTime.getHours());
+    challengeEndDateTime.setMinutes(challenge.wakeTime.getMinutes());
+    challengeEndDateTime.setSeconds(challenge.wakeTime.getSeconds());
+
+    // 캐시 삭제할 필요는 없는것 같음 -> 다른 팀원들도 남아있을 수 있음
+
+    return currentDate >= challengeEndDateTime;
+  }
+
+  // 챌린지 ID 랑 userID 둘다 받아서 호스트인지 확인하고 삭제로 수정
+  // 호스트ID 하나로만 조회 ?? -> 챌린지ID랑 호스트 ID 말고 ?
+  // 모두가 호출가능 ?? -> 프론트 또는 백에서 host인지 아닌지 확인 후 그에따른 결과값 송출 ???
+  async deleteChallenge(
+    challengeId: number,
+    hostId: number,
+  ): Promise<Challenges> {
+    const challenge = await this.challengeRepository.findOne({
+      where: { _id: challengeId, hostId: hostId },
+    });
+    if (!challenge) {
+      throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
+    }
+    await this.challengeRepository.delete(challengeId);
+    return challenge;
+  }
+
+  async challengeGiveUp(challengeId: number, userId: number): Promise<void> {
+    const challenge = await this.challengeRepository.findOne({
+      where: { _id: challengeId },
+    });
+    const users = await this.userRepository.findBy({
+      challengeId: challengeId,
+    });
+    if (users.length === 1) {
+      // 혼자인경우 당연히 호스트인데 예외처리 해줘야하나?
+      challenge.deleted = true;
+    } else if (users.length > 1 && challenge.hostId === userId) {
+      // host가 포기하고 다른 유저가 남아있을 때 host가 아닌 다른 유저에게 챌린지를 넘기는 경우
+      const newHost = users.find((user) => user._id !== challenge.hostId);
+      challenge.hostId = newHost._id;
+    }
+
+    // 챌린지 캐시 삭제
+    this.redisCacheService.del(`challenge_${challengeId}`);
+
+    await this.challengeRepository.save(challenge);
+    await this.userService.resetChallenge(userId);
   }
 
   async searchAvailableMate(email: string): Promise<boolean> {
@@ -72,6 +183,7 @@ export class ChallengesService {
     if (user && challengeId) {
       user.challengeId = challengeId._id;
       await this.userRepository.save(user);
+      await this.redisCacheService.del(`userInfo:${hostId}`);
       return challengeId._id;
     }
     return null;
@@ -151,6 +263,7 @@ export class ChallengesService {
     const challengeResponse: ChallengeResponseDto = {
       challengeId: challenge._id,
       startDate: challenge.startDate,
+      hostId: challenge.hostId,
       wakeTime: challenge.wakeTime,
       duration: challenge.duration,
       mates: participantDtos,
@@ -313,5 +426,74 @@ export class ChallengesService {
 
     const cacheKey = `challenge_${setChallengeWakeTimeDto.challengeId}`;
     await this.redisCacheService.del(cacheKey);
+  }
+
+  // 날짜 비교해서 챌린지 끝난경우 호출되는 메소드
+  async completeChallenge(
+    challengeId: number,
+    userId: number,
+  ): Promise<boolean> {
+    if (!this.endChallenge(challengeId)) {
+      // -> error를 발생시켜야 하나?
+      return false;
+    }
+    await this.userService.resetChallenge(userId); // 2.user 챌린지 정보를 -1로 변경
+    const challenge = await this.challengeRepository.findOne({
+      where: { _id: challengeId },
+    });
+    if (!challenge) {
+      throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
+    }
+    // 1. 호스트인지 체크 후 호스트 인경우 챌린지 expired로 변경 -> 챌린지 정보를 가져와야 알 수 있음 userID 랑 비교
+    if (challenge.hostId === userId) {
+      challenge.expired = true;
+      await this.redisCacheService.del(`challenge_${challengeId}`);
+      await this.challengeRepository.save(challenge);
+    }
+
+    // 3. 메달처리
+    // 기간별로 90%이상 80점 이상 달성시 메달 획득 금 100 은 30 동 7
+    const cutLine = await this.attendanceRepository.find({
+      where: { challengeId, userId, score: MoreThan(80) },
+    });
+    const total = challenge.duration;
+
+    if (cutLine.length >= total * 0.9) {
+      // cutLine/total >= 0.9
+      await this.userService.updateUserMedals(
+        userId,
+        this.userService.decideMedalType(total),
+      );
+    }
+    return true;
+  }
+  // 현재 시간보다 이후인지 확인하는 함수
+  validateStartAndWakeTime(startDate: Date, wakeTime: Date): void {
+    const currentDate = new Date();
+
+    // startDate에 wakeTime을 적용한 실제 시작 시간을 계산
+    const startDateTime = new Date(startDate);
+    startDateTime.setHours(wakeTime.getHours());
+    startDateTime.setMinutes(wakeTime.getMinutes());
+    startDateTime.setSeconds(wakeTime.getSeconds());
+
+    if (startDateTime <= currentDate) {
+      throw new BadRequestException(
+        'The start date and wake time must be in the future.',
+      );
+    }
+  }
+
+  // duration이 7, 30, 100 중 하나인지 확인하는 함수
+  validateDuration(duration: number): void {
+    if (
+      ![Duration.ONE_WEEK, Duration.ONE_MONTH, Duration.THREE_MONTHS].includes(
+        duration,
+      )
+    ) {
+      throw new BadRequestException(
+        'Duration must be one of 7, 30, or 100 days.',
+      );
+    }
   }
 }
