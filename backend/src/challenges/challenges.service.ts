@@ -78,7 +78,7 @@ export class ChallengesService {
     if (!editChall) {
       //host 권한이 없는 챌린지 수정 시 에러처리
       throw new NotFoundException(
-        `Challenge with ID ${challenge.hostId} not found`,
+        `User with ID ${challenge.hostId} is not the host of this challenge`,
       );
     }
 
@@ -129,7 +129,9 @@ export class ChallengesService {
       where: { _id: challengeId, hostId: hostId },
     });
     if (!challenge) {
-      throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
+      throw new NotFoundException(
+        `User with ID ${challenge.hostId} is not the host of this challenge`,
+      );
     }
     await this.challengeRepository.delete(challengeId);
     return challenge;
