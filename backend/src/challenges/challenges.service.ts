@@ -455,16 +455,16 @@ export class ChallengesService {
 
     // 3. 메달처리
     // 기간별로 90%이상 80점 이상 달성시 메달 획득 금 100 은 30 동 7
-    const cutLine = await this.attendanceRepository.find({
+    const qualifiedDaysCount = await this.attendanceRepository.count({
       where: { challengeId, userId, score: MoreThan(80) },
     });
-    const total = challenge.duration;
+    const threshold = challenge.duration;
 
-    if (cutLine.length >= total * 0.9) {
+    if (qualifiedDaysCount >= threshold * 0.9) {
       // cutLine/total >= 0.9
       await this.userService.updateUserMedals(
         userId,
-        this.userService.decideMedalType(total),
+        this.userService.decideMedalType(threshold),
       );
     }
     return true;
