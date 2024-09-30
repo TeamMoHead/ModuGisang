@@ -26,7 +26,14 @@ function Router() {
         <Routes>
           <Route path="/signIn" element={<Signin />} />
           <Route path="/signUp" element={<Signup />} />
-          <Route path="/forgotPassword" element={<ForgotPassword />} />
+          <Route
+            path="/forgotPassword"
+            element={
+              <SafeArea>
+                <ForgotPassword />
+              </SafeArea>
+            }
+          />
           <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
           <Route path="/termsOfService" element={<TermsOfService />} />
           <Route path="/about" element={<About />} />
