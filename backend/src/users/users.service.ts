@@ -220,6 +220,7 @@ export class UserService {
       console.log('getStreak error', e);
     }
   }
+
   getCurrentTime() {
     const today = new Date();
     const koreaOffset = 9 * 60; // KST는 UTC+9
@@ -237,6 +238,7 @@ export class UserService {
     const diffDays = this.getDayDifference(today, lastActiveDate);
     return !(diffDays > 1);
   }
+
   getDayDifference(today: Date, lastActiveDate: Date): number {
     const oneDayInMs = 1000 * 60 * 60 * 24;
     return Math.floor(
@@ -278,8 +280,14 @@ export class UserService {
     }
   }
 
-  async deleteUser(userId: number) {
-    const user = await this.userRepository.findOne({ where: { _id: userId } });
+  async verifyUserPassword(user: Users, password: string) {
+    const isPasswordMatching = await argon2.verify(user.password, password);
+
+    return isPasswordMatching;
+  }
+
+  async deleteUser(user: Users) {
+    const userId = user._id;
     const challengeId = user.challengeId;
     const challenge = await this.challengeRepository.findOne({
       where: { _id: challengeId },
@@ -315,9 +323,6 @@ export class UserService {
     const cacheKey = `challenge_${challengeId}`;
     await this.redisService.del(cacheKey);
 
-    if (result.affected === 0) {
-      throw new NotFoundException('해당 이메일을 가진 유저는 없습니다.');
-    }
     return result.affected;
   }
 
@@ -364,39 +369,44 @@ export class UserService {
   }
 
   async changePassword(userId: number, newPassword: string) {
-    if (checkPW(newPassword)) {
-      const hashedPassword = await argon2.hash(newPassword);
+    const hashedPassword = await argon2.hash(newPassword);
+    const updatedPassword = await this.userRepository.update(userId, {
+      password: hashedPassword,
+    });
+    return updatedPassword.affected === 1;
+  }
 
-      return await this.userRepository.update(userId, {
-        password: hashedPassword,
-      });
-    } else {
-      throw new BadRequestException('비밀번호 양식이 틀렸습니다');
+  checkPWformat(pw: string): any {
+    // 최소 8자 이상
+    if (pw.length < 8) {
+      return { success: false, message: '비밀번호는 8자 이상이어야 합니다.' };
     }
-  }
-}
 
-function checkPW(pw: string): boolean {
-  // 최소 8자 이상
-  if (pw.length < 8) {
-    return false;
-  }
+    // 영문 포함
+    if (!/[a-zA-Z]/.test(pw)) {
+      return {
+        success: false,
+        message: '비밀번호는 영문을 1개 이상 포함해야 합니다.',
+      };
+    }
 
-  // 영문 포함
-  if (!/[a-zA-Z]/.test(pw)) {
-    return false;
-  }
+    // 숫자 포함
+    if (!/\d/.test(pw)) {
+      return {
+        success: false,
+        message: '비밀번호는 숫자를 1개 이상 포함해야 합니다.',
+      };
+    }
 
-  // 숫자 포함
-  if (!/\d/.test(pw)) {
-    return false;
-  }
+    // 특수문자 포함
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pw)) {
+      return {
+        success: false,
+        message: '비밀번호는 특수문자를 1개 이상 포함해야 합니다.',
+      };
+    }
 
-  // 특수문자 포함
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pw)) {
-    return false;
+    // 모든 조건을 만족하면 true 반환
+    return { success: true, message: '비밀번호가 유효합니다.' };
   }
-
-  // 모든 조건을 만족하면 true 반환
-  return true;
 }

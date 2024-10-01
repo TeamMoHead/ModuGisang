@@ -111,12 +111,26 @@ export class UserController {
 
   // 계정 삭제 API
   @Post('delete-user')
-  async deleteUser(@Body('userId') userId: number) {
-    const result = await this.userService.deleteUser(userId);
-    if (result === 1) {
+  async deleteUser(@Body('password') password: string, @Req() req) {
+    const user = await this.userService.findUser(req.user.email);
+    if (!user) {
+      return { status: 404, message: '해당 유저가 없습니다.' };
+    }
+
+    const passwordVerified = await this.userService.verifyUserPassword(
+      user,
+      password,
+    );
+    if (!passwordVerified) {
+      return { status: 401, message: '비밀번호가 일치하지 않습니다.' };
+    }
+
+    // 삭제 진행
+    const deletedUserCount = await this.userService.deleteUser(user);
+    if (deletedUserCount === 1) {
       return { status: 201, message: '회원 삭제 성공' };
     } else {
-      return { status: 401, message: '회원 삭제 실패' };
+      return { status: 500, message: '회원 DB 삭제 실패' };
     }
   }
 
@@ -129,21 +143,40 @@ export class UserController {
   // 비밀번호 변경 API
   @UseGuards(AuthenticateGuard)
   @Post('reset-password')
-  async resetPassword(@Body() body: { email: string; newPassword: string }) {
-    const { email, newPassword } = body;
-    const user = await this.userService.findUser(email);
-    console.log('user ', user);
+  async resetPassword(
+    @Body() body: { newPassword: string; oldPassword: string },
+    @Req() req,
+  ) {
+    const { newPassword, oldPassword } = body;
+
+    // 유저 이메일과 비밀번호로 유저 2차 검증 후 유저 정보 가져오기
+    const user = await this.userService.findUser(req.user.email);
     if (!user) {
-      throw new NotFoundException('해당 이메일을 가진 유저는 없습니다.');
+      return { status: 404, message: '해당 유저가 없습니다.' };
     }
-    const hashedPassword = await this.userService.changePassword(
+
+    const isUserVerified = await this.userService.verifyUserPassword(
+      user,
+      oldPassword,
+    );
+    if (!isUserVerified) {
+      return { status: 401, message: '비밀번호가 일치하지 않습니다.' };
+    }
+
+    const verifyPWResult = this.userService.checkPWformat(newPassword);
+    if (!verifyPWResult.success) {
+      return { status: 400, message: verifyPWResult.message };
+    }
+
+    const isPasswordChanged = await this.userService.changePassword(
       user._id,
       newPassword,
     );
-    if (hashedPassword.affected === 1) {
+
+    if (isPasswordChanged) {
       return { status: 201, message: '비밀번호 변경 성공' };
     } else {
-      return { status: 401, message: '비밀번호 변경 실패' };
+      return { status: 500, message: '비밀번호 변경 중 오류가 발생했습니다.' };
     }
   }
 }
