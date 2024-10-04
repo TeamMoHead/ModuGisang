@@ -214,7 +214,7 @@ const Settings = () => {
         <ChangePasswordWrapper onClick={() => navigate('/changePassword')}>
           <Text>비밀번호 변경</Text>
           <Icon
-            icon="logout" // 아이콘 변경 필요
+            icon="key"
             iconStyle={{
               size: 24,
               color: 'white',
