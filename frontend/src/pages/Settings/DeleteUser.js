@@ -9,14 +9,12 @@ import {
 import { AccountContext } from '../../contexts';
 import useAuth from '../../hooks/useAuth';
 import useNavigateWithState from '../../hooks/useNavigateWithState';
-import useValidation from '../../hooks/useValidation';
 import * as S from '../../styles/common';
 import { Section, SectionTitle, Text } from './components';
 import styled from 'styled-components';
 
 const DeleteAccount = () => {
   const navigateWithState = useNavigateWithState();
-  const { isValidPassword } = useValidation();
   const { handleDeleteAccount } = useAuth();
   const { userId } = useContext(AccountContext);
 
@@ -29,14 +27,6 @@ const DeleteAccount = () => {
   const handlePasswordChange = e => {
     const newPassword = e.target.value;
     setPassword(newPassword);
-
-    // if (newPassword && !isValidPassword(newPassword)) {
-    //   setPasswordError(
-    //     '비밀번호는 8자~16자로 숫자와 영문자, 특수문자를 하나씩 포함해야 합니다.',
-    //   );
-    // } else {
-    //   setPasswordError('');
-    // }
   };
 
   if (isDeleteUserLoading) {
@@ -60,8 +50,8 @@ const DeleteAccount = () => {
             - 탈퇴 후 회원 정보와 서비스 이용 기록이 삭제되며 복구가
             불가능합니다.
             <br />
-            - 동일한 이메일로 재가입이 불가능하며, 회원 탈퇴와 관련한 문의
-            사항은 고객센터를 통해 부탁드립니다.
+            - 동일한 이메일로 30일 이내에 재가입이 불가능하며, 회원 탈퇴와
+            관련한 문의 사항은 고객센터를 통해 부탁드립니다.
             <br />- 모두기상의 개인정보보호방침은{' '}
             <StyledLink
               onClick={() => navigateWithState('/privacyPolicy', 'deleteUser')}
@@ -80,7 +70,6 @@ const DeleteAccount = () => {
             value={password}
             onChange={handlePasswordChange}
           />
-          {/* {passwordError && <ErrorText>{passwordError}</ErrorText>} */}
         </FormSection>
         <CheckboxWrapper>
           <CheckboxLabel>
