@@ -190,7 +190,6 @@ const Wrapper = styled.div`
   height: ${({ $platform }) => ($platform === 'ios' ? '93vh' : '100vh')};
 
   overflow: hidden;
-  padding: 104px 24px 30px 24px;
 
   ${({ $hasMate, $platform }) => css`
     padding: ${$hasMate

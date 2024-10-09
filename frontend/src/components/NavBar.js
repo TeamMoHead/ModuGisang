@@ -158,21 +158,18 @@ const Wrapper = styled.nav`
 
   width: 100vw;
   height: 100px;
-  padding: 0 24px;
   z-index: 100;
   background: ${({ $scrolled, theme }) =>
     $scrolled ? theme.colors.translucent.white : 'transparent'};
   backdrop-filter: ${({ $scrolled }) => ($scrolled ? 'blur(15px)' : 'none')};
   transition: background 0.3s ease;
 
-  padding: ${
-    ({ $platform }) =>
-      $platform === 'ios'
-        ? '59px 24px'
-        : $platform === 'web'
-          ? '0 24px'
-          : '59px 24px' // Android나 다른 플랫폼의 경우 기본값
-  };
+  padding: ${({ $platform }) =>
+    $platform === 'ios'
+      ? '59px 24px'
+      : $platform === 'web'
+        ? '0 24px'
+        : '59px 24px'};
 `;
 
 const Title = styled.header`
