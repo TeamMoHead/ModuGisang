@@ -25,7 +25,14 @@ function Router() {
       <SafeAreaProvider>
         <Routes>
           <Route path="/signIn" element={<Signin />} />
-          <Route path="/signUp" element={<Signup />} />
+          <Route
+            path="/signUp"
+            element={
+              <SafeArea>
+                <Signup />
+              </SafeArea>
+            }
+          />
           <Route
             path="/forgotPassword"
             element={

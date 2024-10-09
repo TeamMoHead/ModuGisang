@@ -97,13 +97,9 @@ const Signin = () => {
         /> */}
       </>
       <AuthOptions>
-        <ForgotPassword href="#" onClick={goToForgotPassword}>
-          비밀번호 찾기
-        </ForgotPassword>
+        <AuthButton onClick={goToForgotPassword}>비밀번호 찾기</AuthButton>
         <Divider>|</Divider>
-        <SignUp href="#" onClick={goToSignUp}>
-          회원가입
-        </SignUp>
+        <AuthButton onClick={goToSignUp}>회원가입</AuthButton>
       </AuthOptions>
     </S.PageWrapper>
   );
@@ -151,14 +147,14 @@ const AuthOptions = styled.div`
   padding: 0 20px;
 `;
 
-const AuthLink = styled.a`
+const AuthButton = styled.button`
   ${({ theme }) => theme.fonts.JuaSmall};
   color: ${({ theme }) => theme.colors.neutral.lightGray};
+  background: none;
+  border: none;
   text-decoration: underline;
+  cursor: pointer;
 `;
-
-const ForgotPassword = props => <AuthLink {...props} />;
-const SignUp = props => <AuthLink {...props} />;
 
 const Divider = styled.span`
   margin: 0 15px;
