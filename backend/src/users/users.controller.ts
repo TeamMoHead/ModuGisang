@@ -23,8 +23,6 @@ export class UserController {
 
   @Post('sign-up')
   async createUser(@Body() createUserDto: CreateUserDto) {
-    console.log('come here');
-    console.log(createUserDto);
     const user = await this.userService.createUser(
       createUserDto.email,
       createUserDto.password,
@@ -110,11 +108,16 @@ export class UserController {
   }
 
   // 계정 삭제 API
+  @UseGuards(AuthenticateGuard)
   @Post('delete-user')
   async deleteUser(@Body('password') password: string, @Req() req) {
-    const user = await this.userService.findUser(req.user.email);
+    if (!req.user) {
+      return { status: 403, message: '인증되지 않은 유저입니다.' };
+    }
+
+    const user = await this.userService.findOneByID(req.user._id);
     if (!user) {
-      return { status: 404, message: '해당 유저가 없습니다.' };
+      return { status: 404, message: '존재하지 않는 유저입니다.' };
     }
 
     const passwordVerified = await this.userService.verifyUserPassword(

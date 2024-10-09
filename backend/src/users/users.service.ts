@@ -282,7 +282,6 @@ export class UserService {
 
   async verifyUserPassword(user: Users, password: string) {
     const isPasswordMatching = await argon2.verify(user.password, password);
-
     return isPasswordMatching;
   }
 
@@ -293,36 +292,39 @@ export class UserService {
       where: { _id: challengeId },
     });
 
-    // 삭제될 유저가 호스트일 때만 진행
-    if (userId === challenge.hostId) {
-      // 현재 챌린지의 호스트일 때 다른 사용자에게 위임
-      let inChallengeUsers = await this.userRepository.find({
-        where: { challengeId: challengeId },
-      });
+    // 챌린지에 참여중인 경우
+    if (challengeId !== -1) {
+      // 삭제될 유저가 호스트일 때
+      if (userId === challenge.hostId) {
+        let inChallengeUsers = await this.userRepository.find({
+          where: { challengeId: challengeId },
+        });
 
-      // 삭제될 사용자 제외 후 새로운 유저에서 뽑기
-      inChallengeUsers = inChallengeUsers.filter(
-        (challengeUser) => challengeUser._id !== userId,
-      );
-      // 삭제될 유저가 챌린지를 혼자 참여할 경우에는 진행 X
-      if (inChallengeUsers.length > 0) {
-        const randomIndex = Math.floor(Math.random() * inChallengeUsers.length);
-        challenge.hostId = inChallengeUsers[randomIndex]._id;
-        await this.challengeRepository.save(challenge);
+        inChallengeUsers = inChallengeUsers.filter(
+          (challengeUser) => challengeUser._id !== userId,
+        );
+
+        // 삭제될 사용자 제외한 챌린지 참여자가 있을 때
+        if (inChallengeUsers.length > 0) {
+          const randomIndex = Math.floor(
+            Math.random() * inChallengeUsers.length,
+          );
+          challenge.hostId = inChallengeUsers[randomIndex]._id;
+          await this.challengeRepository.save(challenge);
+        }
       }
+
+      // 삭제될 사용자는 챌린지에서 빠짐
+      user.challengeId = -1;
+      await this.userRepository.save(user);
     }
 
-    // 삭제될 사용자는 챌린지에서 빠짐
-    user.challengeId = -1;
-    await this.userRepository.save(user);
+    // 챌린지 정보 캐시 삭제
+    await this.redisService.del(`userInfo:${userId}`);
+    await this.redisService.del(`challenge_${challengeId}`);
 
     // 유저 소프트 삭제
     const result = await this.userRepository.softDelete({ _id: userId });
-
-    // 챌린지 정보 캐시 삭제
-    const cacheKey = `challenge_${challengeId}`;
-    await this.redisService.del(cacheKey);
-
     return result.affected;
   }
 
