@@ -20,9 +20,7 @@ const DeleteAccount = () => {
 
   const [password, setPassword] = useState('');
   const [isNoticeChecked, setIsNoticeChecked] = useState(false);
-  const [passwordError, setPasswordError] = useState('');
   const [isDeleteUserLoading, setIsDeleteUserLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handlePasswordChange = e => {
     const newPassword = e.target.value;

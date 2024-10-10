@@ -8,6 +8,7 @@ import PrivacyPolicy from './Settings/PrivacyPolicy';
 import TermsOfService from './Settings/TermsOfService';
 import CustomerService from './Settings/CustomerService';
 import DeleteUser from './Settings/DeleteUser';
+import ChangePassword from './Settings/ChangePassword';
 import About from './Settings/About';
 
 export {
@@ -21,5 +22,6 @@ export {
   TermsOfService,
   CustomerService,
   DeleteUser,
+  ChangePassword,
   About,
 };

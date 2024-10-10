@@ -210,6 +210,19 @@ const Settings = () => {
         </> */}
 
         {/* <LongBtn btnName="연습 게임 진행하기" onClickHandler={handlePractice} /> */}
+
+        <ChangePasswordWrapper onClick={() => navigate('/changePassword')}>
+          <Text>비밀번호 변경</Text>
+          <Icon
+            icon="key"
+            iconStyle={{
+              size: 24,
+              color: 'white',
+              hoverColor: 'white',
+              disable: true,
+            }}
+          />
+        </ChangePasswordWrapper>
         <LogoutWrapper onClick={handleLogOut}>
           <Text>로그아웃</Text>
           <Icon
@@ -281,6 +294,10 @@ const LogoutWrapper = styled.div`
   color: ${({ theme }) => theme.colors.primary.white};
 
   cursor: pointer;
+`;
+
+const ChangePasswordWrapper = styled(LogoutWrapper)`
+  border: 2px solid ${({ theme }) => theme.colors.primary.emerald};
 `;
 
 const Profile = styled.img`
