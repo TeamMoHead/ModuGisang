@@ -141,15 +141,36 @@ export class ChallengesService {
     const challenge = await this.challengeRepository.findOne({
       where: { _id: challengeId },
     });
+    if (!challenge) {
+      throw new NotFoundException(
+        `Challenge with ID ${challengeId} not found.`,
+      );
+    }
+
     const users = await this.userRepository.findBy({
       challengeId: challengeId,
     });
+    if (users.length === 0) {
+      throw new NotFoundException(
+        `No users found for challenge ID ${challengeId}.`,
+      );
+    }
+
     if (users.length === 1) {
       // 혼자인경우 당연히 호스트인데 예외처리 해줘야하나?
+      console.log(`Only one user in challenge. Marking challenge as deleted.`);
       challenge.deleted = true;
     } else if (users.length > 1 && challenge.hostId === userId) {
       // host가 포기하고 다른 유저가 남아있을 때 host가 아닌 다른 유저에게 챌린지를 넘기는 경우
       const newHost = users.find((user) => user._id !== challenge.hostId);
+      if (!newHost) {
+        throw new BadRequestException(
+          `No suitable new host found for challenge ID ${challengeId}.`,
+        );
+      }
+      console.log(
+        `Transferring host from user ${userId} to user ${newHost._id}`,
+      );
       challenge.hostId = newHost._id;
     }
 
@@ -158,6 +179,7 @@ export class ChallengesService {
 
     await this.challengeRepository.save(challenge);
     await this.userService.resetChallenge(userId);
+    console.log(`User ${userId} has given up challenge ${challengeId}`);
   }
 
   async searchAvailableMate(email: string): Promise<boolean> {

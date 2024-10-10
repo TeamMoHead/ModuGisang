@@ -173,4 +173,28 @@ export class ChallengesController {
       );
     }
   }
+
+  @Post('/give-up/:challengeId/:userId')
+  async challengeGiveUp(
+    @Param('challengeId') challengeId: number,
+    @Param('userId') userId: number,
+  ) {
+    try {
+      console.log(
+        `Starting challengeGiveUp for challengeId: ${challengeId}, userId: ${userId}`,
+      );
+      // 챌린지 포기 로직 실행
+      await this.challengeService.challengeGiveUp(challengeId, userId);
+      console.log(
+        `Successfully gave up challenge with ID ${challengeId} for user ${userId}`,
+      );
+      return { status: 200, message: ' 성공' };
+    } catch (error) {
+      console.error(`Error in challengeGiveUp: ${error.message}`);
+      return {
+        status: error.statusCode || 500,
+        message: error.message || 'An unexpected error occurred.',
+      };
+    }
+  }
 }
