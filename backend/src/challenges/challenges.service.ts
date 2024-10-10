@@ -97,10 +97,13 @@ export class ChallengesService {
     return await this.challengeRepository.save(editChall);
   }
 
-  async endChallenge(challengeId: number): Promise<boolean> {
-    const challenge = await this.challengeRepository.findOne({
-      where: { _id: challengeId },
-    });
+  async isEndChallenge(challengeId: number): Promise<boolean> {
+    let challenge = await this.redisCheckChallenge(challengeId);
+    if (challenge == null) {
+      challenge = await this.challengeRepository.findOne({
+        where: { _id: challengeId },
+      });
+    }
     if (!challenge) {
       throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
     }
@@ -466,7 +469,7 @@ export class ChallengesService {
     challengeId: number,
     userId: number,
   ): Promise<boolean> {
-    if (!this.endChallenge(challengeId)) {
+    if (!this.isEndChallenge(challengeId)) {
       // -> error를 발생시켜야 하나?
       return false;
     }
