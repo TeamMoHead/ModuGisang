@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authServices } from '../apis/authServices';
+import { authServices, userServices } from '../apis';
 import { AccountContext } from '../contexts/AccountContexts';
 import useFetch from '../hooks/useFetch';
 
@@ -90,11 +90,10 @@ const useAuth = () => {
     loginPassword,
     setIsLoginLoading,
   }) => {
-    // ============= ⭐️⭐️개발 끝나고 나서 풀어주기⭐️⭐️ ============
-    // if (loginEmail === '' || loginPassword === '') {
-    //   alert('이메일과 비밀번호를 입력해주세요.');
-    //   return;
-    // }
+    if (loginEmail === '' || loginPassword === '') {
+      alert('이메일과 비밀번호를 입력해주세요.');
+      return;
+    }
     setIsLoginLoading(true);
     const response = await fetchData(() =>
       authServices.logInUser({
@@ -196,6 +195,86 @@ const useAuth = () => {
     }
   };
 
+  const handleSendTmpPassword = async ({
+    email,
+    setIsPasswordResetLoading,
+  }) => {
+    if (email === '') {
+      throw new Error('이메일을 입력해주세요.');
+    }
+
+    setIsPasswordResetLoading(true);
+
+    const response = await fetchData(() =>
+      authServices.sendTmpPassword({ email }),
+    );
+
+    const {
+      isLoading: isPasswordResetLoading,
+      status: passwordResetStatus,
+      data: passwordResetData,
+      error: passwordResetError,
+    } = response;
+
+    if (!isPasswordResetLoading && passwordResetData) {
+      setIsPasswordResetLoading(false);
+      return '임시 비밀번호가 이메일로 전송되었습니다.';
+    } else if (!isPasswordResetLoading && passwordResetError) {
+      setIsPasswordResetLoading(false);
+
+      if (passwordResetStatus === 404) {
+        throw new Error('가입되지 않은 이메일입니다.');
+      } else {
+        throw new Error(
+          `임시 비밀번호 발송에 실패했습니다. ${passwordResetError}`,
+        );
+      }
+    }
+  };
+
+  const handleChangePassword = async ({
+    e,
+    currentPassword,
+    newPassword,
+    setIsChangeLoading,
+  }) => {
+    e.preventDefault();
+
+    setIsChangeLoading(true);
+
+    const passwordChangeResponse = await fetchData(() =>
+      userServices.changePassword({
+        accessToken,
+        newPassword,
+        currentPassword,
+      }),
+    );
+
+    const {
+      isLoading: isPasswordChangeLoading,
+      status: passwordChangeStatus,
+      data: passwordChangeData,
+      error: passwordChangeError,
+    } = passwordChangeResponse;
+
+    if (!isPasswordChangeLoading && passwordChangeData) {
+      setIsChangeLoading(false);
+      alert('비밀번호 변경에 성공했습니다.');
+      navigate('/settings');
+    } else if (!isPasswordChangeLoading && passwordChangeError) {
+      setIsChangeLoading(false);
+      if (passwordChangeStatus === 401) {
+        alert('현재 비밀번호가 일치하지 않습니다. 다시 시도해주세요.');
+      } else if (passwordChangeStatus === 404) {
+        alert('가입하지 않은 회원입니다. 고객센터에 문의해주세요.');
+      } else if (passwordChangeStatus === 400) {
+        alert('비밀번호 양식이 틀렸습니다. 다시 시도해주세요.');
+      } else {
+        alert(`비밀번호 변경에 실패했습니다. ${passwordChangeError}`);
+      }
+    }
+  };
+
   return {
     refreshAuthorization,
     checkAuth,
@@ -203,6 +282,8 @@ const useAuth = () => {
     handleSubmitLogIn,
     handleCheckVerifyCode,
     handleSubmitSignUp,
+    handleSendTmpPassword,
+    handleChangePassword,
   };
 };
 

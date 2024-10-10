@@ -6,6 +6,7 @@ import CreateChallenge from './CreateChallenge/CreateChallenge';
 import Settings from './Settings/Settings';
 import PrivacyPolicy from './Settings/PrivacyPolicy';
 import TermsOfService from './Settings/TermsOfService';
+import ChangePassword from './Settings/ChangePassword';
 import About from './Settings/About';
 
 export {
@@ -17,5 +18,6 @@ export {
   Settings,
   PrivacyPolicy,
   TermsOfService,
+  ChangePassword,
   About,
 };
