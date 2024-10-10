@@ -2,7 +2,7 @@ import React from 'react';
 import { Capacitor } from '@capacitor/core';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { GameContextProvider, OpenViduContextProvider } from './contexts';
-import { Signin, Signup, ProtectedRoute } from './pages/Auth';
+import { Signin, Signup, ForgotPassword, ProtectedRoute } from './pages/Auth';
 import { PageNotFound } from './components';
 import {
   Main,
@@ -13,6 +13,7 @@ import {
   Settings,
   PrivacyPolicy,
   TermsOfService,
+  ChangePassword,
   About,
 } from './pages';
 
@@ -36,7 +37,22 @@ function Router() {
       <SafeAreaProvider>
         <Routes>
           <Route path="/signIn" element={<Signin />} />
-          <Route path="/signUp" element={<Signup />} />
+          <Route
+            path="/signUp"
+            element={
+              <SafeArea>
+                <Signup />
+              </SafeArea>
+            }
+          />
+          <Route
+            path="/forgotPassword"
+            element={
+              <SafeArea>
+                <ForgotPassword />
+              </SafeArea>
+            }
+          />
           <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
           <Route path="/termsOfService" element={<TermsOfService />} />
           <Route path="/about" element={<About />} />
@@ -99,6 +115,14 @@ function Router() {
                 <PlatformSafeArea>
                   <Settings />
                 </PlatformSafeArea>
+              }
+            />
+            <Route
+              path="/changePassword"
+              element={
+                <SafeArea>
+                  <ChangePassword />
+                </SafeArea>
               }
             />
           </Route>

@@ -69,6 +69,12 @@ const refreshAccessToken = async ({ accessToken, refreshToken }) => {
   return await API.post(url, payload, config);
 };
 
+const sendTmpPassword = async ({ email }) => {
+  const url = '/email/change-tmp-password';
+  const payload = { email };
+  return await API.post(url, payload);
+};
+
 export const authServices = {
   signUpUser,
   logInUser,
@@ -76,4 +82,5 @@ export const authServices = {
   checkEmailAvailability,
   verifyAuthCode,
   refreshAccessToken,
+  sendTmpPassword,
 };
