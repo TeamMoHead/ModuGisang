@@ -6,11 +6,13 @@ import styled from 'styled-components';
 
 const PAGE_TYPES = [
   'signUp',
+  'forgotPassword',
   'main',
   'myStreak',
   'joinChallenge',
   'createChallenge',
   'settings',
+  'changePassword',
   'privacyPolicy',
   'termsOfService',
 ];
@@ -34,7 +36,9 @@ const NavBar = () => {
       } else {
         navigate('/');
       }
-    } else if (pageType === 'signUp') {
+    } else if (pageType === 'changePassword') {
+      navigate('/settings');
+    } else if (pageType === 'signUp' || pageType === 'forgotPassword') {
       navigate('/signIn');
     } else {
       navigate('/');
@@ -62,10 +66,12 @@ const NavBar = () => {
       </>
     ),
     signUp: '회원가입',
+    forgotPassword: '비밀번호 찾기',
     myStreak: '나의 기록',
     joinChallenge: '챌린지 참여',
     createChallenge: '챌린지 만들기',
     settings: '설정',
+    changePassword: '비밀번호 변경',
     privacyPolicy: '개인정보보호방침',
     termsOfService: '이용약관',
   };
