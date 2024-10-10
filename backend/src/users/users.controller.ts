@@ -4,14 +4,17 @@ import {
   Request,
   Post,
   UseGuards,
-  Res,
   Param,
-  BadRequestException,
   Query,
   Get,
-  Req,
   ParseIntPipe,
+  Res,
+  Req,
+  HttpStatus,
+  BadRequestException,
   NotFoundException,
+  UnauthorizedException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { UserService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -94,6 +97,7 @@ export class UserController {
   async updateAffirm(
     @Param('userId') userId: number,
     @Body('affirmation') affirmation: string,
+    @Res() res,
   ) {
     if (affirmation === '') {
       throw new BadRequestException('확언 값이 없습니다.');
@@ -101,23 +105,25 @@ export class UserController {
     const user = await this.userService.findOneByID(userId);
     const result = await this.userService.updateAffirm(user, affirmation);
     if (result.affected > 0) {
-      return 'success';
+      return res.status(HttpStatus.OK).json({ suceess: true });
     } else {
-      throw new BadRequestException('확언 업로드 실패!');
+      throw new InternalServerErrorException(
+        '확언 업데이트 중 문제가 발생했습니다.',
+      );
     }
   }
 
   // 계정 삭제 API
   @UseGuards(AuthenticateGuard)
   @Post('delete-user')
-  async deleteUser(@Body('password') password: string, @Req() req) {
+  async deleteUser(@Body('password') password: string, @Req() req, @Res() res) {
     if (!req.user) {
-      return { status: 403, message: '인증되지 않은 유저입니다.' };
+      throw new UnauthorizedException('인증되지 않은 유저입니다.');
     }
 
     const user = await this.userService.findOneByID(req.user._id);
     if (!user) {
-      return { status: 404, message: '존재하지 않는 유저입니다.' };
+      throw new NotFoundException('존재하지 않는 유저입니다.');
     }
 
     const passwordVerified = await this.userService.verifyUserPassword(
@@ -125,15 +131,15 @@ export class UserController {
       password,
     );
     if (!passwordVerified) {
-      return { status: 401, message: '비밀번호가 일치하지 않습니다.' };
+      throw new BadRequestException('비밀번호가 일치하지 않습니다.');
     }
 
     // 삭제 진행
     const deletedUserCount = await this.userService.deleteUser(user);
     if (deletedUserCount === 1) {
-      return { status: 201, message: '회원 삭제 성공' };
+      return res.status(HttpStatus.OK).json({ suceess: true });
     } else {
-      return { status: 500, message: '회원 DB 삭제 실패' };
+      throw new InternalServerErrorException('회원 DB 삭제 실패');
     }
   }
 
@@ -149,13 +155,14 @@ export class UserController {
   async resetPassword(
     @Body() body: { newPassword: string; oldPassword: string },
     @Req() req,
+    @Res() res,
   ) {
     const { newPassword, oldPassword } = body;
 
     // 유저 이메일과 비밀번호로 유저 2차 검증 후 유저 정보 가져오기
     const user = await this.userService.findUser(req.user.email);
     if (!user) {
-      return { status: 404, message: '해당 유저가 없습니다.' };
+      throw new NotFoundException('해당 유저가 없습니다.');
     }
 
     const isUserVerified = await this.userService.verifyUserPassword(
@@ -163,12 +170,12 @@ export class UserController {
       oldPassword,
     );
     if (!isUserVerified) {
-      return { status: 401, message: '비밀번호가 일치하지 않습니다.' };
+      throw new BadRequestException('비밀번호가 일치하지 않습니다.');
     }
 
     const verifyPWResult = this.userService.checkPWformat(newPassword);
     if (!verifyPWResult.success) {
-      return { status: 400, message: verifyPWResult.message };
+      throw new BadRequestException(verifyPWResult.message);
     }
 
     const isPasswordChanged = await this.userService.changePassword(
@@ -177,9 +184,11 @@ export class UserController {
     );
 
     if (isPasswordChanged) {
-      return { status: 201, message: '비밀번호 변경 성공' };
+      return res.status(HttpStatus.OK).json({ suceess: true });
     } else {
-      return { status: 500, message: '비밀번호 변경 중 오류가 발생했습니다.' };
+      throw new InternalServerErrorException(
+        '비밀번호 변경 중 문제가 발생했습니다.',
+      );
     }
   }
 }

@@ -267,6 +267,7 @@ export class UserService {
     console.log('redis에 유저 정보가 있습니다.');
     return JSON.parse(user);
   }
+
   async redisSetUser(userId: number, userInformation: any) {
     const state = await this.redisService.set(
       `userInfo:${userId}`,
