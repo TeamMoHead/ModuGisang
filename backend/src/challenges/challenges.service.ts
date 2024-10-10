@@ -138,12 +138,21 @@ export class ChallengesService {
   }
 
   async challengeGiveUp(challengeId: number, userId: number): Promise<void> {
-    const challenge = await this.challengeRepository.findOne({
-      where: { _id: challengeId },
-    });
+    let challenge = await this.redisCheckChallenge(challengeId);
+    if (challenge == null) {
+      challenge = await this.challengeRepository.findOne({
+        where: { _id: challengeId },
+      });
+    }
     if (!challenge) {
       throw new NotFoundException(
         `Challenge with ID ${challengeId} not found.`,
+      );
+    }
+    const currentDate = new Date();
+    if (!this.validateChallengeDate(currentDate, challenge)) {
+      throw new BadRequestException(
+        `Challenge with ID ${challengeId} is not currently in progress.`,
       );
     }
 
@@ -519,5 +528,22 @@ export class ChallengesService {
         'Duration must be one of 7, 30, or 100 days.',
       );
     }
+  }
+  async redisCheckChallenge(challengeId: number) {
+    const challenge = await this.redisCacheService.get(
+      `challenge_${challengeId}`,
+    );
+    if (!challenge) {
+      console.log('redis에 challenge 정보가 없습니다.');
+      return null;
+    }
+    console.log('redis에 challenge 정보가 있습니다.');
+    return JSON.parse(challenge);
+  }
+  validateChallengeDate(currentDate, challenge) {
+    if (currentDate < challenge.startDate || currentDate > challenge.endDate) {
+      return false;
+    }
+    return true;
   }
 }
