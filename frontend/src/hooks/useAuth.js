@@ -212,7 +212,6 @@ const useAuth = () => {
       error: deleteUserError,
     } = response;
 
-    console.log('-----', response);
     if (!isDeleteUserLoading && deleteUserData) {
       setIsDeleteUserLoading(false);
       alert('회원 탈퇴가 성공적으로 완료되었습니다.');
