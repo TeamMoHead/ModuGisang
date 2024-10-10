@@ -172,10 +172,10 @@ const Wrapper = styled.nav`
 
   padding: ${({ $platform }) =>
     $platform === 'ios'
-      ? '59px 24px'
+      ? '72px 24px'
       : $platform === 'web'
         ? '0 24px'
-        : '59px 24px'};
+        : '72px 24px'};
 `;
 
 const Title = styled.header`
