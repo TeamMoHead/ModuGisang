@@ -165,25 +165,30 @@ export class UserService {
     return result;
   }
 
-  // 유저의 초대장 + 스트릭 데이터 처리 함수
-  async fetchInvitationsStreak(userId: number) {
-    // 초대장과 스트릭 테이블 조회값
-    const invitations = await this.getInvitations(userId);
-    const streak = await this.getStreak(userId);
+  // 유저의 스트릭 데이터 처리 함수
+  async getCurrentStreak(userId: number) {
+    const streaks = await this.getStreak(userId);
 
-    const currentStreak = streak?.currentStreak ?? 0;
+    const currentStreak = streaks?.currentStreak ?? 0;
+    const lastActiveDate = streaks?.lastActiveDate ?? null;
+
+    return {
+      currentStreak: currentStreak,
+      lastActiveDate: lastActiveDate,
+    };
+  }
+  // 유저의 초대장 데이터 처리 함수
+  async getInviationsCount(userId: number) {
+    const invitations = await this.getInvitations(userId);
 
     const count = invitations?.invitations.filter(
       (invitation) => !invitation.isExpired,
     ).length; // 초대받은 챌린지의 수
-    // 반환값
-    const response = {
+
+    return {
       invitations: invitations,
-      currentStreak: currentStreak,
-      lastActiveDate: streak?.lastActiveDate ?? null,
       count: count,
     };
-    return response;
   }
 
   // 유저가 초대받은 초대장 조회 함수
