@@ -6,12 +6,14 @@ import React, {
   useContext,
 } from 'react';
 import { UserContext, GameContext, AccountContext } from './';
+import useFetch from '../hooks/useFetch';
 import { challengeServices } from '../apis';
 import { OpenVidu } from 'openvidu-browser';
 
 const OpenViduContext = createContext();
 
 const OpenViduContextProvider = ({ children }) => {
+  const { fetchData } = useFetch();
   const { accessToken } = useContext(AccountContext);
   const { myData, challengeId } = useContext(UserContext);
   const {
@@ -41,11 +43,19 @@ const OpenViduContextProvider = ({ children }) => {
     };
 
     try {
-      const response = await challengeServices.getConnectionToken({
-        accessToken,
-        userData,
+      const response = await fetchData(() => {
+        challengeServices.getConnectionToken({
+          accessToken,
+          userData,
+        });
       });
-      setConnectionToken(response.data.token);
+
+      const { status, data } = response;
+      if (status === 200) {
+        setConnectionToken(data.token);
+      } else {
+        console.error('Failed to get connection token', response);
+      }
     } catch (error) {
       console.error(error);
     }
