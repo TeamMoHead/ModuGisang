@@ -14,6 +14,7 @@ import { Streak } from './entities/streak.entity';
 import RedisCacheService from '../redis-cache/redis-cache.service';
 import { UserInformationDto } from './dto/user-info.dto';
 import { Challenges } from 'src/challenges/challenges.entity';
+import { Invitations } from 'src/invitations/invitations.entity';
 // import { refreshJwtConstants } from 'src/auth/constants';
 
 @Injectable()
@@ -25,12 +26,15 @@ export class UserService {
     private streakRepository: Repository<Streak>,
     @InjectRepository(Challenges)
     private challengeRepository: Repository<Challenges>,
+    @InjectRepository(Invitations)
+    private invitationRepository: Repository<Invitations>,
     private configService: ConfigService,
     private readonly redisService: RedisCacheService,
   ) {
     this.userRepository = userRepository;
     this.streakRepository = streakRepository;
     this.challengeRepository = challengeRepository;
+    this.invitationRepository = invitationRepository;
   }
 
   async createUser(
@@ -161,21 +165,46 @@ export class UserService {
     return result;
   }
 
-  async getInvis(userId: number) {
-    const invitations = await this.userRepository.findOne({
-      where: { _id: userId },
-      relations: ['invitations', 'streak'],
-    });
+  // 유저의 초대장 + 스트릭 데이터 처리 함수
+  async fetchInvitationsStreak(userId: number) {
+    // 초대장과 스트릭 테이블 조회값
+    const invitations = await this.getInvitations(userId);
+    const streak = await this.getStreak(userId);
+
+    const currentStreak = streak?.currentStreak ?? 0;
 
     const count = invitations?.invitations.filter(
       (invitation) => !invitation.isExpired,
     ).length; // 초대받은 챌린지의 수
-    const currentStreak = invitations?.streak?.currentStreak ?? 0;
-    return {
+    // 반환값
+    const response = {
       invitations: invitations,
       currentStreak: currentStreak,
-      lastActiveDate: invitations?.streak?.lastActiveDate ?? null,
+      lastActiveDate: streak?.lastActiveDate ?? null,
       count: count,
+    };
+    return response;
+  }
+
+  // 유저가 초대받은 초대장 조회 함수
+  async getInvitations(userId: number) {
+    const invitations = await this.invitationRepository.find({
+      where: { guestId: userId },
+    });
+
+    // const invitations = await this.userRepository.findOne({
+    //   where: { _id: userId },
+    //   relations: ['invitations', 'streak'],
+    // });
+    // const count = invitations?.invitations.filter(
+    //   (invitation) => !invitation.isExpired,
+    // ).length; // 초대받은 챌린지의 수
+    // const currentStreak = invitations?.streak?.currentStreak ?? 0;
+    return {
+      invitations: invitations,
+      // currentStreak: currentStreak,
+      // lastActiveDate: invitations?.streak?.lastActiveDate ?? null,
+      // count: count,
     };
   }
 
@@ -210,12 +239,12 @@ export class UserService {
 
   async getStreak(userId: number) {
     try {
-      const getStreak = await this.streakRepository.findOne({
+      const streak = await this.streakRepository.findOne({
         where: { userId: userId, user: { deletedAt: null } },
         relations: ['user'],
       });
 
-      return getStreak;
+      return streak;
     } catch (e) {
       console.log('getStreak error', e);
     }

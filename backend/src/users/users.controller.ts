@@ -39,23 +39,29 @@ export class UserController {
   async myData(@Req() req) {
     console.log(req.user);
     console.log('typeof req.user._id', typeof req.user._id);
-    const result = await this.userService.getInvis(req.user._id);
+    const userId = req.user._id;
+    const user = await this.userService.findOneByID(userId);
+    if (!user) {
+      throw new NotFoundException('존재하지 않는 유저입니다.');
+    }
+    const result = await this.userService.fetchInvitationsStreak(userId);
+
     console.log(req.user._id);
     const invitations = result.invitations;
     return {
-      userId: invitations._id,
-      userName: invitations.userName,
+      userId: user._id,
+      userName: user.userName,
       streakDays: 0, // streak 구현 후 처리 예정
       medals: {
-        gold: invitations.medals.gold,
-        silver: invitations.medals.silver,
-        bronze: invitations.medals.bronze,
+        gold: user.medals.gold,
+        silver: user.medals.silver,
+        bronze: user.medals.bronze,
       },
       invitationCounts: result.count,
-      affirmation: invitations.affirmation,
-      challengeId: invitations.challengeId,
-      profile: invitations.profile,
-      openviduToken: invitations.openviduToken,
+      affirmation: user.affirmation,
+      challengeId: user.challengeId,
+      profile: user.profile,
+      openviduToken: user.openviduToken,
     };
   }
 
@@ -66,25 +72,28 @@ export class UserController {
     if (redisCheckUserInfo) {
       return redisCheckUserInfo;
     } else {
-      const result = await this.userService.getInvis(userId);
-      const invitations = result.invitations;
+      const user = await this.userService.findOneByID(userId);
+      if (!user) {
+        throw new NotFoundException('존재하지 않는 유저입니다.');
+      }
+      const result = await this.userService.fetchInvitationsStreak(userId);
       const lastActiveDate = result.lastActiveDate;
       const isCountinue = this.userService.isContinuous(lastActiveDate);
 
       const userInformation = {
-        userId: invitations._id,
-        userName: invitations.userName,
+        userId: user._id,
+        userName: user.userName,
         streakDays: isCountinue ? result.currentStreak : 0,
         medals: {
-          gold: invitations.medals.gold,
-          silver: invitations.medals.silver,
-          bronze: invitations.medals.bronze,
+          gold: user.medals.gold,
+          silver: user.medals.silver,
+          bronze: user.medals.bronze,
         },
         invitationCounts: result.count,
-        affirmation: invitations.affirmation,
-        challengeId: invitations.challengeId,
-        profile: invitations.profile,
-        openviduToken: invitations.openviduToken,
+        affirmation: user.affirmation,
+        challengeId: user.challengeId,
+        profile: user.profile,
+        openviduToken: user.openviduToken,
       };
 
       await this.userService.redisSetUser(userId, userInformation);
