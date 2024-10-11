@@ -42,49 +42,49 @@ function Router() {
           <Route
             path="/signUp"
             element={
-              <SafeArea>
+              <PlatformSafeArea>
                 <Signup />
-              </SafeArea>
+              </PlatformSafeArea>
             }
           />
           <Route
             path="/privacyPolicy"
             element={
-              <SafeArea>
+              <PlatformSafeArea>
                 <PrivacyPolicy />
-              </SafeArea>
+              </PlatformSafeArea>
             }
           />
           <Route
             path="/termsOfService"
             element={
-              <SafeArea>
+              <PlatformSafeArea>
                 <TermsOfService />
-              </SafeArea>
+              </PlatformSafeArea>
             }
           />
           <Route
             path="/customerService"
             element={
-              <SafeArea>
+              <PlatformSafeArea>
                 <CustomerService />
-              </SafeArea>
+              </PlatformSafeArea>
             }
           />
           <Route
             path="/deleteUser"
             element={
-              <SafeArea>
+              <PlatformSafeArea>
                 <DeleteUser />
-              </SafeArea>
+              </PlatformSafeArea>
             }
           />
           <Route
             path="/forgotPassword"
             element={
-              <SafeArea>
+              <PlatformSafeArea>
                 <ForgotPassword />
-              </SafeArea>
+              </PlatformSafeArea>
             }
           />
           <Route path="/about" element={<About />} />
