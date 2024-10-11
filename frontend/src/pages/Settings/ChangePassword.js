@@ -57,7 +57,7 @@ const ChangePassword = () => {
   if (isChangeLoading) {
     return (
       <S.LoadingWrapper>
-        <LoadingWithText loadingMSG="탈퇴 처리 중..." />
+        <LoadingWithText loadingMSG="비밀번호 변경중..." />
       </S.LoadingWrapper>
     );
   }
