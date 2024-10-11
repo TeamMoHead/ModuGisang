@@ -3,7 +3,7 @@ import { Capacitor } from '@capacitor/core';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { GameContextProvider, OpenViduContextProvider } from './contexts';
 import { Signin, Signup, ForgotPassword, ProtectedRoute } from './pages/Auth';
-import { PageNotFound } from './components';
+import { PageNotFound, OfflinePage } from './components';
 import {
   Main,
   InGame,
@@ -126,6 +126,7 @@ function Router() {
               }
             />
           </Route>
+          <Route path="/offline" element={<OfflinePage />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </SafeAreaProvider>

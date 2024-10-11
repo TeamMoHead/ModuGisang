@@ -43,6 +43,9 @@ const useAuth = () => {
   };
 
   const checkAuth = async () => {
+    if (!navigator.onLine) {
+      return navigate('/offline');
+    }
     if (accessToken === null) {
       const isRefreshed = await refreshAuthorization();
       if (!isRefreshed) {
