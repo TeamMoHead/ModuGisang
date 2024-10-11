@@ -19,7 +19,7 @@ export class OpenviduController {
   constructor(private readonly openviduService: OpenviduService) {}
 
   @Post('start-session')
-  async startSession(@Body() body: any, @Res() res) {
+  async startSession(@Body() body: any) {
     console.log('openvidu api start');
     if (!body.userData) {
       throw new HttpException('userData is required', HttpStatus.BAD_REQUEST);
@@ -43,6 +43,7 @@ export class OpenviduController {
     body.userData.challengeId = challengeId.toString();
     body.userData.userId = userId.toString();
     const token = await this.openviduService.openviduTotalService(body); // 사용자 데이터에 대한 정보로 세션과 커넥션 생성 후 토큰 반환
-    res.status(HttpStatus.OK).send(token);
+
+    return { token: token };
   }
 }

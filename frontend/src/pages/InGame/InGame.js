@@ -138,18 +138,22 @@ const InGame = () => {
     const response = await fetchData(() =>
       userServices.getUserInfo({ accessToken, userId }),
     );
-    setMateData(response.data);
-  };
+    const { isLoading, data, error } = response;
+    if (!isLoading && data) {
+      setMateData(data);
+    }
+    if (error) {
+      console.error(error);
+      setMateData(null);
+    }
 
-  useEffect(() => {
-    if (!mateData) return;
     setIsMateDataLoading(false);
-  }, [mateData]);
+  };
 
   if (redirected) return null;
   return (
     <>
-      {isMateSelected && !isMateDataLoading && (
+      {isMateSelected && (
         <FriendStreak
           mateData={mateData}
           isMateDataLoading={isMateDataLoading}

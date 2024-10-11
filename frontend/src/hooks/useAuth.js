@@ -13,28 +13,33 @@ const useAuth = () => {
   const refreshToken = localStorage.getItem('refreshToken');
 
   const refreshAuthorization = async () => {
-    try {
-      if (!refreshToken) {
-        return false;
-      }
+    if (!refreshToken) {
+      return false;
+    }
+    console.log('======isCalled=====');
 
-      const response = await fetchData(() => {
-        authServices.refreshAccessToken({
-          accseeToken: accessToken,
-          refreshToken: refreshToken,
-        });
-      });
-      const { status } = response;
-      if (status === 201) {
-        setAccessToken(response.data.data.accessToken);
-        setUserId(response.data.data.userId);
-        return true;
-      } else {
-        console.error('Failed to refresh access token', response.status);
-        return false;
-      }
-    } catch (error) {
-      console.error('Failed to refresh access token', error);
+    const response = await fetchData(() =>
+      authServices.refreshAccessToken({
+        accseeToken: accessToken,
+        refreshToken: refreshToken,
+      }),
+    );
+    const { isLoading, status, data, error } = response;
+
+    if (!isLoading && status === 201) {
+      setAccessToken(data.accessToken);
+      setUserId(data.userId);
+      return true;
+    }
+
+    if (!isLoading && error) {
+      console.error(
+        'Failed to refresh access token',
+        'status: ',
+        status,
+        'error: ',
+        error,
+      );
       return false;
     }
   };

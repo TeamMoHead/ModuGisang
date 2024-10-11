@@ -130,12 +130,12 @@ const CreateChallenge = () => {
       return;
     }
 
-    const response = await fetchData(() => {
+    const response = await fetchData(() =>
       challengeServices.checkMateAvailability({
         accessToken,
         email: emailInput,
-      });
-    });
+      }),
+    );
 
     const { status, data, error } = response;
     if (status === 200) {

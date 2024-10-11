@@ -8,6 +8,7 @@ const useFetch = () => {
     };
     try {
       const response = await callback();
+
       callResponse.data = response.data;
       callResponse.status = response.status;
       callResponse.error = null;

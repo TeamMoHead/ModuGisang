@@ -151,14 +151,9 @@ export class AuthController {
       const result = await this.authService.refresh(refreshTokenDto);
       console.log(result);
       if (result) {
-        console.log('AccessToken 재성성 성공');
         return {
-          status: 'success',
-          message: 'AccessToken 생성 성공',
-          data: {
-            accessToken: result.accessToken,
-            userId: result.userId,
-          },
+          accessToken: result.accessToken,
+          userId: result.userId,
         };
       } else {
         throw new UnauthorizedException('Access Token create fail');
