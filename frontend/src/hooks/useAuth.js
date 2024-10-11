@@ -16,8 +16,6 @@ const useAuth = () => {
     if (!refreshToken) {
       return false;
     }
-    console.log('======isCalled=====');
-
     const response = await fetchData(() =>
       authServices.refreshAccessToken({
         accseeToken: accessToken,

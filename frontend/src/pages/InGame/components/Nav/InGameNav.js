@@ -47,8 +47,6 @@ const InGameNav = () => {
     setPlatform(Capacitor.getPlatform());
   }, []);
 
-  console.log(platform);
-
   // useEffect(() => {
   //   if (turnMicOnOff) {
   //     if (inGameMode === 4 || inGameMode === 5) {
