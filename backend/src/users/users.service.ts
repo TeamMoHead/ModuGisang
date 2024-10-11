@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { Users } from './entities/users.entity';
 import * as argon2 from 'argon2';
@@ -167,28 +168,40 @@ export class UserService {
 
   // 유저의 스트릭 데이터 처리 함수
   async getCurrentStreak(userId: number) {
-    const streaks = await this.getStreak(userId);
+    try {
+      const streaks = await this.getStreak(userId);
 
-    const currentStreak = streaks?.currentStreak ?? 0;
-    const lastActiveDate = streaks?.lastActiveDate ?? null;
+      const currentStreak = streaks?.currentStreak ?? 0;
+      const lastActiveDate = streaks?.lastActiveDate ?? null;
 
-    return {
-      currentStreak: currentStreak,
-      lastActiveDate: lastActiveDate,
-    };
+      return {
+        currentStreak: currentStreak,
+        lastActiveDate: lastActiveDate,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        '스트릭 데이터를 가져오는 동안 오류가 발생했습니다.',
+      );
+    }
   }
   // 유저의 초대장 데이터 처리 함수
   async getInviationsCount(userId: number) {
-    const invitations = await this.getInvitations(userId);
+    try {
+      const invitations = await this.getInvitations(userId);
 
-    const count = invitations?.invitations.filter(
-      (invitation) => !invitation.isExpired,
-    ).length; // 초대받은 챌린지의 수
+      const count = invitations?.invitations.filter(
+        (invitation) => !invitation.isExpired,
+      ).length; // 초대받은 챌린지의 수
 
-    return {
-      invitations: invitations,
-      count: count,
-    };
+      return {
+        invitations: invitations,
+        count: count,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        '초대장 데이터를 가져오는 동안 오류가 발생했습니다.',
+      );
+    }
   }
 
   // 유저가 초대받은 초대장 조회 함수
