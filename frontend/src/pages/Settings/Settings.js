@@ -241,11 +241,17 @@ const Settings = () => {
           >
             이용약관
           </StyledLink>
-          <p> | </p>
+          <p>|</p>
           <StyledLink
             onClick={() => navigateWithState('/privacyPolicy', 'settings')}
           >
             개인정보보호방침
+          </StyledLink>
+          <p>|</p>
+          <StyledLink
+            onClick={() => navigateWithState('/customerService', 'settings')}
+          >
+            고객센터
           </StyledLink>
         </FooterLinks>
       </S.PageWrapper>
@@ -318,7 +324,7 @@ const FooterLinks = styled.div`
   margin-top: 10px;
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 10px;
 `;
 
 const boxStyle = {
