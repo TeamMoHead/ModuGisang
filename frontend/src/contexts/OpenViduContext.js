@@ -42,22 +42,18 @@ const OpenViduContextProvider = ({ children }) => {
       userName,
     };
 
-    try {
-      const response = await fetchData(() => {
-        challengeServices.getConnectionToken({
-          accessToken,
-          userData,
-        });
+    const response = await fetchData(() => {
+      challengeServices.getConnectionToken({
+        accessToken,
+        userData,
       });
+    });
 
-      const { status, data } = response;
-      if (status === 200) {
-        setConnectionToken(data.token);
-      } else {
-        console.error('Failed to get connection token', response);
-      }
-    } catch (error) {
-      console.error(error);
+    const { status, data } = response;
+    if (status === 200) {
+      setConnectionToken(data.token);
+    } else {
+      console.error('Failed to get connection token', response);
     }
   };
 
