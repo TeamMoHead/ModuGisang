@@ -85,9 +85,12 @@ const useAuth = () => {
       setIsEmailCheckLoading(false);
     } else if (!isEmailCheckLoading && emailCheckError) {
       if (emailCheckStatus === 400) {
-        alert('이미 사용 중인 이메일입니다. 다른 이메일을 입력해주세요.');
-      } else {
         alert(emailCheckError);
+      } else if (emailCheckStatus === 410) {
+        alert(emailCheckError);
+      } else {
+        alert('이메일 중복 확인에 실패했습니다. 다시 시도해주세요.');
+        console.error(emailCheckError);
       }
       setIsEmailCheckLoading(false);
     }
@@ -328,7 +331,7 @@ const useAuth = () => {
       } else if (passwordChangeStatus === 404) {
         alert('가입하지 않은 회원입니다. 고객센터에 문의해주세요.');
       } else if (passwordChangeStatus === 400) {
-        alert('비밀번호 양식이 틀렸습니다. 다시 시도해주세요.');
+        alert(passwordChangeError);
       } else {
         alert(`비밀번호 변경에 실패했습니다. ${passwordChangeError}`);
       }

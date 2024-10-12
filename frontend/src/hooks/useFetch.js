@@ -18,7 +18,10 @@ const useFetch = () => {
       if (!navigator.onLine) {
         navigate('/offline');
       } else {
-        const message = error.response?.data?.message || error.message;
+        const message =
+          error.response?.data?.message ||
+          error.response?.data ||
+          error.message;
         callResponse.data = null;
         callResponse.status = error.response?.status;
         callResponse.error = message;
