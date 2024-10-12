@@ -19,9 +19,9 @@ export class EmailController {
     if (result.success) {
       res.status(HttpStatus.OK).send(result.message);
     } else {
-      if (result.message === '삭제된 이메일입니다.') {
+      if (result.status === 'RECENTLY_DELETED') {
         res.status(HttpStatus.GONE).send(result.message);
-      } else if (result.message === '이미 존재하는 이메일입니다.') {
+      } else if (result.status === 'IN_USE') {
         res.status(HttpStatus.BAD_REQUEST).send(result.message);
       }
     }

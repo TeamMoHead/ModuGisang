@@ -5,6 +5,12 @@ import { ConfigService } from '@nestjs/config';
 import RedisCacheService from 'src/redis-cache/redis-cache.service';
 import { UserService } from 'src/users/users.service';
 
+enum Status {
+  ACTIVE = 'AVAILABLE',
+  IN_USE = 'IN_USE',
+  DELETED = 'RECENTLY_DELETED',
+}
+
 @Injectable()
 export class EmailService {
   private transporter;
@@ -77,7 +83,7 @@ export class EmailService {
 
   async checkAndSendEmail(
     email: string,
-  ): Promise<{ success: boolean; message: string }> {
+  ): Promise<{ success: boolean; message: string; status: string }> {
     const userExists = await this.userService.checkdeletedUser(email);
 
     // userExists가 존재하고 소프트 삭제된 회원인 경우
@@ -93,16 +99,29 @@ export class EmailService {
 
       // 30일 안에 삭제된 이메일인지 확인
       if (diffInMillis <= THIRTY_DAYS_IN_MILLIS) {
-        return { success: false, message: '삭제된 이메일입니다.' };
+        return {
+          success: false,
+          message:
+            '탈퇴한 계정의 이메일입니다. 탈퇴 후 30일 이내 동일한 이메일로 가입할 수 없습니다.',
+          status: Status.DELETED,
+        };
       }
     }
 
     if (userExists) {
-      return { success: false, message: '이미 존재하는 이메일입니다.' };
+      return {
+        success: false,
+        message: '이미 존재하는 이메일입니다.',
+        status: Status.IN_USE,
+      };
     } else {
       const random = await this.sendMail(email);
       await this.setRandom(email, random);
-      return { success: true, message: '인증번호 전송완료' };
+      return {
+        success: true,
+        message: '인증번호 전송완료',
+        status: Status.ACTIVE,
+      };
     }
   }
 
