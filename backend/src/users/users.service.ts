@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { Users } from './entities/users.entity';
 import * as argon2 from 'argon2';
@@ -14,6 +15,7 @@ import { Streak } from './entities/streak.entity';
 import RedisCacheService from '../redis-cache/redis-cache.service';
 import { UserInformationDto } from './dto/user-info.dto';
 import { Challenges } from 'src/challenges/challenges.entity';
+import { Invitations } from 'src/invitations/invitations.entity';
 // import { refreshJwtConstants } from 'src/auth/constants';
 
 @Injectable()
@@ -25,12 +27,15 @@ export class UserService {
     private streakRepository: Repository<Streak>,
     @InjectRepository(Challenges)
     private challengeRepository: Repository<Challenges>,
+    @InjectRepository(Invitations)
+    private invitationRepository: Repository<Invitations>,
     private configService: ConfigService,
     private readonly redisService: RedisCacheService,
   ) {
     this.userRepository = userRepository;
     this.streakRepository = streakRepository;
     this.challengeRepository = challengeRepository;
+    this.invitationRepository = invitationRepository;
   }
 
   async createUser(
@@ -56,6 +61,15 @@ export class UserService {
   async findUser(email: string): Promise<Users> {
     const user = await this.userRepository.findOne({
       where: { email },
+    });
+    return user;
+  }
+
+  // 회원 조회 함수(탈퇴한 회원도 함께 조회)
+  async checkdeletedUser(email: string): Promise<Users> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      withDeleted: true,
     });
     return user;
   }
@@ -161,21 +175,63 @@ export class UserService {
     return result;
   }
 
-  async getInvis(userId: number) {
-    const invitations = await this.userRepository.findOne({
-      where: { _id: userId },
-      relations: ['invitations', 'streak'],
+  // 유저의 스트릭 데이터 처리 함수
+  async getCurrentStreak(userId: number) {
+    try {
+      const streaks = await this.getStreak(userId);
+
+      const currentStreak = streaks?.currentStreak ?? 0;
+      const lastActiveDate = streaks?.lastActiveDate ?? null;
+
+      return {
+        currentStreak: currentStreak,
+        lastActiveDate: lastActiveDate,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        '스트릭 데이터를 가져오는 동안 오류가 발생했습니다.',
+      );
+    }
+  }
+  // 유저의 초대장 데이터 처리 함수
+  async getInviationsCount(userId: number) {
+    try {
+      const invitations = await this.getInvitations(userId);
+
+      const count = invitations?.invitations.filter(
+        (invitation) => !invitation.isExpired,
+      ).length; // 초대받은 챌린지의 수
+
+      return {
+        invitations: invitations,
+        count: count,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        '초대장 데이터를 가져오는 동안 오류가 발생했습니다.',
+      );
+    }
+  }
+
+  // 유저가 초대받은 초대장 조회 함수
+  async getInvitations(userId: number) {
+    const invitations = await this.invitationRepository.find({
+      where: { guestId: userId },
     });
 
-    const count = invitations?.invitations.filter(
-      (invitation) => !invitation.isExpired,
-    ).length; // 초대받은 챌린지의 수
-    const currentStreak = invitations?.streak?.currentStreak ?? 0;
+    // const invitations = await this.userRepository.findOne({
+    //   where: { _id: userId },
+    //   relations: ['invitations', 'streak'],
+    // });
+    // const count = invitations?.invitations.filter(
+    //   (invitation) => !invitation.isExpired,
+    // ).length; // 초대받은 챌린지의 수
+    // const currentStreak = invitations?.streak?.currentStreak ?? 0;
     return {
       invitations: invitations,
-      currentStreak: currentStreak,
-      lastActiveDate: invitations?.streak?.lastActiveDate ?? null,
-      count: count,
+      // currentStreak: currentStreak,
+      // lastActiveDate: invitations?.streak?.lastActiveDate ?? null,
+      // count: count,
     };
   }
 
@@ -210,12 +266,12 @@ export class UserService {
 
   async getStreak(userId: number) {
     try {
-      const getStreak = await this.streakRepository.findOne({
+      const streak = await this.streakRepository.findOne({
         where: { userId: userId, user: { deletedAt: null } },
         relations: ['user'],
       });
 
-      return getStreak;
+      return streak;
     } catch (e) {
       console.log('getStreak error', e);
     }
