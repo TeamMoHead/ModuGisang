@@ -190,7 +190,7 @@ export class UserController {
       oldPassword,
     );
     if (!isUserVerified) {
-      throw new BadRequestException('비밀번호가 일치하지 않습니다.');
+      throw new UnauthorizedException('현재 비밀번호가 일치하지 않습니다.');
     }
 
     const verifyPWResult = this.userService.checkPWformat(newPassword);
