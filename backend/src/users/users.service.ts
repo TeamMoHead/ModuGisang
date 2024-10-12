@@ -65,6 +65,7 @@ export class UserService {
     return user;
   }
 
+  // 회원 조회 함수(탈퇴한 회원도 함께 조회)
   async checkdeletedUser(email: string): Promise<Users> {
     const user = await this.userRepository.findOne({
       where: { email },
