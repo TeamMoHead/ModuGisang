@@ -78,7 +78,25 @@ export class EmailService {
   async checkAndSendEmail(
     email: string,
   ): Promise<{ success: boolean; message: string }> {
-    const userExists = await this.userService.findUser(email);
+    const userExists = await this.userService.checkdeletedUser(email);
+
+    // userExists가 존재하고 소프트 삭제된 회원인 경우
+    if (userExists?.deletedAt) {
+      const deletedAtDate = new Date(userExists.deletedAt); // 삭제된 날짜
+      const currentDate = new Date(); // 현재 날짜
+
+      // 삭제된 날짜와 현재 날짜 간의 차이 계산 (밀리초 단위)
+      const diffInMillis = currentDate.getTime() - deletedAtDate.getTime();
+
+      // 30일(밀리초 기준) = 30일 * 24시간 * 60분 * 60초 * 1000ms
+      const THIRTY_DAYS_IN_MILLIS = 30 * 24 * 60 * 60 * 1000;
+
+      // 30일 안에 삭제된 이메일인지 확인
+      if (diffInMillis <= THIRTY_DAYS_IN_MILLIS) {
+        return { success: false, message: '삭제된 이메일입니다.' };
+      }
+    }
+
     if (userExists) {
       return { success: false, message: '이미 존재하는 이메일입니다.' };
     } else {

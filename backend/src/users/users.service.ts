@@ -65,6 +65,14 @@ export class UserService {
     return user;
   }
 
+  async checkdeletedUser(email: string): Promise<Users> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      withDeleted: true,
+    });
+    return user;
+  }
+
   async findOneByID(_id: number): Promise<Users> {
     return await this.userRepository.findOne({
       where: { _id },
