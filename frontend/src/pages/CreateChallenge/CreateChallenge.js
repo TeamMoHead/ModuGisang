@@ -10,6 +10,7 @@ import {
   InputLine,
   Icon,
 } from '../../components';
+import useFetch from '../../hooks/useFetch';
 import { AccountContext, ChallengeContext } from '../../contexts';
 import { challengeServices } from '../../apis/challengeServices';
 import * as S from '../../styles/common';
@@ -17,6 +18,7 @@ import styled from 'styled-components';
 
 const CreateChallenge = () => {
   const navigate = useNavigate();
+  const { fetchData } = useFetch();
   const [duration, setDuration] = useState(7);
   const [startDate, setStartDate] = useState(new Date());
   const [range, setRange] = useState([new Date(), new Date()]);
@@ -121,34 +123,38 @@ const CreateChallenge = () => {
   };
 
   const checkEmail = async e => {
+    e.preventDefault();
+
     if (emailInput === '') {
       alert('이메일을 입력해주세요.');
       return;
     }
-    try {
-      const response = await challengeServices.checkMateAvailability({
+
+    const response = await fetchData(() =>
+      challengeServices.checkMateAvailability({
         accessToken,
         email: emailInput,
-      });
-      e.preventDefault();
-      if (!response.data.isEngaged) {
+      }),
+    );
+
+    const { status, data, error } = response;
+    if (status === 200) {
+      if (!data.isEngaged) {
         const alreadyExists = mates.some(mate => mate === emailInput);
         if (alreadyExists) {
-          alert('동일한 메이트를 추가했습니다.');
+          alert('이미 추가한 메이트입니다.');
           setEmailInput('');
           return;
         }
         setMates([...mates, emailInput]);
         setEmailInput('');
-      } else if (response.data.isEngaged) {
+      } else if (data.isEngaged) {
         alert('메이트가 이미 다른 챌린지에 참여 중입니다.');
         setEmailInput('');
       }
-    } catch (error) {
-      if (error.response && error.response.status === 500) {
-        alert('사용자를 찾을 수 없습니다. 이메일을 확인해 주세요.');
-        setEmailInput('');
-      }
+    } else if (error) {
+      alert('사용자를 찾을 수 없습니다. 이메일을 확인해 주세요.');
+      setEmailInput('');
     }
   };
 
@@ -241,21 +247,21 @@ const CreateChallenge = () => {
         <TimeBox>
           <TimePicker
             isList={true}
-            pos={'left'}
+            pos="left"
             list={hours}
             onSelectedChange={settingHour}
           />
-          <TimePicker isList={false} pos={'mid'} list={':'} />
+          <TimePicker isList={false} pos="mid" list=":" />
           <TimePicker
             isList={true}
-            pos={'mid'}
+            pos="mid"
             list={minutes}
             onSelectedChange={settingMinute}
           />
-          <TimePicker isList={false} pos={'mid'} list={'|'} />
+          <TimePicker isList={false} pos="mid" list="|" />
           <TimePicker
             isList={true}
-            pos={'right'}
+            pos="right"
             list={periods}
             onSelectedChange={settingPeriod}
           />
@@ -264,8 +270,8 @@ const CreateChallenge = () => {
         <Title>미라클 메이트 초대</Title>
         <InputLine
           hasIcon={true}
-          type={'email'}
-          icon={'search'}
+          type="email"
+          icon="search"
           iconStyle={searchIcon}
           value={emailInput}
           onChange={handleEmailChange}
@@ -278,7 +284,7 @@ const CreateChallenge = () => {
               <InvitedMate key={index}>
                 <MiniCircle /> {mate}
                 <button onClick={() => deleteMate(index)}>
-                  <Icon icon={'close'} iconStyle={iconStyle} />
+                  <Icon icon="close" iconStyle={iconStyle} />
                 </button>
               </InvitedMate>
             ))}

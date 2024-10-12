@@ -13,31 +13,39 @@ const useAuth = () => {
   const refreshToken = localStorage.getItem('refreshToken');
 
   const refreshAuthorization = async () => {
-    try {
-      if (!refreshToken) {
-        return false;
-      }
-
-      const response = await authServices.refreshAccessToken({
+    if (!refreshToken) {
+      return false;
+    }
+    const response = await fetchData(() =>
+      authServices.refreshAccessToken({
         accseeToken: accessToken,
         refreshToken: refreshToken,
-      });
+      }),
+    );
+    const { isLoading, status, data, error } = response;
 
-      if (response.status === 201) {
-        setAccessToken(response.data.data.accessToken);
-        setUserId(response.data.data.userId);
-        return true;
-      } else {
-        console.error('Failed to refresh access token', response.status);
-        return false;
-      }
-    } catch (error) {
-      console.error('Failed to refresh access token', error);
+    if (!isLoading && status === 201) {
+      setAccessToken(data.accessToken);
+      setUserId(data.userId);
+      return true;
+    }
+
+    if (!isLoading && error) {
+      console.error(
+        'Failed to refresh access token',
+        'status: ',
+        status,
+        'error: ',
+        error,
+      );
       return false;
     }
   };
 
   const checkAuth = async () => {
+    if (!navigator.onLine) {
+      return navigate('/offline');
+    }
     if (accessToken === null) {
       const isRefreshed = await refreshAuthorization();
       if (!isRefreshed) {
@@ -77,45 +85,14 @@ const useAuth = () => {
       setIsEmailCheckLoading(false);
     } else if (!isEmailCheckLoading && emailCheckError) {
       if (emailCheckStatus === 400) {
-        alert('이미 사용 중인 이메일입니다. 다른 이메일을 입력해주세요.');
-      } else {
         alert(emailCheckError);
+      } else if (emailCheckStatus === 410) {
+        alert(emailCheckError);
+      } else {
+        alert('이메일 중복 확인에 실패했습니다. 다시 시도해주세요.');
+        console.error(emailCheckError);
       }
       setIsEmailCheckLoading(false);
-    }
-  };
-
-  const handleSubmitLogIn = async ({
-    loginEmail,
-    loginPassword,
-    setIsLoginLoading,
-  }) => {
-    if (loginEmail === '' || loginPassword === '') {
-      alert('이메일과 비밀번호를 입력해주세요.');
-      return;
-    }
-    setIsLoginLoading(true);
-    const response = await fetchData(() =>
-      authServices.logInUser({
-        email: loginEmail,
-        password: loginPassword,
-      }),
-    );
-    const {
-      isLoading: isLoginLoading,
-      data: loginData,
-      error: loginError,
-    } = response;
-    if (!isLoginLoading && loginData) {
-      setAccessToken(loginData.accessToken);
-      localStorage.setItem('refreshToken', loginData.refreshToken);
-      setUserId(loginData.userId);
-      setIsLoginLoading(false);
-      alert('로그인 되었습니다.');
-      navigate('/');
-    } else if (!isLoginLoading && loginError) {
-      setIsLoginLoading(false);
-      alert(loginError);
     }
   };
 
@@ -192,6 +169,59 @@ const useAuth = () => {
     } else if (!isSignUpLoading && signUpError) {
       setIsSignUpLoading(false);
       alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+    }
+  };
+
+  const handleSubmitLogIn = async ({
+    loginEmail,
+    loginPassword,
+    setIsLoginLoading,
+  }) => {
+    if (loginEmail === '' || loginPassword === '') {
+      alert('이메일과 비밀번호를 입력해주세요.');
+      return;
+    }
+    setIsLoginLoading(true);
+    const response = await fetchData(() =>
+      authServices.logInUser({
+        email: loginEmail,
+        password: loginPassword,
+      }),
+    );
+    const {
+      isLoading: isLoginLoading,
+      data: loginData,
+      error: loginError,
+    } = response;
+    if (!isLoginLoading && loginData) {
+      setAccessToken(loginData.accessToken);
+      localStorage.setItem('refreshToken', loginData.refreshToken);
+      setUserId(loginData.userId);
+      setIsLoginLoading(false);
+      alert('로그인 되었습니다.');
+      navigate('/');
+    } else if (!isLoginLoading && loginError) {
+      setIsLoginLoading(false);
+      alert(loginError);
+    }
+  };
+
+  const handleSubmitLogout = async ({ setIsLogoutLoading, userId }) => {
+    setIsLogoutLoading(true);
+    const response = await fetchData(() =>
+      authServices.logOutUser({ accessToken, userId }),
+    );
+    const { isLoading: isLogoutLoading, error: logoutError } = response;
+    if (!isLogoutLoading) {
+      setUserId(null);
+      setAccessToken(null);
+      setIsLogoutLoading(false);
+      localStorage.removeItem('refreshToken');
+      alert('로그아웃 되었습니다.');
+      navigate('/signIn');
+    } else if (logoutError) {
+      setIsLogoutLoading(false);
+      alert(logoutError);
     }
   };
 
@@ -301,7 +331,7 @@ const useAuth = () => {
       } else if (passwordChangeStatus === 404) {
         alert('가입하지 않은 회원입니다. 고객센터에 문의해주세요.');
       } else if (passwordChangeStatus === 400) {
-        alert('비밀번호 양식이 틀렸습니다. 다시 시도해주세요.');
+        alert(passwordChangeError);
       } else {
         alert(`비밀번호 변경에 실패했습니다. ${passwordChangeError}`);
       }
@@ -312,9 +342,10 @@ const useAuth = () => {
     refreshAuthorization,
     checkAuth,
     handleCheckEmail,
-    handleSubmitLogIn,
     handleCheckVerifyCode,
     handleSubmitSignUp,
+    handleSubmitLogIn,
+    handleSubmitLogout,
     handleDeleteAccount,
     handleSendTmpPassword,
     handleChangePassword,

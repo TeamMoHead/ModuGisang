@@ -73,8 +73,14 @@ const Result = () => {
     const response = await fetchData(() =>
       userServices.getUserInfo({ accessToken, userId: theTopUserId }),
     );
-
-    setTheTopUserData(response.data);
+    const { isLoading, data, error } = response;
+    if (!isLoading && data) {
+      setTheTopUserData(data);
+    }
+    if (error) {
+      console.error(error);
+      setTheTopUserData(null);
+    }
   };
 
   useEffect(() => {
