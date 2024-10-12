@@ -222,6 +222,39 @@ const useAuth = () => {
     }
   };
 
+  const handleDeleteAccount = async ({
+    e,
+    password,
+    setIsDeleteUserLoading,
+  }) => {
+    e.preventDefault();
+    setIsDeleteUserLoading(true);
+    const response = await fetchData(() =>
+      authServices.deleteUser({ accessToken, password }),
+    );
+    const {
+      isLoading: isDeleteUserLoading,
+      status: deleteUserStatus,
+      data: deleteUserData,
+      error: deleteUserError,
+    } = response;
+
+    if (!isDeleteUserLoading && deleteUserData) {
+      setIsDeleteUserLoading(false);
+      alert('회원 탈퇴가 성공적으로 완료되었습니다.');
+      navigate('/signIn');
+    } else if (!isDeleteUserLoading && deleteUserError) {
+      setIsDeleteUserLoading(false);
+      if (deleteUserStatus === 401) {
+        alert('비밀번호가 일치하지 않습니다. 다시 시도해주세요.');
+      } else if (deleteUserStatus === 404) {
+        alert('회원 탈퇴에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      } else {
+        alert(`회원 탈퇴에 실패했습니다. ${deleteUserError}`);
+      }
+    }
+  };
+
   const handleSendTmpPassword = async ({
     email,
     setIsPasswordResetLoading,
@@ -310,6 +343,7 @@ const useAuth = () => {
     handleSubmitSignUp,
     handleSubmitLogIn,
     handleSubmitLogout,
+    handleDeleteAccount,
     handleSendTmpPassword,
     handleChangePassword,
   };

@@ -13,6 +13,8 @@ import {
   Settings,
   PrivacyPolicy,
   TermsOfService,
+  CustomerService,
+  DeleteUser,
   ChangePassword,
   About,
 } from './pages';
@@ -40,21 +42,51 @@ function Router() {
           <Route
             path="/signUp"
             element={
-              <SafeArea>
+              <PlatformSafeArea>
                 <Signup />
-              </SafeArea>
+              </PlatformSafeArea>
+            }
+          />
+          <Route
+            path="/privacyPolicy"
+            element={
+              <PlatformSafeArea>
+                <PrivacyPolicy />
+              </PlatformSafeArea>
+            }
+          />
+          <Route
+            path="/termsOfService"
+            element={
+              <PlatformSafeArea>
+                <TermsOfService />
+              </PlatformSafeArea>
+            }
+          />
+          <Route
+            path="/customerService"
+            element={
+              <PlatformSafeArea>
+                <CustomerService />
+              </PlatformSafeArea>
+            }
+          />
+          <Route
+            path="/deleteUser"
+            element={
+              <PlatformSafeArea>
+                <DeleteUser />
+              </PlatformSafeArea>
             }
           />
           <Route
             path="/forgotPassword"
             element={
-              <SafeArea>
+              <PlatformSafeArea>
                 <ForgotPassword />
-              </SafeArea>
+              </PlatformSafeArea>
             }
           />
-          <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
-          <Route path="/termsOfService" element={<TermsOfService />} />
           <Route path="/about" element={<About />} />
           <Route element={<ProtectedRoute />}>
             <Route
