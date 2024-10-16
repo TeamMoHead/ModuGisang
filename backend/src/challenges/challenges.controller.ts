@@ -80,7 +80,7 @@ export class ChallengesController {
 
   // 로컬에 저장한 챌린지 값으로 현재 날짜랑 챌린지 날짜 비교해서 넘은 경우만 호출
   @Post('complete/:challengeId/:userId') // 챌린지가 끝났는지 확인하는 경우
-  async checkChallenge(
+  async completeChallenge(
     @Param('challengeId') challengeId: number,
     @Param('userId') userId: number,
   ) {
