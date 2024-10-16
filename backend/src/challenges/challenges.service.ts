@@ -97,30 +97,6 @@ export class ChallengesService {
     return await this.challengeRepository.save(editChall);
   }
 
-  async isEndChallenge(challengeId: number): Promise<boolean> {
-    let challenge = await this.redisCheckChallenge(challengeId);
-    if (challenge == null) {
-      challenge = await this.challengeRepository.findOne({
-        where: { _id: challengeId },
-      });
-    }
-    if (!challenge) {
-      throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
-    }
-    // 현재 시간을 가져옴
-    const currentDate = new Date();
-
-    // 챌린지 종료 날짜와 기상시간을 결합하여 종료 시간 생성
-    const challengeEndDateTime = new Date(challenge.endDate);
-    challengeEndDateTime.setHours(challenge.wakeTime.getHours());
-    challengeEndDateTime.setMinutes(challenge.wakeTime.getMinutes());
-    challengeEndDateTime.setSeconds(challenge.wakeTime.getSeconds());
-
-    // 캐시 삭제할 필요는 없는것 같음 -> 다른 팀원들도 남아있을 수 있음
-
-    return currentDate >= challengeEndDateTime;
-  }
-
   // 챌린지 ID 랑 userID 둘다 받아서 호스트인지 확인하고 삭제로 수정
   // 호스트ID 하나로만 조회 ?? -> 챌린지ID랑 호스트 ID 말고 ?
   // 모두가 호출가능 ?? -> 프론트 또는 백에서 host인지 아닌지 확인 후 그에따른 결과값 송출 ???
@@ -472,7 +448,7 @@ export class ChallengesService {
     challengeId: number,
     userId: number,
   ): Promise<boolean> {
-    if (!this.isEndChallenge(challengeId)) {
+    if (!this.checkChallengeExpiration(challengeId)) {
       // -> error를 발생시켜야 하나?
       return false;
     }
@@ -506,6 +482,31 @@ export class ChallengesService {
     }
     return true;
   }
+
+  async checkChallengeExpiration(challengeId: number): Promise<boolean> {
+    let challenge = await this.redisCheckChallenge(challengeId);
+    if (challenge == null) {
+      challenge = await this.challengeRepository.findOne({
+        where: { _id: challengeId },
+      });
+    }
+    if (!challenge) {
+      throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
+    }
+    // 현재 시간을 가져옴
+    const currentDate = new Date();
+
+    // 챌린지 종료 날짜와 기상시간을 결합하여 종료 시간 생성
+    const challengeEndDateTime = new Date(challenge.endDate);
+    challengeEndDateTime.setHours(challenge.wakeTime.getHours());
+    challengeEndDateTime.setMinutes(challenge.wakeTime.getMinutes());
+    challengeEndDateTime.setSeconds(challenge.wakeTime.getSeconds());
+
+    // 캐시 삭제할 필요는 없는것 같음 -> 다른 팀원들도 남아있을 수 있음
+
+    return currentDate >= challengeEndDateTime;
+  }
+
   // 현재 시간보다 이후인지 확인하는 함수
   validateStartAndWakeTime(startDate: Date, wakeTime: Date): void {
     const currentDate = new Date();
