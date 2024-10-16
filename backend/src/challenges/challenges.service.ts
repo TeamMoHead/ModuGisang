@@ -459,8 +459,10 @@ export class ChallengesService {
     if (!challenge) {
       throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
     }
-    // 1. 호스트인지 체크 후 호스트 인경우 챌린지 expired로 변경 -> 챌린지 정보를 가져와야 알 수 있음 userID 랑 비교
-    if (challenge.hostId === userId) {
+
+    //// 1. 호스트인지 체크 후 호스트 인경우 챌린지 completed로 변경 -> 챌린지 정보를 가져와야 알 수 있음 userID 랑 비교
+    // 먼저 들어온사람이 먼저 challenge update
+    if (challenge.completed !== true) {
       challenge.completed = true;
       await this.redisCacheService.del(`challenge_${challengeId}`);
       await this.challengeRepository.save(challenge);
