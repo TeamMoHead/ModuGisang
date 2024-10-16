@@ -90,14 +90,14 @@ export class ChallengesController {
     );
     if (result === true) {
       return {
-        expired: true,
+        completed: true,
         message:
-          'This challenge has expired and user data has been successfully updated.',
+          'This challenge has completed and user data has been successfully updated.',
       };
     } else {
       return {
-        expired: false,
-        message: 'This challenge is not expired yet.',
+        completed: false,
+        message: 'This challenge is not completed yet.',
       };
     }
   }
