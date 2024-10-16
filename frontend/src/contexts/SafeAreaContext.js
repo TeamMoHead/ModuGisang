@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Plugins } from '@capacitor/core';
-const { SafeArea } = Plugins;
+import { SafeArea } from 'capacitor-plugin-safe-area';
 
 const SafeAreaContext = createContext();
 
@@ -12,16 +11,16 @@ export const SafeAreaProvider = ({ children }) => {
     right: 0,
   });
 
-  useEffect(() => {
-    const getSafeAreaInsets = async () => {
-      try {
-        const insets = await SafeArea.getSafeAreaInsets();
-        setSafeAreaInsets(insets);
-      } catch (error) {
-        console.error('Failed to get safe area insets:', error);
-      }
-    };
+  const getSafeAreaInsets = async () => {
+    try {
+      const insets = await SafeArea.getSafeAreaInsets();
+      setSafeAreaInsets(insets);
+    } catch (error) {
+      console.error('Failed to get safe area insets:', error);
+    }
+  };
 
+  useEffect(() => {
     getSafeAreaInsets();
     window.addEventListener('resize', getSafeAreaInsets);
 

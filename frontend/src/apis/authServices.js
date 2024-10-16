@@ -55,6 +55,17 @@ const signUpUser = async ({ email, password, userName }) => {
   return await API.post(url, payload);
 };
 
+const deleteUser = async ({ accessToken, password }) => {
+  const url = `/user/delete-user`;
+  const payload = {
+    password,
+  };
+  const config = {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  };
+  return await API.post(url, payload, config);
+};
+
 const refreshAccessToken = async ({ accessToken, refreshToken }) => {
   if (!accessToken) {
     accessToken = null;
@@ -69,11 +80,19 @@ const refreshAccessToken = async ({ accessToken, refreshToken }) => {
   return await API.post(url, payload, config);
 };
 
+const sendTmpPassword = async ({ email }) => {
+  const url = '/email/change-tmp-password';
+  const payload = { email };
+  return await API.post(url, payload);
+};
+
 export const authServices = {
   signUpUser,
+  deleteUser,
   logInUser,
   logOutUser,
   checkEmailAvailability,
   verifyAuthCode,
   refreshAccessToken,
+  sendTmpPassword,
 };

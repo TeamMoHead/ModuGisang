@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authServices } from '../apis/authServices';
+import { authServices, userServices } from '../apis';
 import { AccountContext } from '../contexts/AccountContexts';
 import useFetch from '../hooks/useFetch';
 
@@ -13,31 +13,39 @@ const useAuth = () => {
   const refreshToken = localStorage.getItem('refreshToken');
 
   const refreshAuthorization = async () => {
-    try {
-      if (!refreshToken) {
-        return false;
-      }
-
-      const response = await authServices.refreshAccessToken({
+    if (!refreshToken) {
+      return false;
+    }
+    const response = await fetchData(() =>
+      authServices.refreshAccessToken({
         accseeToken: accessToken,
         refreshToken: refreshToken,
-      });
+      }),
+    );
+    const { isLoading, status, data, error } = response;
 
-      if (response.status === 201) {
-        setAccessToken(response.data.data.accessToken);
-        setUserId(response.data.data.userId);
-        return true;
-      } else {
-        console.error('Failed to refresh access token', response.status);
-        return false;
-      }
-    } catch (error) {
-      console.error('Failed to refresh access token', error);
+    if (!isLoading && status === 201) {
+      setAccessToken(data.accessToken);
+      setUserId(data.userId);
+      return true;
+    }
+
+    if (!isLoading && error) {
+      console.error(
+        'Failed to refresh access token',
+        'status: ',
+        status,
+        'error: ',
+        error,
+      );
       return false;
     }
   };
 
   const checkAuth = async () => {
+    if (!navigator.onLine) {
+      return navigate('/offline');
+    }
     if (accessToken === null) {
       const isRefreshed = await refreshAuthorization();
       if (!isRefreshed) {
@@ -77,46 +85,14 @@ const useAuth = () => {
       setIsEmailCheckLoading(false);
     } else if (!isEmailCheckLoading && emailCheckError) {
       if (emailCheckStatus === 400) {
-        alert('이미 사용 중인 이메일입니다. 다른 이메일을 입력해주세요.');
-      } else {
         alert(emailCheckError);
+      } else if (emailCheckStatus === 410) {
+        alert(emailCheckError);
+      } else {
+        alert('이메일 중복 확인에 실패했습니다. 다시 시도해주세요.');
+        console.error(emailCheckError);
       }
       setIsEmailCheckLoading(false);
-    }
-  };
-
-  const handleSubmitLogIn = async ({
-    loginEmail,
-    loginPassword,
-    setIsLoginLoading,
-  }) => {
-    // ============= ⭐️⭐️개발 끝나고 나서 풀어주기⭐️⭐️ ============
-    // if (loginEmail === '' || loginPassword === '') {
-    //   alert('이메일과 비밀번호를 입력해주세요.');
-    //   return;
-    // }
-    setIsLoginLoading(true);
-    const response = await fetchData(() =>
-      authServices.logInUser({
-        email: loginEmail,
-        password: loginPassword,
-      }),
-    );
-    const {
-      isLoading: isLoginLoading,
-      data: loginData,
-      error: loginError,
-    } = response;
-    if (!isLoginLoading && loginData) {
-      setAccessToken(loginData.accessToken);
-      localStorage.setItem('refreshToken', loginData.refreshToken);
-      setUserId(loginData.userId);
-      setIsLoginLoading(false);
-      alert('로그인 되었습니다.');
-      navigate('/');
-    } else if (!isLoginLoading && loginError) {
-      setIsLoginLoading(false);
-      alert(loginError);
     }
   };
 
@@ -196,13 +172,183 @@ const useAuth = () => {
     }
   };
 
+  const handleSubmitLogIn = async ({
+    loginEmail,
+    loginPassword,
+    setIsLoginLoading,
+  }) => {
+    if (loginEmail === '' || loginPassword === '') {
+      alert('이메일과 비밀번호를 입력해주세요.');
+      return;
+    }
+    setIsLoginLoading(true);
+    const response = await fetchData(() =>
+      authServices.logInUser({
+        email: loginEmail,
+        password: loginPassword,
+      }),
+    );
+    const {
+      isLoading: isLoginLoading,
+      data: loginData,
+      error: loginError,
+    } = response;
+    if (!isLoginLoading && loginData) {
+      setAccessToken(loginData.accessToken);
+      localStorage.setItem('refreshToken', loginData.refreshToken);
+      setUserId(loginData.userId);
+      setIsLoginLoading(false);
+      alert('로그인 되었습니다.');
+      navigate('/');
+    } else if (!isLoginLoading && loginError) {
+      setIsLoginLoading(false);
+      alert(loginError);
+    }
+  };
+
+  const handleSubmitLogout = async ({ setIsLogoutLoading, userId }) => {
+    setIsLogoutLoading(true);
+    const response = await fetchData(() =>
+      authServices.logOutUser({ accessToken, userId }),
+    );
+    const { isLoading: isLogoutLoading, error: logoutError } = response;
+    if (!isLogoutLoading) {
+      setUserId(null);
+      setAccessToken(null);
+      setIsLogoutLoading(false);
+      localStorage.removeItem('refreshToken');
+      alert('로그아웃 되었습니다.');
+      navigate('/signIn');
+    } else if (logoutError) {
+      setIsLogoutLoading(false);
+      alert(logoutError);
+    }
+  };
+
+  const handleDeleteAccount = async ({
+    e,
+    password,
+    setIsDeleteUserLoading,
+  }) => {
+    e.preventDefault();
+    setIsDeleteUserLoading(true);
+    const response = await fetchData(() =>
+      authServices.deleteUser({ accessToken, password }),
+    );
+    const {
+      isLoading: isDeleteUserLoading,
+      status: deleteUserStatus,
+      data: deleteUserData,
+      error: deleteUserError,
+    } = response;
+
+    if (!isDeleteUserLoading && deleteUserData) {
+      setIsDeleteUserLoading(false);
+      alert('회원 탈퇴가 성공적으로 완료되었습니다.');
+      navigate('/signIn');
+    } else if (!isDeleteUserLoading && deleteUserError) {
+      setIsDeleteUserLoading(false);
+      if (deleteUserStatus === 401) {
+        alert('비밀번호가 일치하지 않습니다. 다시 시도해주세요.');
+      } else if (deleteUserStatus === 404) {
+        alert('회원 탈퇴에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      } else {
+        alert(`회원 탈퇴에 실패했습니다. ${deleteUserError}`);
+      }
+    }
+  };
+
+  const handleSendTmpPassword = async ({
+    email,
+    setIsPasswordResetLoading,
+  }) => {
+    if (email === '') {
+      throw new Error('이메일을 입력해주세요.');
+    }
+
+    setIsPasswordResetLoading(true);
+
+    const response = await fetchData(() =>
+      authServices.sendTmpPassword({ email }),
+    );
+
+    const {
+      isLoading: isPasswordResetLoading,
+      status: passwordResetStatus,
+      data: passwordResetData,
+      error: passwordResetError,
+    } = response;
+
+    if (!isPasswordResetLoading && passwordResetData) {
+      setIsPasswordResetLoading(false);
+      return '임시 비밀번호가 이메일로 전송되었습니다.';
+    } else if (!isPasswordResetLoading && passwordResetError) {
+      setIsPasswordResetLoading(false);
+
+      if (passwordResetStatus === 404) {
+        throw new Error('가입되지 않은 이메일입니다.');
+      } else {
+        throw new Error(
+          `임시 비밀번호 발송에 실패했습니다. ${passwordResetError}`,
+        );
+      }
+    }
+  };
+
+  const handleChangePassword = async ({
+    e,
+    currentPassword,
+    newPassword,
+    setIsChangeLoading,
+  }) => {
+    e.preventDefault();
+
+    setIsChangeLoading(true);
+
+    const passwordChangeResponse = await fetchData(() =>
+      userServices.changePassword({
+        accessToken,
+        newPassword,
+        currentPassword,
+      }),
+    );
+
+    const {
+      isLoading: isPasswordChangeLoading,
+      status: passwordChangeStatus,
+      data: passwordChangeData,
+      error: passwordChangeError,
+    } = passwordChangeResponse;
+
+    if (!isPasswordChangeLoading && passwordChangeData) {
+      setIsChangeLoading(false);
+      alert('비밀번호 변경에 성공했습니다.');
+      navigate('/settings');
+    } else if (!isPasswordChangeLoading && passwordChangeError) {
+      setIsChangeLoading(false);
+      if (passwordChangeStatus === 401) {
+        alert('현재 비밀번호가 일치하지 않습니다. 다시 시도해주세요.');
+      } else if (passwordChangeStatus === 404) {
+        alert('가입하지 않은 회원입니다. 고객센터에 문의해주세요.');
+      } else if (passwordChangeStatus === 400) {
+        alert(passwordChangeError);
+      } else {
+        alert(`비밀번호 변경에 실패했습니다. ${passwordChangeError}`);
+      }
+    }
+  };
+
   return {
     refreshAuthorization,
     checkAuth,
     handleCheckEmail,
-    handleSubmitLogIn,
     handleCheckVerifyCode,
     handleSubmitSignUp,
+    handleSubmitLogIn,
+    handleSubmitLogout,
+    handleDeleteAccount,
+    handleSendTmpPassword,
+    handleChangePassword,
   };
 };
 

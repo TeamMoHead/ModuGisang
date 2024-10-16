@@ -105,6 +105,9 @@ export class ChallengesController {
   @Get('search-mate')
   async searchMate(@Query('email') email: string) {
     const result = await this.challengeService.searchAvailableMate(email);
+    if (result === null) {
+      throw new NotFoundException('존재하지 않는 유저입니다.');
+    }
     return {
       isEngaged: result,
     };

@@ -2,17 +2,22 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RoundBtn } from '../components';
 import { UserContext } from '../contexts';
+import { Capacitor } from '@capacitor/core';
 import styled from 'styled-components';
 
 const PAGE_TYPES = [
   'signUp',
+  'forgotPassword',
   'main',
   'myStreak',
   'joinChallenge',
   'createChallenge',
   'settings',
+  'changePassword',
   'privacyPolicy',
   'termsOfService',
+  'customerService',
+  'deleteUser',
 ];
 
 const NavBar = () => {
@@ -24,6 +29,7 @@ const NavBar = () => {
   const [hasRightBtn, setHasRightBtn] = useState(true);
   const [pageType, setPageType] = useState('main');
   const [scrolled, setScrolled] = useState(false);
+  const [platform, setPlatform] = useState('web');
 
   const goBack = () => {
     if (pageType === 'privacyPolicy' || pageType === 'termsOfService') {
@@ -31,11 +37,19 @@ const NavBar = () => {
         navigate('/settings');
       } else if (state?.from === 'signup') {
         navigate('/signUp');
+      } else if (state?.from === 'deleteUser') {
+        navigate('/deleteUser');
       } else {
         navigate('/');
       }
-    } else if (pageType === 'signUp') {
+    } else if (pageType === 'changePassword') {
+      navigate('/settings');
+    } else if (pageType === 'signUp' || pageType === 'forgotPassword') {
       navigate('/signIn');
+    } else if (pageType === 'customerService') {
+      navigate('/settings');
+    } else if (pageType === 'deleteUser') {
+      navigate('/customerService');
     } else {
       navigate('/');
     }
@@ -62,12 +76,16 @@ const NavBar = () => {
       </>
     ),
     signUp: '회원가입',
+    forgotPassword: '비밀번호 찾기',
     myStreak: '나의 기록',
     joinChallenge: '챌린지 참여',
     createChallenge: '챌린지 만들기',
     settings: '설정',
+    changePassword: '비밀번호 변경',
     privacyPolicy: '개인정보보호방침',
     termsOfService: '이용약관',
+    customerService: '고객센터',
+    deleteUser: '회원 탈퇴',
   };
 
   useEffect(() => {
@@ -110,11 +128,16 @@ const NavBar = () => {
     };
   }, []);
 
+  useEffect(() => {
+    setPlatform(Capacitor.getPlatform());
+  }, []);
+
   return (
     <Wrapper
       $hasLeftBtn={hasLeftBtn}
       $hasRightBtn={hasRightBtn}
       $scrolled={scrolled}
+      $platform={platform}
     >
       {hasLeftBtn && (
         <RoundBtn btnStyle={BACK_BTN_STYLE} onClickHandler={goBack} />
@@ -151,12 +174,18 @@ const Wrapper = styled.nav`
 
   width: 100vw;
   height: 100px;
-  padding: 59px 24px;
   z-index: 100;
   background: ${({ $scrolled, theme }) =>
     $scrolled ? theme.colors.translucent.white : 'transparent'};
   backdrop-filter: ${({ $scrolled }) => ($scrolled ? 'blur(15px)' : 'none')};
   transition: background 0.3s ease;
+
+  padding: ${({ $platform }) =>
+    $platform === 'ios'
+      ? '72px 24px'
+      : $platform === 'web'
+        ? '0 24px'
+        : '72px 24px'};
 `;
 
 const Title = styled.header`

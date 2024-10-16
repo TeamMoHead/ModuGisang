@@ -1,8 +1,9 @@
 import React from 'react';
+import { Capacitor } from '@capacitor/core';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { GameContextProvider, OpenViduContextProvider } from './contexts';
-import { Signin, Signup, ProtectedRoute } from './pages/Auth';
-import { PageNotFound } from './components';
+import { Signin, Signup, ForgotPassword, ProtectedRoute } from './pages/Auth';
+import { PageNotFound, OfflinePage } from './components';
 import {
   Main,
   InGame,
@@ -12,11 +13,25 @@ import {
   Settings,
   PrivacyPolicy,
   TermsOfService,
+  CustomerService,
+  DeleteUser,
+  ChangePassword,
   About,
 } from './pages';
 
 import { SafeAreaProvider } from './contexts/SafeAreaContext'; // SafeAreaProvider 추가
 import SafeArea from './styles/SafeArea'; // SafeAreaWrapper를 가져옴
+
+const PlatformSafeArea = ({ children }) => {
+  const platform = Capacitor.getPlatform();
+
+  if (platform === 'ios') {
+    return <SafeArea>{children}</SafeArea>;
+  }
+
+  // web이나 다른 플랫폼의 경우 SafeArea를 적용하지 않음
+  return <>{children}</>;
+};
 
 function Router() {
   return (
@@ -24,49 +39,94 @@ function Router() {
       <SafeAreaProvider>
         <Routes>
           <Route path="/signIn" element={<Signin />} />
-          <Route path="/signUp" element={<Signup />} />
-          <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
-          <Route path="/termsOfService" element={<TermsOfService />} />
+          <Route
+            path="/signUp"
+            element={
+              <PlatformSafeArea>
+                <Signup />
+              </PlatformSafeArea>
+            }
+          />
+          <Route
+            path="/privacyPolicy"
+            element={
+              <PlatformSafeArea>
+                <PrivacyPolicy />
+              </PlatformSafeArea>
+            }
+          />
+          <Route
+            path="/termsOfService"
+            element={
+              <PlatformSafeArea>
+                <TermsOfService />
+              </PlatformSafeArea>
+            }
+          />
+          <Route
+            path="/customerService"
+            element={
+              <PlatformSafeArea>
+                <CustomerService />
+              </PlatformSafeArea>
+            }
+          />
+          <Route
+            path="/deleteUser"
+            element={
+              <PlatformSafeArea>
+                <DeleteUser />
+              </PlatformSafeArea>
+            }
+          />
+          <Route
+            path="/forgotPassword"
+            element={
+              <PlatformSafeArea>
+                <ForgotPassword />
+              </PlatformSafeArea>
+            }
+          />
           <Route path="/about" element={<About />} />
           <Route element={<ProtectedRoute />}>
             <Route
               path="/"
               element={
-                <SafeArea>
+                <PlatformSafeArea>
                   <Main />
-                </SafeArea>
+                </PlatformSafeArea>
               }
             />
             <Route
               path="/main"
               element={
-                <SafeArea>
+                <PlatformSafeArea>
                   <Main />
-                </SafeArea>
+                </PlatformSafeArea>
               }
             />
             <Route
               path="/myStreak"
               element={
-                <SafeArea>
+                <PlatformSafeArea>
                   <MyStreak />
-                </SafeArea>
+                </PlatformSafeArea>
               }
             />
             <Route
               path="/joinChallenge"
               element={
-                <SafeArea>
+                <PlatformSafeArea>
                   <JoinChallenge />
-                </SafeArea>
+                </PlatformSafeArea>
               }
             />
             <Route
               path="/createChallenge"
               element={
-                <SafeArea>
+                <PlatformSafeArea>
                   <CreateChallenge />
-                </SafeArea>
+                </PlatformSafeArea>
               }
             />
             <Route
@@ -74,9 +134,9 @@ function Router() {
               element={
                 <GameContextProvider>
                   <OpenViduContextProvider>
-                    <SafeArea>
+                    <PlatformSafeArea>
                       <InGame />
-                    </SafeArea>
+                    </PlatformSafeArea>
                   </OpenViduContextProvider>
                 </GameContextProvider>
               }
@@ -84,12 +144,21 @@ function Router() {
             <Route
               path="/settings"
               element={
-                <SafeArea>
+                <PlatformSafeArea>
                   <Settings />
+                </PlatformSafeArea>
+              }
+            />
+            <Route
+              path="/changePassword"
+              element={
+                <SafeArea>
+                  <ChangePassword />
                 </SafeArea>
               }
             />
           </Route>
+          <Route path="/offline" element={<OfflinePage />} />
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </SafeAreaProvider>

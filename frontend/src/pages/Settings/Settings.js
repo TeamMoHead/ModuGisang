@@ -1,7 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AccountContext, ChallengeContext, UserContext } from '../../contexts';
-import { authServices, userServices } from '../../apis';
+import { userServices } from '../../apis';
+import useAuth from '../../hooks/useAuth';
 import useFetch from '../../hooks/useFetch';
 import useNavigateWithState from '../../hooks/useNavigateWithState';
 import {
@@ -18,14 +19,14 @@ import styled from 'styled-components';
 
 const Settings = () => {
   const { fetchData } = useFetch();
+  const { handleSubmitLogout } = useAuth();
   const navigateWithState = useNavigateWithState();
   const navigate = useNavigate();
 
   const { getMyData } = useContext(UserContext);
   const user = useContext(UserContext);
   const { challengeData } = useContext(ChallengeContext);
-  const { accessToken, setAccessToken, setUserId, userId } =
-    useContext(AccountContext);
+  const { accessToken, userId } = useContext(AccountContext);
 
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
   const [affirmation, setAffirmation] = useState('');
@@ -36,26 +37,6 @@ const Settings = () => {
   // const [wakeTime, setWakeTime] = useState('');
   // const [challengeId, setChallengeId] = useState('');
   //////////////////////////////////////////
-
-  const handleLogOut = async () => {
-    setIsLogoutLoading(true);
-    const response = await fetchData(() =>
-      authServices.logOutUser({ accessToken, userId }),
-    );
-    const { isLoading: isLogoutLoading, error: logoutError } = response;
-    if (!isLogoutLoading) {
-      setUserId(null);
-      setAccessToken(null);
-      setIsLogoutLoading(false);
-      localStorage.removeItem('refreshToken');
-      alert('로그아웃 되었습니다.');
-      navigate('/signIn');
-    } else if (logoutError) {
-      setIsLogoutLoading(false);
-      alert(logoutError);
-    }
-  };
-
   const handleEditBtn = () => {
     if (!isAbleInput) {
       enableInput();
@@ -210,7 +191,24 @@ const Settings = () => {
         </> */}
 
         {/* <LongBtn btnName="연습 게임 진행하기" onClickHandler={handlePractice} /> */}
-        <LogoutWrapper onClick={handleLogOut}>
+
+        <ChangePasswordWrapper onClick={() => navigate('/changePassword')}>
+          <Text>비밀번호 변경</Text>
+          <Icon
+            icon="key"
+            iconStyle={{
+              size: 24,
+              color: 'white',
+              hoverColor: 'white',
+              disable: true,
+            }}
+          />
+        </ChangePasswordWrapper>
+        <LogoutWrapper
+          onClick={async () =>
+            await handleSubmitLogout({ setIsLogoutLoading, userId })
+          }
+        >
           <Text>로그아웃</Text>
           <Icon
             icon="logout"
@@ -228,11 +226,17 @@ const Settings = () => {
           >
             이용약관
           </StyledLink>
-          <p> | </p>
+          <p>|</p>
           <StyledLink
             onClick={() => navigateWithState('/privacyPolicy', 'settings')}
           >
             개인정보보호방침
+          </StyledLink>
+          <p>|</p>
+          <StyledLink
+            onClick={() => navigateWithState('/customerService', 'settings')}
+          >
+            고객센터
           </StyledLink>
         </FooterLinks>
       </S.PageWrapper>
@@ -277,6 +281,10 @@ const LogoutWrapper = styled.div`
   cursor: pointer;
 `;
 
+const ChangePasswordWrapper = styled(LogoutWrapper)`
+  border: 2px solid ${({ theme }) => theme.colors.primary.emerald};
+`;
+
 const Profile = styled.img`
   width: 93px;
   height: 93px;
@@ -301,7 +309,7 @@ const FooterLinks = styled.div`
   margin-top: 10px;
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 10px;
 `;
 
 const boxStyle = {

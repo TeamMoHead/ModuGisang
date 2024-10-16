@@ -198,6 +198,9 @@ export class ChallengesService {
     const availUser = await this.userRepository.findOne({
       where: { email: email },
     });
+    if (!availUser) {
+      return null;
+    }
     if (availUser.challengeId > 0) {
       return true;
     } else {
