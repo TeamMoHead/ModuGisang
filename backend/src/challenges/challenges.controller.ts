@@ -71,11 +71,21 @@ export class ChallengesController {
     @Param('hostId') hostId: number,
   ) {
     console.log(challengeId);
-    const challenge = await this.challengeService.deleteChallenge(
+    const deleteChallengeResult = await this.challengeService.deleteChallenge(
       challengeId,
       hostId,
     );
-    return challenge;
+    if (deleteChallengeResult.affected === 0) {
+      return {
+        message: '챌린지 삭제 실패',
+        status: 404,
+      };
+    } else {
+      return {
+        message: '챌린지 삭제 성공',
+        status: 200,
+      };
+    }
   }
 
   // 로컬에 저장한 챌린지 값으로 현재 날짜랑 챌린지 날짜 비교해서 넘은 경우만 호출
@@ -191,7 +201,7 @@ export class ChallengesController {
       console.log(
         `Successfully gave up challenge with ID ${challengeId} for user ${userId}`,
       );
-      return { status: 200, message: ' 성공' };
+      return { statusCode: 200, message: ' 성공' };
     } catch (error) {
       console.error(`Error in challengeGiveUp: ${error.message}`);
       return {

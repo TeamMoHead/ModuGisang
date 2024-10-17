@@ -9,6 +9,7 @@ import { Challenges } from './challenges.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   Between,
+  DeleteResult,
   IsNull,
   MoreThan,
   Repository,
@@ -103,7 +104,7 @@ export class ChallengesService {
   async deleteChallenge(
     challengeId: number,
     hostId: number,
-  ): Promise<Challenges> {
+  ): Promise<DeleteResult> {
     const challenge = await this.challengeRepository.findOne({
       where: { _id: challengeId, hostId: hostId },
     });
@@ -112,8 +113,7 @@ export class ChallengesService {
         `User with ID ${challenge.hostId} is not the host of this challenge`,
       );
     }
-    await this.challengeRepository.delete(challengeId);
-    return challenge;
+    return await this.challengeRepository.delete(challengeId);
   }
 
   async challengeGiveUp(challengeId: number, userId: number): Promise<void> {
