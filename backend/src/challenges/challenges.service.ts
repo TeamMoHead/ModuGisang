@@ -448,17 +448,18 @@ export class ChallengesService {
     challengeId: number,
     userId: number,
   ): Promise<boolean> {
-    if (!this.checkChallengeExpiration(challengeId)) {
-      // -> error를 발생시켜야 하나?
-      return false;
-    }
-    await this.userService.resetChallenge(userId); // 2.user 챌린지 정보를 -1로 변경
     const challenge = await this.challengeRepository.findOne({
       where: { _id: challengeId },
     });
     if (!challenge) {
       throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
     }
+    if (!this.checkChallengeExpiration(challenge)) {
+      // -> error를 발생시켜야 하나?
+      return false;
+    }
+
+    await this.userService.resetChallenge(userId); // 2.user 챌린지 정보를 -1로 변경
 
     //// 1. 호스트인지 체크 후 호스트 인경우 챌린지 completed로 변경 -> 챌린지 정보를 가져와야 알 수 있음 userID 랑 비교
     // 먼저 들어온사람이 먼저 challenge update
@@ -485,16 +486,7 @@ export class ChallengesService {
     return true;
   }
 
-  async checkChallengeExpiration(challengeId: number): Promise<boolean> {
-    let challenge = await this.redisCheckChallenge(challengeId);
-    if (challenge == null) {
-      challenge = await this.challengeRepository.findOne({
-        where: { _id: challengeId },
-      });
-    }
-    if (!challenge) {
-      throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
-    }
+  async checkChallengeExpiration(challenge: Challenges): Promise<boolean> {
     // 현재 시간을 가져옴
     const currentDate = new Date();
 
