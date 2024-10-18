@@ -98,19 +98,25 @@ export class ChallengesService {
     return await this.challengeRepository.save(editChall);
   }
 
-  // 챌린지 ID 랑 userID 둘다 받아서 호스트인지 확인하고 삭제로 수정
-  // 호스트ID 하나로만 조회 ?? -> 챌린지ID랑 호스트 ID 말고 ?
-  // 모두가 호출가능 ?? -> 프론트 또는 백에서 host인지 아닌지 확인 후 그에따른 결과값 송출 ???
+  // 챌린지 삭제 시 30일 정도 생성 못한다면 다시 복구 기능이 필요할 수 있음 -> hard가 아닌 soft delete??
   async deleteChallenge(
     challengeId: number,
     hostId: number,
   ): Promise<DeleteResult> {
     const challenge = await this.challengeRepository.findOne({
-      where: { _id: challengeId, hostId: hostId },
+      where: { _id: challengeId },
     });
     if (!challenge) {
-      throw new NotFoundException(
-        `User with ID ${challenge.hostId} is not the host of this challenge`,
+      throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
+    }
+    if (challenge.hostId !== hostId) {
+      throw new BadRequestException(
+        `User with ID ${hostId} is not the host of this challenge`,
+      );
+    }
+    if (challenge.startDate < new Date()) {
+      throw new BadRequestException(
+        `Challenge with ID ${challengeId} has already started so it cannot be deleted.`,
       );
     }
     return await this.challengeRepository.delete(challengeId);
