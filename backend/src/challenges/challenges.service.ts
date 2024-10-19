@@ -11,7 +11,7 @@ import {
   Between,
   DeleteResult,
   IsNull,
-  MoreThan,
+  MoreThanOrEqual,
   Repository,
   createQueryBuilder,
 } from 'typeorm';
@@ -478,7 +478,11 @@ export class ChallengesService {
     // 3. 메달처리
     // 기간별로 90%이상 80점 이상 달성시 메달 획득 금 100 은 30 동 7
     const qualifiedDaysCount = await this.attendanceRepository.count({
-      where: { challengeId, userId, score: MoreThan(80) },
+      where: {
+        challengeId: challengeId,
+        userId: userId,
+        score: MoreThanOrEqual(80),
+      },
     });
     const threshold = challenge.duration;
 
@@ -492,15 +496,20 @@ export class ChallengesService {
     return true;
   }
 
-  async checkChallengeExpiration(challenge: Challenges): Promise<boolean> {
+  checkChallengeExpiration(challenge: Challenges): boolean {
     // 현재 시간을 가져옴
     const currentDate = new Date();
 
     // 챌린지 종료 날짜와 기상시간을 결합하여 종료 시간 생성
     const challengeEndDateTime = new Date(challenge.endDate);
-    challengeEndDateTime.setHours(challenge.wakeTime.getHours());
-    challengeEndDateTime.setMinutes(challenge.wakeTime.getMinutes());
-    challengeEndDateTime.setSeconds(challenge.wakeTime.getSeconds());
+    // wakeTime을 문자열로 처리하여 시간, 분, 초를 추출
+    const [hours, minutes, seconds] = challenge.wakeTime
+      .toString()
+      .split(':')
+      .map(Number);
+
+    // 종료 시간에 wakeTime의 시간, 분, 초 설정
+    challengeEndDateTime.setHours(hours, minutes, seconds || 0);
 
     // 캐시 삭제할 필요는 없는것 같음 -> 다른 팀원들도 남아있을 수 있음
 
