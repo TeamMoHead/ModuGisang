@@ -78,7 +78,7 @@ export class ChallengesController {
     if (deleteChallengeResult.affected === 0) {
       return {
         message: '챌린지 삭제 실패',
-        status: 404,
+        status: 500,
       };
     } else {
       return {
@@ -201,11 +201,11 @@ export class ChallengesController {
       console.log(
         `Successfully gave up challenge with ID ${challengeId} for user ${userId}`,
       );
-      return { statusCode: 200, message: ' 성공' };
+      return { status: 200, message: ' 성공' };
     } catch (error) {
       console.error(`Error in challengeGiveUp: ${error.message}`);
       return {
-        status: error.statusCode || 500,
+        status: error.status || 500,
         message: error.message || 'An unexpected error occurred.',
       };
     }
