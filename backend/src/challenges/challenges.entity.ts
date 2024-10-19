@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 
 @Entity()
+@Unique(['hostId']) // hostId에 대해 고유 제약 조건 설정.
 export class Challenges {
   @PrimaryGeneratedColumn()
   _id: number;

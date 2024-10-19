@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Body,
   Controller,
   Get,
@@ -42,21 +43,29 @@ export class ChallengesController {
   async createChallenge(@Body() createChallengeDto: CreateChallengeDto) {
     console.log('create');
     console.log(createChallengeDto);
-    const challenge =
-      await this.challengeService.createChallenge(createChallengeDto);
+    try {
+      const challenge =
+        await this.challengeService.createChallenge(createChallengeDto);
 
-    const challenge_id = await this.challengeService.hostChallengeStatus(
-      createChallengeDto.hostId,
-    );
-
-    for (let i = 0; i < createChallengeDto.mates.length; i++) {
-      const send = await this.challengeService.sendInvitation(
-        challenge_id,
-        createChallengeDto.mates[i],
+      const challenge_id = await this.challengeService.hostChallengeStatus(
+        createChallengeDto.hostId,
       );
+
+      for (let i = 0; i < createChallengeDto.mates.length; i++) {
+        const send = await this.challengeService.sendInvitation(
+          challenge_id,
+          createChallengeDto.mates[i],
+        );
+      }
+      this.redisService.del(`userInfo:${createChallengeDto.hostId}`);
+      return challenge;
+    } catch (error) {
+      if (error.message.includes('중복')) {
+        throw new ConflictException(
+          '해당 호스트는 이미 챌린지를 만들었습니다.',
+        );
+      }
     }
-    this.redisService.del(`userInfo:${createChallengeDto.hostId}`);
-    return 'create';
   }
   @Post('edit')
   async editChallenge(@Body() editChallengeDto: EditChallengeDto) {
