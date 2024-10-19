@@ -73,12 +73,16 @@ export class ChallengesService {
     this.validateDuration(challenge.duration);
 
     const editChall = await this.challengeRepository.findOne({
-      where: { hostId: challenge.hostId },
+      where: { _id: challenge.challengeId },
     });
 
     if (!editChall) {
-      //host 권한이 없는 챌린지 수정 시 에러처리
       throw new NotFoundException(
+        `Challenge with ID ${challenge.challengeId} not found`,
+      );
+    }
+    if (editChall.hostId !== challenge.hostId) {
+      throw new BadRequestException(
         `User with ID ${challenge.hostId} is not the host of this challenge`,
       );
     }

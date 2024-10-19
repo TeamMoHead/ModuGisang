@@ -14,6 +14,10 @@ export class EditChallengeDto {
   hostId: number; // userId, 사용자가 제공하는 ID로 가정
 
   @IsNotEmpty()
+  @IsNumber()
+  challengeId: number; // challengeId
+
+  @IsNotEmpty()
   @IsEnum(Duration)
   duration: Duration; // enum 타입 사용
 
