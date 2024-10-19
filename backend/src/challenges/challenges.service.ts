@@ -3,6 +3,7 @@ import {
   NotFoundException,
   HttpException,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { Challenges } from './challenges.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -47,17 +48,18 @@ export class ChallengesService {
     return await this.challengeRepository.save(newChallenge);
   }
 
-  async searchAvailableMate(email: string): Promise<boolean> {
+  async searchAvailableMate(email: string, userId: number): Promise<boolean> {
     const availUser = await this.userRepository.findOne({
       where: { email: email },
     });
-    if (!availUser) {
-      return null;
-    }
-    if (availUser.challengeId > 0) {
-      return true;
+    if (availUser._id !== userId) {
+      if (availUser.challengeId > 0) {
+        return true;
+      } else {
+        return false;
+      }
     } else {
-      return false;
+      throw new BadRequestException('본인은 초대할 수 없습니다.');
     }
   }
 

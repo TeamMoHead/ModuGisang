@@ -11,6 +11,7 @@ import {
   Param,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ChallengesService } from './challenges.service';
@@ -42,6 +43,9 @@ export class ChallengesController {
   async createChallenge(@Body() createChallengeDto: CreateChallengeDto) {
     console.log('create');
     console.log(createChallengeDto);
+    if (createChallengeDto.mates.length > 3) {
+      throw new BadRequestException('챌린지 참여 인원이 초과되었습니다.');
+    }
     const challenge =
       await this.challengeService.createChallenge(createChallengeDto);
 
@@ -59,11 +63,12 @@ export class ChallengesController {
     return 'create';
   }
   @Get('search-mate')
-  async searchMate(@Query('email') email: string) {
-    const result = await this.challengeService.searchAvailableMate(email);
-    if (result === null) {
-      throw new NotFoundException('존재하지 않는 유저입니다.');
-    }
+  async searchMate(@Query('email') email: string, @Req() req) {
+    const userId = req.user._id;
+    const result = await this.challengeService.searchAvailableMate(
+      email,
+      userId,
+    );
     return {
       isEngaged: result,
     };
