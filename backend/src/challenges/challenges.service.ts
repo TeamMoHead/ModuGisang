@@ -469,15 +469,18 @@ export class ChallengesService {
       return false;
     }
 
-    await this.userService.resetChallenge(userId); // 2.user 챌린지 정보를 -1로 변경
-
     //// 1. 호스트인지 체크 후 호스트 인경우 챌린지 completed로 변경 -> 챌린지 정보를 가져와야 알 수 있음 userID 랑 비교
-    // 먼저 들어온사람이 먼저 challenge update
+    // 1. 먼저 들어온사람이 먼저 challenge update
     if (challenge.completed !== true) {
       challenge.completed = true;
       await this.redisCacheService.del(`challenge_${challengeId}`);
       await this.challengeRepository.save(challenge);
+    } else {
+      throw new BadRequestException(
+        `Challenge with ID ${challengeId} is already completed.`,
+      );
     }
+    await this.userService.resetChallenge(userId); // 2.user 챌린지 정보를 -1로 변경
 
     // 3. 메달처리
     // 기간별로 90%이상 80점 이상 달성시 메달 획득 금 100 은 30 동 7
