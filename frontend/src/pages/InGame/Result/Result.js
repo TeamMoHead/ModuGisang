@@ -210,14 +210,14 @@ const Result = () => {
               gameResults?.map(({ userName, score }, idx) => (
                 <RankingWrapper key={idx}>
                   <ScoreLine
-                    $scoreWidth={score < 31 ? 31 : score}
+                    $scoreWidth={score < 35 ? 35 : score}
                     $isTheTop={idx === 0}
                   >
                     <RangkingAndScore>
                       <RankingNum>{idx + 1}</RankingNum>
                       <Score>{score}점</Score>
                     </RangkingAndScore>
-                    {score >= 60 && (
+                    {score >= 65 && (
                       <AllInLine>
                         <UserName>{userName}</UserName>
                         <UserProfile
@@ -225,7 +225,7 @@ const Result = () => {
                         />
                       </AllInLine>
                     )}
-                    {score < 60 && score >= 41 && (
+                    {score < 65 && score >= 41 && (
                       <ProfileInLine $scoreWidth={score}>
                         <UserProfile
                           $profileInline={true}
@@ -238,7 +238,7 @@ const Result = () => {
                   {score < 41 && (
                     <ProfileOutLine
                       $profileInline={false}
-                      $scoreWidth={score < 31 ? 31 : score}
+                      $scoreWidth={score < 35 ? 35 : score}
                     >
                       <UserProfile
                         $profileInline={false}
