@@ -96,7 +96,10 @@ export default Main;
 const CardsWrapper = styled.div`
   width: 100%;
   height: 100%;
+  flex-grow: 1;
+  overflow-y: auto;
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
   gap: 20px;
+  padding-bottom: 239px; // BottomFixContent가 덮이더라도 콘텐츠가 충분히 보이도록 여유 공간 추가
 `;

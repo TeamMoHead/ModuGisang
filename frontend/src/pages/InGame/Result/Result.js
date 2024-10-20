@@ -5,6 +5,7 @@ import {
   GameContext,
   OpenViduContext,
   UserContext,
+  SafeAreaContext,
 } from '../../../contexts';
 import useFetch from '../../../hooks/useFetch';
 import { inGameServices, userServices } from '../../../apis';
@@ -53,7 +54,7 @@ const Result = () => {
 
   const [isVideoLoading, setIsVideoLoading] = useState(true);
 
-  const [platform, setPlatform] = useState('web');
+  const { platform, isSmallModel } = useContext(SafeAreaContext);
 
   const getGameResults = async () => {
     const response = await fetchData(() =>
@@ -153,13 +154,13 @@ const Result = () => {
     fireworks();
   }, []);
 
-  useEffect(() => {
-    setPlatform(Capacitor.getPlatform());
-  }, []);
-
   return (
     <>
-      <Wrapper $platform={platform} $hasRest={theRestUsersStream?.length > 0}>
+      <Wrapper
+        $platform={platform}
+        $hasRest={theRestUsersStream?.length > 0}
+        $isSmallModel={isSmallModel}
+      >
         <UpperArea>
           {(!theTopUserData || !theRestUsersStream) && (
             <LoadingWithText loadingMSG="결과를 불러오는 중입니다" />
@@ -267,13 +268,42 @@ const Result = () => {
 
 export default Result;
 
+const getPadding = ($hasRest, $platform, $isSmallModel) => {
+  if ($hasRest) {
+    if ($platform === 'web') {
+      return '104px 24px 0px 24px';
+    }
+    return $isSmallModel ? '104px 24px 0px 24px' : '75px 24px 0px 24px';
+  }
+  if ($platform === 'web') {
+    return '104px 24px 30px 24px';
+  }
+  return $isSmallModel ? '104px 24px 30px 24px' : '75px 24px 30px 24px';
+};
+
+const getGridStyles = $hasRest =>
+  $hasRest &&
+  css`
+    display: grid;
+    grid-template-rows: auto 150px;
+    gap: 10px;
+  `;
+
 const Wrapper = styled.div`
   width: 100vw;
-  height: ${({ $platform }) => ($platform === 'ios' ? '93vh' : '100vh')};
+  height: ${({ $platform, $isSmallModel }) =>
+    $platform === 'ios' && !$isSmallModel ? '93vh' : '100vh'};
+  /* height: ${({ $platform }) => ($platform === 'ios' ? '93vh' : '100vh')}; */
 
   overflow: hidden;
 
-  ${({ $hasRest, $platform }) => css`
+  padding: ${({ $hasRest, $platform, $isSmallModel }) =>
+    getPadding($hasRest, $platform, $isSmallModel)};
+
+  ${({ $hasRest }) => getGridStyles($hasRest)}/* ${({
+    $hasRest,
+    $platform,
+  }) => css`
     padding: ${$hasRest
       ? $platform === 'web'
         ? '104px 24px 0px 24px'
@@ -292,7 +322,7 @@ const Wrapper = styled.div`
       grid-template-rows: auto 150px;
       gap: 10px;
     `}
-  `}
+  `} */
 `;
 
 const UpperArea = styled.div`

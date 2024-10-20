@@ -1,37 +1,56 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { SafeArea } from 'capacitor-plugin-safe-area';
+import { Device } from '@capacitor/device';
 
 const SafeAreaContext = createContext();
 
-export const SafeAreaProvider = ({ children }) => {
-  const [safeAreaInsets, setSafeAreaInsets] = useState({
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  });
+const SafeAreaContextProvider = ({ children }) => {
+  const [platform, setPlatform] = useState('web');
+  const [model, setModel] = useState(null);
+  const [safeAreaPadding, setSafeAreaPadding] = useState('0 24px');
+  const [isSmallModel, setIsSmallModel] = useState(false);
 
-  const getSafeAreaInsets = async () => {
-    try {
-      const insets = await SafeArea.getSafeAreaInsets();
-      setSafeAreaInsets(insets);
-    } catch (error) {
-      console.error('Failed to get safe area insets:', error);
+  const getDeviceInfo = async () => {
+    const response = await Device.getInfo();
+    if (response) {
+      const { model: deviceModel, platform: devicePlatform } = response;
+      setModel(deviceModel);
+      setPlatform(devicePlatform);
+      calculatePadding(devicePlatform, deviceModel);
+    } else {
+      console.error(
+        'Error fetching device info:',
+        response.error || 'Unknown error',
+      );
+    }
+  };
+
+  const calculatePadding = (platform, model) => {
+    if (platform === 'ios') {
+      const isSmallModel =
+        model?.includes('iPhone12,8') ||
+        model?.includes('iPhone14,6') ||
+        model?.includes('iPad');
+      setSafeAreaPadding(
+        isSmallModel ? '24px 24px 12px 24px' : '59px 24px 72px 24px',
+      );
+      setIsSmallModel(isSmallModel);
+    } else {
+      setSafeAreaPadding('0 24px');
+      setIsSmallModel(false);
     }
   };
 
   useEffect(() => {
-    getSafeAreaInsets();
-    window.addEventListener('resize', getSafeAreaInsets);
-
-    return () => window.removeEventListener('resize', getSafeAreaInsets);
+    getDeviceInfo();
   }, []);
 
   return (
-    <SafeAreaContext.Provider value={safeAreaInsets}>
+    <SafeAreaContext.Provider
+      value={{ platform, model, safeAreaPadding, isSmallModel }}
+    >
       {children}
     </SafeAreaContext.Provider>
   );
 };
 
-export const useSafeAreaInsets = () => useContext(SafeAreaContext);
+export { SafeAreaContext, SafeAreaContextProvider };
