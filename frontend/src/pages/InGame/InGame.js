@@ -192,27 +192,6 @@ const InGame = () => {
 
 export default InGame;
 
-// const getPadding = ($hasMate, $platform, $isSmallModel) => {
-//   if ($hasMate) {
-//     if ($platform === 'web') {
-//       return '104px 24px 0px 24px';
-//     }
-//     return $isSmallModel ? '104px 24px 0px 24px' : '75px 24px 0px 24px';
-//   }
-//   if ($platform === 'web') {
-//     return '104px 24px 30px 24px';
-//   }
-//   return $isSmallModel ? '104px 24px 30px 24px' : '75px 24px 30px 24px';
-// };
-
-// const getGridStyles = $hasMate =>
-//   $hasMate &&
-//   css`
-//     display: grid;
-//     grid-template-rows: auto 150px;
-//     gap: 10px;
-//   `;
-
 const Wrapper = styled.div`
   width: 100vw;
   height: ${({ $platform, $isSmallModel }) =>
