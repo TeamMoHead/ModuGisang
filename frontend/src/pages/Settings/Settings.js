@@ -10,8 +10,8 @@ import {
   Icon,
   OutlineBox,
   StyledLink,
-  InputLine,
-  LongBtn,
+  // InputLine,
+  // LongBtn,
 } from '../../components';
 import { AffirmationBox } from './components';
 import * as S from '../../styles/common';
@@ -34,8 +34,8 @@ const Settings = () => {
   const [isExceeded30, setIsExceeded30] = useState(false);
 
   //////////////////////////////////////////
-  const [wakeTime, setWakeTime] = useState('');
-  const [challengeId, setChallengeId] = useState('');
+  // const [wakeTime, setWakeTime] = useState('');
+  // const [challengeId, setChallengeId] = useState('');
   //////////////////////////////////////////
   const handleEditBtn = () => {
     if (!isAbleInput) {
@@ -80,38 +80,38 @@ const Settings = () => {
 
   //////////////////////////////////////////
 
-  const handleWakeTimeChange = e => {
-    setWakeTime(e.target.value);
-  };
+  // const handleWakeTimeChange = e => {
+  //   setWakeTime(e.target.value);
+  // };
 
-  const handleChallengeIdChange = e => {
-    setChallengeId(e.target.value);
-  };
+  // const handleChallengeIdChange = e => {
+  //   setChallengeId(e.target.value);
+  // };
 
-  const handlePractice = () => {
-    console.log('연습 게임으로 이동~!');
-    console.log(user.myData);
-  };
+  // const handlePractice = () => {
+  //   console.log('연습 게임으로 이동~!');
+  //   console.log(user.myData);
+  // };
 
-  const handleChangeWakeTime = async () => {
-    const response = await fetchData(() =>
-      userServices.changeWakeTime({
-        accessToken,
-        wakeTime,
-        userId,
-        challengeId,
-      }),
-    );
-    const { isLoading: isChangeWakeTimeLoading, error: changeWakeTimeError } =
-      response;
-    if (!isChangeWakeTimeLoading) {
-      alert('기상 시간이 변경되었습니다.');
-      // updateWakeTime(wakeTime);
-      setWakeTime('');
-    } else if (changeWakeTimeError) {
-      alert(changeWakeTimeError);
-    }
-  };
+  // const handleChangeWakeTime = async () => {
+  //   const response = await fetchData(() =>
+  //     userServices.changeWakeTime({
+  //       accessToken,
+  //       wakeTime,
+  //       userId,
+  //       challengeId,
+  //     }),
+  //   );
+  //   const { isLoading: isChangeWakeTimeLoading, error: changeWakeTimeError } =
+  //     response;
+  //   if (!isChangeWakeTimeLoading) {
+  //     alert('기상 시간이 변경되었습니다.');
+  //     // updateWakeTime(wakeTime);
+  //     setWakeTime('');
+  //   } else if (changeWakeTimeError) {
+  //     alert(changeWakeTimeError);
+  //   }
+  // };
 
   //////////////////////////////////////////
 
@@ -168,7 +168,7 @@ const Settings = () => {
           }
         />
 
-        <>
+        {/* <>
           <Text>챌린지 ID</Text>
           <InputLine
             label="챌린지 ID"
@@ -188,7 +188,7 @@ const Settings = () => {
             btnName="기상 시간 수정하기"
             onClickHandler={handleChangeWakeTime}
           />
-        </>
+        </> */}
 
         {/* <LongBtn btnName="연습 게임 진행하기" onClickHandler={handlePractice} /> */}
 

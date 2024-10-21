@@ -54,7 +54,8 @@ const Result = () => {
 
   const [isVideoLoading, setIsVideoLoading] = useState(true);
 
-  const { platform, isSmallModel } = useContext(SafeAreaContext);
+  const { platform, isSmallModel, getGridStyles, getPadding } =
+    useContext(SafeAreaContext);
 
   const getGameResults = async () => {
     const response = await fetchData(() =>
@@ -160,6 +161,8 @@ const Result = () => {
         $platform={platform}
         $hasRest={theRestUsersStream?.length > 0}
         $isSmallModel={isSmallModel}
+        getGridStyles={getGridStyles}
+        getPadding={getPadding}
       >
         <UpperArea>
           {(!theTopUserData || !theRestUsersStream) && (
@@ -268,61 +271,17 @@ const Result = () => {
 
 export default Result;
 
-const getPadding = ($hasRest, $platform, $isSmallModel) => {
-  if ($hasRest) {
-    if ($platform === 'web') {
-      return '104px 24px 0px 24px';
-    }
-    return $isSmallModel ? '104px 24px 0px 24px' : '75px 24px 0px 24px';
-  }
-  if ($platform === 'web') {
-    return '104px 24px 30px 24px';
-  }
-  return $isSmallModel ? '104px 24px 30px 24px' : '75px 24px 30px 24px';
-};
-
-const getGridStyles = $hasRest =>
-  $hasRest &&
-  css`
-    display: grid;
-    grid-template-rows: auto 150px;
-    gap: 10px;
-  `;
-
 const Wrapper = styled.div`
   width: 100vw;
   height: ${({ $platform, $isSmallModel }) =>
     $platform === 'ios' && !$isSmallModel ? '93vh' : '100vh'};
-  /* height: ${({ $platform }) => ($platform === 'ios' ? '93vh' : '100vh')}; */
 
   overflow: hidden;
 
-  padding: ${({ $hasRest, $platform, $isSmallModel }) =>
+  padding: ${({ $hasRest, $platform, $isSmallModel, getPadding }) =>
     getPadding($hasRest, $platform, $isSmallModel)};
 
-  ${({ $hasRest }) => getGridStyles($hasRest)}/* ${({
-    $hasRest,
-    $platform,
-  }) => css`
-    padding: ${$hasRest
-      ? $platform === 'web'
-        ? '104px 24px 0px 24px'
-        : $platform === 'ios'
-          ? '75px 24px 0px 24px'
-          : '104px 24px 0px 24px'
-      : $platform === 'ios'
-        ? '75px 24px 30px 24px'
-        : $platform === 'web'
-          ? '104px 24px 30px 24px'
-          : '75px 24px 30px 24px'};
-
-    ${$hasRest &&
-    css`
-      display: grid;
-      grid-template-rows: auto 150px;
-      gap: 10px;
-    `}
-  `} */
+  ${({ $hasRest, getGridStyles }) => getGridStyles($hasRest)};
 `;
 
 const UpperArea = styled.div`

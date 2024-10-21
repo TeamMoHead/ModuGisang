@@ -16,7 +16,6 @@ const SafeAreaWrapper = styled.div`
   padding-top: 59px;
   height: 100%;
   width: 100%;
-  /* border: 5px solid red; */
   box-sizing: border-box;
 `;
 

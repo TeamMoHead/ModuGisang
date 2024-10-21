@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import { Device } from '@capacitor/device';
+
+import { css } from 'styled-components';
 
 const SafeAreaContext = createContext();
 
@@ -40,13 +42,42 @@ const SafeAreaContextProvider = ({ children }) => {
     }
   };
 
+  const getGridStyles = hasMate =>
+    hasMate &&
+    css`
+      display: grid;
+      grid-template-rows: auto 150px;
+      gap: 10px;
+    `;
+
+  const getPadding = ($hasMate, $platform, $isSmallModel) => {
+    if ($hasMate) {
+      if ($platform === 'web') {
+        return '104px 24px 0px 24px';
+      }
+      return $isSmallModel ? '104px 24px 0px 24px' : '75px 24px 0px 24px';
+    }
+    if ($platform === 'web') {
+      return '104px 24px 30px 24px';
+    }
+    return $isSmallModel ? '104px 24px 30px 24px' : '75px 24px 30px 24px';
+  };
+
   useEffect(() => {
     getDeviceInfo();
   }, []);
 
   return (
     <SafeAreaContext.Provider
-      value={{ platform, model, safeAreaPadding, isSmallModel }}
+      value={{
+        platform,
+        model,
+        safeAreaPadding,
+        isSmallModel,
+        getGridStyles,
+        calculatePadding,
+        getPadding,
+      }}
     >
       {children}
     </SafeAreaContext.Provider>

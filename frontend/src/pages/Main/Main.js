@@ -101,5 +101,5 @@ const CardsWrapper = styled.div`
   ${({ theme }) => theme.flex.center}
   flex-direction: column;
   gap: 20px;
-  padding-bottom: 239px; // BottomFixContent가 덮이더라도 콘텐츠가 충분히 보이도록 여유 공간 추가
+  padding-bottom: 239px;
 `;

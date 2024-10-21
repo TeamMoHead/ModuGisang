@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Capacitor } from '@capacitor/core';
 import { useNavigate } from 'react-router-dom';
 import {
   ChallengeContext,
@@ -54,7 +53,8 @@ const InGame = () => {
   } = useContext(MediaPipeContext);
   const [redirected, setRedirected] = useState(false);
   const { accessToken } = useContext(AccountContext);
-  const { platform, mode, isSmallModel } = useContext(SafeAreaContext);
+  const { platform, isSmallModel, getPadding, getGridStyles } =
+    useContext(SafeAreaContext);
   const { fetchData } = useFetch();
 
   const [mateList, setMateList] = useState([]);
@@ -166,6 +166,8 @@ const InGame = () => {
           $platform={platform}
           $isSmallModel={isSmallModel}
           $hasMate={mateList?.length > 0}
+          getPadding={getPadding}
+          getGridStyles={getGridStyles}
         >
           <>
             <MyVideo />
@@ -190,26 +192,26 @@ const InGame = () => {
 
 export default InGame;
 
-const getPadding = ($hasMate, $platform, $isSmallModel) => {
-  if ($hasMate) {
-    if ($platform === 'web') {
-      return '104px 24px 0px 24px';
-    }
-    return $isSmallModel ? '104px 24px 0px 24px' : '75px 24px 0px 24px';
-  }
-  if ($platform === 'web') {
-    return '104px 24px 30px 24px';
-  }
-  return $isSmallModel ? '104px 24px 30px 24px' : '75px 24px 30px 24px';
-};
+// const getPadding = ($hasMate, $platform, $isSmallModel) => {
+//   if ($hasMate) {
+//     if ($platform === 'web') {
+//       return '104px 24px 0px 24px';
+//     }
+//     return $isSmallModel ? '104px 24px 0px 24px' : '75px 24px 0px 24px';
+//   }
+//   if ($platform === 'web') {
+//     return '104px 24px 30px 24px';
+//   }
+//   return $isSmallModel ? '104px 24px 30px 24px' : '75px 24px 30px 24px';
+// };
 
-const getGridStyles = $hasMate =>
-  $hasMate &&
-  css`
-    display: grid;
-    grid-template-rows: auto 150px;
-    gap: 10px;
-  `;
+// const getGridStyles = $hasMate =>
+//   $hasMate &&
+//   css`
+//     display: grid;
+//     grid-template-rows: auto 150px;
+//     gap: 10px;
+//   `;
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -218,33 +220,10 @@ const Wrapper = styled.div`
 
   overflow: hidden;
 
-  padding: ${({ $hasMate, $platform, $isSmallModel }) =>
+  padding: ${({ $hasMate, $platform, $isSmallModel, getPadding }) =>
     getPadding($hasMate, $platform, $isSmallModel)};
 
-  ${({ $hasMate }) => getGridStyles($hasMate)}/* ${({
-    $hasMate,
-    $platform,
-    $isSmallModel,
-  }) => css`
-    padding: ${$hasMate
-      ? $platform === 'web'
-        ? '104px 24px 0px 24px'
-        : $isSmallModel
-          ? '104px 24px 0px 24px'
-          : '75px 24px 0px 24px'
-      : $platform === 'ios'
-        ? '75px 24px 30px 24px'
-        : $isSmallModel
-          ? '104px 24px 30px 24px'
-          : '75px 24px 30px 24px'};
-
-    ${$hasMate &&
-    css`
-      display: grid;
-      grid-template-rows: auto 150px;
-      gap: 10px;
-    `}
-  `} */
+  ${({ $hasMate, getGridStyles }) => getGridStyles($hasMate)}
 `;
 
 const MatesVideoWrapper = styled.div`
