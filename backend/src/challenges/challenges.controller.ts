@@ -43,7 +43,7 @@ export class ChallengesController {
   async createChallenge(@Body() createChallengeDto: CreateChallengeDto) {
     console.log('create');
     console.log(createChallengeDto);
-    if (createChallengeDto.mates.length > 3) {
+    if (createChallengeDto.mates.length > 4) {
       throw new BadRequestException('챌린지 참여 인원이 초과되었습니다.');
     }
     const challenge =
