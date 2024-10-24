@@ -28,130 +28,46 @@ function Router() {
   return (
     <BrowserRouter>
       <SafeAreaContextProvider>
-        <Routes>
-          <Route path="/signIn" element={<Signin />} />
-          <Route
-            path="/signUp"
-            element={
-              <SafeAreaLayout>
-                <Signup />
-              </SafeAreaLayout>
-            }
-          />
-          <Route
-            path="/privacyPolicy"
-            element={
-              <SafeAreaLayout>
-                <PrivacyPolicy />
-              </SafeAreaLayout>
-            }
-          />
-          <Route
-            path="/termsOfService"
-            element={
-              <SafeAreaLayout>
-                <TermsOfService />
-              </SafeAreaLayout>
-            }
-          />
-          <Route
-            path="/customerService"
-            element={
-              <SafeAreaLayout>
-                <CustomerService />
-              </SafeAreaLayout>
-            }
-          />
-          <Route
-            path="/deleteUser"
-            element={
-              <SafeAreaLayout>
-                <DeleteUser />
-              </SafeAreaLayout>
-            }
-          />
-          <Route
-            path="/forgotPassword"
-            element={
-              <SafeAreaLayout>
-                <ForgotPassword />
-              </SafeAreaLayout>
-            }
-          />
-          <Route path="/about" element={<About />} />
-          <Route element={<ProtectedRoute />}>
+        <SafeAreaLayout>
+          <Routes>
+            <Route path="/signIn" element={<Signin />} />
+            <Route path="/signUp" element={<Signup />} />
+            <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
+            <Route path="/termsOfService" element={<TermsOfService />} />
             <Route
-              path="/"
+              path="/customerService"
               element={
                 <SafeAreaLayout>
-                  <Main />
+                  <CustomerService />
                 </SafeAreaLayout>
               }
             />
-            <Route
-              path="/main"
-              element={
-                <SafeAreaLayout>
-                  <Main />
-                </SafeAreaLayout>
-              }
-            />
-            <Route
-              path="/myStreak"
-              element={
-                <SafeAreaLayout>
-                  <MyStreak />
-                </SafeAreaLayout>
-              }
-            />
-            <Route
-              path="/joinChallenge"
-              element={
-                <SafeAreaLayout>
-                  <JoinChallenge />
-                </SafeAreaLayout>
-              }
-            />
-            <Route
-              path="/createChallenge"
-              element={
-                <SafeAreaLayout>
-                  <CreateChallenge />
-                </SafeAreaLayout>
-              }
-            />
-            <Route
-              path="/startMorning"
-              element={
-                <GameContextProvider>
-                  <OpenViduContextProvider>
-                    <SafeAreaLayout>
+            <Route path="/deleteUser" element={<DeleteUser />} />
+            <Route path="/forgotPassword" element={<ForgotPassword />} />
+            <Route path="/about" element={<About />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<Main />} />
+              <Route path="/main" element={<Main />} />
+              <Route path="/myStreak" element={<MyStreak />} />
+              <Route path="/joinChallenge" element={<JoinChallenge />} />
+              <Route path="/createChallenge" element={<CreateChallenge />} />
+              <Route
+                path="/startMorning"
+                element={
+                  <GameContextProvider>
+                    <OpenViduContextProvider>
                       <InGame />
-                    </SafeAreaLayout>
-                  </OpenViduContextProvider>
-                </GameContextProvider>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <SafeAreaLayout>
-                  <Settings />
-                </SafeAreaLayout>
-              }
-            />
-            <Route
-              path="/changePassword"
-              element={
-                <SafeAreaLayout>
-                  <ChangePassword />
-                </SafeAreaLayout>
-              }
-            />
-          </Route>
-          <Route path="/offline" element={<OfflinePage />} />
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
+                    </OpenViduContextProvider>
+                  </GameContextProvider>
+                }
+              />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/changePassword" element={<ChangePassword />} />
+            </Route>
+            <Route path="/offline" element={<OfflinePage />} />
+            <Route path="*" element={<PageNotFound />} />
+          </Routes>
+        </SafeAreaLayout>
       </SafeAreaContextProvider>
     </BrowserRouter>
   );
