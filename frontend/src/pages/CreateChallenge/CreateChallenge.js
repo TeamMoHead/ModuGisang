@@ -220,7 +220,7 @@ const CreateChallenge = () => {
                   <Day>
                     {range[0].getMonth() +
                       1 +
-                      ' 월 ' +
+                      '월 ' +
                       range[0].getDate() +
                       '일'}
                   </Day>
@@ -231,7 +231,7 @@ const CreateChallenge = () => {
                   <Day>
                     {range[1].getMonth() +
                       1 +
-                      ' 월 ' +
+                      '월 ' +
                       range[1].getDate() +
                       '일'}
                   </Day>
