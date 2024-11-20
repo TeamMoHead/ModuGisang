@@ -116,7 +116,7 @@ export class ChallengesService {
     editChall.deleted = false;
 
     // 수정 후 캐시 삭제
-    this.redisCacheService.del(`challenge_${editChall._id}`);
+    this.redisCacheService.del(`challenge_info_${editChall._id}`);
     return await this.challengeRepository.save(editChall);
   }
 
@@ -191,7 +191,7 @@ export class ChallengesService {
     }
 
     // 챌린지 캐시 삭제
-    this.redisCacheService.del(`challenge_${challengeId}`);
+    this.redisCacheService.del(`challenge_info_${challengeId}`);
 
     await this.challengeRepository.save(challenge);
     await this.userService.resetChallenge(userId);
@@ -261,7 +261,7 @@ export class ChallengesService {
           },
         ),
         this.redisCacheService.del(`userInfo:${guestId}`),
-        this.redisCacheService.del(`challenge_${challengeId}`),
+        this.redisCacheService.del(`challenge_info_${challengeId}`),
       ]); // 여러개의 비동기 함수를 동시에 실행
       return { success: true, message: '승낙 성공' };
     } catch (e) {
@@ -326,7 +326,7 @@ export class ChallengesService {
     if (challenge._id > 0) {
       // 결과를 캐시에 저장
       await this.redisCacheService.set(
-        `challenge_${challenge._id}`,
+        `challenge_info_${challenge._id}`,
         JSON.stringify(challengeResponse),
         parseInt(process.env.REDIS_CHALLENGE_EXP),
       ); // 10분 TTL
@@ -481,7 +481,7 @@ export class ChallengesService {
     );
     await this.challengeRepository.save(challengeValue);
 
-    const cacheKey = `challenge_${setChallengeWakeTimeDto.challengeId}`;
+    const cacheKey = `challenge_info_${setChallengeWakeTimeDto.challengeId}`;
     await this.redisCacheService.del(cacheKey);
   }
 
@@ -508,7 +508,7 @@ export class ChallengesService {
     // 1. 먼저 들어온사람이 먼저 challenge update
     if (challenge.completed !== true) {
       challenge.completed = true;
-      await this.redisCacheService.del(`challenge_${challengeId}`);
+      await this.redisCacheService.del(`challenge_info_${challengeId}`);
       await this.challengeRepository.save(challenge);
     } else {
       // 늦게 들어온 사람의 경우 이미 completed 되어있지만, 개인 정보는 바꿔줘야 하므로 에러 발생하면 안 됨.
@@ -590,7 +590,7 @@ export class ChallengesService {
 
   async redisCheckChallenge(challengeId: number) {
     const challenge = await this.redisCacheService.get(
-      `challenge_${challengeId}`,
+      `challenge_info_${challengeId}`,
     );
     if (!challenge) {
       console.log('redis에 challenge 정보가 없습니다.');

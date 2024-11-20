@@ -417,7 +417,7 @@ export class UserService {
 
     // 챌린지 정보 캐시 삭제
     await this.redisService.del(`userInfo:${userId}`);
-    await this.redisService.del(`challenge_${challengeId}`);
+    await this.redisService.del(`challenge_info_${challengeId}`);
 
     // 유저 소프트 삭제
     const result = await this.userRepository.softDelete({ _id: userId });
@@ -429,7 +429,7 @@ export class UserService {
     const result = await this.userRepository.restore(userId);
     const user = await this.userRepository.findOne({ where: { _id: userId } });
     console.log('USER IS', user);
-    const cacheKey = `challenge_${user.challengeId}`;
+    const cacheKey = `challenge_info_${user.challengeId}`;
 
     await this.redisService.del(cacheKey);
 
