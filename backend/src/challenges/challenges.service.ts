@@ -87,8 +87,9 @@ export class ChallengesService {
   async editChallenge(challenge: EditChallengeDto): Promise<Challenges> {
     this.validateStartAndWakeTime(challenge.startDate, challenge.wakeTime);
     this.validateDuration(challenge.duration);
+    const redisKey = `challenge_${challenge.challengeId}`;
 
-    let editChall = await this.redisCheckChallenge(challenge.challengeId);
+    let editChall = await this.redisCheckChallenge(redisKey);
     if (!editChall) {
       editChall = await this.challengeRepository.findOne({
         where: { _id: challenge.challengeId },
@@ -145,7 +146,8 @@ export class ChallengesService {
   }
 
   async challengeGiveUp(challengeId: number, userId: number): Promise<void> {
-    let challenge = await this.redisCheckChallenge(challengeId);
+    const redisKey = `challenge_${challengeId}`;
+    let challenge = await this.redisCheckChallenge(redisKey);
     if (challenge == null) {
       challenge = await this.challengeRepository.findOne({
         where: { _id: challengeId },
@@ -273,9 +275,10 @@ export class ChallengesService {
   async getChallengeInfo(
     challengeId: number,
   ): Promise<ChallengeResponseDto | null> {
+    const redisKey = `challenge_info_${challengeId}`;
     if (challengeId > 0) {
       // 캐시에서 데이터 가져오기 시도
-      const cachedChallenge = await this.redisCheckChallenge(challengeId);
+      const cachedChallenge = await this.redisCheckChallenge(redisKey);
       console.log(cachedChallenge);
       if (cachedChallenge) {
         return cachedChallenge as ChallengeResponseDto;
@@ -490,7 +493,8 @@ export class ChallengesService {
     challengeId: number,
     userId: number,
   ): Promise<boolean> {
-    let challenge = await this.redisCheckChallenge(challengeId);
+    const redisKey = `challenge_${challengeId}`;
+    let challenge = await this.redisCheckChallenge(redisKey);
     if (!challenge) {
       challenge = await this.challengeRepository.findOne({
         where: { _id: challengeId },
@@ -588,10 +592,8 @@ export class ChallengesService {
     }
   }
 
-  async redisCheckChallenge(challengeId: number) {
-    const challenge = await this.redisCacheService.get(
-      `challenge_info_${challengeId}`,
-    );
+  async redisCheckChallenge(redisKey: string) {
+    const challenge = await this.redisCacheService.get(redisKey);
     if (!challenge) {
       console.log('redis에 challenge 정보가 없습니다.');
       return null;
