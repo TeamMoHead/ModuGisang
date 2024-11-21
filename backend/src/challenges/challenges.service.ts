@@ -198,7 +198,8 @@ export class ChallengesService {
     // 챌린지 캐시 삭제
     this.redisCacheService.del(`challenge_info_${challengeId}`);
 
-    await this.challengeRepository.save(challenge);
+    const changedChallenge = await this.challengeRepository.save(challenge);
+    this.cacheSetChallege(changedChallenge);
     await this.userService.resetChallenge(userId);
     console.log(`User ${userId} has given up challenge ${challengeId}`);
   }
