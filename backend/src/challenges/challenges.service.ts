@@ -125,6 +125,8 @@ export class ChallengesService {
   }
 
   // 챌린지 삭제 시 30일 정도 생성 못한다면 다시 복구 기능이 필요할 수 있음 -> hard가 아닌 soft delete??
+  // 챌린지 삭제 시 챌린지에 참가한 유저들의 챌린지 정보도 초기화해야함 -> 캐시도 삭제하고
+  // 캐시 삭제 및 유저들의 챌린지 정보 초기화
   async deleteChallenge(
     challengeId: number,
     hostId: number,
@@ -511,9 +513,8 @@ export class ChallengesService {
   }
 
   async setWakeTime(setChallengeWakeTimeDto): Promise<void> {
-    let challengeValue = await this.redisCheckChallenge(
-      setChallengeWakeTimeDto.challengeId,
-    );
+    const cacheKey = `challenge_info_${setChallengeWakeTimeDto.challengeId}`;
+    let challengeValue = await this.redisCheckChallenge(cacheKey);
     if (!challengeValue) {
       challengeValue = await this.challengeRepository.findOne({
         where: { _id: setChallengeWakeTimeDto.challengeId },
@@ -528,10 +529,10 @@ export class ChallengesService {
     challengeValue.wakeTime = new Date(
       `1970-01-01T${setChallengeWakeTimeDto.wakeTime}`,
     );
-    await this.challengeRepository.save(challengeValue);
-
-    const cacheKey = `challenge_info_${setChallengeWakeTimeDto.challengeId}`;
-    await this.redisCacheService.del(cacheKey);
+    const changedChall = await this.challengeRepository.save(challengeValue);
+    this.cacheUpdateChallegeInfo(changedChall);
+    this.cacheSetChallege(changedChall);
+    //await this.redisCacheService.del(cacheKey);
   }
 
   // 날짜 비교해서 챌린지 끝난경우 호출되는 메소드
@@ -558,8 +559,10 @@ export class ChallengesService {
     // 1. 먼저 들어온사람이 먼저 challenge update
     if (challenge.completed !== true) {
       challenge.completed = true;
-      await this.redisCacheService.del(`challenge_info_${challengeId}`);
-      await this.challengeRepository.save(challenge);
+      //await this.redisCacheService.del(`challenge_info_${challengeId}`);
+      const changedChall = await this.challengeRepository.save(challenge);
+      this.cacheUpdateChallegeInfo(changedChall);
+      this.cacheSetChallege(changedChall);
     } else {
       // 늦게 들어온 사람의 경우 이미 completed 되어있지만, 개인 정보는 바꿔줘야 하므로 에러 발생하면 안 됨.
       // throw new BadRequestException(
