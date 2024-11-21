@@ -117,8 +117,11 @@ export class ChallengesService {
     editChall.deleted = false;
 
     // 수정 후 캐시 삭제
-    this.redisCacheService.del(`challenge_info_${editChall._id}`);
-    return await this.challengeRepository.save(editChall);
+    //this.redisCacheService.del(`challenge_info_${editChall._id}`);
+    const challengeResult = await this.challengeRepository.save(editChall);
+    this.cacheSetChallege(challengeResult);
+    this.cacheUpdateChallegeInfo(challengeResult);
+    return challengeResult;
   }
 
   // 챌린지 삭제 시 30일 정도 생성 못한다면 다시 복구 기능이 필요할 수 있음 -> hard가 아닌 soft delete??
@@ -304,13 +307,16 @@ export class ChallengesService {
       userId: user._id,
       userName: user.userName,
     }));
-    const challengeResponse = this.cacheSetChallege(challenge, participantDtos);
+    const challengeResponse = this.cacheSetChallegeInfo(
+      challenge,
+      participantDtos,
+    );
     console.log(challengeResponse);
 
     return challengeResponse;
   }
 
-  async cacheSetChallege(
+  async cacheSetChallegeInfo(
     challenge: Challenges,
     participantDtos: ParticipantDto[],
   ) {
@@ -330,6 +336,45 @@ export class ChallengesService {
       // 결과를 캐시에 저장
       await this.redisCacheService.set(
         `challenge_info_${challenge._id}`,
+        JSON.stringify(challengeResponse),
+        parseInt(process.env.REDIS_CHALLENGE_EXP),
+      ); // 10분 TTL
+    }
+    return challengeResponse;
+  }
+  async cacheUpdateChallegeInfo(challenge: Challenges) {
+    // 캐시가 없는경우 안해도됨
+    const redisKey = `challenge_info_${challenge._id}`;
+    const cachedChallenge = await this.redisCheckChallenge(redisKey);
+
+    if (!cachedChallenge) {
+      return;
+    }
+    const participantDtos: ParticipantDto[] = cachedChallenge.mates;
+    const challengeResponse = this.cacheSetChallegeInfo(
+      challenge,
+      participantDtos,
+    );
+    console.log(challengeResponse);
+    return challengeResponse;
+  }
+
+  async cacheSetChallege(challenge: Challenges) {
+    const challengeResponse = {
+      challengeId: challenge._id,
+      startDate: challenge.startDate,
+      endDate: challenge.endDate,
+      hostId: challenge.hostId,
+      wakeTime: challenge.wakeTime,
+      duration: challenge.duration,
+      completed: challenge.completed,
+      deleted: challenge.deleted,
+    };
+
+    if (challenge._id > 0) {
+      // 결과를 캐시에 저장
+      await this.redisCacheService.set(
+        `challenge_${challenge._id}`,
         JSON.stringify(challengeResponse),
         parseInt(process.env.REDIS_CHALLENGE_EXP),
       ); // 10분 TTL
