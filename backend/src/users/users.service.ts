@@ -13,6 +13,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { Streak } from './entities/streak.entity';
 import RedisCacheService from '../redis-cache/redis-cache.service';
+import { ChallengesService } from 'src/challenges/challenges.service';
 import { UserInformationDto } from './dto/user-info.dto';
 import { Challenges } from 'src/challenges/challenges.entity';
 import { Invitations } from 'src/invitations/invitations.entity';
@@ -31,6 +32,7 @@ export class UserService {
     private invitationRepository: Repository<Invitations>,
     private configService: ConfigService,
     private readonly redisService: RedisCacheService,
+    private readonly challengesService: ChallengesService,
   ) {
     this.userRepository = userRepository;
     this.streakRepository = streakRepository;
@@ -407,7 +409,8 @@ export class UserService {
             Math.random() * inChallengeUsers.length,
           );
           challenge.hostId = inChallengeUsers[randomIndex]._id;
-          await this.challengeRepository.save(challenge);
+          const changedChall = await this.challengeRepository.save(challenge);
+          this.challengesService.cacheSetChallege(changedChall);
         }
       }
 
@@ -416,8 +419,8 @@ export class UserService {
     }
 
     // 챌린지 정보 캐시 삭제
-    await this.redisService.del(`userInfo:${userId}`);
-    await this.redisService.del(`challenge_info_${challengeId}`);
+    this.redisService.del(`userInfo:${userId}`);
+    this.redisService.del(`challenge_info_${challengeId}`);
 
     // 유저 소프트 삭제
     const result = await this.userRepository.softDelete({ _id: userId });
