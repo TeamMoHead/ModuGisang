@@ -147,6 +147,16 @@ export class ChallengesService {
         `Challenge with ID ${challengeId} has already started so it cannot be deleted.`,
       );
     }
+    const users = await this.userRepository.findBy({ challengeId });
+    const resetPromises = users.map((user) =>
+      this.userService.resetChallenge(user._id),
+    );
+
+    await Promise.all([
+      ...resetPromises,
+      this.redisCacheService.del(`challenge_info_${challengeId}`),
+      this.redisCacheService.del(`challenge_${challengeId}`),
+    ]);
     return await this.challengeRepository.delete(challengeId);
   }
 
