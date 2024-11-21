@@ -19,9 +19,14 @@ export class RedisCacheService {
   }
 
   async set(key: string, value: string, ttl?: number): Promise<string> {
-    const result = await this.redis.set(key, value, 'EX', ttl ?? 100000);
-    this.logger.log(`Cache set for key: ${key} with TTL: ${ttl ?? 100000}`);
-    return result; // 'OK'가 반환됩니다.
+    try {
+      const result = await this.redis.set(key, value, 'EX', ttl ?? 100000);
+      this.logger.log(`Cache set for key: ${key} with TTL: ${ttl ?? 100000}`);
+      return result; // 일반적으로 'OK' 반환
+    } catch (error) {
+      this.logger.error(`Failed to set cache for key: ${key}`, error);
+      throw new Error(`Redis set operation failed: ${error.message}`);
+    }
   }
 
   async lastVisitedTimeGet(key: string): Promise<string> {
