@@ -52,6 +52,7 @@ jobs:
           echo EMAIL_WELCOME_SUBJECT=${{ secrets.EMAIL_WELCOME_SUBJECT }} >> .env.production
           echo ISSUANCE_TMP_PW=${{ secrets.ISSUANCE_TMP_PW }} >> .env.production
           echo SENSITIVE_FIELDS=${{ secrets.SENSITIVE_FIELDS }} >> .env.production
+          echo HEALTH_CHECK_API_KEY=${{ secrets.HEALTH_CHECK_API_KEY }} >> .env.production
 
       - name: Install dependencies
         run: |
@@ -98,8 +99,8 @@ jobs:
             pm2 start dist/main.js --name Final && \
             cd .. && \
 
-            rsync -avz -e 'ssh -i modugisang.pem' /home/$EC2_USER/cicd/dist $EC2_USER@$EC2_MAIN_HOST:/home/$EC2_USER/cicd/
-            ssh -i modugisang.pem $EC2_USER@$EC2_MAIN_HOST '
+            rsync -avz -e 'ssh -i /home/$EC2_USER/modugisang.pem' /home/$EC2_USER/cicd/dist $EC2_USER@$EC2_MAIN_HOST:/home/$EC2_USER/cicd/
+            ssh -i /home/$EC2_USER/modugisang.pem $EC2_USER@$EC2_MAIN_HOST '
               source /home/$EC2_USER/.nvm/nvm.sh && \
               nvm use 22 && \
               cd /home/$EC2_USER/cicd && \
