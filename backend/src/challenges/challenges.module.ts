@@ -6,6 +6,7 @@ import { Challenges } from './challenges.entity';
 import { AttendanceModule } from 'src/attendance/attendance.module';
 import { InvitationsModule } from 'src/invitations/invitations.module';
 import { UserModule } from 'src/users/users.module';
+import { BullAppModule } from 'src/bull/bull.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { UserModule } from 'src/users/users.module';
     InvitationsModule,
     UserModule,
     AttendanceModule,
+    BullAppModule,
   ],
   providers: [ChallengesService],
   controllers: [ChallengesController],

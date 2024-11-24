@@ -2,7 +2,10 @@ import { Module, Global } from '@nestjs/common';
 import { BullModule, BullModuleOptions } from '@nestjs/bull';
 import { ConfigModule, ConfigService } from '@nestjs/config'; // 환경 변수를 사용할 경우
 import { ChallengeProcessor } from 'src/challenges/challenge.processor';
-
+import { BullBoardModule } from '@bull-board/nestjs';
+import { ExpressAdapter } from '@bull-board/express';
+import { BullAdapter } from '@bull-board/api/bullAdapter';
+import { BullController } from './bull.controller';
 @Global()
 @Module({
   imports: [
@@ -21,7 +24,16 @@ import { ChallengeProcessor } from 'src/challenges/challenge.processor';
     BullModule.registerQueue({
       name: 'challenge', // 큐 이름
     }),
+    BullBoardModule.forFeature({
+      name: 'challenge',
+      adapter: BullAdapter, //or use BullAdapter if you're using bull instead of bullMQ
+    }),
+    BullBoardModule.forRoot({
+      route: '/queues',
+      adapter: ExpressAdapter, // Or FastifyAdapter from `@bull-board/fastify`
+    }),
   ],
+  controllers: [BullController],
   providers: [ChallengeProcessor],
 })
 export class BullAppModule {}
