@@ -606,4 +606,20 @@ export class ChallengesService {
     }
     return true;
   }
+
+  async findEndingToday(): Promise<Challenges[]> {
+    const currentDate = new Date();
+
+    // 오늘 날짜만 추출 (시간 제거)
+    const today = new Date(currentDate);
+    today.setHours(0, 0, 0, 0);
+
+    // 현재 시간
+    const now = currentDate.toTimeString().split(' ')[0]; // "HH:mm:ss" 형식
+
+    return this.challengeRepository.find({
+      where: { endDate: today }, // 종료 날짜가 오늘인 챌린지
+      order: { wakeTime: 'ASC' }, // wakeTime 기준 정렬
+    });
+  }
 }
