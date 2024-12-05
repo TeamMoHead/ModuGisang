@@ -87,11 +87,14 @@ export class ChallengesService {
   async editChallenge(challenge: EditChallengeDto): Promise<Challenges> {
     this.validateStartAndWakeTime(challenge.startDate, challenge.wakeTime);
     this.validateDuration(challenge.duration);
+    const redisKey = `challenge_${challenge.challengeId}`;
 
-    const editChall = await this.challengeRepository.findOne({
-      where: { _id: challenge.challengeId },
-    });
-
+    let editChall = await this.redisCheckChallenge(redisKey);
+    if (!editChall) {
+      editChall = await this.challengeRepository.findOne({
+        where: { _id: challenge.challengeId },
+      });
+    }
     if (!editChall) {
       throw new NotFoundException(
         `Challenge with ID ${challenge.challengeId} not found`,
@@ -114,11 +117,16 @@ export class ChallengesService {
     editChall.deleted = false;
 
     // 수정 후 캐시 삭제
-    this.redisCacheService.del(`challenge_${editChall._id}`);
-    return await this.challengeRepository.save(editChall);
+    //this.redisCacheService.del(`challenge_info_${editChall._id}`);
+    const challengeResult = await this.challengeRepository.save(editChall);
+    this.cacheSetChallege(challengeResult);
+    this.cacheUpdateChallegeInfo(challengeResult);
+    return challengeResult;
   }
 
   // 챌린지 삭제 시 30일 정도 생성 못한다면 다시 복구 기능이 필요할 수 있음 -> hard가 아닌 soft delete??
+  // 챌린지 삭제 시 챌린지에 참가한 유저들의 챌린지 정보도 초기화해야함 -> 캐시도 삭제하고
+  // 캐시 삭제 및 유저들의 챌린지 정보 초기화
   async deleteChallenge(
     challengeId: number,
     hostId: number,
@@ -139,11 +147,22 @@ export class ChallengesService {
         `Challenge with ID ${challengeId} has already started so it cannot be deleted.`,
       );
     }
+    const users = await this.userRepository.findBy({ challengeId });
+    const resetPromises = users.map((user) =>
+      this.userService.resetChallenge(user._id),
+    );
+
+    await Promise.all([
+      ...resetPromises,
+      this.redisCacheService.del(`challenge_info_${challengeId}`),
+      this.redisCacheService.del(`challenge_${challengeId}`),
+    ]);
     return await this.challengeRepository.delete(challengeId);
   }
 
   async challengeGiveUp(challengeId: number, userId: number): Promise<void> {
-    let challenge = await this.redisCheckChallenge(challengeId);
+    const redisKey = `challenge_${challengeId}`;
+    let challenge = await this.redisCheckChallenge(redisKey);
     if (challenge == null) {
       challenge = await this.challengeRepository.findOne({
         where: { _id: challengeId },
@@ -189,9 +208,10 @@ export class ChallengesService {
     }
 
     // 챌린지 캐시 삭제
-    this.redisCacheService.del(`challenge_${challengeId}`);
+    this.redisCacheService.del(`challenge_info_${challengeId}`);
 
-    await this.challengeRepository.save(challenge);
+    const changedChallenge = await this.challengeRepository.save(challenge);
+    this.cacheSetChallege(changedChallenge);
     await this.userService.resetChallenge(userId);
     console.log(`User ${userId} has given up challenge ${challengeId}`);
   }
@@ -259,7 +279,7 @@ export class ChallengesService {
           },
         ),
         this.redisCacheService.del(`userInfo:${guestId}`),
-        this.redisCacheService.del(`challenge_${challengeId}`),
+        this.redisCacheService.del(`challenge_info_${challengeId}`),
       ]); // 여러개의 비동기 함수를 동시에 실행
       return { success: true, message: '승낙 성공' };
     } catch (e) {
@@ -271,14 +291,13 @@ export class ChallengesService {
   async getChallengeInfo(
     challengeId: number,
   ): Promise<ChallengeResponseDto | null> {
-    const cacheKey = `challenge_${challengeId}`;
-
+    const redisKey = `challenge_info_${challengeId}`;
     if (challengeId > 0) {
       // 캐시에서 데이터 가져오기 시도
-      const cachedChallenge = await this.redisCacheService.get(cacheKey);
+      const cachedChallenge = await this.redisCheckChallenge(redisKey);
       console.log(cachedChallenge);
       if (cachedChallenge) {
-        return JSON.parse(cachedChallenge) as ChallengeResponseDto;
+        return cachedChallenge as ChallengeResponseDto;
       }
     }
 
@@ -288,7 +307,7 @@ export class ChallengesService {
     });
 
     if (!challenge) {
-      return null; // 챌린지가 없으면 null 반환
+      throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
     }
 
     // 해당 챌린지 ID를 가진 모든 사용자 검색
@@ -301,7 +320,19 @@ export class ChallengesService {
       userId: user._id,
       userName: user.userName,
     }));
+    const challengeResponse = this.cacheSetChallegeInfo(
+      challenge,
+      participantDtos,
+    );
+    console.log(challengeResponse);
 
+    return challengeResponse;
+  }
+
+  async cacheSetChallegeInfo(
+    challenge: Challenges,
+    participantDtos: ParticipantDto[],
+  ) {
     const challengeResponse: ChallengeResponseDto = {
       challengeId: challenge._id,
       startDate: challenge.startDate,
@@ -309,21 +340,60 @@ export class ChallengesService {
       hostId: challenge.hostId,
       wakeTime: challenge.wakeTime,
       duration: challenge.duration,
+      completed: challenge.completed,
+      deleted: challenge.deleted,
       mates: participantDtos,
     };
 
-    if (challengeId > 0) {
+    if (challenge._id > 0) {
       // 결과를 캐시에 저장
       await this.redisCacheService.set(
-        cacheKey,
+        `challenge_info_${challenge._id}`,
         JSON.stringify(challengeResponse),
         parseInt(process.env.REDIS_CHALLENGE_EXP),
       ); // 10분 TTL
     }
+    return challengeResponse;
+  }
+  async cacheUpdateChallegeInfo(challenge: Challenges) {
+    // 캐시가 없는경우 안해도됨
+    const redisKey = `challenge_info_${challenge._id}`;
+    const cachedChallenge = await this.redisCheckChallenge(redisKey);
 
+    if (!cachedChallenge) {
+      return;
+    }
+    const participantDtos: ParticipantDto[] = cachedChallenge.mates;
+    const challengeResponse = this.cacheSetChallegeInfo(
+      challenge,
+      participantDtos,
+    );
+    console.log(challengeResponse);
     return challengeResponse;
   }
 
+  async cacheSetChallege(challenge: Challenges) {
+    const challengeResponse = {
+      challengeId: challenge._id,
+      startDate: challenge.startDate,
+      endDate: challenge.endDate,
+      hostId: challenge.hostId,
+      wakeTime: challenge.wakeTime,
+      duration: challenge.duration,
+      completed: challenge.completed,
+      deleted: challenge.deleted,
+    };
+
+    if (challenge._id > 0) {
+      // 결과를 캐시에 저장
+      await this.redisCacheService.set(
+        `challenge_${challenge._id}`,
+        JSON.stringify(challengeResponse),
+        parseInt(process.env.REDIS_CHALLENGE_EXP),
+      ); // 10분 TTL
+    }
+    return challengeResponse;
+  }
   // async getChallengeInfo(
   //   challengeId: number,
   // ): Promise<ChallengeResponseDto | null> {
@@ -453,9 +523,13 @@ export class ChallengesService {
   }
 
   async setWakeTime(setChallengeWakeTimeDto): Promise<void> {
-    const challengeValue = await this.challengeRepository.findOne({
-      where: { _id: setChallengeWakeTimeDto.challengeId },
-    });
+    const cacheKey = `challenge_info_${setChallengeWakeTimeDto.challengeId}`;
+    let challengeValue = await this.redisCheckChallenge(cacheKey);
+    if (!challengeValue) {
+      challengeValue = await this.challengeRepository.findOne({
+        where: { _id: setChallengeWakeTimeDto.challengeId },
+      });
+    }
     if (!challengeValue) {
       throw new NotFoundException(
         `Challenge with ID ${setChallengeWakeTimeDto.challengeId} not found`,
@@ -465,10 +539,10 @@ export class ChallengesService {
     challengeValue.wakeTime = new Date(
       `1970-01-01T${setChallengeWakeTimeDto.wakeTime}`,
     );
-    await this.challengeRepository.save(challengeValue);
-
-    const cacheKey = `challenge_${setChallengeWakeTimeDto.challengeId}`;
-    await this.redisCacheService.del(cacheKey);
+    const changedChall = await this.challengeRepository.save(challengeValue);
+    this.cacheUpdateChallegeInfo(changedChall);
+    this.cacheSetChallege(changedChall);
+    //await this.redisCacheService.del(cacheKey);
   }
 
   // 날짜 비교해서 챌린지 끝난경우 호출되는 메소드
@@ -476,9 +550,13 @@ export class ChallengesService {
     challengeId: number,
     userId: number,
   ): Promise<boolean> {
-    const challenge = await this.challengeRepository.findOne({
-      where: { _id: challengeId },
-    });
+    const redisKey = `challenge_${challengeId}`;
+    let challenge = await this.redisCheckChallenge(redisKey);
+    if (!challenge) {
+      challenge = await this.challengeRepository.findOne({
+        where: { _id: challengeId },
+      });
+    }
     if (!challenge) {
       throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
     }
@@ -491,8 +569,10 @@ export class ChallengesService {
     // 1. 먼저 들어온사람이 먼저 challenge update
     if (challenge.completed !== true) {
       challenge.completed = true;
-      await this.redisCacheService.del(`challenge_${challengeId}`);
-      await this.challengeRepository.save(challenge);
+      //await this.redisCacheService.del(`challenge_info_${challengeId}`);
+      const changedChall = await this.challengeRepository.save(challenge);
+      this.cacheUpdateChallegeInfo(changedChall);
+      this.cacheSetChallege(changedChall);
     } else {
       // 늦게 들어온 사람의 경우 이미 completed 되어있지만, 개인 정보는 바꿔줘야 하므로 에러 발생하면 안 됨.
       // throw new BadRequestException(
@@ -571,10 +651,8 @@ export class ChallengesService {
     }
   }
 
-  async redisCheckChallenge(challengeId: number) {
-    const challenge = await this.redisCacheService.get(
-      `challenge_${challengeId}`,
-    );
+  async redisCheckChallenge(redisKey: string) {
+    const challenge = await this.redisCacheService.get(redisKey);
     if (!challenge) {
       console.log('redis에 challenge 정보가 없습니다.');
       return null;
