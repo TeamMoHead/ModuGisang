@@ -18,6 +18,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggingInterceptor } from './common/Interceptors/logging.interceptor';
 import { HealthCheckModule } from './health-check/health-check.module';
 import { HealthCheckAuthMiddleware } from './health-check/health-check.middleware';
+import { BullAppModule } from './bull/bull.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { HealthCheckAuthMiddleware } from './health-check/health-check.middlewar
     InGameModule,
     GameStatusModule,
     HealthCheckModule,
+    BullAppModule,
   ],
   controllers: [AppController],
   providers: [
@@ -55,6 +57,8 @@ import { HealthCheckAuthMiddleware } from './health-check/health-check.middlewar
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(HealthCheckAuthMiddleware).forRoutes('health-check');
+    consumer
+      .apply(HealthCheckAuthMiddleware)
+      .forRoutes('health-check', 'bull/status');
   }
 }

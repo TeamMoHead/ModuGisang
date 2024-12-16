@@ -5,6 +5,7 @@ import {
   HttpStatus,
   BadRequestException,
   ConflictException,
+  Logger,
 } from '@nestjs/common';
 import { Challenges } from './challenges.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -30,6 +31,7 @@ import { ChallengeResultDto } from './dto/challengeResult.dto';
 import RedisCacheService from 'src/redis-cache/redis-cache.service';
 import { UserService } from 'src/users/users.service';
 import { EditChallengeDto, Duration } from './dto/editChallenge.dto';
+import * as moment from 'moment-timezone';
 
 @Injectable()
 export class ChallengesService {
@@ -49,7 +51,7 @@ export class ChallengesService {
   ) {
     this.challengeRepository = challengeRepository;
   }
-
+  private readonly logger = new Logger(ChallengesService.name);
   async createChallenge(challenge: CreateChallengeDto): Promise<Challenges> {
     const user = await this.userService.findOneByID(challenge.hostId);
 
@@ -88,10 +90,12 @@ export class ChallengesService {
     this.validateStartAndWakeTime(challenge.startDate, challenge.wakeTime);
     this.validateDuration(challenge.duration);
 
-    const editChall = await this.challengeRepository.findOne({
-      where: { _id: challenge.challengeId },
-    });
-
+    let editChall = await this.redisCheckChallenge(challenge.challengeId);
+    if (!editChall) {
+      editChall = await this.challengeRepository.findOne({
+        where: { _id: challenge.challengeId },
+      });
+    }
     if (!editChall) {
       throw new NotFoundException(
         `Challenge with ID ${challenge.challengeId} not found`,
@@ -271,14 +275,12 @@ export class ChallengesService {
   async getChallengeInfo(
     challengeId: number,
   ): Promise<ChallengeResponseDto | null> {
-    const cacheKey = `challenge_${challengeId}`;
-
     if (challengeId > 0) {
       // 캐시에서 데이터 가져오기 시도
-      const cachedChallenge = await this.redisCacheService.get(cacheKey);
+      const cachedChallenge = await this.redisCheckChallenge(challengeId);
       console.log(cachedChallenge);
       if (cachedChallenge) {
-        return JSON.parse(cachedChallenge) as ChallengeResponseDto;
+        return cachedChallenge as ChallengeResponseDto;
       }
     }
 
@@ -288,7 +290,7 @@ export class ChallengesService {
     });
 
     if (!challenge) {
-      return null; // 챌린지가 없으면 null 반환
+      throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
     }
 
     // 해당 챌린지 ID를 가진 모든 사용자 검색
@@ -301,7 +303,16 @@ export class ChallengesService {
       userId: user._id,
       userName: user.userName,
     }));
+    const challengeResponse = this.cacheSetChallege(challenge, participantDtos);
+    console.log(challengeResponse);
 
+    return challengeResponse;
+  }
+
+  async cacheSetChallege(
+    challenge: Challenges,
+    participantDtos: ParticipantDto[],
+  ) {
     const challengeResponse: ChallengeResponseDto = {
       challengeId: challenge._id,
       startDate: challenge.startDate,
@@ -309,21 +320,21 @@ export class ChallengesService {
       hostId: challenge.hostId,
       wakeTime: challenge.wakeTime,
       duration: challenge.duration,
+      completed: challenge.completed,
+      deleted: challenge.deleted,
       mates: participantDtos,
     };
 
-    if (challengeId > 0) {
+    if (challenge._id > 0) {
       // 결과를 캐시에 저장
       await this.redisCacheService.set(
-        cacheKey,
+        `challenge_${challenge._id}`,
         JSON.stringify(challengeResponse),
         parseInt(process.env.REDIS_CHALLENGE_EXP),
       ); // 10분 TTL
     }
-
     return challengeResponse;
   }
-
   // async getChallengeInfo(
   //   challengeId: number,
   // ): Promise<ChallengeResponseDto | null> {
@@ -453,9 +464,14 @@ export class ChallengesService {
   }
 
   async setWakeTime(setChallengeWakeTimeDto): Promise<void> {
-    const challengeValue = await this.challengeRepository.findOne({
-      where: { _id: setChallengeWakeTimeDto.challengeId },
-    });
+    let challengeValue = await this.redisCheckChallenge(
+      setChallengeWakeTimeDto.challengeId,
+    );
+    if (!challengeValue) {
+      challengeValue = await this.challengeRepository.findOne({
+        where: { _id: setChallengeWakeTimeDto.challengeId },
+      });
+    }
     if (!challengeValue) {
       throw new NotFoundException(
         `Challenge with ID ${setChallengeWakeTimeDto.challengeId} not found`,
@@ -476,9 +492,12 @@ export class ChallengesService {
     challengeId: number,
     userId: number,
   ): Promise<boolean> {
-    const challenge = await this.challengeRepository.findOne({
-      where: { _id: challengeId },
-    });
+    let challenge = await this.redisCheckChallenge(challengeId);
+    if (!challenge) {
+      challenge = await this.challengeRepository.findOne({
+        where: { _id: challengeId },
+      });
+    }
     if (!challenge) {
       throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
     }
@@ -534,7 +553,7 @@ export class ChallengesService {
       .map(Number);
 
     // 종료 시간에 wakeTime의 시간, 분, 초 설정
-    challengeEndDateTime.setHours(hours, minutes, seconds || 0);
+    challengeEndDateTime.setHours(hours, minutes, seconds);
 
     // 캐시 삭제할 필요는 없는것 같음 -> 다른 팀원들도 남아있을 수 있음
 
@@ -586,6 +605,95 @@ export class ChallengesService {
   validateChallengeDate(currentDate, challenge) {
     if (currentDate < challenge.startDate || currentDate > challenge.endDate) {
       return false;
+    }
+    return true;
+  }
+
+  async findEndingToday(): Promise<Challenges[]> {
+    const currentDate = moment().tz('Asia/Seoul'); // 서울 시간대로 설정
+
+    // 오늘 날짜만 추출 (시간 제거)
+    const today = currentDate.clone().startOf('day');
+    console.log('today', today.format());
+
+    //today.setHours(0, 0, 0, 0);
+    //console.log('setHourtoday', today.for);
+
+    const tomorrow = today.clone().add(1, 'days');
+    console.log('tomorrow', tomorrow.format());
+
+    // 현재 시간
+    const now = currentDate.format('HH:mm:ss'); // "HH:mm:ss" 형식
+    console.log('now', now);
+
+    return this.challengeRepository.find({
+      where: {
+        endDate: Between(today.toDate(), tomorrow.toDate()), // 날짜 범위로 조건 지정
+      }, // 종료 날짜가 오늘인 챌린지
+      order: { wakeTime: 'ASC' }, // wakeTime 기준 정렬
+    });
+  }
+
+  async serverCompleteChallenge(challengeId: number): Promise<boolean> {
+    let challenge = await this.redisCheckChallenge(challengeId);
+    if (!challenge) {
+      challenge = await this.challengeRepository.findOne({
+        where: { _id: challengeId },
+      });
+    }
+    if (!challenge) {
+      throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
+    }
+    if (!this.checkChallengeExpiration(challenge)) {
+      throw new BadRequestException('Challenge is not expired yet.');
+    }
+
+    if (challenge.completed === true) {
+      throw new BadRequestException(
+        `Challenge with ID ${challengeId} is already completed.`,
+      );
+    }
+
+    // 챌린지에 속해있는 유저들 모두 찾기
+    const users = await this.userRepository.find({
+      where: { challengeId: challengeId },
+    });
+    if (users.length === 0) {
+      throw new NotFoundException(
+        `No users found for challenge ID ${challengeId}.`,
+      );
+    }
+    try {
+      await Promise.all(
+        users.map(async (user) => {
+          // 3. 메달처리
+          // 기간별로 90%이상 80점 이상 달성시 메달 획득 금 100 은 30 동 7
+          const qualifiedDaysCount = await this.attendanceRepository.count({
+            where: {
+              challengeId: challengeId,
+              userId: user._id,
+              score: MoreThanOrEqual(80),
+            },
+          });
+          const threshold = challenge.duration;
+          if (qualifiedDaysCount >= threshold * 0.9) {
+            await this.userService.updateUserMedals(
+              user._id,
+              this.userService.decideMedalType(threshold),
+            );
+          }
+          await this.userService.resetChallenge(user._id);
+          this.logger.log(
+            `User ${user._id} has completed challenge ${challengeId}`,
+          );
+        }),
+      );
+      challenge.completed = true;
+      await this.redisCacheService.del(`challenge_${challengeId}`);
+      await this.challengeRepository.save(challenge);
+    } catch (e) {
+      console.error('Failed to complete challenge:', e);
+      throw new Error('Error processing challenge completion.');
     }
     return true;
   }
