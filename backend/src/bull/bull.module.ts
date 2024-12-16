@@ -1,4 +1,4 @@
-import { Module, Global } from '@nestjs/common';
+import { Module, Global, forwardRef } from '@nestjs/common';
 import { BullModule, BullModuleOptions } from '@nestjs/bull';
 import { ConfigModule, ConfigService } from '@nestjs/config'; // 환경 변수를 사용할 경우
 import { ChallengeProcessor } from 'src/challenges/challenge.processor';
@@ -6,6 +6,8 @@ import { BullBoardModule } from '@bull-board/nestjs';
 import { ExpressAdapter } from '@bull-board/express';
 import { BullAdapter } from '@bull-board/api/bullAdapter';
 import { BullController } from './bull.controller';
+import { ChallengeQueueService } from 'src/challenges/challenge-queue.service';
+import { ChallengesModule } from 'src/challenges/challenges.module';
 @Global()
 @Module({
   imports: [
@@ -24,16 +26,22 @@ import { BullController } from './bull.controller';
     BullModule.registerQueue({
       name: 'challenge', // 큐 이름
     }),
-    BullBoardModule.forFeature({
-      name: 'challenge',
-      adapter: BullAdapter, //or use BullAdapter if you're using bull instead of bullMQ
-    }),
-    BullBoardModule.forRoot({
-      route: '/queues',
-      adapter: ExpressAdapter, // Or FastifyAdapter from `@bull-board/fastify`
-    }),
+    ...(process.env.NODE_ENV !== 'production'
+      ? [
+          BullBoardModule.forFeature({
+            name: 'challenge',
+            adapter: BullAdapter,
+          }),
+          BullBoardModule.forRoot({
+            route: '/bull-board',
+            adapter: ExpressAdapter,
+          }),
+        ]
+      : []),
+    forwardRef(() => ChallengesModule), // forwardRef로 참조
   ],
   controllers: [BullController],
-  providers: [ChallengeProcessor],
+  providers: [ChallengeProcessor, ChallengeQueueService],
+  exports: [ChallengeQueueService], // 추가: ChallengeQueueService를 export
 })
 export class BullAppModule {}

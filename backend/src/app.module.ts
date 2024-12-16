@@ -57,6 +57,8 @@ import { BullAppModule } from './bull/bull.module';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(HealthCheckAuthMiddleware).forRoutes('health-check');
+    consumer
+      .apply(HealthCheckAuthMiddleware)
+      .forRoutes('health-check', 'bull/status');
   }
 }

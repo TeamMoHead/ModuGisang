@@ -30,6 +30,7 @@ import { ChallengeResultDto } from './dto/challengeResult.dto';
 import RedisCacheService from 'src/redis-cache/redis-cache.service';
 import { UserService } from 'src/users/users.service';
 import { EditChallengeDto, Duration } from './dto/editChallenge.dto';
+import * as moment from 'moment-timezone';
 
 @Injectable()
 export class ChallengesService {
@@ -551,7 +552,7 @@ export class ChallengesService {
       .map(Number);
 
     // 종료 시간에 wakeTime의 시간, 분, 초 설정
-    challengeEndDateTime.setHours(hours, minutes, seconds || 0);
+    challengeEndDateTime.setHours(hours, minutes, seconds);
 
     // 캐시 삭제할 필요는 없는것 같음 -> 다른 팀원들도 남아있을 수 있음
 
@@ -608,18 +609,83 @@ export class ChallengesService {
   }
 
   async findEndingToday(): Promise<Challenges[]> {
-    const currentDate = new Date();
+    const currentDate = moment().tz('Asia/Seoul'); // 서울 시간대로 설정
 
     // 오늘 날짜만 추출 (시간 제거)
-    const today = new Date(currentDate);
-    today.setHours(0, 0, 0, 0);
+    const today = currentDate.clone().startOf('day');
+    console.log('today', today.format());
+
+    //today.setHours(0, 0, 0, 0);
+    //console.log('setHourtoday', today.for);
+
+    const tomorrow = today.clone().add(1, 'days');
+    console.log('tomorrow', tomorrow.format());
 
     // 현재 시간
-    const now = currentDate.toTimeString().split(' ')[0]; // "HH:mm:ss" 형식
+    const now = currentDate.format('HH:mm:ss'); // "HH:mm:ss" 형식
+    console.log('now', now);
 
     return this.challengeRepository.find({
-      where: { endDate: today }, // 종료 날짜가 오늘인 챌린지
+      where: {
+        endDate: Between(today.toDate(), tomorrow.toDate()), // 날짜 범위로 조건 지정
+      }, // 종료 날짜가 오늘인 챌린지
       order: { wakeTime: 'ASC' }, // wakeTime 기준 정렬
     });
+  }
+
+  async serverCompleteChallenge(challengeId: number): Promise<boolean> {
+    let challenge = await this.redisCheckChallenge(challengeId);
+    if (!challenge) {
+      challenge = await this.challengeRepository.findOne({
+        where: { _id: challengeId },
+      });
+    }
+    if (!challenge) {
+      throw new NotFoundException(`Challenge with ID ${challengeId} not found`);
+    }
+    if (!this.checkChallengeExpiration(challenge)) {
+      throw new BadRequestException('Challenge is not expired yet.');
+    }
+
+    if (challenge.completed !== true) {
+      challenge.completed = true;
+      await this.redisCacheService.del(`challenge_${challengeId}`);
+      await this.challengeRepository.save(challenge);
+    } else {
+      throw new BadRequestException(
+        `Challenge with ID ${challengeId} is already completed.`,
+      );
+    }
+    // 챌린지에 속해있는 유저들 모두 찾기
+    const users = await this.userRepository.find({
+      where: { challengeId: challengeId },
+    });
+    if (users.length === 0) {
+      throw new NotFoundException(
+        `No users found for challenge ID ${challengeId}.`,
+      );
+    }
+    await Promise.all(
+      users.map(async (user) => {
+        await this.userService.resetChallenge(user._id);
+        // 3. 메달처리
+        // 기간별로 90%이상 80점 이상 달성시 메달 획득 금 100 은 30 동 7
+        const qualifiedDaysCount = await this.attendanceRepository.count({
+          where: {
+            challengeId: challengeId,
+            userId: user._id,
+            score: MoreThanOrEqual(80),
+          },
+        });
+        const threshold = challenge.duration;
+        if (qualifiedDaysCount >= threshold * 0.9) {
+          await this.userService.updateUserMedals(
+            user._id,
+            this.userService.decideMedalType(threshold),
+          );
+        }
+      }),
+    );
+    return true;
   }
 }

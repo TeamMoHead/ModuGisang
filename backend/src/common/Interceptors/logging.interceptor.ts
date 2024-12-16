@@ -15,7 +15,7 @@ export class LoggingInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest();
     const { method, url, headers, body } = request;
 
-    // 헬스체크 요청 무시
+    // 헬스체크 로깅 무시
     if (headers['user-agent']?.includes('ELB-HealthChecker')) {
       return next.handle();
     }
