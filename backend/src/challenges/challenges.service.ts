@@ -5,6 +5,7 @@ import {
   HttpStatus,
   BadRequestException,
   ConflictException,
+  Logger,
 } from '@nestjs/common';
 import { Challenges } from './challenges.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -50,7 +51,7 @@ export class ChallengesService {
   ) {
     this.challengeRepository = challengeRepository;
   }
-
+  private readonly logger = new Logger(ChallengesService.name);
   async createChallenge(challenge: CreateChallengeDto): Promise<Challenges> {
     const user = await this.userService.findOneByID(challenge.hostId);
 
@@ -647,15 +648,12 @@ export class ChallengesService {
       throw new BadRequestException('Challenge is not expired yet.');
     }
 
-    if (challenge.completed !== true) {
-      challenge.completed = true;
-      await this.redisCacheService.del(`challenge_${challengeId}`);
-      await this.challengeRepository.save(challenge);
-    } else {
+    if (challenge.completed === true) {
       throw new BadRequestException(
         `Challenge with ID ${challengeId} is already completed.`,
       );
     }
+
     // 챌린지에 속해있는 유저들 모두 찾기
     const users = await this.userRepository.find({
       where: { challengeId: challengeId },
@@ -665,27 +663,38 @@ export class ChallengesService {
         `No users found for challenge ID ${challengeId}.`,
       );
     }
-    await Promise.all(
-      users.map(async (user) => {
-        await this.userService.resetChallenge(user._id);
-        // 3. 메달처리
-        // 기간별로 90%이상 80점 이상 달성시 메달 획득 금 100 은 30 동 7
-        const qualifiedDaysCount = await this.attendanceRepository.count({
-          where: {
-            challengeId: challengeId,
-            userId: user._id,
-            score: MoreThanOrEqual(80),
-          },
-        });
-        const threshold = challenge.duration;
-        if (qualifiedDaysCount >= threshold * 0.9) {
-          await this.userService.updateUserMedals(
-            user._id,
-            this.userService.decideMedalType(threshold),
+    try {
+      await Promise.all(
+        users.map(async (user) => {
+          // 3. 메달처리
+          // 기간별로 90%이상 80점 이상 달성시 메달 획득 금 100 은 30 동 7
+          const qualifiedDaysCount = await this.attendanceRepository.count({
+            where: {
+              challengeId: challengeId,
+              userId: user._id,
+              score: MoreThanOrEqual(80),
+            },
+          });
+          const threshold = challenge.duration;
+          if (qualifiedDaysCount >= threshold * 0.9) {
+            await this.userService.updateUserMedals(
+              user._id,
+              this.userService.decideMedalType(threshold),
+            );
+          }
+          await this.userService.resetChallenge(user._id);
+          this.logger.log(
+            `User ${user._id} has completed challenge ${challengeId}`,
           );
-        }
-      }),
-    );
+        }),
+      );
+      challenge.completed = true;
+      await this.redisCacheService.del(`challenge_${challengeId}`);
+      await this.challengeRepository.save(challenge);
+    } catch (e) {
+      console.error('Failed to complete challenge:', e);
+      throw new Error('Error processing challenge completion.');
+    }
     return true;
   }
 }

@@ -14,7 +14,8 @@ export class ChallengeQueueService {
     const wakeTimeDate = new Date();
     wakeTimeDate.setHours(hours, minutes, seconds, 0);
 
-    const delay = wakeTimeDate.getTime() - currentTime.getTime();
+    // delay에 2분 추가 (게임 시간 + 여유시간)
+    const delay = wakeTimeDate.getTime() - currentTime.getTime() + 120000;
     console.log(`Challenge ${challengeId}의 wakeTime: ${wakeTime}`);
     console.log(`Challenge ${challengeId}의 delay: ${delay}`);
     if (delay > 0) {
